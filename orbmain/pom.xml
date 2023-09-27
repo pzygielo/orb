@@ -19,7 +19,8 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.glassfish.corba</groupId>
@@ -58,21 +59,21 @@
             <version>6.0.0</version>
         </dependency>
         <dependency>
-          <groupId>org.glassfish.gmbal</groupId>
-          <artifactId>gmbal</artifactId>
-          <version>${gmbal-version}</version>
+            <groupId>org.glassfish.gmbal</groupId>
+            <artifactId>gmbal</artifactId>
+            <version>${gmbal-version}</version>
         </dependency>
         <dependency>
-          <groupId>org.glassfish.pfl</groupId>
-          <artifactId>pfl-basic</artifactId>
+            <groupId>org.glassfish.pfl</groupId>
+            <artifactId>pfl-basic</artifactId>
         </dependency>
         <dependency>
-          <groupId>org.glassfish.pfl</groupId>
-          <artifactId>pfl-dynamic</artifactId>
+            <groupId>org.glassfish.pfl</groupId>
+            <artifactId>pfl-dynamic</artifactId>
         </dependency>
         <dependency>
-          <groupId>org.glassfish.pfl</groupId>
-          <artifactId>pfl-tf</artifactId>
+            <groupId>org.glassfish.pfl</groupId>
+            <artifactId>pfl-tf</artifactId>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
@@ -122,9 +123,9 @@
                     </instructions>
                 </configuration>
             </plugin>
-            
+
             <!-- generate test idl -->
-            
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>idlj-maven-plugin</artifactId>
@@ -139,7 +140,10 @@
                     <sources>
                         <source>
                             <packagePrefixes>
-                                <packagePrefix><type>interceptors</type><prefix>com.sun.corba.ee.impl</prefix></packagePrefix>
+                                <packagePrefix>
+                                    <type>interceptors</type>
+                                    <prefix>com.sun.corba.ee.impl</prefix>
+                                </packagePrefix>
                             </packagePrefixes>
                         </source>
                     </sources>
@@ -149,10 +153,10 @@
             <!-- generate code coverage report -->
 
             <plugin>
-              <groupId>org.jacoco</groupId>
-              <artifactId>jacoco-maven-plugin</artifactId>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
             </plugin>
 
-         </plugins>
+        </plugins>
     </build>
 </project>

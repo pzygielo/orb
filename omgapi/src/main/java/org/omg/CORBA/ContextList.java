@@ -32,12 +32,12 @@ package org.omg.CORBA;
  * The method <code>get_values</code> returns an <code>NVList</code>
  * object containing the <code>NamedValue</code> objects that hold
  * the value(s) identified by the given string.
- * <P>
+ * <p>
  * A <code>ContextList</code> object is created by the ORB, as
  * illustrated here:
  * <PRE>
- *   ORB orb = ORB.init(args, null);
- *   org.omg.CORBA.ContextList ctxList = orb.create_context_list();
+ * ORB orb = ORB.init(args, null);
+ * org.omg.CORBA.ContextList ctxList = orb.create_context_list();
  * </PRE>
  * The variable <code>ctxList</code> represents an empty
  * <code>ContextList</code> object.  Strings are added to
@@ -45,9 +45,9 @@ package org.omg.CORBA;
  * with the method <code>item</code>, and removed with the
  * method <code>remove</code>.
  *
- * @see Context
  * @version 1.2, 09/09/97
- * @since   JDK1.2
+ * @see Context
+ * @since JDK1.2
  */
 
 public abstract class ContextList {
@@ -56,7 +56,7 @@ public abstract class ContextList {
      * Returns the number of <code>String</code> objects in this
      * <code>ContextList</code> object.
      *
-     * @return                  an <code>int</code> representing the number of
+     * @return an <code>int</code> representing the number of
      * <code>String</code>s in this <code>ContextList</code> object
      */
 
@@ -66,7 +66,7 @@ public abstract class ContextList {
      * Adds a <code>String</code> object to this <code>ContextList</code>
      * object.
      *
-     * @param ctx               the <code>String</code> object to be added
+     * @param ctx the <code>String</code> object to be added
      */
 
     public abstract void add(String ctx);
@@ -74,12 +74,12 @@ public abstract class ContextList {
     /**
      * Returns the <code>String</code> object at the given index.
      *
-     * @param index             the index of the string desired, with 0 being the
-     index of the first string
-     * @return                  the string at the given index
-     * @exception org.omg.CORBA.Bounds  if the index is greater than
-     *                          or equal to the number of strings in this
-     *                <code>ContextList</code> object
+     * @param index the index of the string desired, with 0 being the
+     * index of the first string
+     * @return the string at the given index
+     * @throws org.omg.CORBA.Bounds if the index is greater than
+     * or equal to the number of strings in this
+     * <code>ContextList</code> object
      */
 
     public abstract String item(int index) throws org.omg.CORBA.Bounds;
@@ -89,11 +89,11 @@ public abstract class ContextList {
      * the indices of all strings following the one removed are
      * shifted down by one.
      *
-     * @param index     the index of the <code>String</code> object to be removed,
-     *                with 0 designating the first string
-     * @exception org.omg.CORBA.Bounds  if the index is greater than
-     *                          or equal to the number of <code>String</code> objects in
-     *                this <code>ContextList</code> object
+     * @param index the index of the <code>String</code> object to be removed,
+     * with 0 designating the first string
+     * @throws org.omg.CORBA.Bounds if the index is greater than
+     * or equal to the number of <code>String</code> objects in
+     * this <code>ContextList</code> object
      */
 
     public abstract void remove(int index) throws org.omg.CORBA.Bounds;

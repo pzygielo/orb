@@ -19,23 +19,22 @@
 
 package com.sun.corba.ee.impl.dynamicany;
 
-import org.omg.CORBA.Any;
-import org.omg.CORBA.TypeCode;
-import org.omg.CORBA.TCKind;
-import org.omg.CORBA.portable.InputStream;
-import org.omg.DynamicAny.DynAnyPackage.TypeMismatch;
-import org.omg.DynamicAny.DynAnyFactoryPackage.InconsistentTypeCode;
-import java.math.BigDecimal;
 import com.sun.corba.ee.impl.corba.AnyImpl;
-
-import com.sun.corba.ee.spi.orb.ORB ;
-import com.sun.corba.ee.spi.logging.ORBUtilSystemException ;
+import com.sun.corba.ee.spi.logging.ORBUtilSystemException;
+import com.sun.corba.ee.spi.orb.ORB;
+import org.omg.CORBA.Any;
+import org.omg.CORBA.TCKind;
+import org.omg.CORBA.TypeCode;
+import org.omg.CORBA.portable.InputStream;
 import org.omg.DynamicAny.DynAny;
+import org.omg.DynamicAny.DynAnyFactoryPackage.InconsistentTypeCode;
+import org.omg.DynamicAny.DynAnyPackage.TypeMismatch;
 
-public class DynAnyUtil
-{
+import java.math.BigDecimal;
+
+public class DynAnyUtil {
     private static final ORBUtilSystemException wrapper =
-        ORBUtilSystemException.self ;
+            ORBUtilSystemException.self;
 
     static boolean isConsistentType(TypeCode typeCode) {
         int kind = typeCode.kind().value();
@@ -59,60 +58,58 @@ public class DynAnyUtil
     }
 
     static DynAny createMostDerivedDynAny(Any any, ORB orb, boolean copyValue)
-        throws org.omg.DynamicAny.DynAnyFactoryPackage.InconsistentTypeCode
-    {
-        if (any == null || ! DynAnyUtil.isConsistentType(any.type())) {
+            throws org.omg.DynamicAny.DynAnyFactoryPackage.InconsistentTypeCode {
+        if (any == null || !DynAnyUtil.isConsistentType(any.type())) {
             throw new org.omg.DynamicAny.DynAnyFactoryPackage.InconsistentTypeCode();
         }
 
         switch (any.type().kind().value()) {
-            case TCKind._tk_sequence:
-                return new DynSequenceImpl(orb, any, copyValue);
-            case TCKind._tk_struct:
-                return new DynStructImpl(orb, any, copyValue);
-            case TCKind._tk_array:
-                return new DynArrayImpl(orb, any, copyValue);
-            case TCKind._tk_union:
-                return new DynUnionImpl(orb, any, copyValue);
-            case TCKind._tk_enum:
-                return new DynEnumImpl(orb, any, copyValue);
-            case TCKind._tk_fixed:
-                return new DynFixedImpl(orb, any, copyValue);
-            case TCKind._tk_value:
-                return new DynValueImpl(orb, any, copyValue);
-            case TCKind._tk_value_box:
-                return new DynValueBoxImpl(orb, any, copyValue);
-            default:
-                return new DynAnyBasicImpl(orb, any, copyValue);
+        case TCKind._tk_sequence:
+            return new DynSequenceImpl(orb, any, copyValue);
+        case TCKind._tk_struct:
+            return new DynStructImpl(orb, any, copyValue);
+        case TCKind._tk_array:
+            return new DynArrayImpl(orb, any, copyValue);
+        case TCKind._tk_union:
+            return new DynUnionImpl(orb, any, copyValue);
+        case TCKind._tk_enum:
+            return new DynEnumImpl(orb, any, copyValue);
+        case TCKind._tk_fixed:
+            return new DynFixedImpl(orb, any, copyValue);
+        case TCKind._tk_value:
+            return new DynValueImpl(orb, any, copyValue);
+        case TCKind._tk_value_box:
+            return new DynValueBoxImpl(orb, any, copyValue);
+        default:
+            return new DynAnyBasicImpl(orb, any, copyValue);
         }
     }
 
     static DynAny createMostDerivedDynAny(TypeCode typeCode, ORB orb)
-        throws org.omg.DynamicAny.DynAnyFactoryPackage.InconsistentTypeCode
-    {
-        if (typeCode == null || ! DynAnyUtil.isConsistentType(typeCode)) {
+            throws org.omg.DynamicAny.DynAnyFactoryPackage.InconsistentTypeCode {
+        if (typeCode == null || !DynAnyUtil.isConsistentType(typeCode)) {
             throw new org.omg.DynamicAny.DynAnyFactoryPackage.InconsistentTypeCode();
         }
 
         switch (typeCode.kind().value()) {
-            case TCKind._tk_sequence:
-                return new DynSequenceImpl(orb, typeCode);
-            case TCKind._tk_struct:
-                return new DynStructImpl(orb, typeCode);
-            case TCKind._tk_array:
-                return new DynArrayImpl(orb, typeCode);
-            case TCKind._tk_union:
-                return new DynUnionImpl(orb, typeCode);
-            case TCKind._tk_enum:
-                return new DynEnumImpl(orb, typeCode);
-            case TCKind._tk_fixed:
-                return new DynFixedImpl(orb, typeCode);
-            case TCKind._tk_value:
-                return new DynValueImpl(orb, typeCode);
-            case TCKind._tk_value_box:
-                return new DynValueBoxImpl(orb, typeCode);
-            default:
-                return new DynAnyBasicImpl(orb, typeCode);
+        case TCKind._tk_sequence:
+            return new DynSequenceImpl(orb, typeCode);
+        case TCKind._tk_struct:
+            return new DynStructImpl(orb, typeCode);
+        case TCKind._tk_array:
+            return new DynArrayImpl(orb, typeCode);
+        case TCKind._tk_union:
+            return new DynUnionImpl(orb, typeCode);
+        case TCKind._tk_enum:
+            return new DynEnumImpl(orb, typeCode);
+        case TCKind._tk_fixed:
+            return new DynFixedImpl(orb, typeCode);
+        case TCKind._tk_value:
+            return new DynValueImpl(orb, typeCode);
+        case TCKind._tk_value_box:
+            return new DynValueBoxImpl(orb, typeCode);
+        default:
+            return new DynAnyBasicImpl(orb, typeCode);
         }
     }
 
@@ -136,128 +133,129 @@ public class DynAnyUtil
         // - for Any values, an Any containing a type code with a TCKind value of tk_null
         //   type and no value
         switch (typeCode.kind().value()) {
-            case TCKind._tk_boolean:
-                // false for boolean
-                returnValue.insert_boolean(false);
-                break;
-            case TCKind._tk_short:
-                // zero for numeric types
-                returnValue.insert_short((short)0);
-                break;
-            case TCKind._tk_ushort:
-                // zero for numeric types
-                returnValue.insert_ushort((short)0);
-                break;
-            case TCKind._tk_long:
-                // zero for numeric types
-                returnValue.insert_long(0);
-                break;
-            case TCKind._tk_ulong:
-                // zero for numeric types
-                returnValue.insert_ulong(0);
-                break;
-            case TCKind._tk_longlong:
-                // zero for numeric types
-                returnValue.insert_longlong((long)0);
-                break;
-            case TCKind._tk_ulonglong:
-                // zero for numeric types
-                returnValue.insert_ulonglong((long)0);
-                break;
-            case TCKind._tk_float:
-                // zero for numeric types
-                returnValue.insert_float((float)0.0);
-                break;
-            case TCKind._tk_double:
-                // zero for numeric types
-                returnValue.insert_double(0.0);
-                break;
-            case TCKind._tk_octet:
-                // zero for types octet, char, and wchar
-                returnValue.insert_octet((byte)0);
-                break;
-            case TCKind._tk_char:
-                // zero for types octet, char, and wchar
-                returnValue.insert_char((char)0);
-                break;
-            case TCKind._tk_wchar:
-                // zero for types octet, char, and wchar
-                returnValue.insert_wchar((char)0);
-                break;
-            case TCKind._tk_string:
-                // the empty string for string and wstring
-                // Make sure that type code for bounded strings gets respected
-                returnValue.type(typeCode);
-                // Doesn't erase the type of bounded string
-                returnValue.insert_string("");
-                break;
-            case TCKind._tk_wstring:
-                // the empty string for string and wstring
-                // Make sure that type code for bounded strings gets respected
-                returnValue.type(typeCode);
-                // Doesn't erase the type of bounded string
-                returnValue.insert_wstring("");
-                break;
-            case TCKind._tk_objref:
-                // nil for object references
-                returnValue.insert_Object(null);
-                break;
-            case TCKind._tk_TypeCode:
-                // a type code with a TCKind value of tk_null for type codes
-                // We can reuse the type code that's already in the any.
-                returnValue.insert_TypeCode(returnValue.type());
-                break;
-            case TCKind._tk_any:
-                // for Any values, an Any containing a type code with a TCKind value
-                // of tk_null type and no value.
-                // This is exactly what the default AnyImpl constructor provides.
-                // _REVISIT_ Note that this inner Any is considered uninitialized.
-                returnValue.insert_any(orb.create_any());
-                break;
-            case TCKind._tk_struct:
-            case TCKind._tk_union:
-            case TCKind._tk_enum:
-            case TCKind._tk_sequence:
-            case TCKind._tk_array:
-            case TCKind._tk_except:
-            case TCKind._tk_value:
-            case TCKind._tk_value_box:
-                // There are no default value for complex types since there is no
-                // concept of a hierarchy of Anys. Only DynAnys can be arrange in
-                // a hierarchy to mirror the TypeCode hierarchy.
-                // See DynAnyConstructedImpl.initializeComponentsFromTypeCode()
-                // on how this DynAny hierarchy is created from TypeCodes.
-                returnValue.type(typeCode);
-                break;
-            case TCKind._tk_fixed:
-                returnValue.insert_fixed(new BigDecimal("0.0"), typeCode);
-                break;
-            case TCKind._tk_native:
-            case TCKind._tk_alias:
-            case TCKind._tk_void:
-            case TCKind._tk_Principal:
-            case TCKind._tk_abstract_interface:
-                returnValue.type(typeCode);
-                break;
-            case TCKind._tk_null:
-                // Any is already initialized to null
-                break;
-            case TCKind._tk_longdouble:
-                // Unspecified for Java
-                throw wrapper.tkLongDoubleNotSupported() ;
-            default:
-                throw wrapper.typecodeNotSupported() ;
+        case TCKind._tk_boolean:
+            // false for boolean
+            returnValue.insert_boolean(false);
+            break;
+        case TCKind._tk_short:
+            // zero for numeric types
+            returnValue.insert_short((short) 0);
+            break;
+        case TCKind._tk_ushort:
+            // zero for numeric types
+            returnValue.insert_ushort((short) 0);
+            break;
+        case TCKind._tk_long:
+            // zero for numeric types
+            returnValue.insert_long(0);
+            break;
+        case TCKind._tk_ulong:
+            // zero for numeric types
+            returnValue.insert_ulong(0);
+            break;
+        case TCKind._tk_longlong:
+            // zero for numeric types
+            returnValue.insert_longlong((long) 0);
+            break;
+        case TCKind._tk_ulonglong:
+            // zero for numeric types
+            returnValue.insert_ulonglong((long) 0);
+            break;
+        case TCKind._tk_float:
+            // zero for numeric types
+            returnValue.insert_float((float) 0.0);
+            break;
+        case TCKind._tk_double:
+            // zero for numeric types
+            returnValue.insert_double(0.0);
+            break;
+        case TCKind._tk_octet:
+            // zero for types octet, char, and wchar
+            returnValue.insert_octet((byte) 0);
+            break;
+        case TCKind._tk_char:
+            // zero for types octet, char, and wchar
+            returnValue.insert_char((char) 0);
+            break;
+        case TCKind._tk_wchar:
+            // zero for types octet, char, and wchar
+            returnValue.insert_wchar((char) 0);
+            break;
+        case TCKind._tk_string:
+            // the empty string for string and wstring
+            // Make sure that type code for bounded strings gets respected
+            returnValue.type(typeCode);
+            // Doesn't erase the type of bounded string
+            returnValue.insert_string("");
+            break;
+        case TCKind._tk_wstring:
+            // the empty string for string and wstring
+            // Make sure that type code for bounded strings gets respected
+            returnValue.type(typeCode);
+            // Doesn't erase the type of bounded string
+            returnValue.insert_wstring("");
+            break;
+        case TCKind._tk_objref:
+            // nil for object references
+            returnValue.insert_Object(null);
+            break;
+        case TCKind._tk_TypeCode:
+            // a type code with a TCKind value of tk_null for type codes
+            // We can reuse the type code that's already in the any.
+            returnValue.insert_TypeCode(returnValue.type());
+            break;
+        case TCKind._tk_any:
+            // for Any values, an Any containing a type code with a TCKind value
+            // of tk_null type and no value.
+            // This is exactly what the default AnyImpl constructor provides.
+            // _REVISIT_ Note that this inner Any is considered uninitialized.
+            returnValue.insert_any(orb.create_any());
+            break;
+        case TCKind._tk_struct:
+        case TCKind._tk_union:
+        case TCKind._tk_enum:
+        case TCKind._tk_sequence:
+        case TCKind._tk_array:
+        case TCKind._tk_except:
+        case TCKind._tk_value:
+        case TCKind._tk_value_box:
+            // There are no default value for complex types since there is no
+            // concept of a hierarchy of Anys. Only DynAnys can be arrange in
+            // a hierarchy to mirror the TypeCode hierarchy.
+            // See DynAnyConstructedImpl.initializeComponentsFromTypeCode()
+            // on how this DynAny hierarchy is created from TypeCodes.
+            returnValue.type(typeCode);
+            break;
+        case TCKind._tk_fixed:
+            returnValue.insert_fixed(new BigDecimal("0.0"), typeCode);
+            break;
+        case TCKind._tk_native:
+        case TCKind._tk_alias:
+        case TCKind._tk_void:
+        case TCKind._tk_Principal:
+        case TCKind._tk_abstract_interface:
+            returnValue.type(typeCode);
+            break;
+        case TCKind._tk_null:
+            // Any is already initialized to null
+            break;
+        case TCKind._tk_longdouble:
+            // Unspecified for Java
+            throw wrapper.tkLongDoubleNotSupported();
+        default:
+            throw wrapper.typecodeNotSupported();
         }
         return returnValue;
     }
-/*
-    static Any setTypeOfAny(TypeCode typeCode, Any value) {
-        if (value != null) {
-            value.read_value(value.create_input_stream(), typeCode);
+
+    /*
+        static Any setTypeOfAny(TypeCode typeCode, Any value) {
+            if (value != null) {
+                value.read_value(value.create_input_stream(), typeCode);
+            }
+            return value;
         }
-        return value;
-    }
-*/
+    */
     static Any copy(Any inAny, ORB orb) {
         return new AnyImpl(orb, inAny);
     }
@@ -292,12 +290,12 @@ public class DynAnyUtil
         // Returning simply the value of Any.isInitialized() is not enough.
         // The DynAny spec says that Anys containing null strings do not contain
         // a "legal value" (see ptc 99-10-07, 9.2.3.3)
-        boolean isInitialized = ((AnyImpl)any).isInitialized();
+        boolean isInitialized = ((AnyImpl) any).isInitialized();
         switch (any.type().kind().value()) {
-            case TCKind._tk_string:
-                return (isInitialized && (any.extract_string() != null));
-            case TCKind._tk_wstring:
-                return (isInitialized && (any.extract_wstring() != null));
+        case TCKind._tk_string:
+            return (isInitialized && (any.extract_string() != null));
+        case TCKind._tk_wstring:
+            return (isInitialized && (any.extract_wstring() != null));
         }
         return isInitialized;
     }

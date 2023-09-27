@@ -25,19 +25,19 @@
 package corba.islocal;
 
 import javax.naming.InitialContext;
+
 import org.omg.CORBA.ORB;
 
 import corba.framework.Controller;
 import corba.hcks.C;
 import corba.hcks.U;
 
-import com.sun.corba.ee.spi.presentation.rmi.StubAdapter ;
+import com.sun.corba.ee.spi.presentation.rmi.StubAdapter;
 
-public class Client 
-{
+public class Client {
     public static final String baseMsg = Client.class.getName();
     public static final String main = baseMsg + ".main";
-    
+
     public static ORB orb;
     public static InitialContext initialContext;
 
@@ -46,46 +46,44 @@ public class Client
     public static rmiiI rmiiIConnect;
     public static rmiiI rmiiIPOA;
 
-    public static String idlIConnectArg  = Server.idlIConnect;
-    public static String idlIPOAArg      = Server.idlIPOA;
+    public static String idlIConnectArg = Server.idlIConnect;
+    public static String idlIPOAArg = Server.idlIPOA;
     public static String rmiiIConnectArg = Server.rmiiIConnect;
-    public static String rmiiIPOAArg     = Server.rmiiIPOA;
+    public static String rmiiIPOAArg = Server.rmiiIPOA;
 
     public static int errors = 0;
     public static Thread clientThread;
 
-    public static void main(String[] av)
-    {
+    public static void main(String[] av) {
         try {
             U.sop(main + " starting");
 
-            if (! ColocatedClientServer.isColocated) {
+            if (!ColocatedClientServer.isColocated) {
                 U.sop(main + " : creating ORB.");
                 orb = ORB.init(av, null);
                 U.sop(main + " : creating InitialContext.");
                 initialContext = C.createInitialContext(orb);
             }
 
-            idlIConnect = idlIHelper.narrow(U.resolve(Server.idlIConnect,orb));
-            idlIPOA     = idlIHelper.narrow(U.resolve(Server.idlIPOA,    orb));
+            idlIConnect = idlIHelper.narrow(U.resolve(Server.idlIConnect, orb));
+            idlIPOA = idlIHelper.narrow(U.resolve(Server.idlIPOA, orb));
 
             rmiiIConnect = (rmiiI)
-                U.lookupAndNarrow(Server.rmiiIConnect,
-                                  rmiiI.class, initialContext);
+                    U.lookupAndNarrow(Server.rmiiIConnect,
+                                      rmiiI.class, initialContext);
 
             /*
             rmiiIPOA = (rmiiI)
                 U.lookupAndNarrow(C.rmiiSL, rmiiI.class, initialContext);
             */
 
-
             U.sop("-----------isLocal-------------");
 
-            boolean is_local_result = StubAdapter.isLocal( rmiiIConnect ) ;
+            boolean is_local_result = StubAdapter.isLocal(rmiiIConnect);
             U.sop("is_local: " + is_local_result);
             if (is_local_result != ColocatedClientServer.isColocated) {
-                    errors++;
-                    U.sop("!!! is_local value incorrect !!!");
+                errors++;
+                U.sop("!!! is_local value incorrect !!!");
             }
 
             /* REVISIT - you cannot call StubAdapter.isLocal outside of stub.

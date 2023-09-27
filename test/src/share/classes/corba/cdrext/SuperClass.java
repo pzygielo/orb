@@ -20,8 +20,7 @@
 
 package corba.cdrext;
 
-public class SuperClass
-{
+public class SuperClass {
     private String strValue;
     private int intValue;
 
@@ -43,11 +42,11 @@ public class SuperClass
     }
 
     public boolean equals(Object obj) {
-        if (!(obj instanceof SuperClass))
+        if (!(obj instanceof SuperClass)) {
             return false;
-        else {
-            return intValue == ((SuperClass)obj).intValue
-                && strValue.equals(((SuperClass)obj).strValue);
+        } else {
+            return intValue == ((SuperClass) obj).intValue
+                    && strValue.equals(((SuperClass) obj).strValue);
         }
     }
 }

@@ -20,26 +20,25 @@
 package org.omg.CORBA;
 
 /**
- * This exception indicates that an implementation limit was 
- * exceeded in the ORB run time. For example, an ORB may reach 
- * the maximum number of references it can hold simultaneously 
- * in an address space, the size of a parameter may have 
- * exceeded the allowed maximum, or an ORB may impose a maximum 
+ * This exception indicates that an implementation limit was
+ * exceeded in the ORB run time. For example, an ORB may reach
+ * the maximum number of references it can hold simultaneously
+ * in an address space, the size of a parameter may have
+ * exceeded the allowed maximum, or an ORB may impose a maximum
  * on the number of clients or servers that can run simultaneously.<P>
  * It contains a minor code, which gives more detailed information about
  * what caused the exception, and a completion status. It may also contain
  * a string describing the exception.
  *
+ * @version 1.16, 09/09/97
  * @see <A href="../../../../guide/idl/jidlExceptions.html">documentation on
  * Java&nbsp;IDL exceptions</A>
- * @version     1.16, 09/09/97
- * @since       JDK1.2
+ * @since JDK1.2
  */
-
 
 public final class IMP_LIMIT extends SystemException {
     /**
-     * Constructs an <code>IMP_LIMIT</code> exception with a default 
+     * Constructs an <code>IMP_LIMIT</code> exception with a default
      * minor code of 0 and a completion state of COMPLETED_NO.
      */
     public IMP_LIMIT() {
@@ -59,6 +58,7 @@ public final class IMP_LIMIT extends SystemException {
     /**
      * Constructs an <code>IMP_LIMIT</code> exception with the specified
      * minor code and completion status.
+     *
      * @param minor the minor code
      * @param completed the completion status
      */
@@ -70,6 +70,7 @@ public final class IMP_LIMIT extends SystemException {
      * Constructs an <code>IMP_LIMIT</code> exception with the specified detail
      * message, minor code, and completion status.
      * A detail message is a String that describes this particular exception.
+     *
      * @param s the String containing a detail message
      * @param minor the minor code
      * @param completed the completion status

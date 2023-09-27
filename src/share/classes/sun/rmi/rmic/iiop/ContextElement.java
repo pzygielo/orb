@@ -22,7 +22,8 @@ package sun.rmi.rmic.iiop;
 
 /**
  * ContextElement provides a common interface for elements of a ContextStack.
- * @author      Bryan Atsatt
+ *
+ * @author Bryan Atsatt
  */
 public interface ContextElement {
     public String getElementName();

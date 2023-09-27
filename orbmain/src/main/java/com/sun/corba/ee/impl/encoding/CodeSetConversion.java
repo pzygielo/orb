@@ -19,65 +19,56 @@
 
 package com.sun.corba.ee.impl.encoding;
 
-import java.nio.ByteOrder;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.WeakHashMap;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetEncoder;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.IllegalCharsetNameException;
-import java.nio.charset.MalformedInputException;
-import java.nio.charset.UnsupportedCharsetException;
-import java.nio.charset.UnmappableCharacterException;
-
-import com.sun.corba.ee.spi.logging.ORBUtilSystemException;
 import com.sun.corba.ee.spi.logging.OMGSystemException;
+import com.sun.corba.ee.spi.logging.ORBUtilSystemException;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.CharBuffer;
+import java.nio.charset.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * Collection of classes, interfaces, and factory methods for
  * CORBA code set conversion.
- *
+ * <p>
  * This is mainly used to shield other code from the sun.io
  * converters which might change, as well as provide some basic
  * translation from conversion to CORBA error exceptions.  Some
  * extra work is required here to facilitate the way CORBA
  * says it uses UTF-16 as of the 00-11-03 spec.
- *
+ * <p>
  * REVISIT - Since the nio.Charset and nio.Charset.Encoder/Decoder
- *           use NIO ByteBuffer and NIO CharBuffer, the interaction
- *           and interface between this class and the CDR streams
- *           should be looked at more closely for optimizations to
- *           avoid unnecessary copying of data between char[] &amp;
- *           CharBuffer and byte[] &amp; ByteBuffer, especially
- *           DirectByteBuffers.
- *
+ * use NIO ByteBuffer and NIO CharBuffer, the interaction
+ * and interface between this class and the CDR streams
+ * should be looked at more closely for optimizations to
+ * avoid unnecessary copying of data between char[] &amp;
+ * CharBuffer and byte[] &amp; ByteBuffer, especially
+ * DirectByteBuffers.
  */
-public class CodeSetConversion
-{
+public class CodeSetConversion {
     private static final ORBUtilSystemException wrapper =
-        ORBUtilSystemException.self ;
+            ORBUtilSystemException.self;
     private static final OMGSystemException omgWrapper =
-        OMGSystemException.self ;
+            OMGSystemException.self;
 
     /**
      * Abstraction for char to byte conversion.
-     *
+     * <p>
      * Must be used in the proper sequence:
-     *
+     * <p>
      * 1)  convert
      * 2)  Optional getNumBytes and/or getAlignment (if necessary)
      * 3)  getBytes (see warning)
      */
-    public abstract static class CTBConverter
-    {
+    public abstract static class CTBConverter {
         // Perform the conversion of the provided char or String,
         // allowing the caller to query for more information
         // before writing.
         public abstract void convert(char chToConvert);
+
         public abstract void convert(String strToConvert);
 
         // How many bytes resulted from the conversion?
@@ -102,7 +93,7 @@ public class CodeSetConversion
         // save references.
         public abstract byte[] getBytes();
     }
-    
+
     /**
      * Abstraction for byte to char conversion.
      */
@@ -118,17 +109,17 @@ public class CodeSetConversion
         // The same array may be used internally over multiple
         // calls.
         public abstract char[] getChars(byte[] bytes, int offset, int length);
+
         public abstract char[] getChars(ByteBuffer byteBuffer, int offset, int length);
 
     }
 
     /**
      * Implementation of CTBConverter which uses a nio.Charset.CharsetEncoder
-     * to do the real work.  Handles translation of exceptions to the 
+     * to do the real work.  Handles translation of exceptions to the
      * appropriate CORBA versions.
      */
-    private class JavaCTBConverter extends CTBConverter
-    {
+    private class JavaCTBConverter extends CTBConverter {
         // nio.Charset.CharsetEncoder actually does the work here
         // have to use it directly rather than through String's interface
         // because we want to know when errors occur during the conversion.
@@ -166,16 +157,16 @@ public class CodeSetConversion
                     ctb = tmpCharset.newEncoder();
                     cache.setConverter(codeset.getName(), ctb);
                 }
-            } catch(IllegalCharsetNameException icne) {
+            } catch (IllegalCharsetNameException icne) {
 
                 // This can only happen if one of our Entries has
                 // an invalid name.
-                throw wrapper.invalidCtbConverterName(icne,codeset.getName());
-            } catch(UnsupportedCharsetException ucne) {
+                throw wrapper.invalidCtbConverterName(icne, codeset.getName());
+            } catch (UnsupportedCharsetException ucne) {
 
                 // This can only happen if one of our Entries has
                 // an unsupported name.
-                throw wrapper.invalidCtbConverterName(ucne,codeset.getName());
+                throw wrapper.invalidCtbConverterName(ucne, codeset.getName());
             }
 
             alignment = alignmentForEncoding;
@@ -186,9 +177,10 @@ public class CodeSetConversion
         }
 
         public void convert(char chToConvert) {
-            if (chars == null)
+            if (chars == null) {
                 chars = new char[1];
-            
+            }
+
             // The CharToByteConverter only takes a char[]
             chars[0] = chToConvert;
             numChars = 1;
@@ -201,19 +193,19 @@ public class CodeSetConversion
             // space/time trade off.  If we could get the char[] out of
             // the String without copying, that would be great, but
             // it's forbidden since String is immutable.
-            if (chars == null || chars.length < strToConvert.length())
+            if (chars == null || chars.length < strToConvert.length()) {
                 chars = new char[strToConvert.length()];
+            }
 
             numChars = strToConvert.length();
-            
+
             buffer = cacheEncoder.get(strToConvert);
             if (buffer != null) {
                 numBytes = buffer.limit();
                 //We need to set the buffer position to zero; becoz a
                 //previous read would have set the buffer position to its limit
                 buffer.position(0);
-            }
-            else {
+            } else {
                 strToConvert.getChars(0, numChars, chars, 0);
                 convertCharArray();
                 cacheEncoder.put(strToConvert, buffer);
@@ -226,7 +218,7 @@ public class CodeSetConversion
         public final int getNumBytes() {
             return numBytes;
         }
-        
+
         public final int getAlignment() {
             return alignment;
         }
@@ -244,7 +236,7 @@ public class CodeSetConversion
 
         private void convertCharArray() {
             try {
-                
+
                 // Possible optimization of directly converting into the CDR buffer.
                 // However, that means the CDR code would have to reserve
                 // a 4 byte string length ahead of time, and we'd need a
@@ -258,7 +250,7 @@ public class CodeSetConversion
                 // factor of 2 increase.
 
                 // Convert the characters
-                buffer = ctb.encode(CharBuffer.wrap(chars,0,numChars));
+                buffer = ctb.encode(CharBuffer.wrap(chars, 0, numChars));
 
                 // ByteBuffer returned by the encoder will set its limit
                 // to byte immediately after the last written byte.
@@ -266,17 +258,17 @@ public class CodeSetConversion
 
             } catch (IllegalStateException ise) {
                 // an encoding operation is already in progress
-                throw wrapper.ctbConverterFailure( ise ) ;
+                throw wrapper.ctbConverterFailure(ise);
             } catch (MalformedInputException mie) {
                 // There were illegal Unicode char pairs
-                throw wrapper.badUnicodePair( mie ) ;
+                throw wrapper.badUnicodePair(mie);
             } catch (UnmappableCharacterException uce) {
                 // A character doesn't map to the desired code set
                 // CORBA formal 00-11-03.
-                throw omgWrapper.charNotInCodeset( uce ) ;
+                throw omgWrapper.charNotInCodeset(uce);
             } catch (CharacterCodingException cce) {
                 // If this happens, then some other encoding error occured
-                throw wrapper.ctbConverterFailure( cce ) ;
+                throw wrapper.ctbConverterFailure(cce);
             }
         }
     }
@@ -285,8 +277,7 @@ public class CodeSetConversion
      * Special UTF16 converter which can either always write a BOM
      * or use a specified byte order without one.
      */
-    private class UTF16CTBConverter extends JavaCTBConverter
-    {
+    private class UTF16CTBConverter extends JavaCTBConverter {
         // Using this constructor, we will always write a BOM
         public UTF16CTBConverter() {
             super(OSFCodeSetRegistry.UTF_16, 2);
@@ -300,7 +291,7 @@ public class CodeSetConversion
 
     /**
      * Implementation of BTCConverter which uses a sun.io.ByteToCharConverter
-     * for the real work.  Handles translation of exceptions to the 
+     * for the real work.  Handles translation of exceptions to the
      * appropriate CORBA versions.
      */
     private class JavaBTCConverter extends BTCConverter {
@@ -326,17 +317,17 @@ public class CodeSetConversion
 
             } catch (IllegalStateException ile) {
                 // There were a decoding operation already in progress
-                throw wrapper.btcConverterFailure( ile ) ;
+                throw wrapper.btcConverterFailure(ile);
             } catch (MalformedInputException mie) {
                 // There were illegal Unicode char pairs
-                throw wrapper.badUnicodePair( mie ) ;
+                throw wrapper.badUnicodePair(mie);
             } catch (UnmappableCharacterException uce) {
                 // A character doesn't map to the desired code set.
                 // CORBA formal 00-11-03.
-                throw omgWrapper.charNotInCodeset( uce ) ;
+                throw omgWrapper.charNotInCodeset(uce);
             } catch (CharacterCodingException cce) {
                 // If this happens, then a character decoding error occured.
-                throw wrapper.btcConverterFailure( cce ) ;
+                throw wrapper.btcConverterFailure(cce);
             }
         }
 
@@ -350,7 +341,6 @@ public class CodeSetConversion
             // Basic tests didn't show more than a 1 ms increase
             // worst case.  It's less than a factor of 2 increase.
             // Also makes the interface more difficult.
-
 
             try {
 
@@ -379,17 +369,17 @@ public class CodeSetConversion
 
             } catch (IllegalStateException ile) {
                 // There were a decoding operation already in progress
-                throw wrapper.btcConverterFailure( ile ) ;
+                throw wrapper.btcConverterFailure(ile);
             } catch (MalformedInputException mie) {
                 // There were illegal Unicode char pairs
-                throw wrapper.badUnicodePair( mie ) ;
+                throw wrapper.badUnicodePair(mie);
             } catch (UnmappableCharacterException uce) {
                 // A character doesn't map to the desired code set.
                 // CORBA formal 00-11-03.
-                throw omgWrapper.charNotInCodeset( uce ) ;
+                throw omgWrapper.charNotInCodeset(uce);
             } catch (CharacterCodingException cce) {
                 // If this happens, then a character decoding error occured.
-                throw wrapper.btcConverterFailure( cce ) ;
+                throw wrapper.btcConverterFailure(cce);
             }
         }
 
@@ -410,10 +400,10 @@ public class CodeSetConversion
                     cache.setConverter(javaCodeSetName, result);
                 }
 
-            } catch(IllegalCharsetNameException icne) {
+            } catch (IllegalCharsetNameException icne) {
                 // This can only happen if one of our charset entries has
                 // an illegal name.
-                throw wrapper.invalidBtcConverterName( icne, javaCodeSetName ) ;
+                throw wrapper.invalidBtcConverterName(icne, javaCodeSetName);
             }
 
             return result;
@@ -424,12 +414,11 @@ public class CodeSetConversion
      * Special converter for UTF16 since it's required to optionally
      * support a byte order marker while the internal Java converters
      * either require it or require that it isn't there.
-     *
+     * <p>
      * The solution is to check for the byte order marker, and if we
      * need to do something differently, switch internal converters.
      */
-    private class UTF16BTCConverter extends JavaBTCConverter
-    {
+    private class UTF16BTCConverter extends JavaBTCConverter {
         private ByteOrder defaultByteOrder;
         private boolean converterUsesBOM = true;
 
@@ -444,21 +433,23 @@ public class CodeSetConversion
         }
 
         public char[] getChars(ByteBuffer byteBuffer, int offset, int numBytes) {
-            byte [] marker = {byteBuffer.get(), byteBuffer.get()};
+            byte[] marker = { byteBuffer.get(), byteBuffer.get() };
             byteBuffer.position(0);
 
             if (hasUTF16ByteOrderMarker(marker, 0, numBytes)) {
-                if (!converterUsesBOM)
+                if (!converterUsesBOM) {
                     switchToConverter(OSFCodeSetRegistry.UTF_16);
+                }
 
                 converterUsesBOM = true;
                 return super.getChars(byteBuffer, offset, numBytes);
             } else {
                 if (converterUsesBOM) {
-                    if (defaultByteOrder == ByteOrder.LITTLE_ENDIAN)
+                    if (defaultByteOrder == ByteOrder.LITTLE_ENDIAN) {
                         switchToConverter(OSFCodeSetRegistry.UTF_16LE);
-                    else
+                    } else {
                         switchToConverter(OSFCodeSetRegistry.UTF_16BE);
+                    }
 
                     converterUsesBOM = false;
                 }
@@ -470,18 +461,20 @@ public class CodeSetConversion
         public char[] getChars(byte[] bytes, int offset, int numBytes) {
 
             if (hasUTF16ByteOrderMarker(bytes, offset, numBytes)) {
-                if (!converterUsesBOM)
+                if (!converterUsesBOM) {
                     switchToConverter(OSFCodeSetRegistry.UTF_16);
+                }
 
                 converterUsesBOM = true;
 
                 return super.getChars(bytes, offset, numBytes);
             } else {
                 if (converterUsesBOM) {
-                    if (defaultByteOrder == ByteOrder.LITTLE_ENDIAN)
+                    if (defaultByteOrder == ByteOrder.LITTLE_ENDIAN) {
                         switchToConverter(OSFCodeSetRegistry.UTF_16LE);
-                    else
+                    } else {
                         switchToConverter(OSFCodeSetRegistry.UTF_16BE);
+                    }
 
                     converterUsesBOM = false;
                 }
@@ -501,17 +494,18 @@ public class CodeSetConversion
                 int b1 = array[offset] & 0x00FF;
                 int b2 = array[offset + 1] & 0x00FF;
 
-                char marker = (char)((b1 << 8) | (b2));
-                
+                char marker = (char) ((b1 << 8) | (b2));
+
                 return (marker == UTF16_BE_MARKER || marker == UTF16_LE_MARKER);
-            } else
+            } else {
                 return false;
+            }
         }
 
         /**
          * The current solution for dealing with UTF-16 in CORBA
          * is that if our sun.io converter requires byte order markers,
-         * and then we see a CORBA wstring/wchar without them, we 
+         * and then we see a CORBA wstring/wchar without them, we
          * switch to the sun.io converter that doesn't require them.
          */
         private void switchToConverter(OSFCodeSetRegistry.Entry newCodeSet) {
@@ -523,46 +517,48 @@ public class CodeSetConversion
 
     /**
      * CTB converter factory for single byte or variable length encodings.
+     *
      * @param codeset Codeset to get converter for
      * @return Char-to-Byte Converter for codeset
      */
     public CTBConverter getCTBConverter(OSFCodeSetRegistry.Entry codeset) {
         int alignment = (!codeset.isFixedWidth() ?
-                         1 :
-                         codeset.getMaxBytesPerChar());
-            
+                1 :
+                codeset.getMaxBytesPerChar());
+
         return new JavaCTBConverter(codeset, alignment);
     }
 
     /**
      * CTB converter factory for multibyte (mainly fixed) encodings.
-     *
-     * Because of the awkwardness with byte order markers and the possibility of 
-     * using UCS-2, you must specify both the endianness of the stream as well as 
-     * whether or not to use byte order markers if applicable.  UCS-2 has no byte 
+     * <p>
+     * Because of the awkwardness with byte order markers and the possibility of
+     * using UCS-2, you must specify both the endianness of the stream as well as
+     * whether or not to use byte order markers if applicable.  UCS-2 has no byte
      * order markers.  UTF-16 has optional markers.
-     *
+     * <p>
      * If you select useByteOrderMarkers, there is no guarantee that the encoding
      * will use the endianness specified.
-     *
      */
     CTBConverter getCTBConverter(OSFCodeSetRegistry.Entry codeset,
-                                        boolean littleEndian,
-                                        boolean useByteOrderMarkers) {
+                                 boolean littleEndian,
+                                 boolean useByteOrderMarkers) {
 
         // UCS2 doesn't have byte order markers, and we're encoding it
         // as UTF-16 since UCS2 isn't available in all Java platforms.
         // They should be identical with only minor differences in
         // negative cases.
-        if (codeset == OSFCodeSetRegistry.UCS_2)
+        if (codeset == OSFCodeSetRegistry.UCS_2) {
             return new UTF16CTBConverter(littleEndian);
+        }
 
         // We can write UTF-16 with or without a byte order marker.
         if (codeset == OSFCodeSetRegistry.UTF_16) {
-            if (useByteOrderMarkers)
+            if (useByteOrderMarkers) {
                 return new UTF16CTBConverter();
-            else
+            } else {
                 return new UTF16CTBConverter(littleEndian);
+            }
         }
 
         // Everything else uses the generic JavaCTBConverter.
@@ -576,17 +572,17 @@ public class CodeSetConversion
         // This doesn't matter for GIOP 1.2 wchars and wstrings
         // since the encoded bytes are treated as an encapsulation.
         int alignment = (!codeset.isFixedWidth() ?
-                         1 :
-                         codeset.getMaxBytesPerChar());
+                1 :
+                codeset.getMaxBytesPerChar());
 
         CTBConverter converter;
 
-        Map<OSFCodeSetRegistry.Entry, CTBConverter> m =  cacheCTBC.get();
+        Map<OSFCodeSetRegistry.Entry, CTBConverter> m = cacheCTBC.get();
         converter = m.get(codeset);
-        if (converter == null ) {
+        if (converter == null) {
             converter = new JavaCTBConverter(codeset, alignment);
             m.put(codeset, converter);
-        } else if(converter.getAlignment() != alignment) {
+        } else if (converter.getAlignment() != alignment) {
             ((JavaCTBConverter) converter).setAlignment(alignment);
         }
         return converter;
@@ -594,6 +590,7 @@ public class CodeSetConversion
 
     /**
      * BTCConverter factory for single byte or variable width encodings.
+     *
      * @param codeset Codeset to get converter for
      * @return new Byte-to-Char Converter
      */
@@ -603,7 +600,8 @@ public class CodeSetConversion
 
     /**
      * BTCConverter factory for fixed width multibyte encodings.
-     * @param codeset  Codeset to get converter for
+     *
+     * @param codeset Codeset to get converter for
      * @param defaultByteOrder Order of bytes in the codeset
      * @return Converter for a codeset
      */
@@ -612,7 +610,7 @@ public class CodeSetConversion
         if (codeset == OSFCodeSetRegistry.UTF_16 || codeset == OSFCodeSetRegistry.UCS_2) {
             return new UTF16BTCConverter(defaultByteOrder);
         } else {
-            Map<OSFCodeSetRegistry.Entry, BTCConverter> m  = cacheBTCC.get();
+            Map<OSFCodeSetRegistry.Entry, BTCConverter> m = cacheBTCC.get();
             BTCConverter converter = m.get(codeset);
             if (converter == null) {
                 converter = new JavaBTCConverter(codeset);
@@ -622,9 +620,9 @@ public class CodeSetConversion
         }
     }
 
-    /** 
+    /**
      * Follows the code set negotiation algorithm in CORBA formal 99-10-07 13.7.2.
-     *
+     * <p>
      * Returns the proper negotiated OSF character encoding number or
      * CodeSetConversion.FALLBACK_CODESET.
      */
@@ -639,10 +637,11 @@ public class CodeSetConversion
         int serverNative = server.nativeCodeSet;
 
         if (serverNative == 0) {
-            if (server.conversionCodeSets.length > 0)
+            if (server.conversionCodeSets.length > 0) {
                 serverNative = server.conversionCodeSets[0];
-            else
+            } else {
                 return CodeSetConversion.FALLBACK_CODESET;
+            }
         }
 
         if (client.nativeCodeSet == serverNative) {
@@ -687,7 +686,7 @@ public class CodeSetConversion
         // UTF8 and UTF16, the fall back code sets.  It's also a lot
         // of work to implement.  In the case of incompatibility, the
         // spec says to throw a CODESET_INCOMPATIBLE exception.
-        
+
         // Use the fallback
         return CodeSetConversion.FALLBACK_CODESET;
     }
@@ -695,6 +694,7 @@ public class CodeSetConversion
     /**
      * Perform the code set negotiation algorithm and come up with
      * the two encodings to use.
+     *
      * @param client Info from the client
      * @param server Info from the server
      * @return Resulted negotiated encoding context
@@ -702,16 +702,16 @@ public class CodeSetConversion
     public CodeSetComponentInfo.CodeSetContext negotiate(CodeSetComponentInfo client,
                                                          CodeSetComponentInfo server) {
         int charData
-            = selectEncoding(client.getCharComponent(),
-                             server.getCharComponent());
+                = selectEncoding(client.getCharComponent(),
+                                 server.getCharComponent());
 
         if (charData == CodeSetConversion.FALLBACK_CODESET) {
             charData = OSFCodeSetRegistry.UTF_8.getNumber();
         }
 
         int wcharData
-            = selectEncoding(client.getWCharComponent(),
-                             server.getWCharComponent());
+                = selectEncoding(client.getWCharComponent(),
+                                 server.getWCharComponent());
 
         if (wcharData == CodeSetConversion.FALLBACK_CODESET) {
             wcharData = OSFCodeSetRegistry.UTF_16.getNumber();
@@ -723,19 +723,21 @@ public class CodeSetConversion
 
     // No one should instantiate a CodeSetConversion but the singleton
     // instance method
-    private CodeSetConversion() {}
+    private CodeSetConversion() {
+    }
 
     // initialize-on-demand holder
     private static class CodeSetConversionHolder {
-        static final CodeSetConversion csc = new CodeSetConversion() ;
+        static final CodeSetConversion csc = new CodeSetConversion();
     }
 
     /**
      * CodeSetConversion is a singleton, and this is the access point.
+     *
      * @return A holder for {@link CodeSetConversion}
      */
     public static CodeSetConversion impl() {
-        return CodeSetConversionHolder.csc ;
+        return CodeSetConversionHolder.csc;
     }
 
     // Number used internally to indicate the fallback code
@@ -751,18 +753,18 @@ public class CodeSetConversion
     //  btc/ctb object has cached string<-->byte[] cache on a per thread basis.
     //  Everytime a string is encoded/decoded it's result will be stored in 
     //  the weak HashMap of the respective converters.
-    private ThreadLocal <HashMap<OSFCodeSetRegistry.Entry, BTCConverter>> 
-        cacheBTCC = new ThreadLocal() {
+    private ThreadLocal<HashMap<OSFCodeSetRegistry.Entry, BTCConverter>>
+            cacheBTCC = new ThreadLocal() {
         @Override
         public HashMap<OSFCodeSetRegistry.Entry, BTCConverter> initialValue() {
-            return new HashMap<OSFCodeSetRegistry.Entry, BTCConverter>() ;
+            return new HashMap<OSFCodeSetRegistry.Entry, BTCConverter>();
         }
     };
-    private ThreadLocal <HashMap<OSFCodeSetRegistry.Entry, CTBConverter>> 
-        cacheCTBC = new ThreadLocal() {
+    private ThreadLocal<HashMap<OSFCodeSetRegistry.Entry, CTBConverter>>
+            cacheCTBC = new ThreadLocal() {
         @Override
         public HashMap<OSFCodeSetRegistry.Entry, CTBConverter> initialValue() {
-            return new HashMap<OSFCodeSetRegistry.Entry, CTBConverter>() ;
+            return new HashMap<OSFCodeSetRegistry.Entry, CTBConverter>();
         }
     };
 }

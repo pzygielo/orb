@@ -19,9 +19,10 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
-import org.glassfish.rmic.tools.asm.Label;
 import org.glassfish.rmic.tools.asm.Assembler;
+import org.glassfish.rmic.tools.asm.Label;
+import org.glassfish.rmic.tools.java.*;
+
 import java.io.PrintStream;
 import java.util.Hashtable;
 
@@ -99,12 +100,15 @@ class Expression extends Node {
     public boolean equals(int i) {
         return false;
     }
+
     public boolean equals(boolean b) {
         return false;
     }
+
     public boolean equals(Identifier id) {
         return false;
     }
+
     public boolean equals(String s) {
         return false;
     }
@@ -129,7 +133,6 @@ class Expression extends Node {
     public boolean equalsDefault() {
         return false;
     }
-
 
     /**
      * Convert an expresion to a type
@@ -177,7 +180,9 @@ class Expression extends Node {
         }
     }
 
-    /** @deprecated (for backward compatibility) */
+    /**
+     * @deprecated (for backward compatibility)
+     */
     @Deprecated
     public boolean fitsType(Environment env, Type t) {
         return fitsType(env, (Context) null, t);
@@ -189,15 +194,17 @@ class Expression extends Node {
     public Vset checkValue(Environment env, Context ctx, Vset vset, Hashtable<Object, Object> exp) {
         return vset;
     }
+
     public Vset checkInitializer(Environment env, Context ctx, Vset vset, Type t, Hashtable<Object, Object> exp) {
         return checkValue(env, ctx, vset, exp);
     }
+
     public Vset check(Environment env, Context ctx, Vset vset, Hashtable<Object, Object> exp) {
         throw new CompilerError("check failed");
     }
 
     public Vset checkLHS(Environment env, Context ctx,
-                            Vset vset, Hashtable<Object, Object> exp) {
+                         Vset vset, Hashtable<Object, Object> exp) {
         env.error(where, "invalid.lhs.assignment");
         type = Type.tError;
         return vset;
@@ -238,10 +245,11 @@ class Expression extends Node {
 
     public Vset checkAssignOp(Environment env, Context ctx,
                               Vset vset, Hashtable<Object, Object> exp, Expression outside) {
-        if (outside instanceof IncDecExpression)
+        if (outside instanceof IncDecExpression) {
             env.error(where, "invalid.arg", opNames[outside.op]);
-        else
+        } else {
             env.error(where, "invalid.lhs.assignment");
+        }
         type = Type.tError;
         return vset;
     }
@@ -258,6 +266,7 @@ class Expression extends Node {
      * If a node decides it can only be a package prefix, it sets its
      * type to {@code Type.tPackage}.  The caller must detect this
      * and act appropriately to verify the full package name.
+     *
      * @arg loc the expression containing the ambiguous expression
      */
     public Vset checkAmbigName(Environment env, Context ctx, Vset vset, Hashtable<Object, Object> exp,
@@ -297,7 +306,7 @@ class Expression extends Node {
 
     /**
      * Evaluate.
-     *
+     * <p>
      * Attempt to compute the value of an expression node.  If all operands are
      * literal constants of the same kind (e.g., IntegerExpression nodes), a
      * new constant node of the proper type is returned representing the value
@@ -310,7 +319,7 @@ class Expression extends Node {
 
     /**
      * Simplify.
-     *
+     * <p>
      * Attempt to simplify an expression node by returning a semantically-
      * equivalent expression that is presumably less costly to execute.  There
      * is some overlap with the intent of 'eval', as compile-time evaluation of
@@ -328,11 +337,11 @@ class Expression extends Node {
 
     /**
      * Inline.
-     *
+     * <p>
      * Recursively simplify each child of an expression node, destructively
      * replacing the child with the simplified result.  Also attempts to
      * simplify the current node 'this', and returns the simplified result.
-     *
+     * <p>
      * The name 'inline' is somthing of a misnomer, as these methods are
      * responsible for compile-time expression simplification in general.
      * The 'eval' and 'simplify' methods apply to a single expression node
@@ -342,6 +351,7 @@ class Expression extends Node {
     public Expression inline(Environment env, Context ctx) {
         return null;
     }
+
     public Expression inlineValue(Environment env, Context ctx) {
         return this;
     }
@@ -353,11 +363,11 @@ class Expression extends Node {
      * example if it contains a division by zero, a non-constant
      * subexpression, or a subexpression which "refuses" to evaluate)
      * then return `null' to indicate failure.
-     *
+     * <p>
      * It is anticipated that this method will be called to evaluate
      * concatenations of compile-time constant strings.  The call
      * originates from AddExpression#inlineValue().
-     *
+     * <p>
      * See AddExpression#inlineValueSB() for detailed comments.
      */
     protected StringBuffer inlineValueSB(Environment env,
@@ -366,7 +376,7 @@ class Expression extends Node {
         Expression inlined = inlineValue(env, ctx);
         Object val = inlined.getValue();
 
-        if (val == null && !inlined.isNull()){
+        if (val == null && !inlined.isNull()) {
             // This (supposedly constant) expression refuses to yield
             // a value.  This can happen, in particular, when we are
             // trying to evaluate a division by zero.  It can also
@@ -386,9 +396,9 @@ class Expression extends Node {
         // of getValue(), that we preserve the type.
         // Fix for 4103959, 4102672.
         if (type == Type.tChar) {
-            buffer.append((char)((Integer)val).intValue());
+            buffer.append((char) ((Integer) val).intValue());
         } else if (type == Type.tBoolean) {
-            buffer.append(((Integer)val).intValue() != 0);
+            buffer.append(((Integer) val).intValue() != 0);
         } else {
             buffer.append(val);
         }
@@ -420,6 +430,7 @@ class Expression extends Node {
             throw new CompilerError("codeBranch " + opNames[op]);
         }
     }
+
     public void codeValue(Environment env, Context ctx, Assembler asm) {
         if (type.isType(TC_BOOLEAN)) {
             Label l1 = new Label();
@@ -435,31 +446,35 @@ class Expression extends Node {
             throw new CompilerError("codeValue");
         }
     }
+
     public void code(Environment env, Context ctx, Assembler asm) {
         codeValue(env, ctx, asm);
 
         switch (type.getTypeCode()) {
-          case TC_VOID:
+        case TC_VOID:
             break;
 
-          case TC_DOUBLE:
-          case TC_LONG:
+        case TC_DOUBLE:
+        case TC_LONG:
             asm.add(where, opc_pop2);
             break;
 
-          default:
+        default:
             asm.add(where, opc_pop);
             break;
         }
     }
+
     int codeLValue(Environment env, Context ctx, Assembler asm) {
         print(System.out);
         throw new CompilerError("invalid lhs");
     }
+
     void codeLoad(Environment env, Context ctx, Assembler asm) {
         print(System.out);
         throw new CompilerError("invalid load");
     }
+
     void codeStore(Environment env, Context ctx, Assembler asm) {
         print(System.out);
         throw new CompilerError("invalid store");
@@ -469,8 +484,7 @@ class Expression extends Node {
      * Convert this expression to a string.
      */
     void ensureString(Environment env, Context ctx, Assembler asm)
-            throws ClassNotFound, AmbiguousMember
-    {
+            throws ClassNotFound, AmbiguousMember {
         if (type == Type.tString && isNonNull()) {
             return;
         }
@@ -491,9 +505,9 @@ class Expression extends Node {
                 // Convert non-string object to string.  If object is
                 // a string, we don't need to convert it, except in the
                 // case that it is null, which is handled below.
-                Type argType1[] = {Type.tObject};
+                Type argType1[] = { Type.tObject };
                 MemberDefinition f1 =
-                    stClsDef.matchMethod(env, sourceClass, idValueOf, argType1);
+                        stClsDef.matchMethod(env, sourceClass, idValueOf, argType1);
                 asm.add(where, opc_invokestatic, f1);
             }
             // FIX FOR 4030173
@@ -504,17 +518,17 @@ class Expression extends Node {
             // approach taken here minimizes code size -- open code would
             // be faster.  The 'toString' method for an array class cannot
             // be overridden, thus we know that it will never return null.
-            if (!type.inMask(TM_ARRAY|TM_NULL)) {
-                Type argType2[] = {Type.tString};
+            if (!type.inMask(TM_ARRAY | TM_NULL)) {
+                Type argType2[] = { Type.tString };
                 MemberDefinition f2 =
-                    stClsDef.matchMethod(env, sourceClass, idValueOf, argType2);
+                        stClsDef.matchMethod(env, sourceClass, idValueOf, argType2);
                 asm.add(where, opc_invokestatic, f2);
             }
         } else {
             // Primitive type
-            Type argType[] = {type};
+            Type argType[] = { type };
             MemberDefinition f =
-                stClsDef.matchMethod(env, sourceClass, idValueOf, argType);
+                    stClsDef.matchMethod(env, sourceClass, idValueOf, argType);
             asm.add(where, opc_invokestatic, f);
         }
     }
@@ -527,8 +541,7 @@ class Expression extends Node {
      */
     void codeAppend(Environment env, Context ctx, Assembler asm,
                     ClassDeclaration sbClass, boolean needBuffer)
-            throws ClassNotFound, AmbiguousMember
-    {
+            throws ClassNotFound, AmbiguousMember {
         ClassDefinition sourceClass = ctx.field.getClassDefinition();
         ClassDefinition sbClsDef = sbClass.getClassDefinition(env);
         MemberDefinition f;
@@ -543,7 +556,7 @@ class Expression extends Node {
                 // optimize by initializing the buffer with the string
                 codeValue(env, ctx, asm);
                 ensureString(env, ctx, asm);
-                Type argType[] = {Type.tString};
+                Type argType[] = { Type.tString };
                 f = sbClsDef.matchMethod(env, sourceClass, idInit, argType);
             }
             asm.add(where, opc_invokespecial, f);
@@ -559,9 +572,9 @@ class Expression extends Node {
             // invoking an overloading of 'append' that has the required
             // semantics.
             Type argType[] =
-                { (type.inMask(TM_REFERENCE) && type != Type.tString)
-                  ? Type.tObject
-                  : type };
+                    { (type.inMask(TM_REFERENCE) && type != Type.tString)
+                            ? Type.tObject
+                            : type };
             f = sbClsDef.matchMethod(env, sourceClass, idAppend, argType);
             asm.add(where, opc_invokevirtual, f);
         }
@@ -572,32 +585,32 @@ class Expression extends Node {
      */
     void codeDup(Environment env, Context ctx, Assembler asm, int items, int depth) {
         switch (items) {
-          case 0:
+        case 0:
             return;
 
-          case 1:
+        case 1:
             switch (depth) {
-              case 0:
+            case 0:
                 asm.add(where, opc_dup);
                 return;
-              case 1:
+            case 1:
                 asm.add(where, opc_dup_x1);
                 return;
-              case 2:
+            case 2:
                 asm.add(where, opc_dup_x2);
                 return;
 
             }
             break;
-          case 2:
+        case 2:
             switch (depth) {
-              case 0:
+            case 0:
                 asm.add(where, opc_dup2);
                 return;
-              case 1:
+            case 1:
                 asm.add(where, opc_dup2_x1);
                 return;
-              case 2:
+            case 2:
                 asm.add(where, opc_dup2_x2);
                 return;
 
@@ -612,108 +625,108 @@ class Expression extends Node {
         int to = t.getTypeCode();
 
         switch (to) {
-          case TC_BOOLEAN:
+        case TC_BOOLEAN:
             if (from != TC_BOOLEAN) {
                 break;
             }
             return;
-          case TC_BYTE:
+        case TC_BYTE:
             if (from != TC_BYTE) {
                 codeConversion(env, ctx, asm, f, Type.tInt);
                 asm.add(where, opc_i2b);
             }
             return;
-          case TC_CHAR:
+        case TC_CHAR:
             if (from != TC_CHAR) {
                 codeConversion(env, ctx, asm, f, Type.tInt);
                 asm.add(where, opc_i2c);
             }
             return;
-          case TC_SHORT:
+        case TC_SHORT:
             if (from != TC_SHORT) {
                 codeConversion(env, ctx, asm, f, Type.tInt);
                 asm.add(where, opc_i2s);
             }
             return;
-          case TC_INT:
+        case TC_INT:
             switch (from) {
-              case TC_BYTE:
-              case TC_CHAR:
-              case TC_SHORT:
-              case TC_INT:
+            case TC_BYTE:
+            case TC_CHAR:
+            case TC_SHORT:
+            case TC_INT:
                 return;
-              case TC_LONG:
+            case TC_LONG:
                 asm.add(where, opc_l2i);
                 return;
-              case TC_FLOAT:
+            case TC_FLOAT:
                 asm.add(where, opc_f2i);
                 return;
-              case TC_DOUBLE:
+            case TC_DOUBLE:
                 asm.add(where, opc_d2i);
                 return;
             }
             break;
-          case TC_LONG:
+        case TC_LONG:
             switch (from) {
-              case TC_BYTE:
-              case TC_CHAR:
-              case TC_SHORT:
-              case TC_INT:
+            case TC_BYTE:
+            case TC_CHAR:
+            case TC_SHORT:
+            case TC_INT:
                 asm.add(where, opc_i2l);
                 return;
-              case TC_LONG:
+            case TC_LONG:
                 return;
-              case TC_FLOAT:
+            case TC_FLOAT:
                 asm.add(where, opc_f2l);
                 return;
-              case TC_DOUBLE:
+            case TC_DOUBLE:
                 asm.add(where, opc_d2l);
                 return;
             }
             break;
-          case TC_FLOAT:
+        case TC_FLOAT:
             switch (from) {
-              case TC_BYTE:
-              case TC_CHAR:
-              case TC_SHORT:
-              case TC_INT:
+            case TC_BYTE:
+            case TC_CHAR:
+            case TC_SHORT:
+            case TC_INT:
                 asm.add(where, opc_i2f);
                 return;
-              case TC_LONG:
+            case TC_LONG:
                 asm.add(where, opc_l2f);
                 return;
-              case TC_FLOAT:
+            case TC_FLOAT:
                 return;
-              case TC_DOUBLE:
+            case TC_DOUBLE:
                 asm.add(where, opc_d2f);
                 return;
             }
             break;
-          case TC_DOUBLE:
+        case TC_DOUBLE:
             switch (from) {
-              case TC_BYTE:
-              case TC_CHAR:
-              case TC_SHORT:
-              case TC_INT:
+            case TC_BYTE:
+            case TC_CHAR:
+            case TC_SHORT:
+            case TC_INT:
                 asm.add(where, opc_i2d);
                 return;
-              case TC_LONG:
+            case TC_LONG:
                 asm.add(where, opc_l2d);
                 return;
-              case TC_FLOAT:
+            case TC_FLOAT:
                 asm.add(where, opc_f2d);
                 return;
-              case TC_DOUBLE:
+            case TC_DOUBLE:
                 return;
             }
             break;
 
-          case TC_CLASS:
+        case TC_CLASS:
             switch (from) {
-              case TC_NULL:
+            case TC_NULL:
                 return;
-              case TC_CLASS:
-              case TC_ARRAY:
+            case TC_CLASS:
+            case TC_ARRAY:
                 try {
                     if (!env.implicitCast(f, t)) {
                         asm.add(where, opc_checkcast, env.getClassDeclaration(t));
@@ -726,12 +739,12 @@ class Expression extends Node {
 
             break;
 
-          case TC_ARRAY:
+        case TC_ARRAY:
             switch (from) {
-              case TC_NULL:
+            case TC_NULL:
                 return;
-              case TC_CLASS:
-              case TC_ARRAY:
+            case TC_CLASS:
+            case TC_ARRAY:
                 try {
                     if (!env.implicitCast(f, t)) {
                         asm.add(where, opc_checkcast, t);
@@ -757,7 +770,7 @@ class Expression extends Node {
      * Create a copy of the expression for method inlining
      */
     public Expression copyInline(Context ctx) {
-        return (Expression)clone();
+        return (Expression) clone();
     }
 
     /**

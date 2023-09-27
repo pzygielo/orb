@@ -36,8 +36,8 @@ import org.omg.CORBA.ORB;
 import org.omg.IOP.TaggedComponent;
 
 import com.sun.corba.ee.spi.ior.IOR;
-import com.sun.corba.ee.spi.ior.iiop.IIOPProfileTemplate ;
-import com.sun.corba.ee.spi.ior.iiop.IIOPAddress ;
+import com.sun.corba.ee.spi.ior.iiop.IIOPProfileTemplate;
+import com.sun.corba.ee.spi.ior.iiop.IIOPAddress;
 import com.sun.corba.ee.spi.legacy.connection.GetEndPointInfoAgainException;
 import com.sun.corba.ee.spi.legacy.connection.ORBSocketFactory;
 import com.sun.corba.ee.spi.transport.SocketInfo;
@@ -45,9 +45,8 @@ import com.sun.corba.ee.spi.transport.SocketInfo;
 import com.sun.corba.ee.impl.misc.ORBUtility;
 
 public class MySocketFactory
-    implements
-        ORBSocketFactory
-{
+        implements
+        ORBSocketFactory {
     private Hashtable iorSocketInfo = new Hashtable();
 
     public static int numCallsGetEndPointInfo = 0;
@@ -57,8 +56,7 @@ public class MySocketFactory
     // Constructor used during ORB initialization.
     //
 
-    public MySocketFactory()
-    {
+    public MySocketFactory() {
         System.out.println("MySocketFactory()");
     }
 
@@ -67,15 +65,14 @@ public class MySocketFactory
     //
 
     public ServerSocket createServerSocket(String type, int port)
-        throws
-            IOException 
-    {
+            throws
+            IOException {
         System.out.println("createServerSocket(" + type + ", " + port + ")");
         createSocketMessage("ServerSocket", type, "localhost", port);
 
         if (type.equals(ORBSocketFactory.IIOP_CLEAR_TEXT)) {
             ServerSocketChannel serverSocketChannel =
-                ServerSocketChannel.open();
+                    ServerSocketChannel.open();
             ServerSocket serverSocket = serverSocketChannel.socket();
             serverSocket.bind(new InetSocketAddress(port));
             return serverSocket;
@@ -88,10 +85,9 @@ public class MySocketFactory
     // Client side.
     //
 
-    public SocketInfo getEndPointInfo(ORB orb, 
-                                        IOR ior,
-                                        SocketInfo socketInfo)
-    {
+    public SocketInfo getEndPointInfo(ORB orb,
+                                      IOR ior,
+                                      SocketInfo socketInfo) {
         numCallsGetEndPointInfo++;
 
         System.out.println("MySocketFactory.getEndPointInfo: entering.");
@@ -99,8 +95,8 @@ public class MySocketFactory
         if (socketInfo != null) {
             if (socketInfo instanceof SocketInfoImpl) {
                 System.out.println(
-                    "MySocketFactory.getEndPointInfo: found cookie: "
-                    + ((SocketInfoImpl)socketInfo).getCookie());
+                        "MySocketFactory.getEndPointInfo: found cookie: "
+                                + ((SocketInfoImpl) socketInfo).getCookie());
             } else {
                 throw new RuntimeException("Wrong type of cookie");
             }
@@ -108,21 +104,21 @@ public class MySocketFactory
 
         // Get the clear text host/port form the profile.
 
-        IIOPProfileTemplate temp = (IIOPProfileTemplate)ior.getProfile().getTaggedProfileTemplate() ;
-        IIOPAddress primary = temp.getPrimaryAddress() ;
+        IIOPProfileTemplate temp = (IIOPProfileTemplate) ior.getProfile().getTaggedProfileTemplate();
+        IIOPAddress primary = temp.getPrimaryAddress();
         String host = primary.getHost().toLowerCase();
-        int    port = primary.getPort();
+        int port = primary.getPort();
 
         if (/*false*/ socketInfo == null) {
             // The first time it is called on each invocation
             // we give bad info so we can raise an exception
             // in createSocket and end up here again to test
             // the get info loop.
-            socketInfo = 
-                new SocketInfoImpl(Common.DummyType,
-                                     Common.DummyHost,
-                                     Common.DummyPort,
-                                     "dummy cookie");
+            socketInfo =
+                    new SocketInfoImpl(Common.DummyType,
+                                       Common.DummyHost,
+                                       Common.DummyPort,
+                                       "dummy cookie");
             printSocketInfoReturn(host, port, socketInfo);
             return socketInfo;
         }
@@ -133,9 +129,8 @@ public class MySocketFactory
 
         if (socketInfo != null) {
             if (!socketInfo.getType().equals(Common.DummyType) ||
-                !socketInfo.getHost().equals(Common.DummyHost) ||
-                socketInfo.getPort() != Common.DummyPort)
-            {
+                    !socketInfo.getHost().equals(Common.DummyHost) ||
+                    socketInfo.getPort() != Common.DummyPort) {
                 throw new RuntimeException("MySocketFactory.getEndPointInfo: should never happen.");
             }
         }
@@ -148,59 +143,56 @@ public class MySocketFactory
         Vector portList = (Vector) iorSocketInfo.get(ior);
         if (portList == null) {
             TaggedComponent taggedComponents[] =
-                ior.getProfile().getTaggedProfileTemplate().getIOPComponents(
-                    (com.sun.corba.ee.spi.orb.ORB)orb, Common.ListenPortsComponentID);
+                    ior.getProfile().getTaggedProfileTemplate().getIOPComponents(
+                            (com.sun.corba.ee.spi.orb.ORB) orb, Common.ListenPortsComponentID);
             if (taggedComponents.length > 0) {
-                String componentData = 
-                    new String(taggedComponents[0].component_data);
+                String componentData =
+                        new String(taggedComponents[0].component_data);
                 System.out.println("componentData: " + componentData);
                 iorSocketInfo.put(ior, parseComponentData(componentData));
             }
-            socketInfo = 
-                new SocketInfoImpl(ORBSocketFactory.IIOP_CLEAR_TEXT,
-                                     host,
-                                     port,
-                                     "clear text cookie");
+            socketInfo =
+                    new SocketInfoImpl(ORBSocketFactory.IIOP_CLEAR_TEXT,
+                                       host,
+                                       port,
+                                       "clear text cookie");
         } else {
-            TypePortPair nextPair = (TypePortPair)portList.remove(0);
+            TypePortPair nextPair = (TypePortPair) portList.remove(0);
             if (portList.size() == 0) {
                 // When there is not more remembered info remove
                 // it from the cache so it will start over.
                 iorSocketInfo.remove(ior);
             }
             socketInfo =
-                new SocketInfoImpl(nextPair.getType(),
-                                     host,
-                                     nextPair.getPort(),
-                                     "component cookie");
+                    new SocketInfoImpl(nextPair.getType(),
+                                       host,
+                                       nextPair.getPort(),
+                                       "component cookie");
         }
         printSocketInfoReturn(host, port, socketInfo);
         return socketInfo;
     }
 
     private void printSocketInfoReturn(String host,
-                                    int port,
-                                    SocketInfo socketInfo)
-    {
+                                       int port,
+                                       SocketInfo socketInfo) {
         System.out.println("getEndPointInfo(" + host + ", " + port + ")" +
-                           " = " + socketInfo);
+                                   " = " + socketInfo);
     }
 
     public Socket createSocket(SocketInfo socketInfo)
-        throws
+            throws
             IOException,
-            GetEndPointInfoAgainException
-    {
+            GetEndPointInfoAgainException {
         numCallsCreateSocket++;
 
         String type = socketInfo.getType();
         String host = socketInfo.getHost();
-        int    port = socketInfo.getPort();
-        System.out.println("createSocket(" + type + ", " + host + ", " + port +")");
+        int port = socketInfo.getPort();
+        System.out.println("createSocket(" + type + ", " + host + ", " + port + ")");
         if (type.equals(Common.DummyType) &&
-            host.equals(Common.DummyHost) &&
-            port == Common.DummyPort) 
-        {
+                host.equals(Common.DummyHost) &&
+                port == Common.DummyPort) {
             // This is to test the "get info" loop.
             throw new GetEndPointInfoAgainException(socketInfo);
         }
@@ -208,8 +200,8 @@ public class MySocketFactory
         createSocketMessage("ClientSocket", type, host, port);
 
         if (type.equals(ORBSocketFactory.IIOP_CLEAR_TEXT)) {
-            InetSocketAddress address = 
-                new InetSocketAddress(host, port);
+            InetSocketAddress address =
+                    new InetSocketAddress(host, port);
             SocketChannel socketChannel = ORBUtility.openSocketChannel(address);
             Socket socket = socketChannel.socket();
             try {
@@ -222,17 +214,15 @@ public class MySocketFactory
         }
     }
 
-    private void createSocketMessage(String clientOrServer, 
+    private void createSocketMessage(String clientOrServer,
                                      String type,
                                      String host,
-                                     int port)
-    {
-        System.out.println("  creating " + clientOrServer + 
-                           " " + type + " " + host + " " + port);
+                                     int port) {
+        System.out.println("  creating " + clientOrServer +
+                                   " " + type + " " + host + " " + port);
     }
 
-    private Vector parseComponentData(String componentData)
-    {
+    private Vector parseComponentData(String componentData) {
         // REVISIT:
         // Workaround for:
         // componentData: ^@^@^@^@^@^@^@*MyType1:48154,MyType2:48155,MyType3:48156^@ 
@@ -243,16 +233,15 @@ public class MySocketFactory
                                        componentData.length() - 9);
         }
 
-
         Vector typePortPairs = new Vector();
-        StringTokenizer pairs = 
-            new StringTokenizer(componentData, ",");
+        StringTokenizer pairs =
+                new StringTokenizer(componentData, ",");
         while (pairs.hasMoreTokens()) {
             String current = pairs.nextToken();
             StringTokenizer pair = new StringTokenizer(current, ":");
             String type = null;
             int port = -1;
-            if  (pair.hasMoreTokens()) {
+            if (pair.hasMoreTokens()) {
                 type = pair.nextToken();
                 if (pair.hasMoreTokens()) {
                     try {
@@ -263,7 +252,7 @@ public class MySocketFactory
             }
             if (type == null || port == -1) {
                 throw new RuntimeException("Improper ORBListenSocket format: "
-                                           + componentData);
+                                                   + componentData);
             }
             typePortPairs.add(new TypePortPair(type, port));
         }
@@ -272,48 +261,50 @@ public class MySocketFactory
 }
 
 class SocketInfoImpl
-    extends
-        com.sun.corba.ee.impl.legacy.connection.EndPointInfoImpl
-{
+        extends
+        com.sun.corba.ee.impl.legacy.connection.EndPointInfoImpl {
     String cookie;
 
-    SocketInfoImpl(String type, String host, int port, String cookie)
-    {
+    SocketInfoImpl(String type, String host, int port, String cookie) {
         super(type, port, host);
         this.cookie = cookie;
     }
 
-    String getCookie()
-    {
+    String getCookie() {
         return cookie;
     }
 
     @Override
-    public String toString()
-    {
-        return 
-            "(SocketInfoImpl " + type 
-            + " " + hostname + " " + port 
-            + " " + cookie
-            + ")";
+    public String toString() {
+        return
+                "(SocketInfoImpl " + type
+                        + " " + hostname + " " + port
+                        + " " + cookie
+                        + ")";
     }
 }
 
-class TypePortPair
-{
+class TypePortPair {
     private String type;
-    private int    port;
-    TypePortPair (String type, int port)
-    {
+    private int port;
+
+    TypePortPair(String type, int port) {
         this.type = type;
         this.port = port;
     }
-    public String getType  () { return type; }
-    public int    getPort  () { return port; }
-    @Override
-    public String toString () { return type + ":" + port; }
-}
 
-                
+    public String getType() {
+        return type;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    @Override
+    public String toString() {
+        return type + ":" + port;
+    }
+}
 
 // End of file.

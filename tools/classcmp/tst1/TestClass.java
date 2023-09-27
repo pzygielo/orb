@@ -17,10 +17,13 @@
  * Classpath-exception-2.0
  */
 
-public class TestClass
-{
-    public String methodA() { return null; }
+public class TestClass {
+    public String methodA() {
+        return null;
+    }
 
-    public int methodX() { return 27; }
+    public int methodX() {
+        return 27;
+    }
 }
 

@@ -19,13 +19,12 @@
 
 package org.omg.CORBA;
 
-import org.omg.CORBA.portable.Streamable;
 import org.omg.CORBA.portable.InputStream;
 import org.omg.CORBA.portable.OutputStream;
-
+import org.omg.CORBA.portable.Streamable;
 
 /**
- * The Holder for <tt>Object</tt>.  For more information on 
+ * The Holder for <tt>Object</tt>.  For more information on
  * Holder files, see <a href="doc-files/generatedfiles.html#holder">
  * "Generated Files: Holder Files"</a>.<P>
  * A Holder class for a CORBA object reference (a value of type
@@ -38,13 +37,13 @@ import org.omg.CORBA.portable.OutputStream;
  * must also fill the "in" value to be sent to the server.
  * Before the method invocation returns, the ORB will fill in the
  * value corresponding to the "out" value returned from the server.
- * <P>
+ * <p>
  * If <code>myObjectHolder</code> is an instance of <code>ObjectHolder</code>,
  * the value stored in its <code>value</code> field can be accessed with
  * <code>myObjectHolder.value</code>.
  *
- * @version     1.14, 09/09/97
- * @since       JDK1.2
+ * @version 1.14, 09/09/97
+ * @since JDK1.2
  */
 public final class ObjectHolder implements Streamable {
     /**
@@ -59,14 +58,15 @@ public final class ObjectHolder implements Streamable {
      */
     public ObjectHolder() {
     }
-    
+
     /**
      * Constructs a new <code>ObjectHolder</code> object with its
      * <code>value</code> field initialized to the given
      * <code>Object</code>.
+     *
      * @param initial the <code>Object</code> with which to initialize
-     *                the <code>value</code> field of the newly-created
-     *                <code>ObjectHolder</code> object
+     * the <code>value</code> field of the newly-created
+     * <code>ObjectHolder</code> object
      */
     public ObjectHolder(Object initial) {
         value = initial;
@@ -84,7 +84,7 @@ public final class ObjectHolder implements Streamable {
     }
 
     /**
-     * Marshals to <code>output</code> the value in 
+     * Marshals to <code>output</code> the value in
      * this <code>ObjectHolder</code> object.
      *
      * @param output the OutputStream which will contain the CDR formatted data.
@@ -94,11 +94,11 @@ public final class ObjectHolder implements Streamable {
     }
 
     /**
-     * Returns the TypeCode corresponding to the value held in 
+     * Returns the TypeCode corresponding to the value held in
      * this <code>ObjectHolder</code> object
      *
-     * @return    the TypeCode of the value held in
-     *            this <code>ObjectHolder</code> object
+     * @return the TypeCode of the value held in
+     * this <code>ObjectHolder</code> object
      */
     public org.omg.CORBA.TypeCode _type() {
         return org.omg.CORBA.ORB.init().get_primitive_tc(TCKind.tk_objref);

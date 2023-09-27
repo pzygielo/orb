@@ -25,10 +25,10 @@
 package corba.hcks;
 
 import javax.naming.InitialContext;
+
 import org.omg.CORBA.ORB;
 
-public class ColocatedClientServer 
-{
+public class ColocatedClientServer {
     public static final String baseMsg = ColocatedClientServer.class.getName();
     public static final String main = baseMsg + ".main";
 
@@ -44,10 +44,9 @@ public class ColocatedClientServer
     public static boolean isColocated = false;
     public static java.lang.Object signal = new java.lang.Object();
 
-    public static void main (String args[])
-    {
+    public static void main(String args[]) {
 
-        Client.testName = ColocatedClientServer.class.getName() ;
+        Client.testName = ColocatedClientServer.class.getName();
         isColocated = true; // Used by Client and Server.
 
         try {
@@ -57,7 +56,7 @@ public class ColocatedClientServer
             orb = C.createORB(args, fragmentSize);
             Server.orb = orb;
             Client.orb = orb;
-            
+
             // Share a naming context between client and server
             // so StubAdapter.isLocal is true.
 
@@ -65,7 +64,7 @@ public class ColocatedClientServer
             initialContext = C.createInitialContext(orb);
             Server.initialContext = initialContext;
             Client.initialContext = initialContext;
-            
+
             ServerThread ServerThread = new ServerThread(args);
             ServerThread.start();
             synchronized (signal) {
@@ -82,15 +81,14 @@ public class ColocatedClientServer
     }
 }
 
-class ServerThread extends Thread
-{
+class ServerThread extends Thread {
     String[] args;
-    ServerThread (String[] args)
-    {
+
+    ServerThread(String[] args) {
         this.args = args;
     }
-    public void run ()
-    {
+
+    public void run() {
         Server.main(args);
     }
 }

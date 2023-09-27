@@ -20,11 +20,12 @@
 
 package javax.rmi.CORBA;
 
+import org.omg.CORBA.ORB;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.rmi.RemoteException;
-import org.omg.CORBA.ORB;
 
 /**
  * Supports delegation for method implementations in {@link Stub}.
@@ -32,9 +33,9 @@ import org.omg.CORBA.ORB;
  * interface and provides a replacement implementation for all the
  * methods of <code>javax.rmi.CORBA.Stub</code>.  If delegation is
  * enabled, each stub has an associated delegate.
- *
+ * <p>
  * Delegates are enabled by providing the delegate's class name as the
- * value of the 
+ * value of the
  * <code>javax.rmi.CORBA.StubClass</code>
  * system property.
  *
@@ -44,6 +45,7 @@ public interface StubDelegate {
 
     /**
      * Delegation call for {@link Stub#hashCode}.
+     *
      * @param self stub to call on
      * @return int hashcode of the stub
      */
@@ -51,6 +53,7 @@ public interface StubDelegate {
 
     /**
      * Delegation call for {@link Stub#equals}.
+     *
      * @param self stub to call on
      * @param obj other object to compare
      * @return true if the two objects are equal
@@ -59,6 +62,7 @@ public interface StubDelegate {
 
     /**
      * Delegation call for {@link Stub#toString}.
+     *
      * @param self to call toString on
      * @return String representation of the Stub
      */
@@ -66,34 +70,39 @@ public interface StubDelegate {
 
     /**
      * Delegation call for {@link Stub#connect}.
+     *
      * @param self stub to call on
      * @param orb the ORB to connect to
      * @throws RemoteException if there was an error connecting
      */
     void connect(Stub self, ORB orb)
-        throws RemoteException;
- 
+            throws RemoteException;
+
     // _REVISIT_ cannot link to Stub.readObject directly... why not?
+
     /**
      * Delegation call for
      * <a href="{@docRoot}/serialized-form.html#javax.rmi.CORBA.Stub"><code>Stub.readObject(java.io.ObjectInputStream)</code></a>.
+     *
      * @param self stub to read
      * @param s stream to read from
      * @throws IOException if there was an error reading from the stream
      * @throws ClassNotFoundException if the class that was represented by the steam cannot be found
      */
     void readObject(Stub self, ObjectInputStream s)
-        throws IOException, ClassNotFoundException;
+            throws IOException, ClassNotFoundException;
 
     // _REVISIT_ cannot link to Stub.writeObject directly... why not?
+
     /**
-     * Delegation call for 
+     * Delegation call for
      * <a href="{@docRoot}/serialized-form.html#javax.rmi.CORBA.Stub"><code>Stub.writeObject(java.io.ObjectOutputStream)</code></a>.
+     *
      * @param self stub to write
      * @param s stream to write to
      * @throws IOException if there was an error writing to stream
      */
     void writeObject(Stub self, ObjectOutputStream s)
-        throws IOException;
+            throws IOException;
 
 }

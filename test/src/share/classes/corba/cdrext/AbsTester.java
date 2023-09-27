@@ -21,8 +21,7 @@ package corba.cdrext;
 
 import java.rmi.*;
 
-public interface AbsTester
-{
+public interface AbsTester {
     public void ping() throws RemoteException;
 }
 

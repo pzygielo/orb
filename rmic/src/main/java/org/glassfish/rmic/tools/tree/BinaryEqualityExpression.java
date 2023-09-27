@@ -19,7 +19,9 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
+import org.glassfish.rmic.tools.java.ClassNotFound;
+import org.glassfish.rmic.tools.java.Environment;
+import org.glassfish.rmic.tools.java.Type;
 
 /**
  * WARNING: The contents of this source file are not part of any
@@ -46,7 +48,7 @@ class BinaryEqualityExpression extends BinaryExpression {
         } else if ((tm & (TM_CLASS | TM_ARRAY | TM_NULL)) != 0) {
             try {
                 if (env.explicitCast(left.type, right.type) ||
-                    env.explicitCast(right.type, left.type)) {
+                        env.explicitCast(right.type, left.type)) {
                     return;
                 }
                 env.error(where, "incompatible.type",

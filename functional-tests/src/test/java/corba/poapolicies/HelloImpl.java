@@ -21,20 +21,23 @@ package corba.poapolicies;
 
 import HelloStuff.HelloPOA;
 
-public class HelloImpl extends HelloPOA
-{
+public class HelloImpl extends HelloPOA {
     public byte[] id;
+
     public HelloImpl() {
         id = null;
     }
+
     public HelloImpl(byte[] oid) {
         id = oid;
     }
+
     public String hi() {
-        if (id == null)
+        if (id == null) {
             return "Welcome, POA";
-        else
-            return "Welcome, POA (oid = "+new String(id)+")";
+        } else {
+            return "Welcome, POA (oid = " + new String(id) + ")";
+        }
     }
 }
         

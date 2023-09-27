@@ -24,8 +24,7 @@
 
 package corba.folb_8_1;
 
-
-import java.util.Properties ;
+import java.util.Properties;
 
 import org.omg.CORBA.ORB;
 import org.omg.PortableServer.POA;
@@ -37,8 +36,7 @@ import corba.hcks.U;
 /**
  * @author Harold Carr
  */
-public class Server
-{
+public class Server {
     public static final String baseMsg = Common.class.getName();
 
     public static ORB orb;
@@ -46,8 +44,7 @@ public class Server
     // So it can be accessed later.
     public static org.omg.CORBA.Object ref;
 
-    public static void setProperties(Properties props, int[] socketPorts)
-    {
+    public static void setProperties(Properties props, int[] socketPorts) {
         //
         // Debugging flags.  Generally commented out.
         //
@@ -82,24 +79,22 @@ public class Server
                           "dummy");
     }
 
-    public static String formatListenPorts()
-    {
+    public static String formatListenPorts() {
         String result = "";
         for (int i = 0; i < Common.socketTypes.length; i++) {
-            result += Common.socketTypes[i] 
-                + ":" 
-                + Integer.toString(Common.socketPorts[i]);
+            result += Common.socketTypes[i]
+                    + ":"
+                    + Integer.toString(Common.socketPorts[i]);
             if (i + 1 < Common.socketTypes.length) {
                 result += ",";
             }
         }
         return result;
     }
-  
-    public static void main(String av[])
-    {
+
+    public static void main(String av[]) {
         try {
-            if (! ColocatedCS.isColocated) {
+            if (!ColocatedCS.isColocated) {
                 Properties props = System.getProperties();
                 setProperties(props, Common.socketPorts);
                 orb = ORB.init(av, props);
@@ -108,15 +103,15 @@ public class Server
             POA poa = Common.createPOA("child", false, orb);
             ref = Common.createAndBind(Common.serverName1, orb, poa);
             Common.createAndBind(Common.serverName2, orb, poa);
-      
-            System.out.println ("Server is ready.");
+
+            System.out.println("Server is ready.");
 
             synchronized (ColocatedCS.signal) {
                 ColocatedCS.signal.notifyAll();
             }
-            
+
             orb.run();
-            
+
         } catch (Throwable t) {
             System.out.println(baseMsg + t);
             t.printStackTrace(System.out);
@@ -129,69 +124,57 @@ public class Server
 // This class is to ensure that we do NOT store a contact info to
 // a different object and try to send an invocation from a client to
 // an incorrect Tie.
-class I2Servant extends I2POA
-{
+class I2Servant extends I2POA {
     private com.sun.corba.ee.spi.orb.ORB orb;
 
-    public I2Servant(ORB orb)
-    {
+    public I2Servant(ORB orb) {
         this.orb = (com.sun.corba.ee.spi.orb.ORB) orb;
     }
 
-    public int m(String x)
-    {
+    public int m(String x) {
         int result = new Integer(x).intValue();
         System.out.println("I2Servant.m result: " + result);
         System.out.flush();
         return result;
     }
-  
-    public org.omg.CORBA.Object n(String x)
-    {
+
+    public org.omg.CORBA.Object n(String x) {
         return Server.ref;
     }
 
-    public int foo(int x)
-    {
+    public int foo(int x) {
         return x;
     }
 }
 
-class IServant extends IPOA
-{
+class IServant extends IPOA {
     private com.sun.corba.ee.spi.orb.ORB orb;
 
-    public IServant(ORB orb)
-    {
+    public IServant(ORB orb) {
         this.orb = (com.sun.corba.ee.spi.orb.ORB) orb;
     }
 
-    public String m(String x)
-    {
+    public String m(String x) {
         return "IServant echoes: " + x;
     }
 
-    public int n(String x)
-    {
+    public int n(String x) {
         return 101;
     }
 
-    public int throwRuntimeException(int x)
-    {
-        return 1/x;
+    public int throwRuntimeException(int x) {
+        return 1 / x;
     }
 
-    public boolean unregister(String socketType)
-    {
+    public boolean unregister(String socketType) {
         return U.unregisterAcceptorAndCloseConnections(socketType, orb);
     }
 
-    public boolean register(String socketType)
-    {
-        return U.registerAcceptor(socketType, 
-                          ((Integer) Common.socketTypeToPort.get(socketType))
-                              .intValue(),
-                          orb);
+    public boolean register(String socketType) {
+        return U.registerAcceptor(socketType,
+                                  ((Integer) Common.socketTypeToPort.get(socketType))
+                                          .intValue(),
+                                  orb);
     }
 }
 

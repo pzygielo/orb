@@ -24,9 +24,9 @@ package org.omg.CORBA.ORBPackage;
  * <code>ORB.resolve_initial_references</code> is passed a name
  * for which there is no initial reference.
  *
- * @see org.omg.CORBA.ORB#resolve_initial_references(String)
  * @version 1.6, 03/18/98
- * @since   JDK1.2
+ * @see org.omg.CORBA.ORB#resolve_initial_references(String)
+ * @since JDK1.2
  */
 
 // @SuppressWarnings({"serial"})
@@ -39,8 +39,9 @@ final public class InvalidName extends org.omg.CORBA.UserException {
     }
 
     /**
-     * Constructs an <code>InvalidName</code> exception with the specified 
+     * Constructs an <code>InvalidName</code> exception with the specified
      * reason message.
+     *
      * @param reason the String containing a reason message
      */
     public InvalidName(String reason) {

@@ -34,7 +34,7 @@ import java.util.Vector;
  * The static forImplementation(...) method must be used to obtain an instance,
  * and will return null if the ClassDefinition is non-conforming.
  *
- * @author      Bryan Atsatt
+ * @author Bryan Atsatt
  */
 public class NCClassType extends ClassType {
 
@@ -44,7 +44,7 @@ public class NCClassType extends ClassType {
 
     /**
      * Create an NCClassType for the given class.
-     *
+     * <p>
      * If the class is not a properly formed or if some other error occurs, the
      * return value will be null, and errors will have been reported to the
      * supplied BatchEnvironment.
@@ -52,27 +52,31 @@ public class NCClassType extends ClassType {
     public static NCClassType forNCClass(ClassDefinition classDef,
                                          ContextStack stack) {
 
-        if (stack.anyErrors()) return null;
+        if (stack.anyErrors()) {
+            return null;
+        }
 
         boolean doPop = false;
         try {
             // Do we already have it?
 
             org.glassfish.rmic.tools.java.Type theType = classDef.getType();
-            Type existing = getType(theType,stack);
+            Type existing = getType(theType, stack);
 
             if (existing != null) {
 
-                if (!(existing instanceof NCClassType)) return null; // False hit.
+                if (!(existing instanceof NCClassType)) {
+                    return null; // False hit.
+                }
 
-                                // Yep, so return it...
+                // Yep, so return it...
 
                 return (NCClassType) existing;
 
             }
 
             NCClassType it = new NCClassType(stack, classDef);
-            putType(theType,it,stack);
+            putType(theType, it, stack);
             stack.push(it);
             doPop = true;
 
@@ -80,12 +84,14 @@ public class NCClassType extends ClassType {
                 stack.pop(true);
                 return it;
             } else {
-                removeType(theType,stack);
+                removeType(theType, stack);
                 stack.pop(false);
                 return null;
             }
         } catch (CompilerError e) {
-            if (doPop) stack.pop(false);
+            if (doPop) {
+                stack.pop(false);
+            }
             return null;
         }
     }
@@ -94,7 +100,7 @@ public class NCClassType extends ClassType {
      * Return a string describing this type.
      */
     @Override
-    public String getTypeDescription () {
+    public String getTypeDescription() {
         return addExceptionDescription("Non-conforming class");
     }
 
@@ -107,7 +113,7 @@ public class NCClassType extends ClassType {
      * object is not yet completely initialized.
      */
     private NCClassType(ContextStack stack, ClassDefinition classDef) {
-        super(stack,classDef,TYPE_NC_CLASS | TM_CLASS | TM_COMPOUND);
+        super(stack, classDef, TYPE_NC_CLASS | TM_CLASS | TM_COMPOUND);
     }
 
     //_____________________________________________________________________
@@ -117,7 +123,7 @@ public class NCClassType extends ClassType {
     /**
      * Initialize this instance.
      */
-    private boolean initialize (ContextStack stack) {
+    private boolean initialize(ContextStack stack) {
         if (!initParents(stack)) {
             return false;
         }
@@ -132,32 +138,32 @@ public class NCClassType extends ClassType {
 
                 // Get methods...
 
-                if (addAllMethods(getClassDefinition(),directMethods,false,false,stack) != null) {
+                if (addAllMethods(getClassDefinition(), directMethods, false, false, stack) != null) {
 
                     // Update parent class methods...
 
-                    if (updateParentClassMethods(getClassDefinition(),directMethods,false,stack) != null) {
+                    if (updateParentClassMethods(getClassDefinition(), directMethods, false, stack) != null) {
 
-                    // Get conforming constants...
+                        // Get conforming constants...
 
-                    if (addConformingConstants(directMembers,false,stack)) {
+                        if (addConformingConstants(directMembers, false, stack)) {
 
-                        // We're ok, so pass 'em up...
+                            // We're ok, so pass 'em up...
 
-                        if (!initialize(directInterfaces,directMethods,directMembers,stack,false)) {
-                            return false;
+                            if (!initialize(directInterfaces, directMethods, directMembers, stack, false)) {
+                                return false;
+                            }
                         }
-                    }
                     }
                 }
                 return true;
 
             } catch (ClassNotFound e) {
-                classNotFound(stack,e);
+                classNotFound(stack, e);
             }
             return false;
         } else {
-            return initialize(null,null,null,stack,false);
+            return initialize(null, null, null, stack, false);
         }
     }
 }

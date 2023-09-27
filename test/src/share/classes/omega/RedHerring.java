@@ -20,6 +20,7 @@
 
 package omega;
 
-public class RedHerring implements java.io.Serializable {}
+public class RedHerring implements java.io.Serializable {
+}
 
 

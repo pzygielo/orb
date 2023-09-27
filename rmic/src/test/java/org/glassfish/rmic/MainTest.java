@@ -158,7 +158,7 @@ public class MainTest {
         main.generateClass(environment, identifier);
 
         assertThat(main.getGeneratedClassNames(environment),
-                arrayContainingInAnyOrder("org.glassfish.rmic.classes.hcks._RmiII_Stub", "org.glassfish.rmic.classes.hcks._RmiIIServant_Tie"));
+                   arrayContainingInAnyOrder("org.glassfish.rmic.classes.hcks._RmiII_Stub", "org.glassfish.rmic.classes.hcks._RmiIIServant_Tie"));
     }
 
 }

@@ -21,25 +21,25 @@ package corba.serialization.proxy;
 
 import test.Test;
 import corba.framework.*;
+
 import java.util.Properties;
 
 public class ProxySerializationTest extends CORBATest {
-    protected void doTest() throws Throwable
-    {
+    protected void doTest() throws Throwable {
         //DEBUG: release commnet here
         //test.Test.debug=true;
         Options.addServerArg("-debug");
         Controller orbd = createORBD();
- 
+
         Properties serverProps = Options.getServerProperties();
         orbd.start();
- 
+
         Controller server = createServer("corba.serialization.proxy.Server");
         Controller client = createClient("corba.serialization.proxy.Client");
 
         server.start();
         client.start();
- 
+
         client.waitFor(120000);
 
         client.stop();

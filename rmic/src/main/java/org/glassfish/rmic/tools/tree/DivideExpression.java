@@ -19,9 +19,8 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
-import java.util.Hashtable;
+import org.glassfish.rmic.tools.java.Environment;
 
 /**
  * WARNING: The contents of this source file are not part of any
@@ -43,12 +42,15 @@ class DivideExpression extends DivRemExpression {
     Expression eval(int a, int b) {
         return new IntExpression(where, a / b);
     }
+
     Expression eval(long a, long b) {
         return new LongExpression(where, a / b);
     }
+
     Expression eval(float a, float b) {
         return new FloatExpression(where, a / b);
     }
+
     Expression eval(double a, double b) {
         return new DoubleExpression(where, a / b);
     }

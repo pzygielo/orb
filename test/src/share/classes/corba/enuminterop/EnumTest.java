@@ -22,31 +22,31 @@ package corba.enuminterop;
 import corba.framework.CORBATest;
 import corba.framework.Controller;
 import corba.framework.Options;
+
 import java.util.Properties;
 
 public class EnumTest extends CORBATest {
     @Override
-    protected void doTest() throws Throwable
-    {
+    protected void doTest() throws Throwable {
         Options.addServerArg("-debug");
         Controller orbd = createORBD();
- 
+
         Properties serverProps = Options.getServerProperties();
- 
-        Controller server = createServer( Server.class.getName() ) ;
- 
+
+        Controller server = createServer(Server.class.getName());
+
         orbd.start();
- 
+
         server.start();
- 
-        Controller client = createClient( Client.class.getName() ) ;
- 
+
+        Controller client = createClient(Client.class.getName());
+
         client.start();
- 
+
         client.waitFor(120000);
- 
+
         client.stop();
- 
+
         server.stop();
 
         orbd.stop();

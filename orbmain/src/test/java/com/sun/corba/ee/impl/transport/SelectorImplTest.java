@@ -134,7 +134,6 @@ public class SelectorImplTest extends TransportTestBase {
         assertFalse(eventHandler.timeout);
     }
 
-
     protected void setPrivateFieldValue(Object obj, String fieldName, Object value) {
         try {
             Class theClass = obj.getClass();
@@ -152,10 +151,11 @@ public class SelectorImplTest extends TransportTestBase {
             field.setAccessible(true);
             field.set(obj, value);
         } catch (NoSuchFieldException e) {
-            if (theClass.equals(Object.class))
+            if (theClass.equals(Object.class)) {
                 throw e;
-            else
+            } else {
                 setPrivateFieldValue(obj, theClass.getSuperclass(), fieldName, value);
+            }
         }
     }
 
@@ -282,10 +282,10 @@ public class SelectorImplTest extends TransportTestBase {
             return selectionKey;
         }
 
-
         public void clearReadyOps() {
-            for (SelectionKeyFake key : keys)
+            for (SelectionKeyFake key : keys) {
                 key.readyOps = 0;
+            }
         }
     }
 

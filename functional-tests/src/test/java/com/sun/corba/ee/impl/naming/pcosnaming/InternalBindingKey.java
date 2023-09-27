@@ -20,8 +20,8 @@
 package com.sun.corba.ee.impl.naming.pcosnaming;
 
 import java.io.Serializable;
-import org.omg.CosNaming.NameComponent;
 
+import org.omg.CosNaming.NameComponent;
 
 /**
  * Class InternalBindingKey implements the necessary wrapper code
@@ -31,8 +31,7 @@ import org.omg.CosNaming.NameComponent;
  * the lengths of the id and kind strings for faster comparison.
  */
 public class InternalBindingKey
-        implements Serializable
-{
+        implements Serializable {
 
     // computed by serialver tool
     private static final long serialVersionUID = -5410796631793704055L;
@@ -41,11 +40,11 @@ public class InternalBindingKey
     public String kind;
 
     // Default Constructor
-    public InternalBindingKey() {}
+    public InternalBindingKey() {
+    }
 
     // Normal constructor
-    public InternalBindingKey(NameComponent n)
-    {
+    public InternalBindingKey(NameComponent n) {
         setup(n);
     }
 
@@ -57,52 +56,41 @@ public class InternalBindingKey
 
     // Compare the keys by comparing name's id and kind
     public boolean equals(java.lang.Object o) {
-        if (o == null)
+        if (o == null) {
             return false;
+        }
         if (o instanceof InternalBindingKey) {
-            InternalBindingKey that = (InternalBindingKey)o;
-            if( this.id != null && that.id != null )
-            {
-                if (this.id.length() != that.id.length() )
-                {
-                        return false;
+            InternalBindingKey that = (InternalBindingKey) o;
+            if (this.id != null && that.id != null) {
+                if (this.id.length() != that.id.length()) {
+                    return false;
                 }
                 // If id is set is must be equal
-                if (this.id.length() > 0 && this.id.equals(that.id) == false) 
-                {
-                        return false;
+                if (this.id.length() > 0 && this.id.equals(that.id) == false) {
+                    return false;
                 }
-            }
-            else
-            {
+            } else {
                 // If One is Null and the other is not then it's a mismatch
                 // So, return false
-                if( ( this.id == null && that.id != null )
-                ||  ( this.id !=null && that.id == null ) )
-                {
-                        return false;
+                if ((this.id == null && that.id != null)
+                        || (this.id != null && that.id == null)) {
+                    return false;
                 }
             }
-            if( this.kind != null && that.kind != null )
-            {
-                if (this.kind.length() != that.kind.length() )
-                {
-                        return false;
+            if (this.kind != null && that.kind != null) {
+                if (this.kind.length() != that.kind.length()) {
+                    return false;
                 }
                 // If kind is set it must be equal
-                if (this.kind.length() > 0 && this.kind.equals(that.kind) == false) 
-                {
-                        return false;
+                if (this.kind.length() > 0 && this.kind.equals(that.kind) == false) {
+                    return false;
                 }
-            }
-            else
-            {
+            } else {
                 // If One is Null and the other is not then it's a mismatch
                 // So, return false
-                if( ( this.kind == null && that.kind != null )
-                ||  ( this.kind !=null && that.kind == null ) )
-                {
-                        return false;
+                if ((this.kind == null && that.kind != null)
+                        || (this.kind != null && that.kind == null)) {
+                    return false;
                 }
             }
             // We have checked all the possibilities, so return true
@@ -112,16 +100,13 @@ public class InternalBindingKey
         }
     }
 
-
     // Return precomputed value
     public int hashCode() {
         int hashVal = 0;
-        if (this.id.length() > 0)
-        {
+        if (this.id.length() > 0) {
             hashVal += this.id.hashCode();
         }
-        if (this.kind.length() > 0)
-        {
+        if (this.kind.length() > 0) {
             hashVal += this.kind.hashCode();
         }
         return hashVal;

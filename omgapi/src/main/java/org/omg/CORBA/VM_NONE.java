@@ -20,19 +20,18 @@
 package org.omg.CORBA;
 
 /**
- * Defines the code used to represent the one of the values of a value type 
+ * Defines the code used to represent the one of the values of a value type
  * in a typecode.
  *
  * @author OMG
- * @see org.omg.CORBA.TypeCode
  * @version 1.12 07/27/07
- * @since   JDK1.2
+ * @see org.omg.CORBA.TypeCode
+ * @since JDK1.2
  */
 
- 
 public interface VM_NONE {
     /**
-     * The value representing the value type in a typecode as per 
+     * The value representing the value type in a typecode as per
      * CORBA 2.3 spec.
      */
     final short value = (short) (0L);

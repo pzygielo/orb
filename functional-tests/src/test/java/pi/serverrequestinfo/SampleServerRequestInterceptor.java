@@ -32,16 +32,15 @@ import org.omg.PortableInterceptor.ServerRequestInterceptor;
  * performed on interceptor number 2 and only if the target() is not
  * helloRefForward.
  */
-public class SampleServerRequestInterceptor 
-    extends org.omg.CORBA.LocalObject 
-    implements ServerRequestInterceptor
-{
+public class SampleServerRequestInterceptor
+        extends org.omg.CORBA.LocalObject
+        implements ServerRequestInterceptor {
     // Valid message for exceptions
     public static final String VALID_MESSAGE = "Valid test result.";
 
     // The dyanmic strategy that will be used for this round.
     public static InterceptorStrategy strategy = null;
-    
+
     // The name of this interceptor
     private String name;
 
@@ -77,14 +76,13 @@ public class SampleServerRequestInterceptor
     // _is_a invocations are recorded at most once.  This is useful for
     // when we actually want to record interception on the _is_a "special op".
     static boolean dontIgnoreIsA = false;
-    
 
     // Records the method invocation order
     public static String methodOrder = "";
 
     private static int invokeCount = 0;
 
-    public SampleServerRequestInterceptor( String name ) {
+    public SampleServerRequestInterceptor(String name) {
         this.name = name;
     }
 
@@ -95,92 +93,136 @@ public class SampleServerRequestInterceptor
     public void destroy() {
     }
 
-    public void receive_request_service_contexts( ServerRequestInfo ri )
-        throws ForwardRequest 
-    {
+    public void receive_request_service_contexts(ServerRequestInfo ri)
+            throws ForwardRequest {
         // Only execute if the interceptor is enabled, this interception
         // point is enabled, we are the second interceptor, and we are 
         // executing on hello, not helloForward.
-        if( ri.operation().equals( "syncWithServer" ) ) return;
-        if( !dontIgnoreIsA && ri.operation().equals( "_is_a" ) ) {
-            if( name.equals( "1" ) ) {
-                System.out.println( 
-                    "    - Interceptor: Ingoring _is_a call..." );
+        if (ri.operation().equals("syncWithServer")) {
+            return;
+        }
+        if (!dontIgnoreIsA && ri.operation().equals("_is_a")) {
+            if (name.equals("1")) {
+                System.out.println(
+                        "    - Interceptor: Ingoring _is_a call...");
             }
             return;
         }
-        if( !enabled ) return;
-        if( !receiveRequestServiceContextsEnabled ) return;
-        if( !name.equals( "2" ) ) return;
+        if (!enabled) {
+            return;
+        }
+        if (!receiveRequestServiceContextsEnabled) {
+            return;
+        }
+        if (!name.equals("2")) {
+            return;
+        }
 
         intercepted = true;
-        strategy.receive_request_service_contexts( this, ri );
+        strategy.receive_request_service_contexts(this, ri);
     }
 
-    public void receive_request (ServerRequestInfo ri) 
-        throws ForwardRequest
-    {
+    public void receive_request(ServerRequestInfo ri)
+            throws ForwardRequest {
         // Only execute if the interceptor is enabled, this interception
         // point is enabled, we are the second interceptor, and we are 
         // executing on hello, not helloForward.
-        if( ri.operation().equals( "syncWithServer" ) ) return;
-        if( !dontIgnoreIsA && ri.operation().equals( "_is_a" ) ) return;
-        if( !enabled ) return;
-        if( !receiveRequestEnabled ) return;
-        if( !name.equals( "2" ) ) return;
-
-        strategy.receive_request( this, ri );
-    }
-
-    public void send_reply (ServerRequestInfo ri) {
-        // Only execute if the interceptor is enabled, this interception
-        // point is enabled, we are the second interceptor, and we are 
-        // executing on hello, not helloForward.
-        if( ri.operation().equals( "syncWithServer" ) ) return;
-        if( !dontIgnoreIsA && ri.operation().equals( "_is_a" ) ) return;
-        if( !enabled ) return;
-        if( !sendReplyEnabled ) return;
-        if( !name.equals( "2" ) ) return;
-
-        strategy.send_reply( this, ri );
-    }
-
-    public void send_exception (ServerRequestInfo ri) 
-        throws ForwardRequest
-    {
-        // Only execute if the interceptor is enabled, this interception
-        // point is enabled, we are the second interceptor, and we are 
-        // executing on hello, not helloForward.
-        if( ri.operation().equals( "syncWithServer" ) ) return;
-        if( !dontIgnoreIsA && ri.operation().equals( "_is_a" ) ) return;
-        if( !enabled ) return;
-        if( !sendExceptionEnabled ) return;
-        if( exceptionRedirectToOther && name.equals( "3" ) ) {
-            exceptionRedirectToOther = false;
-            throw new ForwardRequest( TestInitializer.helloRefForward );
+        if (ri.operation().equals("syncWithServer")) {
+            return;
         }
-        if( !name.equals( "2" ) ) return;
+        if (!dontIgnoreIsA && ri.operation().equals("_is_a")) {
+            return;
+        }
+        if (!enabled) {
+            return;
+        }
+        if (!receiveRequestEnabled) {
+            return;
+        }
+        if (!name.equals("2")) {
+            return;
+        }
 
-        strategy.send_exception( this, ri );
+        strategy.receive_request(this, ri);
     }
 
-    public void send_other (ServerRequestInfo ri) 
-        throws ForwardRequest 
-    {
+    public void send_reply(ServerRequestInfo ri) {
         // Only execute if the interceptor is enabled, this interception
         // point is enabled, we are the second interceptor, and we are 
         // executing on hello, not helloForward.
-        if( ri.operation().equals( "syncWithServer" ) ) return;
-        if( !dontIgnoreIsA && ri.operation().equals( "_is_a" ) ) return;
-        if( !enabled ) return;
-        if( !sendOtherEnabled ) return;
-        if( !name.equals( "2" ) ) return;
+        if (ri.operation().equals("syncWithServer")) {
+            return;
+        }
+        if (!dontIgnoreIsA && ri.operation().equals("_is_a")) {
+            return;
+        }
+        if (!enabled) {
+            return;
+        }
+        if (!sendReplyEnabled) {
+            return;
+        }
+        if (!name.equals("2")) {
+            return;
+        }
 
-        strategy.send_other( this, ri );
+        strategy.send_reply(this, ri);
+    }
+
+    public void send_exception(ServerRequestInfo ri)
+            throws ForwardRequest {
+        // Only execute if the interceptor is enabled, this interception
+        // point is enabled, we are the second interceptor, and we are 
+        // executing on hello, not helloForward.
+        if (ri.operation().equals("syncWithServer")) {
+            return;
+        }
+        if (!dontIgnoreIsA && ri.operation().equals("_is_a")) {
+            return;
+        }
+        if (!enabled) {
+            return;
+        }
+        if (!sendExceptionEnabled) {
+            return;
+        }
+        if (exceptionRedirectToOther && name.equals("3")) {
+            exceptionRedirectToOther = false;
+            throw new ForwardRequest(TestInitializer.helloRefForward);
+        }
+        if (!name.equals("2")) {
+            return;
+        }
+
+        strategy.send_exception(this, ri);
+    }
+
+    public void send_other(ServerRequestInfo ri)
+            throws ForwardRequest {
+        // Only execute if the interceptor is enabled, this interception
+        // point is enabled, we are the second interceptor, and we are 
+        // executing on hello, not helloForward.
+        if (ri.operation().equals("syncWithServer")) {
+            return;
+        }
+        if (!dontIgnoreIsA && ri.operation().equals("_is_a")) {
+            return;
+        }
+        if (!enabled) {
+            return;
+        }
+        if (!sendOtherEnabled) {
+            return;
+        }
+        if (!name.equals("2")) {
+            return;
+        }
+
+        strategy.send_other(this, ri);
 
         // Make sure we do not invoke any more strategy methods.
         // This will effectively ignore invoking interceptors on forwards.
-        if( !invokeOnForwardedObject ) {
+        if (!invokeOnForwardedObject) {
             enabled = false;
         }
     }

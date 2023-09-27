@@ -26,12 +26,12 @@ package corba.giopheaderpadding;
 
 import java.util.Properties;
 import javax.naming.InitialContext;
+
 import org.omg.CORBA.ORB;
 import corba.hcks.C;
 import corba.hcks.U;
 
-public class ColocatedClientServer 
-{
+public class ColocatedClientServer {
     public static final String baseMsg = ColocatedClientServer.class.getName();
     public static final String main = baseMsg + ".main";
 
@@ -47,8 +47,7 @@ public class ColocatedClientServer
     public static boolean isColocated = false;
     public static java.lang.Object signal = new java.lang.Object();
 
-    public static void main (String[] av)
-    {
+    public static void main(String[] av) {
         isColocated = true; // Used by Client and Server.
 
         try {
@@ -62,7 +61,7 @@ public class ColocatedClientServer
             U.sop(main + " : creating ORB.");
             Server.orb = (com.sun.corba.ee.spi.orb.ORB) orb;
             Client.orb = orb;
-            
+
             // Share a naming context between client and server
             // so Util.isLocal is true.
 
@@ -71,7 +70,7 @@ public class ColocatedClientServer
             initialContext = C.createInitialContext(orb);
             Server.initialContext = initialContext;
             Client.initialContext = initialContext;
-            
+
             ServerThread ServerThread = new ServerThread(av);
             ServerThread.start();
             synchronized (signal) {
@@ -89,15 +88,14 @@ public class ColocatedClientServer
     }
 }
 
-class ServerThread extends Thread
-{
+class ServerThread extends Thread {
     String[] args;
-    ServerThread (String[] args)
-    {
+
+    ServerThread(String[] args) {
         this.args = args;
     }
-    public void run ()
-    {
+
+    public void run() {
         Server.main(args);
     }
 }

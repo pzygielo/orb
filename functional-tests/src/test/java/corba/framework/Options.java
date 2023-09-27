@@ -31,17 +31,19 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-/** Static library class to provide access to test configuration data.
+/**
+ * Static library class to provide access to test configuration data.
  * This thing need to be further re-written to a class that is instantiated,
  * instead of the current static approach.  It should set up the defaults from
  * system properties and arguments to the constructor in the constructor.
  * It should provide setters and getters as needed for the tests.
- * Note that all setters must update all data, especially including the 
+ * Note that all setters must update all data, especially including the
  * properties returned from getORBDProperties, getClientProperties, and getServerProperties.
  */
 public class Options {
     // Prevent normal instantiation
-    private Options() { }
+    private Options() {
+    }
 
     public static final String defORBDHandshake = "ORBD is ready.";
     public static final String defServerHandshake = "Server is ready.";
@@ -50,30 +52,30 @@ public class Options {
     private static Port orbInitialPort;
     private static Port activationPort;
 
-    private static String javaIDLHome;                  
+    private static String javaIDLHome;
     private static String activationDbDirName;          // NO key   defActivationDbDirName
     private static String classpath;                    // key java.class.path
     private static String orbClass;                     // key org.omg.CORBA.ORBClass
 
-    private static Vector orbdArgs ; 
-    private static Vector serverArgs ;
-    private static Vector clientArgs ;
+    private static Vector orbdArgs;
+    private static Vector serverArgs;
+    private static Vector clientArgs;
 
     // Extra execution strategy arguments
-    private static Hashtable orbdExtra ;
-    private static Hashtable serverExtra ;
-    private static Hashtable clientExtra ;
+    private static Hashtable orbdExtra;
+    private static Hashtable serverExtra;
+    private static Hashtable clientExtra;
 
     // Extra arguments to compilers
-    private static Vector rmicArgs ;
-    private static Vector idlCompilerArgs ;
-    private static Vector javacArgs ;
+    private static Vector rmicArgs;
+    private static Vector idlCompilerArgs;
+    private static Vector javacArgs;
 
     // environment properties
-    private static Properties defaultProperties ;
-    private static Properties ORBDProps ;
-    private static Properties serverProps ;
-    private static Properties clientProps ;
+    private static Properties defaultProperties;
+    private static Properties ORBDProps;
+    private static Properties serverProps;
+    private static Properties clientProps;
 
     private static String emmaFile;
 
@@ -84,68 +86,70 @@ public class Options {
     private static String outputDirectory;
 
     // Files for compilation
-    private static String[] javaFiles = null ;
-    private static String[] idlFiles = null ;
-    private static String[] rmicFiles = null ;
+    private static String[] javaFiles = null;
+    private static String[] idlFiles = null;
+    private static String[] rmicFiles = null;
 
-    private static void initializeDefaults( Properties props ) {
+    private static void initializeDefaults(Properties props) {
         // Initialize default properties from the system properties.
         for (String key : Util.PROCESS_PROPERTIES) {
-            String value = System.getProperty( key ) ;
-            if (value != null)
-                props.setProperty( key, value ) ;
+            String value = System.getProperty(key);
+            if (value != null) {
+                props.setProperty(key, value);
+            }
         }
 
         String prop = props.getProperty(ORBConstants.INITIAL_PORT_PROPERTY);
-        if (prop == null)
+        if (prop == null) {
             orbInitialPort = new Port();
-        else
+        } else {
             orbInitialPort = new Port(Integer.parseInt(prop));
-        props.setProperty( ORBConstants.INITIAL_PORT_PROPERTY, orbInitialPort.toString() ) ;
+        }
+        props.setProperty(ORBConstants.INITIAL_PORT_PROPERTY, orbInitialPort.toString());
 
         prop = props.getProperty(ORBConstants.ORBD_PORT_PROPERTY);
-        if (prop == null)
+        if (prop == null) {
             activationPort = new Port();
-        else
+        } else {
             activationPort = new Port(Integer.parseInt(prop));
+        }
 
-        emmaFile = props.getProperty("emma.coverage.out.file", "") ;
-        orbClass = props.getProperty("org.omg.CORBA.ORBClass", "com.sun.corba.ee.impl.orb.ORBImpl" );
+        emmaFile = props.getProperty("emma.coverage.out.file", "");
+        orbClass = props.getProperty("org.omg.CORBA.ORBClass", "com.sun.corba.ee.impl.orb.ORBImpl");
 
-        props.setProperty( "java.naming.factory.initial", JndiConstants.COSNAMING_CONTEXT_FACTORY ) ;
+        props.setProperty("java.naming.factory.initial", JndiConstants.COSNAMING_CONTEXT_FACTORY);
     }
 
-    private static String getPackageAsDir( CORBATest parent ) {
+    private static String getPackageAsDir(CORBATest parent) {
         String packageName = CORBAUtil.getPackageName(parent);
         String pkg = packageName.replace('.', File.separatorChar);
-        return pkg ;
+        return pkg;
     }
 
-    private static String getTestDirectory( CORBATest parent ) {
-        String testBase = (String)(parent.getArgs().get( "-testbase" )) ;
-        String testRoot = "" ;
-        
+    private static String getTestDirectory(CORBATest parent) {
+        String testBase = (String) (parent.getArgs().get("-testbase"));
+        String testRoot = "";
+
         if (testBase == null) {
             testRoot = "/../src/share/classes/";
-            testBase = System.getProperty( "user.dir" ) ;
+            testBase = System.getProperty("user.dir");
         } else {
             testRoot = "/src/share/classes/";
         }
 
-        String result = testBase + testRoot.replace('/', File.separatorChar) + 
-            getPackageAsDir( parent )  + File.separator;
-        return result ;
+        String result = testBase + testRoot.replace('/', File.separatorChar) +
+                getPackageAsDir(parent) + File.separator;
+        return result;
     }
 
     /**
-     * Initialize the options.  This should be called by the 
+     * Initialize the options.  This should be called by the
      * test framework, not individual tests.  It should be called
      * before each new test runs to reset everything.
      *
-     *@param  parent   The current test
+     * @param parent The current test
      */
-    public static void init(CORBATest parent) throws IOException
-    {
+    public static void init(CORBATest parent) throws IOException {
         serverArgs = new Vector(10);
         clientArgs = new Vector(10);
 
@@ -155,49 +159,49 @@ public class Options {
 
         orbdExtra.put(ExternalExec.HANDSHAKE_KEY, defORBDHandshake);
         serverExtra.put(ExternalExec.HANDSHAKE_KEY, defServerHandshake);
-        
+
         rmicArgs = new Vector(10);
         idlCompilerArgs = new Vector(10);
         javacArgs = new Vector(10);
-        
-        javaFiles = null ;
-        idlFiles = null ;
-        rmicFiles = null ;
 
-        defaultProperties = new Properties() ;
-        initializeDefaults( defaultProperties ) ;
+        javaFiles = null;
+        idlFiles = null;
+        rmicFiles = null;
 
-        setORBDArgs( "-ORBDebug orbd" ) ;
+        defaultProperties = new Properties();
+        initializeDefaults(defaultProperties);
 
-        testDirectory = getTestDirectory( parent ) ;
+        setORBDArgs("-ORBDebug orbd");
+
+        testDirectory = getTestDirectory(parent);
 
         String defaultOutputDirectory = parent.getArgs().get(test.Test.OUTPUT_DIRECTORY)
-            + File.separator + getPackageAsDir(parent) + File.separator;
+                + File.separator + getPackageAsDir(parent) + File.separator;
 
-        setDirectories( defaultOutputDirectory, defaultProperties ) ;
+        setDirectories(defaultOutputDirectory, defaultProperties);
 
         // Set up props based on default properties. The props may be further modified in the tests.
-        ORBDProps = new Properties( defaultProperties ) ;
-        ORBDProps.setProperty( ORBConstants.PERSISTENT_SERVER_PORT_PROPERTY, getActivationPort() ) ;
+        ORBDProps = new Properties(defaultProperties);
+        ORBDProps.setProperty(ORBConstants.PERSISTENT_SERVER_PORT_PROPERTY, getActivationPort());
 
         String persistentServerId = defaultProperties.getProperty(ORBConstants.ORB_SERVER_ID_PROPERTY, "1");
-        ORBDProps.setProperty( ORBConstants.ORB_SERVER_ID_PROPERTY, persistentServerId ) ;
+        ORBDProps.setProperty(ORBConstants.ORB_SERVER_ID_PROPERTY, persistentServerId);
 
-        serverProps = new Properties( defaultProperties ) ;
-        clientProps = new Properties( defaultProperties ) ;
+        serverProps = new Properties(defaultProperties);
+        clientProps = new Properties(defaultProperties);
     }
 
     // Set directories and classpath parts that depend on outputdir.
-    private static void setDirectories( String outdir, Properties props ) {
-        outputDirectory = outdir ;
-        reportDirectory = outdir ;
-        props.setProperty( "output.dir", outdir ) ;
+    private static void setDirectories(String outdir, Properties props) {
+        outputDirectory = outdir;
+        reportDirectory = outdir;
+        props.setProperty("output.dir", outdir);
 
-        javaIDLHome = outdir + "JavaIDLHome" ;
-        props.setProperty( "com.sun.corba.ee.JavaIDLHome", javaIDLHome ) ;
+        javaIDLHome = outdir + "JavaIDLHome";
+        props.setProperty("com.sun.corba.ee.JavaIDLHome", javaIDLHome);
 
-        activationDbDirName = javaIDLHome + File.separator + "db.dir" ;
-        props.setProperty( ORBConstants.DB_DIR_PROPERTY, activationDbDirName ) ;
+        activationDbDirName = javaIDLHome + File.separator + "db.dir";
+        props.setProperty(ORBConstants.DB_DIR_PROPERTY, activationDbDirName);
 
         StringBuilder newPath = new StringBuilder(outputDirectory + File.pathSeparator);
         newPath.append(System.getProperty("java.class.path"));
@@ -205,7 +209,7 @@ public class Options {
     }
 
     public static long getMaximumTimeout() {
-        return 120000 ;
+        return 120000;
     }
 
     /**
@@ -245,7 +249,7 @@ public class Options {
      * ORBD (space separated).
      */
     public static void setORBDArgs(String values) {
-        orbdArgs = new Vector() ;
+        orbdArgs = new Vector();
         Options.addArgsFromString(values, orbdArgs);
     }
 
@@ -326,11 +330,11 @@ public class Options {
      * Set the output directory -- disallowed.
      */
     public static void setOutputDirectory(String value) {
-        setDirectories( value, defaultProperties ) ;
+        setDirectories(value, defaultProperties);
     }
 
     /**
-     * Return the class path to pass to subprocesses 
+     * Return the class path to pass to subprocesses
      * (defaults to the system property java.class.path
      * plus the output directory).
      */
@@ -410,8 +414,9 @@ public class Options {
      * when creating subprocesses. Set to
      * {java.home}/bin/java).
      */
-    public static String getJavaExec() { return System.getProperty("java.home")
-            + File.separator + "bin" + File.separator + "java";
+    public static String getJavaExec() {
+        return System.getProperty("java.home")
+                + File.separator + "bin" + File.separator + "java";
     }
 
     /**
@@ -481,11 +486,10 @@ public class Options {
     }
 
     /**
-     * Utility method for adding space separated arguments to 
+     * Utility method for adding space separated arguments to
      * a given vector.
      */
-    private static void addArgsFromString(String args, Vector container)
-    {
+    private static void addArgsFromString(String args, Vector container) {
         StringTokenizer st = new StringTokenizer(args);
 
         while (st.hasMoreTokens()) {
@@ -545,8 +549,8 @@ public class Options {
         return idlFiles;
     }
 
-    public static String getEmmaFile() { 
-        return emmaFile ;
+    public static String getEmmaFile() {
+        return emmaFile;
     }
 
     /**

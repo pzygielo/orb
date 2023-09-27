@@ -34,17 +34,15 @@ import org.omg.PortableInterceptor.Current;
 import org.omg.PortableInterceptor.InvalidSlot;
 
 public class LoggingServiceClientInterceptor
-    extends org.omg.CORBA.LocalObject
-    implements ClientRequestInterceptor
-{
+        extends org.omg.CORBA.LocalObject
+        implements ClientRequestInterceptor {
     private LoggingService loggingService;
     private Current piCurrent;
     private int outCallIndicatorSlotId;
 
     public LoggingServiceClientInterceptor(LoggingService loggingService,
                                            Current piCurrent,
-                                           int outCallIndicatorSlotId)
-    {
+                                           int outCallIndicatorSlotId) {
         this.loggingService = loggingService;
         this.piCurrent = piCurrent;
         this.outCallIndicatorSlotId = outCallIndicatorSlotId;
@@ -54,41 +52,34 @@ public class LoggingServiceClientInterceptor
     // Interceptor operations
     //
 
-    public String name() 
-    {
+    public String name() {
         return "LoggingServiceClientInterceptor";
     }
 
-    public void destroy() 
-    {
+    public void destroy() {
     }
 
     //
     // ClientRequestInterceptor operations
     //
 
-    public void send_request(ClientRequestInfo ri)
-    {
+    public void send_request(ClientRequestInfo ri) {
         log(ri, "send_request");
     }
 
-    public void send_poll(ClientRequestInfo ri)
-    {
+    public void send_poll(ClientRequestInfo ri) {
         log(ri, "send_poll");
     }
 
-    public void receive_reply(ClientRequestInfo ri)
-    {
+    public void receive_reply(ClientRequestInfo ri) {
         log(ri, "receive_reply");
     }
 
-    public void receive_exception(ClientRequestInfo ri)
-    {
+    public void receive_exception(ClientRequestInfo ri) {
         log(ri, "receive_exception");
     }
 
-    public void receive_other(ClientRequestInfo ri)
-    {
+    public void receive_other(ClientRequestInfo ri) {
         log(ri, "receive_other");
     }
 
@@ -96,8 +87,7 @@ public class LoggingServiceClientInterceptor
     // Utilities.
     //
 
-    public void log(ClientRequestInfo ri, String point)
-    {
+    public void log(ClientRequestInfo ri, String point) {
         // IMPORTANT: Always set the TSC out call indicator in case
         // other interceptors make outcalls for this request.
         // Otherwise the outcall will not be set for the other interceptor's
@@ -107,7 +97,8 @@ public class LoggingServiceClientInterceptor
         indicator.insert_boolean(true);
         try {
             piCurrent.set_slot(outCallIndicatorSlotId, indicator);
-        } catch (InvalidSlot e) { }
+        } catch (InvalidSlot e) {
+        }
 
         try {
             indicator = ri.get_slot(outCallIndicatorSlotId);
@@ -121,7 +112,7 @@ public class LoggingServiceClientInterceptor
                 loggingService.log(ri.operation() + " " + point);
             }
         } catch (InvalidSlot e) {
-            System.out.println("Exception handling not shown.");            
+            System.out.println("Exception handling not shown.");
         }
     }
 }

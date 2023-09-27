@@ -21,12 +21,13 @@ package corba.strm2;
 
 import java.rmi.*;
 import javax.rmi.PortableRemoteObject;
+
 import org.omg.CORBA.ORB;
+
 import java.io.*;
 import javax.naming.*;
 
-public class TesterImpl extends PortableRemoteObject implements Tester
-{
+public class TesterImpl extends PortableRemoteObject implements Tester {
     public TesterImpl() throws RemoteException, NamingException {
         super();
     }
@@ -38,7 +39,7 @@ public class TesterImpl extends PortableRemoteObject implements Tester
     public Testable createTestObject() {
         try {
             Class testObjectClass = Class.forName("TestObject");
-            return (Testable)testObjectClass.newInstance();
+            return (Testable) testObjectClass.newInstance();
         } catch (Exception ex) {
             throw new RuntimeException("Couldn't create TestObject", ex);
         }
@@ -49,9 +50,9 @@ public class TesterImpl extends PortableRemoteObject implements Tester
         try {
 
             System.out.println("TesterImpl w/ version "
-                               + getDescription()
-                               + " received from client w/ version "
-                               + input.getDescription());
+                                       + getDescription()
+                                       + " received from client w/ version "
+                                       + input.getDescription());
             System.out.println(input.toString());
 
         } catch (RuntimeException rt) {

@@ -17,28 +17,28 @@
  * Classpath-exception-2.0
  */
 
-package corba.dynamicrmiiiop.testclasses ; 
+package corba.dynamicrmiiiop.testclasses;
 
-public class MyApplicationExceptionBase extends Exception
-{
-    public MyApplicationExceptionBase( String msg )
-    {
-        super( msg ) ;
+public class MyApplicationExceptionBase extends Exception {
+    public MyApplicationExceptionBase(String msg) {
+        super(msg);
     }
 
-    public boolean equals( Object obj )
-    {
-        if (this == obj)
-            return true ;
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
 
-        if (!obj.getClass().equals(getClass()))
-            return false ;
+        if (!obj.getClass().equals(getClass())) {
+            return false;
+        }
 
-        MyApplicationExceptionBase other = (MyApplicationExceptionBase)obj ;
+        MyApplicationExceptionBase other = (MyApplicationExceptionBase) obj;
 
-        if (getMessage() == null)
-            return other.getMessage() == null ;
+        if (getMessage() == null) {
+            return other.getMessage() == null;
+        }
 
-        return getMessage().equals( other.getMessage() ) ;
+        return getMessage().equals(other.getMessage());
     }
 }

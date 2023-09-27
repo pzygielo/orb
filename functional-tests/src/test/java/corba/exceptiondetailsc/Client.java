@@ -26,6 +26,7 @@ package corba.exceptiondetailsc;
 
 import java.rmi.RemoteException;
 import javax.naming.InitialContext;
+
 import org.omg.CORBA.FREE_MEM;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.UNKNOWN;
@@ -34,19 +35,18 @@ import corba.framework.Controller;
 import corba.hcks.C;
 import corba.hcks.U;
 
-public class Client 
-{
+public class Client {
     public static final String baseMsg = Client.class.getName();
     public static final String main = baseMsg + ".main";
 
-    public static final String IDLConnect     = "IDL/Connect";
-    public static final String IDLPOA         = "IDL/POA";
+    public static final String IDLConnect = "IDL/Connect";
+    public static final String IDLPOA = "IDL/POA";
     public static final String RMIIIOPConnect = "RMI-IIOP/Connect";
-    public static final String RMIIIOPPOA     = "RMI-IIOP/POA";
-    public static final String SYSTEM         = "SYSTEM_EXCEPTION";
-    public static final String USER           = "USER_EXCEPTION";
-    public static final String RUNTIME        = "RuntimeException";
-    
+    public static final String RMIIIOPPOA = "RMI-IIOP/POA";
+    public static final String SYSTEM = "SYSTEM_EXCEPTION";
+    public static final String USER = "USER_EXCEPTION";
+    public static final String RUNTIME = "RuntimeException";
+
     public static ORB orb;
     public static InitialContext initialContext;
 
@@ -55,22 +55,21 @@ public class Client
     public static rmiiI rmiiIConnect;
     public static rmiiI rmiiIPOA;
 
-    public static String idlIConnectArg  = Server.idlIConnect;
-    public static String idlIPOAArg      = Server.idlIPOA;
+    public static String idlIConnectArg = Server.idlIConnect;
+    public static String idlIPOAArg = Server.idlIPOA;
     public static String rmiiIConnectArg = Server.rmiiIConnect;
-    public static String rmiiIPOAArg     = Server.rmiiIPOA;
+    public static String rmiiIPOAArg = Server.rmiiIPOA;
 
     public static boolean isColocated = false;
     public static boolean debug = false;
 
     public static int numErrors = 0;
 
-    public static void main(String[] av)
-    {
+    public static void main(String[] av) {
         try {
             U.sop(main + " starting");
 
-            if (! ColocatedClientServer.isColocated) {
+            if (!ColocatedClientServer.isColocated) {
                 U.sop(main + " : creating ORB.");
                 orb = ORB.init(av, null);
                 U.sop(main + " : creating InitialContext.");
@@ -81,17 +80,17 @@ public class Client
             U.sop("+++++++++++++++++++++++++Looking up IDL references.");
             U.lf();
 
-            idlIConnect = idlIHelper.narrow(U.resolve(Server.idlIConnect,orb));
-            idlIPOA     = idlIHelper.narrow(U.resolve(Server.idlIPOA,    orb));
+            idlIConnect = idlIHelper.narrow(U.resolve(Server.idlIConnect, orb));
+            idlIPOA = idlIHelper.narrow(U.resolve(Server.idlIPOA, orb));
 
             U.lf();
             U.sop("+++++++++++++++++++++++++Looking up RMI references.");
             U.lf();
             rmiiIConnect = (rmiiI)
-                U.lookupAndNarrow(Server.rmiiIConnect,
-                                  rmiiI.class, initialContext);
+                    U.lookupAndNarrow(Server.rmiiIConnect,
+                                      rmiiI.class, initialContext);
             rmiiIPOA = (rmiiI)
-                U.lookupAndNarrow(Server.rmiiIPOA, rmiiI.class,initialContext);
+                    U.lookupAndNarrow(Server.rmiiIPOA, rmiiI.class, initialContext);
 
             /* REVISIT: investigate hang
             rmiiIPOA = (rmiiI)
@@ -236,8 +235,7 @@ public class Client
     public static void processThrowable(String servantType,
                                         String exceptionCategory,
                                         Throwable got,
-                                        Throwable expected)
-    {
+                                        Throwable expected) {
         processThrowable(servantType, exceptionCategory, got, expected, null);
     }
 
@@ -245,8 +243,7 @@ public class Client
                                         String exceptionCategory,
                                         Throwable got,
                                         Throwable expected,
-                                        String messageSubstring)
-    {
+                                        String messageSubstring) {
         boolean failType = false;
         boolean failMessage = false;
 

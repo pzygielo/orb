@@ -38,24 +38,32 @@ public class statusU {
             this.desc = desc;
         }
 
-        int getStatus() { return status; }
-        String getDesc() { return desc; }
+        int getStatus() {
+            return status;
+        }
+
+        String getDesc() {
+            return desc;
+        }
 
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
 
-            if (getStatus() == RTMConstants.PASS)
+            if (getStatus() == RTMConstants.PASS) {
                 sb.append(PASS);
-            else
+            } else {
                 sb.append(FAIL);
+            }
 
             sb.append(" - ");
             sb.append(getDesc());
 
             return sb.toString();
         }
-    };
+    }
+
+    ;
 
     /* FIELDS */
 
@@ -170,8 +178,9 @@ public class statusU {
         }
 
         if (treeMap.containsKey(testName)) {
-            TestData d = (TestData)treeMap.get(testName);
-            TestData d2 = new TestData(logicalOp(d.getStatus(), status, andOr) == RTMConstants.PASS ? RTMConstants.PASS : RTMConstants.FAIL, d.getDesc() + "\n" + desc);
+            TestData d = (TestData) treeMap.get(testName);
+            TestData d2 = new TestData(logicalOp(d.getStatus(), status, andOr) == RTMConstants.PASS ? RTMConstants.PASS : RTMConstants.FAIL,
+                                       d.getDesc() + "\n" + desc);
             treeMap.put(testName, d2);
         } else {
             addStatus(testName, status, desc);
@@ -180,16 +189,18 @@ public class statusU {
 
     private int logicalOp(int status1, int status2, int op) {
         if (op == RTMConstants.AND) {
-            if ((status1 == RTMConstants.PASS) && (status2 == RTMConstants.PASS))
+            if ((status1 == RTMConstants.PASS) && (status2 == RTMConstants.PASS)) {
                 return RTMConstants.PASS;
-            else
+            } else {
                 return RTMConstants.FAIL;
+            }
         } else { // Default is OR operation. No need of error checking
             // here since input has already been validated
-            if ((status1 == RTMConstants.FAIL) && (status2 == RTMConstants.FAIL))
+            if ((status1 == RTMConstants.FAIL) && (status2 == RTMConstants.FAIL)) {
                 return RTMConstants.FAIL;
-            else
+            } else {
                 return RTMConstants.PASS;
+            }
         }
     }
 
@@ -202,14 +213,15 @@ public class statusU {
         while (i.hasNext()) {
             data += "<TEST-CASE>\n";
 
-            String str = (String)i.next();
-            TestData d = (TestData)treeMap.get(str);
+            String str = (String) i.next();
+            TestData d = (TestData) treeMap.get(str);
             data += "<TEST-CASE-ID STATUS=\"" +
-                ((d.getStatus() == RTMConstants.PASS) ? PASS : FAIL) +
-                "\">" + str + "</TEST-CASE-ID>\n";
+                    ((d.getStatus() == RTMConstants.PASS) ? PASS : FAIL) +
+                    "\">" + str + "</TEST-CASE-ID>\n";
 
-            if (!d.getDesc().equals(""))
+            if (!d.getDesc().equals("")) {
                 data += "<TEST-CASE-DESC>" + d.getDesc() + "</TEST-CASE-DESC>\n";
+            }
 
             data += "</TEST-CASE>\n\n";
         }
@@ -223,33 +235,34 @@ public class statusU {
         String category;
         String suiteName;
 
-        if (testName.startsWith("api"))
+        if (testName.startsWith("api")) {
             category = "API";
-        else if (testName.startsWith("product"))
+        } else if (testName.startsWith("product")) {
             category = "PRODUCT";
-        else if (testName.startsWith("endToend"))
+        } else if (testName.startsWith("endToend")) {
             category = "END-TO-END";
-        else if (testName.startsWith("Reliability"))
+        } else if (testName.startsWith("Reliability")) {
             category = "RELIABILITY";
-        else if (testName.startsWith("interoperability"))
+        } else if (testName.startsWith("interoperability")) {
             category = "INTEROPERABILITY";
-        else if (testName.startsWith("performance"))
+        } else if (testName.startsWith("performance")) {
             category = "PERFORMANCE";
-        else if (testName.startsWith("scalability"))
+        } else if (testName.startsWith("scalability")) {
             category = "SCALABILITY";
-        else
+        } else {
             category = "No Description available";
+        }
 
         int index = testName.indexOf("_");
         if (index == -1) {
             index = testName.length();
         } else {
-            index = testName.indexOf("_", index+1);
+            index = testName.indexOf("_", index + 1);
             if (index == -1) {
                 index = testName.length();
             }
         }
-        suiteName = (String)hash.get(testName.substring(0, index));
+        suiteName = (String) hash.get(testName.substring(0, index));
 
         data += "<TEST SUITE-NAME=\"" + suiteName + "\" CATEGORY=\"" + category + "\">\n";
         data += "<TEST-NAME>" + testName + "</TEST-NAME>\n";
@@ -294,7 +307,6 @@ public class statusU {
         System.out.println(generateSummary(testName, desc));
     }
 
-
     synchronized public int totalPass() {
         int pass = 0;
 
@@ -302,15 +314,15 @@ public class statusU {
         Iterator i = s.iterator();
 
         while (i.hasNext()) {
-            String str = (String)i.next();
-            TestData d = (TestData)treeMap.get(str);
-            if (d.getStatus() == RTMConstants.PASS)
+            String str = (String) i.next();
+            TestData d = (TestData) treeMap.get(str);
+            if (d.getStatus() == RTMConstants.PASS) {
                 pass++;
+            }
         }
 
         return pass;
     }
-
 
     synchronized public int totalFail() {
         int fail = 0;
@@ -319,10 +331,11 @@ public class statusU {
         Iterator i = s.iterator();
 
         while (i.hasNext()) {
-            String str = (String)i.next();
-            TestData d = (TestData)treeMap.get(str);
-            if (d.getStatus() == RTMConstants.FAIL)
+            String str = (String) i.next();
+            TestData d = (TestData) treeMap.get(str);
+            if (d.getStatus() == RTMConstants.FAIL) {
                 fail++;
+            }
         }
 
         return fail;

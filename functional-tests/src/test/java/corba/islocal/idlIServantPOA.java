@@ -27,17 +27,14 @@ package corba.islocal;
 import corba.hcks.U;
 
 class idlIServantPOA
-    extends 
-        idlIPOA
-{
+        extends
+        idlIPOA {
     public static final String baseMsg = idlIServantPOA.class.getName();
 
-    public idlIServantPOA()
-    {
+    public idlIServantPOA() {
     }
 
-    public String o(String arg1)
-    {
+    public String o(String arg1) {
         // REVISIT : IDL stubs do NOT have colocated branch yet.
         // NEW: but now we have a SharedCDR subcontract.
         Server.checkThread(baseMsg);

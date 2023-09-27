@@ -30,8 +30,7 @@ import com.sun.corba.ee.spi.transport.ContactInfo;
  *
  * @author Harold Carr
  */
-public interface ClientRequestDispatcher
-{
+public interface ClientRequestDispatcher {
     /**
      * At the beginning of a request the presentation block uses this
      * to obtain an OutputObject to set data to be sent on a message.
@@ -41,13 +40,12 @@ public interface ClientRequestDispatcher
      * @param isOneWay - <code>true</code> if the message is asynchronous
      * @param contactInfo - the CorbaContactInfo
      * which which created/chose this <code>ClientRequestDispatcher</code>
-     *
      * @return OutputObject
      */
     public CDROutputObject beginRequest(Object self,
-                                     String methodName,
-                                     boolean isOneWay,
-                                     ContactInfo contactInfo);
+                                        String methodName,
+                                        boolean isOneWay,
+                                        ContactInfo contactInfo);
 
     /**
      * After the presentation block has set data on the CDROutputObject
@@ -56,26 +54,22 @@ public interface ClientRequestDispatcher
      *
      * @param self -
      * @param outputObject object to mark as complete
-     *
      * @return CDRInputObject if the message is synchronous.
-     *
-     * @throws org.omg.CORBA.portable.ApplicationException 
-     * if the remote side raises an exception declared in the remote interface.
-     * 
+     * @throws org.omg.CORBA.portable.ApplicationException if the remote side raises an exception declared in the remote interface.
      * @throws org.omg.CORBA.portable.RemarshalException RemarshalException
      * if the PEPt runtime would like the presentation block to start over.
      */
     public CDRInputObject marshalingComplete(java.lang.Object self,
-                                          CDROutputObject outputObject)
+                                             CDROutputObject outputObject)
     // REVISIT EXCEPTIONS
-        throws
-            org.omg.CORBA.portable.ApplicationException, 
+            throws
+            org.omg.CORBA.portable.ApplicationException,
             org.omg.CORBA.portable.RemarshalException;
 
     /**
      * After the presentation block completes a request it signals
      * the PEPt runtime by calling this method.
-     *
+     * <p>
      * This method may release resources.  In some cases it may cause
      * control or error messages to be sent.
      *
@@ -84,7 +78,7 @@ public interface ClientRequestDispatcher
      * @param inputObject unused
      */
     public void endRequest(ORB broker,
-                           java.lang.Object self, 
+                           java.lang.Object self,
                            CDRInputObject inputObject);
 }
 

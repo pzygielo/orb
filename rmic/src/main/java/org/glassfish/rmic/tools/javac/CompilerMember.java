@@ -19,19 +19,18 @@
 
 package org.glassfish.rmic.tools.javac;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
+import org.glassfish.rmic.tools.java.MemberDefinition;
 
 /**
  * This class is used to represents fields while they are
  * being compiled
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
  */
-@Deprecated
-final
+@Deprecated final
 class CompilerMember implements Comparable<Object> {
     MemberDefinition field;
     Assembler asm;
@@ -53,8 +52,9 @@ class CompilerMember implements Comparable<Object> {
     }
 
     String getKey() {
-        if (key==null)
-            key = name+sig;
+        if (key == null) {
+            key = name + sig;
+        }
         return key;
     }
 

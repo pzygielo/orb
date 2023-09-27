@@ -28,7 +28,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 /**
  * This class is used to represent a file loaded from the class path, and
  * is represented by nio Path.
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
@@ -85,12 +85,12 @@ class PathClassFile extends ClassFile {
         return path.getFileName().toString();
     }
 
-//JCOV
+    //JCOV
     @Override
     public String getAbsoluteName() {
         return path.toAbsolutePath().toUri().toString();
     }
-// end JCOV
+    // end JCOV
 
     @Override
     public long length() {

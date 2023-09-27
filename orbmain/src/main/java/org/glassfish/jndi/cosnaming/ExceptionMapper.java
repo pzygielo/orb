@@ -18,36 +18,37 @@
  */
 package org.glassfish.jndi.cosnaming;
 
-import javax.naming.*;
-import javax.naming.directory.*;
-import javax.naming.spi.*;
-
-import org.omg.CosNaming.*;
+import org.omg.CosNaming.NameComponent;
+import org.omg.CosNaming.NamingContext;
 import org.omg.CosNaming.NamingContextPackage.*;
-import org.omg.CORBA.*;
+
+import javax.naming.*;
+import javax.naming.spi.NamingManager;
 
 /**
-  * A convenience class to map the COS Naming exceptions to the JNDI exceptions.
-  */
+ * A convenience class to map the COS Naming exceptions to the JNDI exceptions.
+ */
 
 public final class ExceptionMapper {
-    private ExceptionMapper() {} // ensure no instance
+    private ExceptionMapper() {
+    } // ensure no instance
+
     private static final boolean debug = false;
 
     public static final NamingException mapException(Exception e,
-        CNCtx ctx, NameComponent[] inputName) throws NamingException {
+                                                     CNCtx ctx, NameComponent[] inputName) throws NamingException {
         if (e instanceof NamingException) {
-            return (NamingException)e;
+            return (NamingException) e;
         }
 
         if (e instanceof RuntimeException) {
-            throw (RuntimeException)e;
+            throw (RuntimeException) e;
         }
 
         NamingException ne;
         if (e instanceof NotFound) {
             if (ctx.federation) {
-                return tryFed((NotFound)e, ctx, inputName);
+                return tryFed((NotFound) e, ctx, inputName);
 
             } else {
                 ne = new NameNotFoundException();
@@ -64,14 +65,14 @@ public final class ExceptionMapper {
             // NotFound doesn't set rest as expected. -RL
             if (inputName != null && (inputName.length > rest.length)) {
                 NameComponent[] resolvedName =
-                    new NameComponent[inputName.length - rest.length];
+                        new NameComponent[inputName.length - rest.length];
                 System.arraycopy(inputName, 0, resolvedName, 0, resolvedName.length);
                 // Wrap resolved NamingContext inside a CNCtx
                 // Guess that its name (which is relative to ctx)
                 // is the part of inputName minus rest_of_name
                 ne.setResolvedObj(new CNCtx(ctx._orb, ctx.orbTracker, nc,
-                                                ctx._env,
-                    ctx.makeFullName(resolvedName)));
+                                            ctx._env,
+                                            ctx.makeFullName(resolvedName)));
             } else {
                 ne.setResolvedObj(ctx);
             }
@@ -93,7 +94,7 @@ public final class ExceptionMapper {
     }
 
     private static final NamingException tryFed(NotFound e, CNCtx ctx,
-        NameComponent[] inputName) throws NamingException {
+                                                NameComponent[] inputName) throws NamingException {
         NameComponent[] rest = e.rest_of_name;
 
         if (debug) {
@@ -107,10 +108,10 @@ public final class ExceptionMapper {
         // If one of those is not found, you get "aa" as 'rest'.
         if (rest.length == 1 && inputName != null) {
             // Check that we're not talking to 1.2/1.3 Sun tnameserv
-            NameComponent lastIn = inputName[inputName.length-1];
+            NameComponent lastIn = inputName[inputName.length - 1];
             if (rest[0].id.equals(lastIn.id) &&
-                rest[0].kind != null &&
-                rest[0].kind.equals(lastIn.kind)) {
+                    rest[0].kind != null &&
+                    rest[0].kind.equals(lastIn.kind)) {
                 // Might be legit
                 ;
             } else {
@@ -138,7 +139,7 @@ public final class ExceptionMapper {
                     // No more remaining
                     rest = null;
                 } else {
-                    NameComponent[] tmp = new NameComponent[rest.length-1];
+                    NameComponent[] tmp = new NameComponent[rest.length - 1];
                     System.arraycopy(rest, 1, tmp, 0, tmp.length);
                     rest = tmp;
                 }
@@ -166,7 +167,7 @@ public final class ExceptionMapper {
 
         // Lookup resolved name to get resolved object
         final java.lang.Object resolvedObj =
-            (resolvedName != null) ? ctx.callResolve(resolvedName) : ctx;
+                (resolvedName != null) ? ctx.callResolve(resolvedName) : ctx;
 
         if (resolvedObj instanceof javax.naming.Context) {
             // obj is a context and child is not found
@@ -176,8 +177,9 @@ public final class ExceptionMapper {
                 public java.lang.Object getContent() {
                     return resolvedObj;
                 }
+
                 private static final long serialVersionUID =
-                    669984699392133792L;
+                        669984699392133792L;
             };
             Reference ref = new Reference("java.lang.Object", addr);
 
@@ -187,7 +189,7 @@ public final class ExceptionMapper {
 
             cpe.setResolvedObj(ref);
             cpe.setAltName(cname);
-            cpe.setAltNameCtx((javax.naming.Context)resolvedObj);
+            cpe.setAltNameCtx((javax.naming.Context) resolvedObj);
 
             return cpe;
         } else {
@@ -197,12 +199,12 @@ public final class ExceptionMapper {
             java.lang.Object resolvedObj2;
             try {
                 resolvedObj2 = NamingManager.getObjectInstance(resolvedObj,
-                    cname, ctx, ctx._env);
+                                                               cname, ctx, ctx._env);
             } catch (NamingException ge) {
                 throw ge;
             } catch (Exception ge) {
                 NamingException ne = new NamingException(
-                    "problem generating object using object factory");
+                        "problem generating object using object factory");
                 ne.setRootCause(ge);
                 throw ne;
             }
@@ -221,8 +223,9 @@ public final class ExceptionMapper {
                     public java.lang.Object getContent() {
                         return rf2;
                     }
+
                     private static final long serialVersionUID =
-                        -785132553978269772L;
+                            -785132553978269772L;
                 };
                 Reference ref = new Reference("java.lang.Object", addr);
                 cpe.setResolvedObj(ref);

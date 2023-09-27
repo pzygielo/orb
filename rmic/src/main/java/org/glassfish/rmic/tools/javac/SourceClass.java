@@ -19,25 +19,24 @@
 
 package org.glassfish.rmic.tools.javac;
 
-import org.glassfish.rmic.tools.java.*;
-import org.glassfish.rmic.tools.tree.*;
-import org.glassfish.rmic.tools.tree.CompoundStatement;
 import org.glassfish.rmic.tools.asm.Assembler;
 import org.glassfish.rmic.tools.asm.ConstantPool;
-import java.util.Vector;
+import org.glassfish.rmic.tools.java.*;
+import org.glassfish.rmic.tools.tree.*;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.DataOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
+import java.util.Vector;
 
 /**
  * This class represents an Java class as it is read from
  * an Java source file.
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
@@ -61,7 +60,7 @@ class SourceClass extends ClassDefinition {
      */
     ConstantPool tab = new ConstantPool();
 
-   /**
+    /**
      * The list of class dependencies
      */
     Hashtable<ClassDeclaration, ClassDeclaration> deps = new Hashtable<>(11);
@@ -110,7 +109,7 @@ class SourceClass extends ClassDefinition {
         // Check for a package level class which is declared static.
         if (isStatic() && outerClass == null) {
             env.error(where, "static.class", this);
-            this.modifiers &=~ M_STATIC;
+            this.modifiers &= ~M_STATIC;
         }
 
         // Inner classes cannot be static, nor can they be interfaces
@@ -125,7 +124,7 @@ class SourceClass extends ClassDefinition {
                 env.error(where, "inner.interface");
             } else if (isStatic()) {
                 env.error(where, "static.inner.class", this);
-                this.modifiers &=~ M_STATIC;
+                this.modifiers &= ~M_STATIC;
                 if (innerClassMember != null) {
                     innerClassMember.subModifiers(M_STATIC);
                 }
@@ -134,11 +133,11 @@ class SourceClass extends ClassDefinition {
 
         if (isPrivate() && outerClass == null) {
             env.error(where, "private.class", this);
-            this.modifiers &=~ M_PRIVATE;
+            this.modifiers &= ~M_PRIVATE;
         }
         if (isProtected() && outerClass == null) {
             env.error(where, "protected.class", this);
-            this.modifiers &=~ M_PROTECTED;
+            this.modifiers &= ~M_PROTECTED;
         }
         /*----*
         if ((isPublic() || isProtected()) && isInsideLocal()) {
@@ -156,8 +155,9 @@ class SourceClass extends ClassDefinition {
         // Set simple, unmangled local name for a local or anonymous class.
         // NOTE: It would be OK to do this unconditionally, as null is the
         // correct value for a member (non-local) class.
-        if (localName != null)
+        if (localName != null) {
             setLocalName(localName);
+        }
 
         // Check for inner class with same simple name as one of
         // its enclosing classes.  Note that 'getLocalName' returns
@@ -169,16 +169,18 @@ class SourceClass extends ClassDefinition {
             // Test above suppresses error for nested anonymous classes,
             // which have an internal "name", but are not named in source code.
             for (ClassDefinition scope = outerClass; scope != null;
-                  scope = scope.getOuterClass()) {
+                 scope = scope.getOuterClass()) {
                 Identifier outerName = scope.getLocalName();
-                if (thisName.equals(outerName))
+                if (thisName.equals(outerName)) {
                     env.error(where, "inner.redefined", thisName);
+                }
             }
         }
     }
 
     /**
      * Return last position in this class.
+     *
      * @see #getWhere
      */
     public long getEndPosition() {
@@ -189,17 +191,17 @@ class SourceClass extends ClassDefinition {
         this.endPosition = endPosition;
     }
 
+    // JCOV
 
-// JCOV
     /**
      * Return absolute name of source file
      */
     public String getAbsoluteName() {
-        String AbsName = ((ClassFile)getSource()).getAbsoluteName();
+        String AbsName = ((ClassFile) getSource()).getAbsoluteName();
 
         return AbsName;
     }
-//end JCOV
+    //end JCOV
 
     /**
      * Return imports
@@ -228,8 +230,8 @@ class SourceClass extends ClassDefinition {
         // If doing -xdepend option, save away list of class dependencies
         //   making sure to NOT include duplicates or the class we are in
         //   (Hashtable's put() makes sure we don't have duplicates)
-        if ( toplevelEnv.print_dependencies() && c != getClassDeclaration() ) {
-            deps.put(c,c);
+        if (toplevelEnv.print_dependencies() && c != getClassDeclaration()) {
+            deps.put(c, c);
         }
     }
 
@@ -282,10 +284,10 @@ class SourceClass extends ClassDefinition {
                     return;
                 }
                 if (f.isNative() || f.isAbstract() ||
-                      f.isStatic() || f.isSynchronized() || f.isFinal()) {
+                        f.isStatic() || f.isSynchronized() || f.isFinal()) {
                     env.error(f.getWhere(), "constr.modifier", f);
                     f.subModifiers(M_NATIVE | M_ABSTRACT |
-                                   M_STATIC | M_SYNCHRONIZED | M_FINAL);
+                                           M_STATIC | M_SYNCHRONIZED | M_FINAL);
                 }
             } else if (f.isInitializer()) {
                 if (f.getClassDefinition().isInterface()) {
@@ -300,11 +302,11 @@ class SourceClass extends ClassDefinition {
             }
 
             if (f.getClassDefinition().isInterface() &&
-                (f.isStatic() || f.isSynchronized() || f.isNative()
-                 || f.isFinal() || f.isPrivate() || f.isProtected())) {
+                    (f.isStatic() || f.isSynchronized() || f.isNative()
+                            || f.isFinal() || f.isPrivate() || f.isProtected())) {
                 env.error(f.getWhere(), "intf.modifier.method", f);
-                f.subModifiers(M_STATIC |  M_SYNCHRONIZED | M_NATIVE |
-                               M_FINAL | M_PRIVATE);
+                f.subModifiers(M_STATIC | M_SYNCHRONIZED | M_NATIVE |
+                                       M_FINAL | M_PRIVATE);
             }
             if (f.isTransient()) {
                 env.error(f.getWhere(), "transient.meth", f);
@@ -332,7 +334,7 @@ class SourceClass extends ClassDefinition {
                     f.subModifiers(M_NATIVE);
                 }
                 if (f.isSynchronized()) {
-                    env.error(f.getWhere(),"abstract.synchronized.modifier",f);
+                    env.error(f.getWhere(), "abstract.synchronized.modifier", f);
                     f.subModifiers(M_SYNCHRONIZED);
                 }
             }
@@ -360,26 +362,26 @@ class SourceClass extends ClassDefinition {
                     Object arg = arguments.elementAt(i);
                     long where = f.getWhere();
                     if (arg instanceof MemberDefinition) {
-                        where = ((MemberDefinition)arg).getWhere();
-                        arg = ((MemberDefinition)arg).getName();
+                        where = ((MemberDefinition) arg).getWhere();
+                        arg = ((MemberDefinition) arg).getName();
                     }
                     // (arg should be an Identifier now)
                     if (argTypes[i].isType(TC_VOID)
-                        || argTypes[i].isVoidArray()) {
+                            || argTypes[i].isVoidArray()) {
                         env.error(where, "void.argument", arg);
                     }
                 }
             }
         } else if (f.isInnerClass()) {
             if (f.isVolatile() ||
-                f.isTransient() || f.isNative() || f.isSynchronized()) {
+                    f.isTransient() || f.isNative() || f.isSynchronized()) {
                 env.error(f.getWhere(), "inner.modifier", f);
                 f.subModifiers(M_VOLATILE | M_TRANSIENT |
-                               M_NATIVE | M_SYNCHRONIZED);
+                                       M_NATIVE | M_SYNCHRONIZED);
             }
             // same check as for fields, below:
             if (f.getClassDefinition().isInterface() &&
-                  (f.isPrivate() || f.isProtected())) {
+                    (f.isPrivate() || f.isProtected())) {
                 env.error(f.getWhere(), "intf.modifier.field", f);
                 f.subModifiers(M_PRIVATE | M_PROTECTED);
                 f.addModifiers(M_PUBLIC);
@@ -418,7 +420,7 @@ class SourceClass extends ClassDefinition {
             }
 
             if (f.getClassDefinition().isInterface() &&
-                  (f.isPrivate() || f.isProtected())) {
+                    (f.isPrivate() || f.isProtected())) {
                 env.error(f.getWhere(), "intf.modifier.field", f);
                 f.subModifiers(M_PRIVATE | M_PROTECTED);
                 f.addModifiers(M_PUBLIC);
@@ -427,13 +429,13 @@ class SourceClass extends ClassDefinition {
         // Do not check for repeated methods here:  Types are not yet resolved.
         if (!f.isInitializer()) {
             for (MemberDefinition f2 = getFirstMatch(f.getName());
-                         f2 != null; f2 = f2.getNextMatch()) {
+                 f2 != null; f2 = f2.getNextMatch()) {
                 if (f.isVariable() && f2.isVariable()) {
                     env.error(f.getWhere(), "var.multidef", f, f2);
                     return;
                 } else if (f.isInnerClass() && f2.isInnerClass() &&
-                           !f.getInnerClass().isLocal() &&
-                           !f2.getInnerClass().isLocal()) {
+                        !f.getInnerClass().isLocal() &&
+                        !f2.getInnerClass().isLocal()) {
                     // Found a duplicate inner-class member.
                     // Duplicate local classes are detected in
                     // 'VarDeclarationStatement.checkDeclaration'.
@@ -471,6 +473,7 @@ class SourceClass extends ClassDefinition {
 
     /**
      * See if the source file of this class is right.
+     *
      * @see ClassDefinition#noteUsedBy
      */
     public void noteUsedBy(ClassDefinition ref, long where, Environment env) {
@@ -489,42 +492,53 @@ class SourceClass extends ClassDefinition {
         if (def.getSource().equals(ref.getSource())) {
             return;             // intra-file reference
         }
-        ((SourceClass)def).checkSourceFile(env, where);
+        ((SourceClass) def).checkSourceFile(env, where);
     }
 
     /**
      * Check this class and all its fields.
      */
     public void check(Environment env) throws ClassNotFound {
-        if (tracing) env.dtEnter("SourceClass.check: " + getName());
+        if (tracing) {
+            env.dtEnter("SourceClass.check: " + getName());
+        }
         if (isInsideLocal()) {
             // An inaccessible class gets checked when the surrounding
             // block is checked.
             // QUERY: Should this case ever occur?
             // What would invoke checking of a local class aside from
             // checking the surrounding method body?
-            if (tracing) env.dtEvent("SourceClass.check: INSIDE LOCAL " +
-                                     getOuterClass().getName());
+            if (tracing) {
+                env.dtEvent("SourceClass.check: INSIDE LOCAL " +
+                                    getOuterClass().getName());
+            }
             getOuterClass().check(env);
         } else {
             if (isInnerClass()) {
-                if (tracing) env.dtEvent("SourceClass.check: INNER CLASS " +
-                                         getOuterClass().getName());
+                if (tracing) {
+                    env.dtEvent("SourceClass.check: INNER CLASS " +
+                                        getOuterClass().getName());
+                }
                 // Make sure the outer is checked first.
-                ((SourceClass)getOuterClass()).maybeCheck(env);
+                ((SourceClass) getOuterClass()).maybeCheck(env);
             }
             Vset vset = new Vset();
             Context ctx = null;
-            if (tracing)
+            if (tracing) {
                 env.dtEvent("SourceClass.check: CHECK INTERNAL " + getName());
+            }
             vset = checkInternal(setupEnv(env), ctx, vset);
             // drop vset here
         }
-        if (tracing) env.dtExit("SourceClass.check: " + getName());
+        if (tracing) {
+            env.dtExit("SourceClass.check: " + getName());
+        }
     }
 
     private void maybeCheck(Environment env) throws ClassNotFound {
-        if (tracing) env.dtEvent("SourceClass.maybeCheck: " + getName());
+        if (tracing) {
+            env.dtEvent("SourceClass.maybeCheck: " + getName());
+        }
         // Check this class now, if it has not yet been checked.
         // Cf. Main.compile().  Perhaps this code belongs there somehow.
         ClassDeclaration c = getClassDeclaration();
@@ -536,7 +550,7 @@ class SourceClass extends ClassDefinition {
     }
 
     private Vset checkInternal(Environment env, Context ctx, Vset vset)
-                throws ClassNotFound {
+            throws ClassNotFound {
         Identifier nm = getClassDeclaration().getName();
         if (env.verbose()) {
             env.output("[checking class " + nm + "]");
@@ -563,13 +577,13 @@ class SourceClass extends ClassDefinition {
             where = IdentifierToken.getWhere(superClassId, where);
             env.resolveExtendsByName(where, this, sup.getName());
         }
-        for (int i = 0 ; i < interfaces.length ; i++) {
+        for (int i = 0; i < interfaces.length; i++) {
             ClassDeclaration intf = interfaces[i];
             long where = getWhere();
             // Error localization fails here if interfaces were
             // elided during error recovery from an invalid one.
             if (interfaceIds != null
-                && interfaceIds.length == interfaces.length) {
+                    && interfaceIds.length == interfaces.length) {
                 where = IdentifierToken.getWhere(interfaceIds[i], where);
             }
             env.resolveExtendsByName(where, this, intf.getName());
@@ -584,13 +598,14 @@ class SourceClass extends ClassDefinition {
                 // We want this to throw a ClassNotFound exception
                 Imports imports = toplevelEnv.getImports();
                 Identifier ID = imports.resolve(env, simpleName);
-                if (ID != getName())
+                if (ID != getName()) {
                     env.error(where, "class.multidef.import", simpleName, ID);
+                }
             } catch (AmbiguousClass e) {
                 // At least one of e.name1 and e.name2 must be different
                 Identifier ID = (e.name1 != getName()) ? e.name1 : e.name2;
                 env.error(where, "class.multidef.import", simpleName, ID);
-            }  catch (ClassNotFound e) {
+            } catch (ClassNotFound e) {
                 // we want this to happen
             }
 
@@ -629,11 +644,13 @@ class SourceClass extends ClassDefinition {
      */
     public void checkSourceFile(Environment env, long where) {
         // one error per offending class is sufficient
-        if (sourceFileChecked)  return;
+        if (sourceFileChecked) {
+            return;
+        }
         sourceFileChecked = true;
 
         String fname = getName().getName() + ".java";
-        String src = ((ClassFile)getSource()).getName();
+        String src = ((ClassFile) getSource()).getName();
         if (!src.equals(fname)) {
             if (isPublic()) {
                 env.error(where, "public.class.file", this, fname);
@@ -654,7 +671,9 @@ class SourceClass extends ClassDefinition {
      */
 
     public ClassDeclaration getSuperClass(Environment env) {
-        if (tracing) env.dtEnter("SourceClass.getSuperClass: " + this);
+        if (tracing) {
+            env.dtEnter("SourceClass.getSuperClass: " + this);
+        }
         // Superclass may fail to be set because of error recovery,
         // so resolve types here only if 'checkSupers' has not yet
         // completed its checks on the superclass.
@@ -668,7 +687,9 @@ class SourceClass extends ClassDefinition {
             // already been reported.  Furthermore, error recovery can null out
             // the superclass, which would cause a spurious error from the test here.
         }
-        if (tracing) env.dtExit("SourceClass.getSuperClass: " + this);
+        if (tracing) {
+            env.dtExit("SourceClass.getSuperClass: " + this);
+        }
         return superClass;
     }
 
@@ -683,7 +704,9 @@ class SourceClass extends ClassDefinition {
         // *** DEBUG ***
         supersCheckStarted = true;
 
-        if (tracing) env.dtEnter("SourceClass.checkSupers: " + this);
+        if (tracing) {
+            env.dtEnter("SourceClass.checkSupers: " + this);
+        }
 
         if (isInterface()) {
             if (isFinal()) {
@@ -704,7 +727,7 @@ class SourceClass extends ClassDefinition {
                 where = IdentifierToken.getWhere(superClassId, where);
                 try {
                     ClassDefinition def =
-                        getSuperClass().getClassDefinition(env);
+                            getSuperClass().getClassDefinition(env);
                     // Resolve superclass and its ancestors.
                     def.resolveTypeStructure(env);
                     // Access to the superclass should be checked relative
@@ -737,7 +760,7 @@ class SourceClass extends ClassDefinition {
                         // 'NullPointerException' if 'def' is null,
                         // so omit this check as error recovery.
                         ClassDefinition sup = def;
-                        for (;;) {
+                        for (; ; ) {
                             if (enclosingClassOf(sup)) {
                                 // Do we need a similar test for
                                 // interfaces?  See bugid 4038529.
@@ -766,7 +789,8 @@ class SourceClass extends ClassDefinition {
                     // class is ambiguous, but may not necessarily tell
                     // us if the class is not found.
                     // (part of solution for 4059855)
-                reportError: {
+                    reportError:
+                    {
                         try {
                             env.resolve(e.name);
                         } catch (AmbiguousClass ee) {
@@ -791,7 +815,7 @@ class SourceClass extends ClassDefinition {
                 if (isAnonymous()) {
                     // checker should have filled it in first
                     throw new CompilerError("anonymous super");
-                } else  if (!getName().equals(idJavaLangObject)) {
+                } else if (!getName().equals(idJavaLangObject)) {
                     throw new CompilerError("unresolved super");
                 }
             }
@@ -802,11 +826,11 @@ class SourceClass extends ClassDefinition {
         supersChecked = true;
 
         // Check interfaces
-        for (int i = 0 ; i < interfaces.length ; i++) {
+        for (int i = 0; i < interfaces.length; i++) {
             ClassDeclaration intf = interfaces[i];
             long where = getWhere();
             if (interfaceIds != null
-                && interfaceIds.length == interfaces.length) {
+                    && interfaceIds.length == interfaces.length) {
                 where = IdentifierToken.getWhere(interfaceIds[i], where);
             }
             try {
@@ -833,7 +857,8 @@ class SourceClass extends ClassDefinition {
                 // interface is ambiguous, but may not necessarily tell
                 // us if the interface is not found.
                 // (part of solution for 4059855)
-            reportError2: {
+                reportError2:
+                {
                     try {
                         env.resolve(e.name);
                     } catch (AmbiguousClass ee) {
@@ -851,14 +876,16 @@ class SourceClass extends ClassDefinition {
             // Remove this interface from the list of interfaces
             // as recovery from an error.
             ClassDeclaration newInterfaces[] =
-                new ClassDeclaration[interfaces.length - 1];
+                    new ClassDeclaration[interfaces.length - 1];
             System.arraycopy(interfaces, 0, newInterfaces, 0, i);
             System.arraycopy(interfaces, i + 1, newInterfaces, i,
                              newInterfaces.length - i);
             interfaces = newInterfaces;
             --i;
         }
-        if (tracing) env.dtExit("SourceClass.checkSupers: " + this);
+        if (tracing) {
+            env.dtExit("SourceClass.checkSupers: " + this);
+        }
     }
 
     /**
@@ -888,7 +915,7 @@ class SourceClass extends ClassDefinition {
         // correctly.  This problem didn't occur before 1.2beta1.
         // This is a fix for bug 4082816.
         for (MemberDefinition f = getFirstMember();
-                     f != null; f = f.getNextMember()) {
+             f != null; f = f.getNextMember()) {
             if (f.isInnerClass()) {
                 // System.out.println("Considering " + f + " in " + this);
                 SourceClass cdef = (SourceClass) f.getInnerClass();
@@ -954,7 +981,7 @@ class SourceClass extends ClassDefinition {
         // Note that within non-static code, all statics are always
         // definitely assigned, and vice-versa.
         for (MemberDefinition f = getFirstMember();
-                     f != null; f = f.getNextMember()) {
+             f != null; f = f.getNextMember()) {
             if (f.isVariable() && f.isBlankFinal()) {
                 // The following allocates a LocalMember object as a proxy
                 // to represent the field.
@@ -978,7 +1005,7 @@ class SourceClass extends ClassDefinition {
         // Do all the initializers in order, checking the definite
         // assignment of blank finals.  Separate static from non-static.
         for (MemberDefinition f = getFirstMember();
-                     f != null; f = f.getNextMember()) {
+             f != null; f = f.getNextMember()) {
             try {
                 if (f.isVariable() || f.isInitializer()) {
                     if (f.isStatic()) {
@@ -997,7 +1024,7 @@ class SourceClass extends ClassDefinition {
         // Check the rest of the field definitions.
         // (Note:  Re-checking a field is a no-op.)
         for (MemberDefinition f = getFirstMember();
-                     f != null; f = f.getNextMember()) {
+             f != null; f = f.getNextMember()) {
             try {
                 if (f.isConstructor()) {
                     // When checking a constructor, an explicit call to
@@ -1027,7 +1054,7 @@ class SourceClass extends ClassDefinition {
         // Otherwise, the inner classes might not have a chance to
         // add access or class literal fields to the outer class.
         for (MemberDefinition f = getFirstMember();
-                     f != null; f = f.getNextMember()) {
+             f != null; f = f.getNextMember()) {
             if (f.isInnerClass()) {
                 SourceClass cdef = (SourceClass) f.getInnerClass();
                 if (!cdef.isInsideLocal()) {
@@ -1042,7 +1069,9 @@ class SourceClass extends ClassDefinition {
         return vset;
     }
 
-    /** Make sure all my blank finals exist now. */
+    /**
+     * Make sure all my blank finals exist now.
+     */
 
     private void checkBlankFinals(Environment env, Context ctxInit, Vset vset,
                                   boolean isStatic) {
@@ -1050,8 +1079,8 @@ class SourceClass extends ClassDefinition {
             if (!vset.testVar(i)) {
                 MemberDefinition ff = ctxInit.getElement(i);
                 if (ff != null && ff.isBlankFinal()
-                    && ff.isStatic() == isStatic
-                    && ff.getClassDefinition() == this) {
+                        && ff.isStatic() == isStatic
+                        && ff.getClassDefinition() == this) {
                     env.error(ff.getWhere(),
                               "final.var.not.initialized", ff.getName());
                 }
@@ -1066,18 +1095,25 @@ class SourceClass extends ClassDefinition {
      */
     private boolean basicChecking = false;
     private boolean basicCheckDone = false;
+
     protected void basicCheck(Environment env) throws ClassNotFound {
 
-        if (tracing) env.dtEnter("SourceClass.basicCheck: " + getName());
+        if (tracing) {
+            env.dtEnter("SourceClass.basicCheck: " + getName());
+        }
 
         super.basicCheck(env);
 
         if (basicChecking || basicCheckDone) {
-            if (tracing) env.dtExit("SourceClass.basicCheck: OK " + getName());
+            if (tracing) {
+                env.dtExit("SourceClass.basicCheck: OK " + getName());
+            }
             return;
         }
 
-        if (tracing) env.dtEvent("SourceClass.basicCheck: CHECKING " + getName());
+        if (tracing) {
+            env.dtEvent("SourceClass.basicCheck: CHECKING " + getName());
+        }
 
         basicChecking = true;
 
@@ -1127,7 +1163,7 @@ class SourceClass extends ClassDefinition {
                 // undetectable, as the constructor is always accessible within
                 // the class in which its containing (private) class appears.
                 int accessModifiers = getModifiers() &
-                    (isInnerClass() ? (M_PUBLIC | M_PROTECTED) : M_PUBLIC);
+                        (isInnerClass() ? (M_PUBLIC | M_PROTECTED) : M_PUBLIC);
                 env.makeMemberDefinition(env, getWhere(), this, null,
                                          accessModifiers,
                                          t, idInit, null, null, code);
@@ -1146,12 +1182,14 @@ class SourceClass extends ClassDefinition {
 
         basicChecking = false;
         basicCheckDone = true;
-        if (tracing) env.dtExit("SourceClass.basicCheck: " + getName());
+        if (tracing) {
+            env.dtExit("SourceClass.basicCheck: " + getName());
+        }
     }
 
     /**
      * Add a group of methods to this class as miranda methods.
-     *
+     * <p>
      * For a definition of Miranda methods, see the comment above the
      * method addMirandaMethods() in the file
      * org/glassfish/rmic/tools/java/ClassDeclaration.java
@@ -1159,7 +1197,7 @@ class SourceClass extends ClassDefinition {
     protected void addMirandaMethods(Environment env,
                                      Iterator<MemberDefinition> mirandas) {
 
-        while(mirandas.hasNext()) {
+        while (mirandas.hasNext()) {
             MemberDefinition method = mirandas.next();
 
             addMember(method);
@@ -1190,24 +1228,26 @@ class SourceClass extends ClassDefinition {
 
     public void resolveTypeStructure(Environment env) {
 
-        if (tracing)
+        if (tracing) {
             env.dtEnter("SourceClass.resolveTypeStructure: " + getName());
+        }
 
         // Resolve immediately enclosing type, which in turn
         // forces resolution of all enclosing type declarations.
         ClassDefinition oc = getOuterClass();
         if (oc != null && oc instanceof SourceClass
-            && !((SourceClass)oc).resolved) {
+                && !((SourceClass) oc).resolved) {
             // Do the outer class first, always.
-            ((SourceClass)oc).resolveTypeStructure(env);
+            ((SourceClass) oc).resolveTypeStructure(env);
             // (Note:  this.resolved is probably true at this point.)
         }
 
         // Punt if we've already resolved this class, or are currently
         // in the process of doing so.
         if (resolved || resolving) {
-            if (tracing)
+            if (tracing) {
                 env.dtExit("SourceClass.resolveTypeStructure: OK " + getName());
+            }
             return;
         }
 
@@ -1217,8 +1257,9 @@ class SourceClass extends ClassDefinition {
         // former purpose, distinct from that of 'resolved'.
         resolving = true;
 
-        if (tracing)
+        if (tracing) {
             env.dtEvent("SourceClass.resolveTypeStructure: RESOLVING " + getName());
+        }
 
         env = setupEnv(env);
 
@@ -1241,9 +1282,10 @@ class SourceClass extends ClassDefinition {
         }
 
         for (MemberDefinition
-                 f = getFirstMember() ; f != null ; f = f.getNextMember()) {
-            if (f instanceof SourceMember)
-                ((SourceMember)f).resolveTypeStructure(env);
+             f = getFirstMember(); f != null; f = f.getNextMember()) {
+            if (f instanceof SourceMember) {
+                ((SourceMember) f).resolveTypeStructure(env);
+            }
         }
 
         resolving = false;
@@ -1263,11 +1305,17 @@ class SourceClass extends ClassDefinition {
 
         // Now we have enough information to detect method repeats.
         for (MemberDefinition
-                 f = getFirstMember() ; f != null ; f = f.getNextMember()) {
-            if (f.isInitializer())  continue;
-            if (!f.isMethod())  continue;
+             f = getFirstMember(); f != null; f = f.getNextMember()) {
+            if (f.isInitializer()) {
+                continue;
+            }
+            if (!f.isMethod()) {
+                continue;
+            }
             for (MemberDefinition f2 = f; (f2 = f2.getNextMatch()) != null; ) {
-                if (!f2.isMethod())  continue;
+                if (!f2.isMethod()) {
+                    continue;
+                }
                 if (f.getType().equals(f2.getType())) {
                     env.error(f.getWhere(), "meth.multidef", f);
                     continue;
@@ -1278,13 +1326,15 @@ class SourceClass extends ClassDefinition {
                 }
             }
         }
-        if (tracing)
+        if (tracing) {
             env.dtExit("SourceClass.resolveTypeStructure: " + getName());
+        }
     }
 
     protected void resolveSupers(Environment env) {
-        if (tracing)
+        if (tracing) {
             env.dtEnter("SourceClass.resolveSupers: " + this);
+        }
         // Find the super class
         if (superClassId != null && superClass == null) {
             superClass = resolveSuper(env, superClassId);
@@ -1292,15 +1342,15 @@ class SourceClass extends ClassDefinition {
             // In all other cases, if we have a valid 'superClassId',
             // we return with a valid and non-null 'superClass' value.
             if (superClass == getClassDeclaration()
-                && getName().equals(idJavaLangObject)) {
-                    superClass = null;
-                    superClassId = null;
+                    && getName().equals(idJavaLangObject)) {
+                superClass = null;
+                superClassId = null;
             }
         }
         // Find interfaces
         if (interfaceIds != null && interfaces == null) {
             interfaces = new ClassDeclaration[interfaceIds.length];
-            for (int i = 0 ; i < interfaces.length ; i++) {
+            for (int i = 0; i < interfaces.length; i++) {
                 interfaces[i] = resolveSuper(env, interfaceIds[i]);
                 for (int j = 0; j < i; j++) {
                     if (interfaces[i] == interfaces[j]) {
@@ -1311,22 +1361,27 @@ class SourceClass extends ClassDefinition {
                 }
             }
         }
-        if (tracing)
+        if (tracing) {
             env.dtExit("SourceClass.resolveSupers: " + this);
+        }
     }
 
     private ClassDeclaration resolveSuper(Environment env, IdentifierToken t) {
         Identifier name = t.getName();
-        if (tracing)
+        if (tracing) {
             env.dtEnter("SourceClass.resolveSuper: " + name);
-        if (isInnerClass())
+        }
+        if (isInnerClass()) {
             name = outerClass.resolveName(env, name);
-        else
+        } else {
             name = env.resolveName(name);
+        }
         ClassDeclaration result = env.getClassDeclaration(name);
         // Result is never null, as a new 'ClassDeclaration' is
         // created if one with the given name does not exist.
-        if (tracing) env.dtExit("SourceClass.resolveSuper: " + name);
+        if (tracing) {
+            env.dtExit("SourceClass.resolveSuper: " + name);
+        }
         return result;
     }
 
@@ -1334,13 +1389,14 @@ class SourceClass extends ClassDefinition {
      * During the type-checking of an outer method body or initializer,
      * this routine is called to check a local class body
      * in the proper context.
-     * @param   sup     the named super class or interface (if anonymous)
-     * @param   args    the actual arguments (if anonymous)
+     *
+     * @param sup the named super class or interface (if anonymous)
+     * @param args the actual arguments (if anonymous)
      */
     public Vset checkLocalClass(Environment env, Context ctx, Vset vset,
                                 ClassDefinition sup,
                                 Expression args[], Type argTypes[]
-                                ) throws ClassNotFound {
+    ) throws ClassNotFound {
         env = setupEnv(env);
 
         if ((sup != null) != isAnonymous()) {
@@ -1364,12 +1420,12 @@ class SourceClass extends ClassDefinition {
      */
     public void inlineLocalClass(Environment env) {
         for (MemberDefinition
-                 f = getFirstMember(); f != null; f = f.getNextMember()) {
+             f = getFirstMember(); f != null; f = f.getNextMember()) {
             if ((f.isVariable() || f.isInitializer()) && !f.isStatic()) {
                 continue;       // inlined inside of constructors only
             }
             try {
-                ((SourceMember)f).inline(env);
+                ((SourceMember) f).inline(env);
             } catch (ClassNotFound ee) {
                 env.error(f.getWhere(), "class.not.found", ee.name, this);
             }
@@ -1378,21 +1434,22 @@ class SourceClass extends ClassDefinition {
             inlinedLocalClass = true;
             // add more constructor arguments for uplevel references
             for (MemberDefinition
-                     f = getFirstMember(); f != null; f = f.getNextMember()) {
+                 f = getFirstMember(); f != null; f = f.getNextMember()) {
                 if (f.isConstructor()) {
                     //((SourceMember)f).addUplevelArguments(false);
-                    ((SourceMember)f).addUplevelArguments();
+                    ((SourceMember) f).addUplevelArguments();
                 }
             }
         }
     }
+
     private boolean inlinedLocalClass = false;
 
     /**
      * Check a class which is inside a local class, but is not itself local.
      */
     public Vset checkInsideClass(Environment env, Context ctx, Vset vset)
-                throws ClassNotFound {
+            throws ClassNotFound {
         if (!isInsideLocal() || isLocal()) {
             throw new CompilerError("checkInsideClass");
         }
@@ -1406,10 +1463,12 @@ class SourceClass extends ClassDefinition {
     private void resolveAnonymousStructure(Environment env,
                                            ClassDefinition sup,
                                            Expression args[], Type argTypes[]
-                                           ) throws ClassNotFound {
+    ) throws ClassNotFound {
 
-        if (tracing) env.dtEvent("SourceClass.resolveAnonymousStructure: " +
-                                 this + ", super " + sup);
+        if (tracing) {
+            env.dtEvent("SourceClass.resolveAnonymousStructure: " +
+                                this + ", super " + sup);
+        }
 
         // Decide now on the superclass.
 
@@ -1425,11 +1484,11 @@ class SourceClass extends ClassDefinition {
         if (sup.isInterface()) {
             // allow an interface in the "super class" position
             int ni = (interfaces == null) ? 0 : interfaces.length;
-            ClassDeclaration i1[] = new ClassDeclaration[1+ni];
+            ClassDeclaration i1[] = new ClassDeclaration[1 + ni];
             if (ni > 0) {
                 System.arraycopy(interfaces, 0, i1, 1, ni);
                 if (interfaceIds != null && interfaceIds.length == ni) {
-                    IdentifierToken id1[] = new IdentifierToken[1+ni];
+                    IdentifierToken id1[] = new IdentifierToken[1 + ni];
                     System.arraycopy(interfaceIds, 0, id1, 1, ni);
                     id1[0] = new IdentifierToken(sup.getName());
                 }
@@ -1450,11 +1509,11 @@ class SourceClass extends ClassDefinition {
         IdentifierToken names[] = new IdentifierToken[argTypes.length];
         for (int i = 0; i < names.length; i++) {
             names[i] = new IdentifierToken(args[i].getWhere(),
-                                           Identifier.lookup("$"+i));
+                                           Identifier.lookup("$" + i));
         }
         int outerArg = (sup.isTopLevel() || sup.isLocal()) ? 0 : 1;
         Expression superArgs[] = new Expression[-outerArg + args.length];
-        for (int i = outerArg ; i < args.length ; i++) {
+        for (int i = outerArg; i < args.length; i++) {
             superArgs[-outerArg + i] = new IdentifierExpression(names[i]);
         }
         long where = getWhere();
@@ -1472,7 +1531,7 @@ class SourceClass extends ClassDefinition {
         Node code = new CompoundStatement(where, body);
         int mod = M_SYNTHETIC; // ISSUE: make M_PRIVATE, with wrapper?
         env.makeMemberDefinition(env, where, this, null,
-                                mod, t, idInit, names, null, code);
+                                 mod, t, idInit, names, null, code);
     }
 
     /**
@@ -1483,14 +1542,14 @@ class SourceClass extends ClassDefinition {
      */
 
     private static int classModifierBits[] =
-        { ACC_PUBLIC, ACC_PRIVATE, ACC_PROTECTED, ACC_STATIC, ACC_FINAL,
-          ACC_INTERFACE, ACC_ABSTRACT, ACC_SUPER, M_ANONYMOUS, M_LOCAL,
-          M_STRICTFP, ACC_STRICT};
+            { ACC_PUBLIC, ACC_PRIVATE, ACC_PROTECTED, ACC_STATIC, ACC_FINAL,
+                    ACC_INTERFACE, ACC_ABSTRACT, ACC_SUPER, M_ANONYMOUS, M_LOCAL,
+                    M_STRICTFP, ACC_STRICT };
 
     private static String classModifierNames[] =
-        { "PUBLIC", "PRIVATE", "PROTECTED", "STATIC", "FINAL",
-          "INTERFACE", "ABSTRACT", "SUPER", "ANONYMOUS", "LOCAL",
-          "STRICTFP", "STRICT"};
+            { "PUBLIC", "PRIVATE", "PROTECTED", "STATIC", "FINAL",
+                    "INTERFACE", "ABSTRACT", "SUPER", "ANONYMOUS", "LOCAL",
+                    "STRICTFP", "STRICT" };
 
     static String classModifierString(int mods) {
         String s = "";
@@ -1511,12 +1570,12 @@ class SourceClass extends ClassDefinition {
      * or return null if this is not possible.
      */
     public MemberDefinition getAccessMember(Environment env, Context ctx,
-                                          MemberDefinition field, boolean isSuper) {
+                                            MemberDefinition field, boolean isSuper) {
         return getAccessMember(env, ctx, field, false, isSuper);
     }
 
     public MemberDefinition getUpdateMember(Environment env, Context ctx,
-                                          MemberDefinition field, boolean isSuper) {
+                                            MemberDefinition field, boolean isSuper) {
         if (!field.isVariable()) {
             throw new CompilerError("method");
         }
@@ -1586,12 +1645,12 @@ class SourceClass extends ClassDefinition {
             // argument of an otherwise unused "dummy" type.
             anm = idInit;
             // Get the dummy class, creating it if necessary.
-            SourceClass outerMostClass = (SourceClass)getTopClass();
+            SourceClass outerMostClass = (SourceClass) getTopClass();
             dummyType = outerMostClass.dummyArgumentType;
             if (dummyType == null) {
                 // Create dummy class.
                 IdentifierToken sup =
-                    new IdentifierToken(0, idJavaLangObject);
+                        new IdentifierToken(0, idJavaLangObject);
                 IdentifierToken interfaces[] = {};
                 IdentifierToken t = new IdentifierToken(0, idNull);
                 int mod = M_ANONYMOUS | M_STATIC | M_SYNTHETIC;
@@ -1601,10 +1660,10 @@ class SourceClass extends ClassDefinition {
                     mod |= M_PUBLIC;
                 }
                 ClassDefinition dummyClass =
-                    toplevelEnv.makeClassDefinition(toplevelEnv,
-                                                    0, t, null, mod,
-                                                    sup, interfaces,
-                                                    outerMostClass);
+                        toplevelEnv.makeClassDefinition(toplevelEnv,
+                                                        0, t, null, mod,
+                                                        sup, interfaces,
+                                                        outerMostClass);
                 // Check the class.
                 // It is likely that a full check is not really necessary,
                 // but it is essential that the class be marked as parsed.
@@ -1613,10 +1672,12 @@ class SourceClass extends ClassDefinition {
                 Type argTypesX[] = {};
                 try {
                     ClassDefinition supcls =
-                        toplevelEnv.getClassDefinition(idJavaLangObject);
+                            toplevelEnv.getClassDefinition(idJavaLangObject);
                     dummyClass.checkLocalClass(toplevelEnv, null,
                                                new Vset(), supcls, argsX, argTypesX);
-                } catch (ClassNotFound ee) {};
+                } catch (ClassNotFound ee) {
+                }
+                ;
                 // Get class type.
                 dummyType = dummyClass.getType();
                 outerMostClass.dummyArgumentType = dummyType;
@@ -1638,7 +1699,7 @@ class SourceClass extends ClassDefinition {
         if (isStatic) {
             if (!isMethod) {
                 if (!isUpdate) {
-                    Type at[] = { };
+                    Type at[] = {};
                     argTypes = at;
                     t = Type.tMethod(t); // nullary getter
                 } else {
@@ -1675,7 +1736,7 @@ class SourceClass extends ClassDefinition {
                     // Access method is a constructor.
                     // Requires a dummy argument.
                     MemberDefinition outerThisArg =
-                        ((SourceMember)field).getOuterThisArg();
+                            ((SourceMember) field).getOuterThisArg();
                     if (outerThisArg != null) {
                         // Outer instance link must be the first argument.
                         // The following is a sanity check that will catch
@@ -1692,19 +1753,19 @@ class SourceClass extends ClassDefinition {
                         }
                     } else {
                         // There is no outer instance.
-                        argTypes = new Type[nargs+1];
+                        argTypes = new Type[nargs + 1];
                         argTypes[0] = dummyType;
                         for (int i = 0; i < nargs; i++) {
-                            argTypes[i+1] = at[i];
+                            argTypes[i + 1] = at[i];
                         }
                     }
                 } else {
                     // Access method is static.
                     // Requires an explicit 'this' argument.
-                    argTypes = new Type[nargs+1];
+                    argTypes = new Type[nargs + 1];
                     argTypes[0] = classType;
                     for (int i = 0; i < nargs; i++) {
-                        argTypes[i+1] = at[i];
+                        argTypes[i + 1] = at[i];
                     }
                 }
                 t = Type.tMethod(t.getReturnType(), argTypes);
@@ -1715,7 +1776,7 @@ class SourceClass extends ClassDefinition {
         long where = field.getWhere();
         IdentifierToken names[] = new IdentifierToken[nlen];
         for (int i = 0; i < nlen; i++) {
-            names[i] = new IdentifierToken(where, Identifier.lookup("$"+i));
+            names[i] = new IdentifierToken(where, Identifier.lookup("$" + i));
         }
 
         Expression access = null;
@@ -1724,7 +1785,7 @@ class SourceClass extends ClassDefinition {
 
         if (isStatic) {
             args = new Expression[nlen];
-            for (int i = 0 ; i < nlen ; i++) {
+            for (int i = 0; i < nlen; i++) {
                 args[i] = new IdentifierExpression(names[i]);
             }
         } else {
@@ -1734,18 +1795,18 @@ class SourceClass extends ClassDefinition {
                 thisArg = new ThisExpression(where);
                 // Remove dummy argument, as it is not
                 // passed to the target method.
-                args = new Expression[nlen-1];
-                for (int i = 1 ; i < nlen ; i++) {
-                    args[i-1] = new IdentifierExpression(names[i]);
+                args = new Expression[nlen - 1];
+                for (int i = 1; i < nlen; i++) {
+                    args[i - 1] = new IdentifierExpression(names[i]);
                 }
             } else {
                 // Non-constructor access method is static, so
                 // we use the first argument as 'this'.
                 thisArg = new IdentifierExpression(names[0]);
                 // Remove first argument.
-                args = new Expression[nlen-1];
-                for (int i = 1 ; i < nlen ; i++) {
-                    args[i-1] = new IdentifierExpression(names[i]);
+                args = new Expression[nlen - 1];
+                for (int i = 1; i < nlen; i++) {
+                    args[i - 1] = new IdentifierExpression(names[i]);
                 }
             }
             access = thisArg;
@@ -1795,9 +1856,9 @@ class SourceClass extends ClassDefinition {
         // (name-resolved) in the same context as its target method  This
         // should always be the case.
         SourceMember newf = (SourceMember)
-            env.makeMemberDefinition(env, where, this,
-                                     null, mod, t, anm, names,
-                                     field.getExceptionIds(), code);
+                env.makeMemberDefinition(env, where, this,
+                                         null, mod, t, anm, names,
+                                         field.getExceptionIds(), code);
         // Just to be safe, copy over the name-resolved exceptions from the
         // target so that the context in which the access method is checked
         // doesn't matter.
@@ -1843,7 +1904,6 @@ class SourceClass extends ClassDefinition {
             }
         }
 
-
         //System.out.println("[Access member '" +
         //                      newf + "' created for field '" +
         //                      field +"' in class '" + this + "']");
@@ -1862,7 +1922,7 @@ class SourceClass extends ClassDefinition {
              f != null;
              f = f.getNextMember()) {
             if (f.isInnerClass()) {
-                SourceClass ic = (SourceClass)f.getInnerClass();
+                SourceClass ic = (SourceClass) f.getInnerClass();
                 if (!ic.isInterface()) {
                     return ic;
                 }
@@ -1877,7 +1937,7 @@ class SourceClass extends ClassDefinition {
              f = f.getNextMember()) {
             if (f.isInnerClass()) {
                 SourceClass lc =
-                    ((SourceClass)f.getInnerClass()).findLookupContext();
+                        ((SourceClass) f.getInnerClass()).findLookupContext();
                 if (lc != null) {
                     return lc;
                 }
@@ -1926,17 +1986,16 @@ class SourceClass extends ClassDefinition {
                 // literal embedded somewhere within.  Part of fix for 4055017.
                 needNewClass = true;
                 IdentifierToken sup =
-                    new IdentifierToken(fwhere, idJavaLangObject);
+                        new IdentifierToken(fwhere, idJavaLangObject);
                 IdentifierToken interfaces[] = {};
                 IdentifierToken t = new IdentifierToken(fwhere, idNull);
                 int mod = M_PUBLIC | M_ANONYMOUS | M_STATIC | M_SYNTHETIC;
                 c = (SourceClass)
-                    toplevelEnv.makeClassDefinition(toplevelEnv,
-                                                    fwhere, t, null, mod,
-                                                    sup, interfaces, this);
+                        toplevelEnv.makeClassDefinition(toplevelEnv,
+                                                        fwhere, t, null, mod,
+                                                        sup, interfaces, this);
             }
         }
-
 
         // The name of the class-getter stub is "class$"
         Identifier idDClass = Identifier.lookup(prefixClass);
@@ -1979,9 +2038,9 @@ class SourceClass extends ClassDefinition {
         Statement body = new ReturnStatement(w, e);
         // map the exceptions
         Identifier idClassNotFound =
-            Identifier.lookup("java.lang.ClassNotFoundException");
+                Identifier.lookup("java.lang.ClassNotFoundException");
         Identifier idNoClassDefFound =
-            Identifier.lookup("java.lang.NoClassDefFoundError");
+                Identifier.lookup("java.lang.NoClassDefFoundError");
         Type ctyp = Type.tClass(idClassNotFound);
         Type exptyp = Type.tClass(idNoClassDefFound);
         Identifier idGetMessage = Identifier.lookup("getMessage");
@@ -2018,15 +2077,16 @@ class SourceClass extends ClassDefinition {
             Type argTypesX[] = {};
             try {
                 ClassDefinition sup =
-                    toplevelEnv.getClassDefinition(idJavaLangObject);
+                        toplevelEnv.getClassDefinition(idJavaLangObject);
                 c.checkLocalClass(toplevelEnv, null,
                                   new Vset(), sup, argsX, argTypesX);
-            } catch (ClassNotFound ee) {};
+            } catch (ClassNotFound ee) {
+            }
+            ;
         }
 
         return lookup;
     }
-
 
     /**
      * A list of active ongoing compilations. This list
@@ -2039,7 +2099,7 @@ class SourceClass extends ClassDefinition {
      * Compile this class
      */
     public void compile(OutputStream out)
-                throws InterruptedException, IOException {
+            throws InterruptedException, IOException {
         Environment env = toplevelEnv;
         synchronized (active) {
             while (active.contains(getName())) {
@@ -2074,22 +2134,25 @@ class SourceClass extends ClassDefinition {
     }
 
     protected void compileClass(Environment env, OutputStream out)
-                throws IOException, ClassNotFound {
+            throws IOException, ClassNotFound {
         Vector<CompilerMember> variables = new Vector<>();
         Vector<CompilerMember> methods = new Vector<>();
         Vector<ClassDefinition> innerClasses = new Vector<>();
-        CompilerMember init = new CompilerMember(new MemberDefinition(getWhere(), this, M_STATIC, Type.tMethod(Type.tVoid), idClassInit, null, null), new Assembler());
-        Context ctx = new Context((Context)null, init.field);
+        CompilerMember init = new CompilerMember(new MemberDefinition(getWhere(), this, M_STATIC, Type.tMethod(Type.tVoid), idClassInit, null, null),
+                                                 new Assembler());
+        Context ctx = new Context((Context) null, init.field);
 
         for (ClassDefinition def = this; def.isInnerClass(); def = def.getOuterClass()) {
             innerClasses.addElement(def);
         }
         // Reverse the order, so that outer levels come first:
         int ncsize = innerClasses.size();
-        for (int i = ncsize; --i >= 0; )
+        for (int i = ncsize; --i >= 0; ) {
             innerClasses.addElement(innerClasses.elementAt(i));
-        for (int i = ncsize; --i >= 0; )
+        }
+        for (int i = ncsize; --i >= 0; ) {
             innerClasses.removeElementAt(i);
+        }
 
         // System.out.println("compile class " + getName());
 
@@ -2099,9 +2162,9 @@ class SourceClass extends ClassDefinition {
         boolean haveExceptions = false;
 
         // Generate code for all fields
-        for (SourceMember field = (SourceMember)getFirstMember();
+        for (SourceMember field = (SourceMember) getFirstMember();
              field != null;
-             field = (SourceMember)field.getNextMember()) {
+             field = (SourceMember) field.getNextMember()) {
 
             //System.out.println("compile field " + field.getName());
 
@@ -2111,7 +2174,7 @@ class SourceClass extends ClassDefinition {
             try {
                 if (field.isMethod()) {
                     haveExceptions |=
-                        (field.getExceptions(env).length > 0);
+                            (field.getExceptions(env).length > 0);
 
                     if (field.isInitializer()) {
                         if (field.isStatic()) {
@@ -2119,7 +2182,7 @@ class SourceClass extends ClassDefinition {
                         }
                     } else {
                         CompilerMember f =
-                            new CompilerMember(field, new Assembler());
+                                new CompilerMember(field, new Assembler());
                         field.code(env, f.asm);
                         methods.addElement(f);
                     }
@@ -2134,17 +2197,17 @@ class SourceClass extends ClassDefinition {
 
                     }
                     haveConstantValue |=
-                        (field.getInitialValue() != null);
+                            (field.getInitialValue() != null);
                 }
             } catch (CompilerError ee) {
                 ee.printStackTrace();
                 env.error(field, 0, "generic",
                           field.getClassDeclaration() + ":" + field +
-                          "@" + ee.toString(), null, null);
+                                  "@" + ee.toString(), null, null);
             }
         }
         if (!init.asm.empty()) {
-           init.asm.add(getWhere(), opc_return, true);
+            init.asm.add(getWhere(), opc_return, true);
             methods.addElement(init);
         }
 
@@ -2165,7 +2228,7 @@ class SourceClass extends ClassDefinition {
 
         String sourceFile = null;
         if (env.debug_source()) {
-            sourceFile = ((ClassFile)getSource()).getName();
+            sourceFile = ((ClassFile) getSource()).getName();
             tab.put("SourceFile");
             tab.put(sourceFile);
             nClassAttrs += 1;
@@ -2190,14 +2253,14 @@ class SourceClass extends ClassDefinition {
                 nClassAttrs += 1;
             }
         }
-// JCOV
+        // JCOV
         if (env.coverage()) {
             nClassAttrs += 2;           // AbsoluteSourcePath, TimeStamp
             tab.put("AbsoluteSourcePath");
             tab.put("TimeStamp");
             tab.put("CoverageTable");
         }
-// end JCOV
+        // end JCOV
         if (env.debug_vars()) {
             tab.put("LocalVariableTable");
         }
@@ -2206,21 +2269,21 @@ class SourceClass extends ClassDefinition {
             nClassAttrs += 1;           // InnerClasses
         }
 
-// JCOV
+        // JCOV
         String absoluteSourcePath = "";
         long timeStamp = 0;
 
         if (env.coverage()) {
-                absoluteSourcePath = getAbsoluteName();
-                timeStamp = System.currentTimeMillis();
-                tab.put(absoluteSourcePath);
+            absoluteSourcePath = getAbsoluteName();
+            timeStamp = System.currentTimeMillis();
+            tab.put(absoluteSourcePath);
         }
-// end JCOV
+        // end JCOV
         tab.put(getClassDeclaration());
         if (getSuperClass() != null) {
             tab.put(getSuperClass());
         }
-        for (int i = 0 ; i < interfaces.length ; i++) {
+        for (int i = 0; i < interfaces.length; i++) {
             tab.put(interfaces[i]);
         }
 
@@ -2229,14 +2292,15 @@ class SourceClass extends ClassDefinition {
         // to run (this allows comparing class files for a fixed point
         // to validate the compiler)
         CompilerMember[] ordered_methods =
-            new CompilerMember[methods.size()];
+                new CompilerMember[methods.size()];
         methods.copyInto(ordered_methods);
         java.util.Arrays.sort(ordered_methods);
-        for (int i=0; i<methods.size(); i++)
+        for (int i = 0; i < methods.size(); i++) {
             methods.setElementAt(ordered_methods[i], i);
+        }
 
         // Optimize Code and Collect method constants
-        for (Enumeration<CompilerMember> e = methods.elements() ; e.hasMoreElements() ; ) {
+        for (Enumeration<CompilerMember> e = methods.elements(); e.hasMoreElements(); ) {
             CompilerMember f = e.nextElement();
             try {
                 f.asm.optimize(env);
@@ -2244,7 +2308,7 @@ class SourceClass extends ClassDefinition {
                 tab.put(f.name);
                 tab.put(f.sig);
                 ClassDeclaration exp[] = f.field.getExceptions(env);
-                for (int i = 0 ; i < exp.length ; i++) {
+                for (int i = 0; i < exp.length; i++) {
                     tab.put(exp[i]);
                 }
             } catch (Exception ee) {
@@ -2255,20 +2319,20 @@ class SourceClass extends ClassDefinition {
         }
 
         // Collect field constants
-        for (Enumeration<CompilerMember> e = variables.elements() ; e.hasMoreElements() ; ) {
+        for (Enumeration<CompilerMember> e = variables.elements(); e.hasMoreElements(); ) {
             CompilerMember f = e.nextElement();
             tab.put(f.name);
             tab.put(f.sig);
 
             Object val = f.field.getInitialValue();
             if (val != null) {
-                tab.put((val instanceof String) ? new StringExpression(f.field.getWhere(), (String)val) : val);
+                tab.put((val instanceof String) ? new StringExpression(f.field.getWhere(), (String) val) : val);
             }
         }
 
         // Collect inner class constants
         for (Enumeration<ClassDefinition> e = innerClasses.elements();
-             e.hasMoreElements() ; ) {
+             e.hasMoreElements(); ) {
             ClassDefinition inner = e.nextElement();
             tab.put(inner.getClassDeclaration());
 
@@ -2330,7 +2394,9 @@ class SourceClass extends ClassDefinition {
             // If protected, transform to public.
             // M_PRIVATE and M_PROTECTED are already masked off by MM_CLASS above.
             // cmods &= ~(M_PRIVATE | M_PROTECTED);
-            if (isProtected()) cmods |= M_PUBLIC;
+            if (isProtected()) {
+                cmods |= M_PUBLIC;
+            }
             // Rule 3a.  Note that Rule 3b doesn't apply to transformed modifiers.
             if (outerClass.isInterface()) {
                 assertModifiers(cmods, M_PUBLIC);
@@ -2342,7 +2408,7 @@ class SourceClass extends ClassDefinition {
         if (env.dumpModifiers()) {
             Identifier cn = getName();
             Identifier nm =
-                Identifier.lookup(cn.getQualifier(), cn.getFlatName());
+                    Identifier.lookup(cn.getQualifier(), cn.getFlatName());
             System.out.println();
             System.out.println("CLASSFILE  " + nm);
             System.out.println("---" + classModifierString(cmods));
@@ -2351,7 +2417,7 @@ class SourceClass extends ClassDefinition {
         data.writeShort(tab.index(getClassDeclaration()));
         data.writeShort((getSuperClass() != null) ? tab.index(getSuperClass()) : 0);
         data.writeShort(interfaces.length);
-        for (int i = 0 ; i < interfaces.length ; i++) {
+        for (int i = 0; i < interfaces.length; i++) {
             data.writeShort(tab.index(interfaces[i]));
         }
 
@@ -2361,7 +2427,7 @@ class SourceClass extends ClassDefinition {
         DataOutputStream databuf = new DataOutputStream(buf);
 
         data.writeShort(variables.size());
-        for (Enumeration<CompilerMember> e = variables.elements() ; e.hasMoreElements() ; ) {
+        for (Enumeration<CompilerMember> e = variables.elements(); e.hasMoreElements(); ) {
             CompilerMember f = e.nextElement();
             Object val = f.field.getInitialValue();
 
@@ -2378,7 +2444,7 @@ class SourceClass extends ClassDefinition {
             if (val != null) {
                 data.writeShort(tab.index("ConstantValue"));
                 data.writeInt(2);
-                data.writeShort(tab.index((val instanceof String) ? new StringExpression(f.field.getWhere(), (String)val) : val));
+                data.writeShort(tab.index((val instanceof String) ? new StringExpression(f.field.getWhere(), (String) val) : val));
             }
             if (dep) {
                 data.writeShort(tab.index("Deprecated"));
@@ -2393,14 +2459,14 @@ class SourceClass extends ClassDefinition {
         // write methods
 
         data.writeShort(methods.size());
-        for (Enumeration<CompilerMember> e = methods.elements() ; e.hasMoreElements() ; ) {
+        for (Enumeration<CompilerMember> e = methods.elements(); e.hasMoreElements(); ) {
             CompilerMember f = e.nextElement();
 
             int xmods = f.field.getModifiers() & MM_METHOD;
             // Transform floating point modifiers.  M_STRICTFP
             // of member + status of enclosing class turn into
             // ACC_STRICT bit.
-            if (((xmods & M_STRICTFP)!=0) || ((cmods & M_STRICTFP)!=0)) {
+            if (((xmods & M_STRICTFP) != 0) || ((cmods & M_STRICTFP) != 0)) {
                 xmods |= ACC_STRICT;
             } else {
                 // Use the default
@@ -2419,17 +2485,17 @@ class SourceClass extends ClassDefinition {
             methodAtts += (dep ? 1 : 0) + (syn ? 1 : 0);
 
             if (!f.asm.empty()) {
-                data.writeShort(methodAtts+1);
+                data.writeShort(methodAtts + 1);
                 f.asm.write(env, databuf, f.field, tab);
                 int natts = 0;
                 if (env.debug_lines()) {
                     natts++;
                 }
-// JCOV
+                // JCOV
                 if (env.coverage()) {
                     natts++;
                 }
-// end JCOV
+                // end JCOV
                 if (env.debug_vars()) {
                     natts++;
                 }
@@ -2443,15 +2509,15 @@ class SourceClass extends ClassDefinition {
                     attbuf.reset();
                 }
 
-//JCOV
+                //JCOV
                 if (env.coverage()) {
-                    f.asm.writeCoverageTable(env, (ClassDefinition)this, new DataOutputStream(attbuf), tab, f.field.getWhere());
+                    f.asm.writeCoverageTable(env, (ClassDefinition) this, new DataOutputStream(attbuf), tab, f.field.getWhere());
                     databuf.writeShort(tab.index("CoverageTable"));
                     databuf.writeInt(attbuf.size());
                     attbuf.writeTo(buf);
                     attbuf.reset();
                 }
-// end JCOV
+                // end JCOV
                 if (env.debug_vars()) {
                     f.asm.writeLocalVariableTable(env, f.field, new DataOutputStream(attbuf), tab);
                     databuf.writeShort(tab.index("LocalVariableTable"));
@@ -2465,10 +2531,11 @@ class SourceClass extends ClassDefinition {
                 buf.writeTo(data);
                 buf.reset();
             } else {
-//JCOV
-                if ((env.coverage()) && ((f.field.getModifiers() & M_NATIVE) > 0))
-                    f.asm.addNativeToJcovTab(env, (ClassDefinition)this);
-// end JCOV
+                //JCOV
+                if ((env.coverage()) && ((f.field.getModifiers() & M_NATIVE) > 0)) {
+                    f.asm.addNativeToJcovTab(env, (ClassDefinition) this);
+                }
+                // end JCOV
                 data.writeShort(methodAtts);
             }
 
@@ -2476,7 +2543,7 @@ class SourceClass extends ClassDefinition {
                 data.writeShort(tab.index("Exceptions"));
                 data.writeInt(2 + exp.length * 2);
                 data.writeShort(exp.length);
-                for (int i = 0 ; i < exp.length ; i++) {
+                for (int i = 0; i < exp.length; i++) {
                     data.writeShort(tab.index(exp[i]));
                 }
             }
@@ -2508,7 +2575,7 @@ class SourceClass extends ClassDefinition {
             data.writeInt(0);
         }
 
-// JCOV
+        // JCOV
         if (env.coverage()) {
             data.writeShort(tab.index("AbsoluteSourcePath"));
             data.writeInt(2);
@@ -2517,14 +2584,14 @@ class SourceClass extends ClassDefinition {
             data.writeInt(8);
             data.writeLong(timeStamp);
         }
-// end JCOV
+        // end JCOV
 
         if (innerClasses.size() > 0) {
             data.writeShort(tab.index("InnerClasses"));
-            data.writeInt(2 + 2*4*innerClasses.size());
+            data.writeInt(2 + 2 * 4 * innerClasses.size());
             data.writeShort(innerClasses.size());
-            for (Enumeration<ClassDefinition> e = innerClasses.elements() ;
-                 e.hasMoreElements() ; ) {
+            for (Enumeration<ClassDefinition> e = innerClasses.elements();
+                 e.hasMoreElements(); ) {
                 // For each inner class name transformation, we have a record
                 // with the following fields:
                 //
@@ -2573,7 +2640,7 @@ class SourceClass extends ClassDefinition {
 
                 // Generate inner_class_access_flags.
                 int imods = inner.getInnerClassMember().getModifiers()
-                            & ACCM_INNERCLASS;
+                        & ACCM_INNERCLASS;
 
                 // Certain modifiers are implied for nested types.
                 // See rules 1, 2, 3a, and 3b enumerated above.
@@ -2595,7 +2662,7 @@ class SourceClass extends ClassDefinition {
                 if (env.dumpModifiers()) {
                     Identifier fn = inner.getInnerClassMember().getName();
                     Identifier nm =
-                        Identifier.lookup(fn.getQualifier(), fn.getFlatName());
+                            Identifier.lookup(fn.getQualifier(), fn.getFlatName());
                     System.out.println("INNERCLASS " + nm);
                     System.out.println("---" + classModifierString(imods));
                 }
@@ -2607,13 +2674,13 @@ class SourceClass extends ClassDefinition {
         data.flush();
         tab = null;
 
-// JCOV
+        // JCOV
         // generate coverage data
         if (env.covdata()) {
             Assembler CovAsm = new Assembler();
-            CovAsm.GenVecJCov(env, (ClassDefinition)this, timeStamp);
+            CovAsm.GenVecJCov(env, (ClassDefinition) this, timeStamp);
         }
-// end JCOV
+        // end JCOV
     }
 
     /**
@@ -2623,11 +2690,11 @@ class SourceClass extends ClassDefinition {
     public void printClassDependencies(Environment env) {
 
         // Only do this if the -xdepend flag is on
-        if ( toplevelEnv.print_dependencies() ) {
+        if (toplevelEnv.print_dependencies()) {
 
             // Name of java source file this class was in (full path)
             //    e.g. /home/ohair/Test.java
-            String src = ((ClassFile)getSource()).getAbsoluteName();
+            String src = ((ClassFile) getSource()).getAbsoluteName();
 
             // Class name, fully qualified
             //   e.g. "java.lang.Object" or "FooBar" or "org.glassfish.rmic.tools.javac.Main"
@@ -2644,22 +2711,22 @@ class SourceClass extends ClassDefinition {
 
             // First line looks like:
             //    CLASS:src,startLine,endLine,className
-            System.out.println( "CLASS:"
-                    + src               + ","
-                    + startLine         + ","
-                    + endLine   + ","
-                    + className);
+            System.out.println("CLASS:"
+                                       + src + ","
+                                       + startLine + ","
+                                       + endLine + ","
+                                       + className);
 
             // For each class this class is dependent on:
             //    CLDEP:className1,className2
             //  where className1 is the name of the class we are in, and
             //        classname2 is the name of the class className1
             //          is dependent on.
-            for(Enumeration<ClassDeclaration> e = deps.elements();  e.hasMoreElements(); ) {
+            for (Enumeration<ClassDeclaration> e = deps.elements(); e.hasMoreElements(); ) {
                 ClassDeclaration data = e.nextElement();
                 // Mangle name of class dependend on.
                 String depName =
-                    Type.mangleInnerType(data.getName()).toString();
+                        Type.mangleInnerType(data.getName()).toString();
                 env.output("CLDEP:" + className + "," + depName);
             }
         }

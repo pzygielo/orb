@@ -30,18 +30,18 @@ import java.io.IOException;
  * It is used to load classes, resolve class names and
  * report errors. It is an abstract class, a subclass
  * must define implementations for some of the functions.<p>
- *
+ * <p>
  * An environment has a source object associated with it.
  * This is the thing against which errors are reported, it
  * is usually a file name, a field or a class.<p>
- *
+ * <p>
  * Environments can be nested to change the source object.<p>
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
  *
- * @author      Arthur van Hoff
+ * @author Arthur van Hoff
  */
 
 public class Environment implements Constants {
@@ -63,11 +63,13 @@ public class Environment implements Constants {
     Object source;
 
     public Environment(Environment env, Object source) {
-        if (env != null && env.env != null && env.getClass() == this.getClass())
+        if (env != null && env.env != null && env.getClass() == this.getClass()) {
             env = env.env;      // a small optimization
+        }
         this.env = env;
         this.source = source;
     }
+
     public Environment() {
         this(null, null);
     }
@@ -97,7 +99,7 @@ public class Environment implements Constants {
         if (nm.isInner()) {
             ClassDefinition c = getClassDefinition(nm.getTopName());
             Identifier tail = nm.getFlatName();
-        walkTail:
+            walkTail:
             while (tail.isQualified()) {
                 tail = tail.getTail();
                 Identifier head = tail.getHead();
@@ -114,7 +116,7 @@ public class Environment implements Constants {
                 // '$' characters when determining the external name of the class and
                 // the name of the class file.
                 if (hname.length() > 0
-                    && Character.isDigit(hname.charAt(0))) {
+                        && Character.isDigit(hname.charAt(0))) {
                     ClassDefinition localClass = c.getLocalClass(hname);
                     if (localClass != null) {
                         c = localClass;
@@ -136,7 +138,6 @@ public class Environment implements Constants {
         }
         return getClassDeclaration(nm).getClassDefinition(this);
     }
-
 
     /**
      * Return a class declaration given a type. Only works for
@@ -223,7 +224,7 @@ public class Environment implements Constants {
      */
     public boolean resolve(long where, ClassDefinition c, Type t) {
         switch (t.getTypeCode()) {
-          case TC_CLASS: {
+        case TC_CLASS: {
             ClassDefinition def;
             try {
                 Identifier nm = t.getClassName();
@@ -259,15 +260,15 @@ public class Environment implements Constants {
                 return false;
             }
             return true;
-          }
+        }
 
-          case TC_ARRAY:
+        case TC_ARRAY:
             return resolve(where, c, t.getElementType());
 
-          case TC_METHOD:
+        case TC_METHOD:
             boolean ok = resolve(where, c, t.getReturnType());
             Type args[] = t.getArgumentTypes();
-            for (int i = args.length ; i-- > 0 ; ) {
+            for (int i = args.length; i-- > 0; ) {
                 ok &= resolve(where, c, args[i]);
             }
             return ok;
@@ -289,7 +290,7 @@ public class Environment implements Constants {
     }
 
     private boolean resolveByName(long where, ClassDefinition c,
-                                 Identifier nm, boolean isExtends) {
+                                  Identifier nm, boolean isExtends) {
         ClassDefinition def;
         try {
             if (!nm.isQualified() && !nm.isInner() && !classExists(nm)) {
@@ -298,8 +299,8 @@ public class Environment implements Constants {
             def = getQualifiedClassDefinition(where, nm, c, isExtends);
             ClassDeclaration decl = def.getClassDeclaration();
             if (!((!isExtends && c.canAccess(this, decl))
-                  ||
-                  (isExtends && c.extendsCanAccess(this, decl)))) {
+                    ||
+                    (isExtends && c.extendsCanAccess(this, decl)))) {
                 error(where, "cant.access.class", def);
                 return true; // return false later
             }
@@ -311,7 +312,7 @@ public class Environment implements Constants {
             // is going to fail anyway.
             try {
                 if (e.name.isInner() &&
-                    getPackage(e.name.getTopName()).exists()) {
+                        getPackage(e.name.getTopName()).exists()) {
                     env.error(where, "class.and.package",
                               e.name.getTopName());
                 }
@@ -337,7 +338,7 @@ public class Environment implements Constants {
         if (nm.isInner()) {
             ClassDefinition c = getClassDefinition(nm.getTopName());
             Identifier tail = nm.getFlatName();
-        walkTail:
+            walkTail:
             while (tail.isQualified()) {
                 tail = tail.getTail();
                 Identifier head = tail.getHead();
@@ -346,7 +347,7 @@ public class Environment implements Constants {
                 // Handle synthesized names of local and anonymous classes.
                 // See 'getClassDefinition(env)' above.
                 if (hname.length() > 0
-                    && Character.isDigit(hname.charAt(0))) {
+                        && Character.isDigit(hname.charAt(0))) {
                     ClassDefinition localClass = c.getLocalClass(hname);
                     if (localClass != null) {
                         c = localClass;
@@ -364,10 +365,10 @@ public class Environment implements Constants {
                             // was a simple, unqualified name.  Hopefully, JLS 2e
                             // will clarify the matter.
                             if ((!isExtends
-                                 && !ctxClass.canAccess(env, fdecl))
-                                ||
-                                (isExtends
-                                 && !ctxClass.extendsCanAccess(env, fdecl))) {
+                                    && !ctxClass.canAccess(env, fdecl))
+                                    ||
+                                    (isExtends
+                                            && !ctxClass.extendsCanAccess(env, fdecl))) {
                                 // Reported error location is imprecise.
                                 env.error(where, "no.type.access", head, rdecl, ctxClass);
                             }
@@ -420,9 +421,11 @@ public class Environment implements Constants {
      * to the package scope.  (Fix for 4097882)
      */
     public Type resolveNames(ClassDefinition c, Type t, boolean synth) {
-        if (tracing) dtEvent("Environment.resolveNames: " + c + ", " + t);
+        if (tracing) {
+            dtEvent("Environment.resolveNames: " + c + ", " + t);
+        }
         switch (t.getTypeCode()) {
-          case TC_CLASS: {
+        case TC_CLASS: {
             Identifier name = t.getClassName();
             Identifier rname;
             if (synth) {
@@ -434,19 +437,19 @@ public class Environment implements Constants {
                 t = Type.tClass(rname);
             }
             break;
-          }
+        }
 
-          case TC_ARRAY:
+        case TC_ARRAY:
             t = Type.tArray(resolveNames(c, t.getElementType(), synth));
             break;
 
-          case TC_METHOD: {
+        case TC_METHOD: {
             Type ret = t.getReturnType();
             Type rret = resolveNames(c, ret, synth);
             Type args[] = t.getArgumentTypes();
             Type rargs[] = new Type[args.length];
             boolean changed = (ret != rret);
-            for (int i = args.length ; i-- > 0 ; ) {
+            for (int i = args.length; i-- > 0; ) {
                 Type arg = args[i];
                 Type rarg = resolveNames(c, arg, synth);
                 rargs[i] = rarg;
@@ -458,7 +461,7 @@ public class Environment implements Constants {
                 t = Type.tMethod(rret, rargs);
             }
             break;
-          }
+        }
         }
         return t;
     }
@@ -490,7 +493,7 @@ public class Environment implements Constants {
             }
             try {
                 return this.getClassDefinition(rhead).
-                    resolveInnerClass(this, name.getTail());
+                        resolveInnerClass(this, name.getTail());
             } catch (ClassNotFound ee) {
                 // return partially-resolved name someone else can fail on
                 return Identifier.lookupInner(rhead, name.getTail());
@@ -514,8 +517,9 @@ public class Environment implements Constants {
         } catch (ClassNotFound ee) {
             // last chance to make something halfway sensible
             Imports imports = getImports();
-            if (imports != null)
+            if (imports != null) {
                 return imports.forceResolve(this, name);
+            }
         }
         return name;
     }
@@ -533,7 +537,7 @@ public class Environment implements Constants {
      */
     public final Identifier resolvePackageQualifiedName(Identifier name) {
         Identifier tail = null;
-        for (;;) {
+        for (; ; ) {
             if (classExists(name)) {
                 break;
             }
@@ -543,11 +547,12 @@ public class Environment implements Constants {
                 break;
             }
             Identifier nm = name.getName();
-            tail = (tail == null)? nm: Identifier.lookup(nm, tail);
+            tail = (tail == null) ? nm : Identifier.lookup(nm, tail);
             name = name.getQualifier();
         }
-        if (tail != null)
+        if (tail != null) {
             name = Identifier.lookupInner(name, tail);
+        }
         return name;
     }
 
@@ -555,7 +560,9 @@ public class Environment implements Constants {
      * Resolve a class name, using only package and import directives.
      */
     public Identifier resolve(Identifier nm) throws ClassNotFound {
-        if (env == null)  return nm;    // a pretty useless no-op
+        if (env == null) {
+            return nm;    // a pretty useless no-op
+        }
         return env.resolve(nm);
     }
 
@@ -563,7 +570,9 @@ public class Environment implements Constants {
      * Get the imports used to resolve class names.
      */
     public Imports getImports() {
-        if (env == null)  return null; // lame default
+        if (env == null) {
+            return null; // lame default
+        }
         return env.getImports();
     }
 
@@ -576,7 +585,9 @@ public class Environment implements Constants {
                                                IdentifierToken superClass,
                                                IdentifierToken interfaces[],
                                                ClassDefinition outerClass) {
-        if (env == null)  return null; // lame default
+        if (env == null) {
+            return null; // lame default
+        }
         return env.makeClassDefinition(origEnv, where, name,
                                        doc, modifiers,
                                        superClass, interfaces, outerClass);
@@ -586,15 +597,17 @@ public class Environment implements Constants {
      * Create a new field.
      */
     public MemberDefinition makeMemberDefinition(Environment origEnv, long where,
-                                               ClassDefinition clazz,
-                                               String doc, int modifiers,
-                                               Type type, Identifier name,
-                                               IdentifierToken argNames[],
-                                               IdentifierToken expIds[],
-                                               Object value) {
-        if (env == null)  return null; // lame default
+                                                 ClassDefinition clazz,
+                                                 String doc, int modifiers,
+                                                 Type type, Identifier name,
+                                                 IdentifierToken argNames[],
+                                                 IdentifierToken expIds[],
+                                                 Object value) {
+        if (env == null) {
+            return null; // lame default
+        }
         return env.makeMemberDefinition(origEnv, where, clazz, doc, modifiers,
-                                       type, name, argNames, expIds, value);
+                                        type, name, argNames, expIds, value);
     }
 
     /**
@@ -603,27 +616,30 @@ public class Environment implements Constants {
 
     public boolean isApplicable(MemberDefinition m, Type args[]) throws ClassNotFound {
         Type mType = m.getType();
-        if (!mType.isType(TC_METHOD))
+        if (!mType.isType(TC_METHOD)) {
             return false;
+        }
         Type mArgs[] = mType.getArgumentTypes();
-        if (args.length != mArgs.length)
+        if (args.length != mArgs.length) {
             return false;
-        for (int i = args.length ; --i >= 0 ;)
-            if (!isMoreSpecific(args[i], mArgs[i]))
+        }
+        for (int i = args.length; --i >= 0; ) {
+            if (!isMoreSpecific(args[i], mArgs[i])) {
                 return false;
+            }
+        }
         return true;
     }
-
 
     /**
      * Returns true if "best" is in every argument at least as good as "other"
      */
     public boolean isMoreSpecific(MemberDefinition best, MemberDefinition other)
-           throws ClassNotFound {
+            throws ClassNotFound {
         Type bestType = best.getClassDeclaration().getType();
         Type otherType = other.getClassDeclaration().getType();
         boolean result = isMoreSpecific(bestType, otherType)
-                      && isApplicable(other, best.getType().getArgumentTypes());
+                && isApplicable(other, best.getType().getArgumentTypes());
         // System.out.println("isMoreSpecific: " + best + "/" + other
         //                      + " => " + result);
         return result;
@@ -643,24 +659,34 @@ public class Environment implements Constants {
      */
     @SuppressWarnings("fallthrough")
     public boolean implicitCast(Type from, Type to) throws ClassNotFound {
-        if (from == to)
+        if (from == to) {
             return true;
+        }
 
         int toTypeCode = to.getTypeCode();
 
-        switch(from.getTypeCode()) {
+        switch (from.getTypeCode()) {
         case TC_BYTE:
-            if (toTypeCode == TC_SHORT)
+            if (toTypeCode == TC_SHORT) {
                 return true;
+            }
         case TC_SHORT:
         case TC_CHAR:
-            if (toTypeCode == TC_INT) return true;
+            if (toTypeCode == TC_INT) {
+                return true;
+            }
         case TC_INT:
-            if (toTypeCode == TC_LONG) return true;
+            if (toTypeCode == TC_LONG) {
+                return true;
+            }
         case TC_LONG:
-            if (toTypeCode == TC_FLOAT) return true;
+            if (toTypeCode == TC_FLOAT) {
+                return true;
+            }
         case TC_FLOAT:
-            if (toTypeCode == TC_DOUBLE) return true;
+            if (toTypeCode == TC_DOUBLE) {
+                return true;
+            }
         case TC_DOUBLE:
         default:
             return false;
@@ -671,15 +697,15 @@ public class Environment implements Constants {
         case TC_ARRAY:
             if (!to.isType(TC_ARRAY)) {
                 return (to == Type.tObject || to == Type.tCloneable
-                           || to == Type.tSerializable);
+                        || to == Type.tSerializable);
             } else {
                 // both are arrays.  recurse down both until one isn't an array
                 do {
                     from = from.getElementType();
                     to = to.getElementType();
                 } while (from.isType(TC_ARRAY) && to.isType(TC_ARRAY));
-                if (  from.inMask(TM_ARRAY|TM_CLASS)
-                      && to.inMask(TM_ARRAY|TM_CLASS)) {
+                if (from.inMask(TM_ARRAY | TM_CLASS)
+                        && to.inMask(TM_ARRAY | TM_CLASS)) {
                     return isMoreSpecific(from, to);
                 } else {
                     return (from.getTypeCode() == to.getTypeCode());
@@ -697,7 +723,6 @@ public class Environment implements Constants {
             }
         }
     }
-
 
     /**
      * Return true if an explicit cast from this type to
@@ -732,25 +757,26 @@ public class Environment implements Constants {
             }
 
             return toClass.isInterface() ||
-                   fromClass.isInterface() ||
-                   fromClass.superClassOf(this, toClass.getClassDeclaration());
+                    fromClass.isInterface() ||
+                    fromClass.superClassOf(this, toClass.getClassDeclaration());
         }
         if (to.isType(TC_ARRAY)) {
-            if (from.isType(TC_ARRAY))  {
+            if (from.isType(TC_ARRAY)) {
                 Type t1 = from.getElementType();
                 Type t2 = to.getElementType();
                 while ((t1.getTypeCode() == TC_ARRAY)
-                       && (t2.getTypeCode() == TC_ARRAY)) {
+                        && (t2.getTypeCode() == TC_ARRAY)) {
                     t1 = t1.getElementType();
                     t2 = t2.getElementType();
                 }
-                if (t1.inMask(TM_ARRAY|TM_CLASS) &&
-                    t2.inMask(TM_ARRAY|TM_CLASS)) {
+                if (t1.inMask(TM_ARRAY | TM_CLASS) &&
+                        t2.inMask(TM_ARRAY | TM_CLASS)) {
                     return explicitCast(t1, t2);
                 }
             } else if (from == Type.tObject || from == Type.tCloneable
-                          || from == Type.tSerializable)
+                    || from == Type.tSerializable) {
                 return true;
+            }
         }
         return false;
     }
@@ -771,9 +797,11 @@ public class Environment implements Constants {
     public final boolean debug_lines() {
         return (getFlags() & F_DEBUG_LINES) != 0;
     }
+
     public final boolean debug_vars() {
         return (getFlags() & F_DEBUG_VARS) != 0;
     }
+
     public final boolean debug_source() {
         return (getFlags() & F_DEBUG_SOURCE) != 0;
     }
@@ -786,6 +814,7 @@ public class Environment implements Constants {
     public final boolean opt() {
         return (getFlags() & F_OPT) != 0;
     }
+
     public final boolean opt_interclass() {
         return (getFlags() & F_OPT_INTERCLASS) != 0;
     }
@@ -858,25 +887,29 @@ public class Environment implements Constants {
 
     /**
      * Issue an error.
-     *  source   - the input source, usually a file name string
-     *  offset   - the offset in the source of the error
-     *  err      - the error number (as defined in this interface)
-     *  arg1     - an optional argument to the error (null if not applicable)
-     *  arg2     - a second optional argument to the error (null if not applicable)
-     *  arg3     - a third optional argument to the error (null if not applicable)
+     * source   - the input source, usually a file name string
+     * offset   - the offset in the source of the error
+     * err      - the error number (as defined in this interface)
+     * arg1     - an optional argument to the error (null if not applicable)
+     * arg2     - a second optional argument to the error (null if not applicable)
+     * arg3     - a third optional argument to the error (null if not applicable)
      */
     public void error(Object source, long where, String err, Object arg1, Object arg2, Object arg3) {
         env.error(source, where, err, arg1, arg2, arg3);
     }
+
     public final void error(long where, String err, Object arg1, Object arg2, Object arg3) {
         error(source, where, err, arg1, arg2, arg3);
     }
+
     public final void error(long where, String err, Object arg1, Object arg2) {
         error(source, where, err, arg1, arg2, null);
     }
+
     public final void error(long where, String err, Object arg1) {
         error(source, where, err, arg1, null, null);
     }
+
     public final void error(long where, String err) {
         error(source, where, err, null, null, null);
     }
@@ -892,8 +925,9 @@ public class Environment implements Constants {
     private static boolean debugging = (System.getProperty("javac.debug") != null);
 
     public static void debugOutput(Object msg) {
-        if (Environment.debugging)
+        if (Environment.debugging) {
             System.out.println(msg.toString());
+        }
     }
 
     /**
@@ -914,7 +948,9 @@ public class Environment implements Constants {
      * Return major version to use in generated class files.
      */
     public short getMajorVersion() {
-        if (env==null) return JAVA_DEFAULT_VERSION;  // needed for javah
+        if (env == null) {
+            return JAVA_DEFAULT_VERSION;  // needed for javah
+        }
         return env.getMajorVersion();
     }
 
@@ -922,20 +958,23 @@ public class Environment implements Constants {
      * Return minor version to use in generated class files.
      */
     public short getMinorVersion() {
-        if (env==null) return JAVA_DEFAULT_MINOR_VERSION;  // needed for javah
+        if (env == null) {
+            return JAVA_DEFAULT_MINOR_VERSION;  // needed for javah
+        }
         return env.getMinorVersion();
     }
 
-// JCOV
+    // JCOV
+
     /**
-     *  get coverage flag
+     * get coverage flag
      */
     public final boolean coverage() {
         return (getFlags() & F_COVERAGE) != 0;
     }
 
     /**
-     *  get flag of generation the coverage data file
+     * get flag of generation the coverage data file
      */
     public final boolean covdata() {
         return (getFlags() & F_COVDATA) != 0;
@@ -948,7 +987,7 @@ public class Environment implements Constants {
         return env.getcovFile();
     }
 
-// end JCOV
+    // end JCOV
 
     /**
      * Debug tracing.
@@ -957,25 +996,31 @@ public class Environment implements Constants {
      * This code should probably be integrated with 'debugOutput' above,
      * but we need to give more thought to the issue of classifying debugging
      * messages and allowing those only those of interest to be enabled.
-     *
+     * <p>
      * Calls to these methods are generally conditioned on the final variable
      * 'Constants.tracing', which allows the calls to be completely omitted
      * in a production release to avoid space and time overhead.
      */
 
     private static boolean dependtrace =
-                (System.getProperty("javac.trace.depend") != null);
+            (System.getProperty("javac.trace.depend") != null);
 
     public void dtEnter(String s) {
-        if (dependtrace) System.out.println(">>> " + s);
+        if (dependtrace) {
+            System.out.println(">>> " + s);
+        }
     }
 
     public void dtExit(String s) {
-        if (dependtrace) System.out.println("<<< " + s);
+        if (dependtrace) {
+            System.out.println("<<< " + s);
+        }
     }
 
     public void dtEvent(String s) {
-        if (dependtrace) System.out.println(s);
+        if (dependtrace) {
+            System.out.println(s);
+        }
     }
 
     /**
@@ -985,8 +1030,10 @@ public class Environment implements Constants {
      */
 
     private static boolean dumpmodifiers =
-                (System.getProperty("javac.dump.modifiers") != null);
+            (System.getProperty("javac.dump.modifiers") != null);
 
-    public boolean dumpModifiers() { return dumpmodifiers; }
+    public boolean dumpModifiers() {
+        return dumpmodifiers;
+    }
 
 }

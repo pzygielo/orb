@@ -27,5 +27,5 @@ public interface AnimalFinder extends Remote {
 
     Animal[][] getZooCages(int[][] sizes) throws RemoteException;
 
-    double getValues(short a, long b, float c, double d)  throws RemoteException;
+    double getValues(short a, long b, float c, double d) throws RemoteException;
 }

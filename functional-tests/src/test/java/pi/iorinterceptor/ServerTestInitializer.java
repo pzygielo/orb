@@ -24,24 +24,28 @@ import org.omg.PortableInterceptor.ORBInitInfoPackage.*;
 
 import java.util.*;
 import java.io.*;
+
 import org.omg.CORBA.*;
 
 /**
  * Registers the necessary IORInterceptor interceptors to test IORInterceptor.
  */
-public class ServerTestInitializer 
-    extends org.omg.CORBA.LocalObject
-    implements ORBInitializer
-{
+public class ServerTestInitializer
+        extends org.omg.CORBA.LocalObject
+        implements ORBInitializer {
 
     // The PrintStream to pass to the IORInterceptor for output
     // This is set from Server.java, statically.
     static PrintStream out;
 
-    /** The ORB to pass to the IORInterceptor */
+    /**
+     * The ORB to pass to the IORInterceptor
+     */
     static ORB orb;
 
-    /** True if post_init failed */
+    /**
+     * True if post_init failed
+     */
     public static boolean postInitFailed = false;
 
     /**
@@ -53,29 +57,28 @@ public class ServerTestInitializer
     /**
      * Called before all references are registered
      */
-    public void pre_init (org.omg.PortableInterceptor.ORBInitInfo info) {
+    public void pre_init(org.omg.PortableInterceptor.ORBInitInfo info) {
     }
 
     /**
      * Called after all references are registered
      */
-    public void post_init (org.omg.PortableInterceptor.ORBInitInfo info) {
-        IORInterceptor iorInterceptor = new SampleIORInterceptor( "test", out);
-        IORInterceptor npeIORInterceptor = new NPEIORInterceptor( "npe", out);
+    public void post_init(org.omg.PortableInterceptor.ORBInitInfo info) {
+        IORInterceptor iorInterceptor = new SampleIORInterceptor("test", out);
+        IORInterceptor npeIORInterceptor = new NPEIORInterceptor("npe", out);
         try {
-            out.println( "    - post_init: adding Sample IOR Interceptor..." );
-            info.add_ior_interceptor( iorInterceptor );
-            out.println( "    - post_init: adding NPE IOR Interceptor..." );
-            info.add_ior_interceptor( npeIORInterceptor );
-        }
-        catch( DuplicateName e ) {
-            out.println( "    - post_init: received DuplicateName!" );
+            out.println("    - post_init: adding Sample IOR Interceptor...");
+            info.add_ior_interceptor(iorInterceptor);
+            out.println("    - post_init: adding NPE IOR Interceptor...");
+            info.add_ior_interceptor(npeIORInterceptor);
+        } catch (DuplicateName e) {
+            out.println("    - post_init: received DuplicateName!");
             postInitFailed = true;
         }
 
-        out.println( "    - post_init: registering PolicyFactory for 100..." );
+        out.println("    - post_init: registering PolicyFactory for 100...");
         PolicyFactory policyFactory100 = new PolicyFactoryHundred();
-        info.register_policy_factory( 100, policyFactory100 );
+        info.register_policy_factory(100, policyFactory100);
     }
 
 }

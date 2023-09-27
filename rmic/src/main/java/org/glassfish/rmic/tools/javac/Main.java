@@ -19,16 +19,15 @@
 
 package org.glassfish.rmic.tools.javac;
 
-import org.glassfish.rmic.tools.java.*;
-// JCOV
-// end JCOV
+import org.glassfish.rmic.tools.java.Constants;
 
-import java.util.*;
 import java.text.MessageFormat;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 /**
  * Main program of the Java compiler
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
@@ -49,7 +48,7 @@ class Main implements Constants {
     private static void initResource() {
         try {
             messageRB =
-                ResourceBundle.getBundle("org.glassfish.rmic.tools.javac.resources.javac");
+                    ResourceBundle.getBundle("org.glassfish.rmic.tools.javac.resources.javac");
         } catch (MissingResourceException e) {
             throw new Error("Fatal: Resource for javac is missing");
         }
@@ -72,9 +71,15 @@ class Main implements Constants {
             String message = messageRB.getString(key);
             return MessageFormat.format(message, fixed1, fixed2, fixed3);
         } catch (MissingResourceException e) {
-            if (fixed1 == null)  fixed1 = "null";
-            if (fixed2 == null)  fixed2 = "null";
-            if (fixed3 == null)  fixed3 = "null";
+            if (fixed1 == null) {
+                fixed1 = "null";
+            }
+            if (fixed2 == null) {
+                fixed2 = "null";
+            }
+            if (fixed3 == null) {
+                fixed3 = "null";
+            }
             String message = "JAVAC MESSAGE FILE IS BROKEN: key={0}, arguments={1}, {2}, {3}";
             return MessageFormat.format(message, key, fixed1, fixed2, fixed3);
         }

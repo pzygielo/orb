@@ -23,6 +23,7 @@ import java.rmi.RemoteException;
 
 public interface Interface extends java.rmi.Remote {
     public String o1(String x) throws RemoteException;
+
     public String o2(String x) throws RemoteException;
 }
 

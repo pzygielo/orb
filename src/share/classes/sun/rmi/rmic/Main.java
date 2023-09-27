@@ -42,13 +42,14 @@ import sun.tools.java.Identifier;
 import sun.tools.java.ClassPath;
 
 import sun.tools.util.CommandLine;
+
 import java.lang.reflect.Constructor;
 import java.util.Properties;
 
 /**
  * Main "rmic" program.
  */
-@SuppressWarnings({"deprecation"})
+@SuppressWarnings({ "deprecation" })
 public class Main implements sun.rmi.rmic.Constants {
     String sourcePathArg;
     String sysClassPathArg;
@@ -90,8 +91,8 @@ public class Main implements sun.rmi.rmic.Constants {
      */
     public void output(String msg) {
         PrintStream out =
-            this.out instanceof PrintStream ? (PrintStream)this.out
-            : new PrintStream(this.out, true);
+                this.out instanceof PrintStream ? (PrintStream) this.out
+                        : new PrintStream(this.out, true);
         out.println(msg);
     }
 
@@ -109,7 +110,7 @@ public class Main implements sun.rmi.rmic.Constants {
     public void usage() {
         error("rmic.usage", program);
     }
-    
+
     /**
      * Run the compiler
      */
@@ -149,7 +150,7 @@ public class Main implements sun.rmi.rmic.Constants {
         nowrite = false;
         nocompile = false;
         keepGenerated = false;
-        generatorArgs = getArray("generator.args",true);
+        generatorArgs = getArray("generator.args", true);
         if (generatorArgs == null) {
             return false;
         }
@@ -167,7 +168,7 @@ public class Main implements sun.rmi.rmic.Constants {
         }
 
         // Parse arguments
-        for (int i = 0 ; i < argv.length ; i++) {
+        for (int i = 0; i < argv.length; i++) {
             if (argv[i] != null) {
                 if (argv[i].equals("-g")) {
                     flags &= ~F_OPT;
@@ -198,7 +199,7 @@ public class Main implements sun.rmi.rmic.Constants {
                     keepGenerated = true;
                     argv[i] = null;
                 } else if (argv[i].equals("-keep") ||
-                           argv[i].equals("-keepgenerated")) {
+                        argv[i].equals("-keepgenerated")) {
                     keepGenerated = true;
                     argv[i] = null;
                 } else if (argv[i].equals("-show")) {
@@ -286,14 +287,13 @@ public class Main implements sun.rmi.rmic.Constants {
                         return false;
                     }
                 } else {
-                    if (!checkGeneratorArg(argv,i)) {
+                    if (!checkGeneratorArg(argv, i)) {
                         usage();
                         return false;
                     }
                 }
             }
         }
-
 
         // Now that all generators have had a chance at the args,
         // scan what's left for classes and illegal args...
@@ -309,7 +309,6 @@ public class Main implements sun.rmi.rmic.Constants {
                 }
             }
         }
-
 
         // If the generators vector is empty, add the default generator...
 
@@ -334,88 +333,89 @@ public class Main implements sun.rmi.rmic.Constants {
                     // Got a match, add Generator and call parseArgs...
                     Generator gen = addGenerator(arg);
                     if (gen == null) {
-                        return false;    
+                        return false;
                     }
-                    result = gen.parseArgs(argv,this);
+                    result = gen.parseArgs(argv, this);
                     break;
                 }
             }
         }
         return result;
     }
-        
+
     /**
      * Instantiate and add a generator to the generators array.
      */
     protected Generator addGenerator(String arg) {
-                
+
         Generator gen;
-                
+
         // Create an instance of the generator and add it to
         // the array...
-                
+
         String className = getString("generator.class." + arg);
         if (className == null) {
-            error("rmic.missing.property",arg);
+            error("rmic.missing.property", arg);
             return null;
         }
-                
+
         try {
             gen = (Generator) Class.forName(className).newInstance();
         } catch (Exception e) {
-            error("rmic.cannot.instantiate",className);
+            error("rmic.cannot.instantiate", className);
             return null;
         }
 
         generators.addElement(gen);
-                
+
         // Get the environment required by this generator...
-                
+
         Class envClass = BatchEnvironment.class;
-        String env = getString("generator.env." + arg);         
+        String env = getString("generator.env." + arg);
         if (env != null) {
             try {
                 envClass = Class.forName(env);
-                 
+
                 // Is the new class a subclass of the current one?
 
                 if (environmentClass.isAssignableFrom(envClass)) {
-                             
+
                     // Yes, so switch to the new one...
-                                
+
                     environmentClass = envClass;
-                            
+
                 } else {
-                                
+
                     // No. Is the current class a subclass of the
                     // new one?
-                                
+
                     if (!envClass.isAssignableFrom(environmentClass)) {
-                                    
+
                         // No, so it's a conflict...
 
-                        error("rmic.cannot.use.both",environmentClass.getName(),envClass.getName());
+                        error("rmic.cannot.use.both", environmentClass.getName(), envClass.getName());
                         return null;
                     }
                 }
             } catch (ClassNotFoundException e) {
-                error("rmic.class.not.found",env);
+                error("rmic.class.not.found", env);
                 return null;
             }
         }
-                
+
         // If this is the iiop stub generator, cache
         // that fact for the jrmp generator...
-                
+
         if (arg.equals("iiop")) {
             iiopGeneration = true;
         }
         return gen;
     }
-    
+
     /**
      * Grab a resource string and parse it into an array of strings. Assumes
      * comma separated list.
+     *
      * @param name The resource name.
      * @param mustExist If true, throws error if resource does not exist. If
      * false and resource does not exist, returns zero element array.
@@ -425,14 +425,14 @@ public class Main implements sun.rmi.rmic.Constants {
         String value = getString(name);
         if (value == null) {
             if (mustExist) {
-                error("rmic.resource.not.found",name);
+                error("rmic.resource.not.found", name);
                 return null;
             } else {
                 return new String[0];
             }
         }
-                
-        StringTokenizer parser = new StringTokenizer(value,", \t\n\r", false);
+
+        StringTokenizer parser = new StringTokenizer(value, ", \t\n\r", false);
         int count = parser.countTokens();
         result = new String[count];
         for (int i = 0; i < count; i++) {
@@ -441,30 +441,28 @@ public class Main implements sun.rmi.rmic.Constants {
 
         return result;
     }
-        
+
     /**
      * Get the correct type of BatchEnvironment
      */
     public BatchEnvironment getEnv() {
 
         ClassPath classPath =
-            BatchEnvironment.createClassPath(classPathString,
-                                             sysClassPathArg,
-                                             extDirsArg);
+                BatchEnvironment.createClassPath(classPathString,
+                                                 sysClassPathArg,
+                                                 extDirsArg);
         BatchEnvironment result = null;
         try {
-            Class[] ctorArgTypes = {OutputStream.class,ClassPath.class,Main.class};
-            Object[] ctorArgs = {out,classPath,this};
+            Class[] ctorArgTypes = { OutputStream.class, ClassPath.class, Main.class };
+            Object[] ctorArgs = { out, classPath, this };
             Constructor constructor = environmentClass.getConstructor(ctorArgTypes);
             result = (BatchEnvironment) constructor.newInstance(ctorArgs);
             result.reset();
-        }
-        catch (Exception e) {
-            error("rmic.cannot.instantiate",environmentClass.getName());
+        } catch (Exception e) {
+            error("rmic.cannot.instantiate", environmentClass.getName());
         }
         return result;
     }
-        
 
     /**
      * Do the compile with the switches and files already supplied
@@ -478,7 +476,7 @@ public class Main implements sun.rmi.rmic.Constants {
         // Compat and 1.1 stubs must retain the old version number.
         env.majorVersion = 45;
         env.minorVersion = 3;
-        
+
         // Preload the "out of memory" error string just in case we run
         // out of memory during the compile.
         String noMemoryErrorString = getText("rmic.no.memory");
@@ -488,9 +486,9 @@ public class Main implements sun.rmi.rmic.Constants {
             /** Load the classes on the command line
              * Replace the entries in classes with the ClassDefinition for the class
              */
-            for (int i = classes.size()-1; i >= 0; i-- ) {
+            for (int i = classes.size() - 1; i >= 0; i--) {
                 Identifier implClassName =
-                    Identifier.lookup((String)classes.elementAt(i));
+                        Identifier.lookup((String) classes.elementAt(i));
 
                 /*
                  * Fix bugid 4049354: support using '.' as an inner class
@@ -518,7 +516,7 @@ public class Main implements sun.rmi.rmic.Constants {
                 try {
                     ClassDefinition def = decl.getClassDefinition(env);
                     for (int j = 0; j < generators.size(); j++) {
-                        Generator gen = (Generator)generators.elementAt(j);
+                        Generator gen = (Generator) generators.elementAt(j);
                         gen.generate(env, def, destDir);
                     }
                 } catch (ClassNotFound ex) {
@@ -620,18 +618,18 @@ public class Main implements sun.rmi.rmic.Constants {
     /*
      * Compile all classes that need to be compiled.
      */
-    public void compileAllClasses (BatchEnvironment env)
-        throws ClassNotFound,
-               IOException,
-               InterruptedException {
+    public void compileAllClasses(BatchEnvironment env)
+            throws ClassNotFound,
+            IOException,
+            InterruptedException {
         ByteArrayOutputStream buf = new ByteArrayOutputStream(4096);
         boolean done;
 
         do {
             done = true;
-            for (Enumeration e = env.getClasses() ; e.hasMoreElements() ; ) {
-                ClassDeclaration c = (ClassDeclaration)e.nextElement();
-                done = compileClass(c,buf,env);
+            for (Enumeration e = env.getClasses(); e.hasMoreElements(); ) {
+                ClassDeclaration c = (ClassDeclaration) e.nextElement();
+                done = compileClass(c, buf, env);
             }
         } while (!done);
     }
@@ -639,112 +637,108 @@ public class Main implements sun.rmi.rmic.Constants {
     /*
      * Compile a single class.
      */
-    public boolean compileClass (ClassDeclaration c,
-                                 ByteArrayOutputStream buf,
-                                 BatchEnvironment env)
-        throws ClassNotFound,
-               IOException,
-               InterruptedException {
+    public boolean compileClass(ClassDeclaration c,
+                                ByteArrayOutputStream buf,
+                                BatchEnvironment env)
+            throws ClassNotFound,
+            IOException,
+            InterruptedException {
         boolean done = true;
         env.flushErrors();
         sun.tools.javac.SourceClass src;
 
         switch (c.getStatus()) {
-        case CS_UNDEFINED:
-            {
-                if (!env.dependencies()) {
-                    break;
-                }
-                // fall through
+        case CS_UNDEFINED: {
+            if (!env.dependencies()) {
+                break;
+            }
+            // fall through
+        }
+
+        case CS_SOURCE: {
+            done = false;
+            env.loadDefinition(c);
+            if (c.getStatus() != CS_PARSED) {
+                break;
+            }
+            // fall through
+        }
+
+        case CS_PARSED: {
+            if (c.getClassDefinition().isInsideLocal()) {
+                break;
+            }
+            // If we get to here, then compilation is going
+            // to occur. If the -Xnocompile switch is set
+            // then fail. Note that this check is required
+            // here because this method is called from
+            // generators, not just from within this class...
+
+            if (nocompile) {
+                throw new IOException("Compilation required, but -Xnocompile option in effect");
             }
 
-        case CS_SOURCE:
-            {
-                done = false;
-                env.loadDefinition(c);
-                if (c.getStatus() != CS_PARSED) {
-                    break;
-                }
-                // fall through
-            }
-                        
-        case CS_PARSED:
-            {
-                if (c.getClassDefinition().isInsideLocal()) {
-                    break;
-                }
-                // If we get to here, then compilation is going
-                // to occur. If the -Xnocompile switch is set
-                // then fail. Note that this check is required
-                // here because this method is called from
-                // generators, not just from within this class...
+            done = false;
 
-                if (nocompile) {
-                    throw new IOException("Compilation required, but -Xnocompile option in effect");
-                }
+            src = (sun.tools.javac.SourceClass) c.getClassDefinition(env);
+            src.check(env);
+            c.setDefinition(src, CS_CHECKED);
+            // fall through
+        }
 
-                done = false;
-
-                src = (sun.tools.javac.SourceClass)c.getClassDefinition(env);
-                src.check(env);
-                c.setDefinition(src, CS_CHECKED);
-                // fall through
-            }
-
-        case CS_CHECKED:
-            {
-                src = (sun.tools.javac.SourceClass)c.getClassDefinition(env);
-                // bail out if there were any errors
-                if (src.getError()) {
-                    c.setDefinition(src, CS_COMPILED);
-                    break;
-                }
-                done = false;
-                buf.reset();
-                src.compile(buf);
+        case CS_CHECKED: {
+            src = (sun.tools.javac.SourceClass) c.getClassDefinition(env);
+            // bail out if there were any errors
+            if (src.getError()) {
                 c.setDefinition(src, CS_COMPILED);
-                src.cleanup(env);
+                break;
+            }
+            done = false;
+            buf.reset();
+            src.compile(buf);
+            c.setDefinition(src, CS_COMPILED);
+            src.cleanup(env);
 
-                if (src.getError() || nowrite) {
+            if (src.getError() || nowrite) {
+                break;
+            }
+
+            String pkgName = c.getName().getQualifier().toString().replace('.', File.separatorChar);
+            String className = c.getName().getFlatName().toString().replace('.', SIGC_INNERCLASS) + ".class";
+
+            File file;
+            if (destDir != null) {
+                if (pkgName.length() > 0) {
+                    file = new File(destDir, pkgName);
+                    if (!file.exists()) {
+                        file.mkdirs();
+                    }
+                    file = new File(file, className);
+                } else {
+                    file = new File(destDir, className);
+                }
+            } else {
+                ClassFile classfile = (ClassFile) src.getSource();
+                if (classfile.isZipped()) {
+                    env.error(0, "cant.write", classfile.getPath());
                     break;
                 }
-
-                String pkgName = c.getName().getQualifier().toString().replace('.', File.separatorChar);
-                String className = c.getName().getFlatName().toString().replace('.', SIGC_INNERCLASS) + ".class";
-
-                File file;
-                if (destDir != null) {
-                    if (pkgName.length() > 0) {
-                        file = new File(destDir, pkgName);
-                        if (!file.exists()) {
-                            file.mkdirs();
-                        }
-                        file = new File(file, className);
-                    } else {
-                        file = new File(destDir, className);
-                    }
-                } else {
-                    ClassFile classfile = (ClassFile)src.getSource();
-                    if (classfile.isZipped()) {
-                        env.error(0, "cant.write", classfile.getPath());
-                        break;
-                    }
-                    file = new File(classfile.getPath());
-                    file = new File(file.getParent(), className);
-                }
-
-                // Create the file
-                try {
-                    FileOutputStream out = new FileOutputStream(file.getPath());
-                    buf.writeTo(out);
-                    out.close();
-                    if (env.verbose()) {
-                        output(getText("rmic.wrote", file.getPath()));
-                    }
-                } catch (IOException ee) {
-                    env.error(0, "cant.write", file.getPath());
-                }
+                file = new File(classfile.getPath());
+                file = new File(file.getParent(), className);
             }
+
+            // Create the file
+            try {
+                FileOutputStream out = new FileOutputStream(file.getPath());
+                buf.writeTo(out);
+                out.close();
+                if (env.verbose()) {
+                    output(getText("rmic.wrote", file.getPath()));
+                }
+            } catch (IOException ee) {
+                env.error(0, "cant.write", file.getPath());
+            }
+        }
         }
         return done;
     }
@@ -772,7 +766,8 @@ public class Main implements sun.rmi.rmic.Constants {
         if (resourcesExt != null) {
             try {
                 return resourcesExt.getString(key);
-            } catch (MissingResourceException e) {}
+            } catch (MissingResourceException e) {
+            }
         }
 
         try {
@@ -789,15 +784,16 @@ public class Main implements sun.rmi.rmic.Constants {
     private static void initResources() {
         try {
             resources =
-                ResourceBundle.getBundle("sun.rmi.rmic.resources.rmic");
+                    ResourceBundle.getBundle("sun.rmi.rmic.resources.rmic");
             resourcesInitialized = true;
             try {
                 resourcesExt =
-                    ResourceBundle.getBundle("sun.rmi.rmic.resources.rmicext");
-            } catch (MissingResourceException e) {}
+                        ResourceBundle.getBundle("sun.rmi.rmic.resources.rmicext");
+            } catch (MissingResourceException e) {
+            }
         } catch (MissingResourceException e) {
             throw new Error("fatal: missing resource bundle: " +
-                            e.getClassName());
+                                    e.getClassName());
         }
     }
 
@@ -809,17 +805,17 @@ public class Main implements sun.rmi.rmic.Constants {
         return message;
     }
 
-    public static String getText(String key, Object... args )
-    {
+    public static String getText(String key, Object... args) {
         String format = getString(key);
         if (format == null) {
             format = "no text found: key = \"" + key + "\", " +
-                "arguments = " ;
-            
-            for (int ctr=0; ctr<args.length; ctr++) {
-                if (ctr != 0)
-                    format += ", " ;
-                format += "\"{" + ctr + "}\"" ;
+                    "arguments = ";
+
+            for (int ctr = 0; ctr < args.length; ctr++) {
+                if (ctr != 0) {
+                    format += ", ";
+                }
+                format += "\"{" + ctr + "}\"";
             }
         }
 

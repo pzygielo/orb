@@ -21,13 +21,14 @@
 
 package org.glassfish.rmic.iiop;
 
-import java.util.Hashtable;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Hashtable;
 
 /**
  * DirectoryLoader is a simple ClassLoader which loads from a specified
  * file system directory.
+ *
  * @author Bryan Atsatt
  */
 
@@ -39,7 +40,7 @@ public class DirectoryLoader extends ClassLoader {
     /**
      * Constructor.
      */
-    public DirectoryLoader (File rootDir) {
+    public DirectoryLoader(File rootDir) {
         cache = new Hashtable<>();
         if (rootDir == null || !rootDir.isDirectory()) {
             throw new IllegalArgumentException();
@@ -47,7 +48,8 @@ public class DirectoryLoader extends ClassLoader {
         root = rootDir;
     }
 
-    private DirectoryLoader () {}
+    private DirectoryLoader() {
+    }
 
     /**
      * Convenience version of loadClass which sets 'resolve' == true.
@@ -64,9 +66,9 @@ public class DirectoryLoader extends ClassLoader {
      */
     @Override
     public synchronized Class<?> loadClass(String className, boolean resolve)
-        throws ClassNotFoundException {
+            throws ClassNotFoundException {
         Class<?> result;
-        byte  classData[];
+        byte classData[];
 
         // Do we already have it in the cache?
 
@@ -100,7 +102,9 @@ public class DirectoryLoader extends ClassLoader {
 
                 // Resolve it...
 
-                if (resolve) resolveClass(result);
+                if (resolve) {
+                    resolveClass(result);
+                }
 
                 // Add to cache...
 
@@ -115,14 +119,14 @@ public class DirectoryLoader extends ClassLoader {
      * Reurn a byte array containing the contents of the class file.  Returns null
      * if an exception occurs.
      */
-    private byte[] getClassFileData (String className) {
+    private byte[] getClassFileData(String className) {
 
         byte result[] = null;
         FileInputStream stream = null;
 
         // Get the file...
 
-        File classFile = new File(root,className.replace('.',File.separatorChar) + ".class");
+        File classFile = new File(root, className.replace('.', File.separatorChar) + ".class");
 
         // Now get the bits...
 
@@ -130,16 +134,14 @@ public class DirectoryLoader extends ClassLoader {
             stream = new FileInputStream(classFile);
             result = new byte[stream.available()];
             stream.read(result);
-        } catch(ThreadDeath death) {
+        } catch (ThreadDeath death) {
             throw death;
         } catch (Throwable e) {
-        }
-
-        finally {
+        } finally {
             if (stream != null) {
                 try {
                     stream.close();
-                } catch(ThreadDeath death) {
+                } catch (ThreadDeath death) {
                     throw death;
                 } catch (Throwable e) {
                 }

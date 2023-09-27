@@ -22,10 +22,14 @@ package javax.rmi;
 
 import test.Test;
 import test.WebServer;
+
 import java.io.File;
+
 import com.sun.corba.ee.impl.util.JDKBridge;
+
 import javax.rmi.CORBA.Util;
 import java.rmi.server.RMIClassLoader;
+
 import org.glassfish.pfl.test.JUnitReportHelper;
 
 public class ClassLoadTest extends Test {
@@ -34,118 +38,120 @@ public class ClassLoadTest extends Test {
     private static int FAIL_ILLEGAL_ARG = 2;
     private static int FAIL_NULL_PTR = 3;
     private static int FAIL_NOT_FOUND12_OR_ILLEGAL_ARG11 = 4;
-    
+
     private static String[] failure = {
-        "SUCCEED",
-        "ClassNotFoundException",
-        "IllegalArgumentException",
-        "NullPointerException",
-        "ClassNotFoundException on 1.2 or IllegalArgumentException on 1.1",
+            "SUCCEED",
+            "ClassNotFoundException",
+            "IllegalArgumentException",
+            "NullPointerException",
+            "ClassNotFoundException on 1.2 or IllegalArgumentException on 1.1",
     };
-    
+
     private static int LOCAL = 4;
     private static int REMOTE = 5;
     private static boolean isPre12VM = false;
     private static boolean is12VM = true;
-    
+
     private JUnitReportHelper helper = new JUnitReportHelper(
-        this.getClass().getName() ) ;
+            this.getClass().getName());
 
-    private String makeTestName( String className ) {
-        if (className == null)
-            return "null" ;
-
-        StringBuilder sb = new StringBuilder() ;
-        int numArrays = 0 ;
-        while ((numArrays < className.length()) && className.charAt(numArrays) == '[') {
-            numArrays++ ;
+    private String makeTestName(String className) {
+        if (className == null) {
+            return "null";
         }
-            
-        for (int a=numArrays; a<className.length(); a++ ) {
-            char ch = className.charAt( a ) ;
-            if (Character.isJavaIdentifierPart( ch ))
-                sb.append( ch ) ;
-            else
-                sb.append( '_' ) ;
-        } 
 
+        StringBuilder sb = new StringBuilder();
+        int numArrays = 0;
+        while ((numArrays < className.length()) && className.charAt(numArrays) == '[') {
+            numArrays++;
+        }
 
-        for (int ctr2=0; ctr2<numArrays; ctr2++ )
-            sb.append( "_array" ) ;
+        for (int a = numArrays; a < className.length(); a++) {
+            char ch = className.charAt(a);
+            if (Character.isJavaIdentifierPart(ch)) {
+                sb.append(ch);
+            } else {
+                sb.append('_');
+            }
+        }
 
-        return sb.toString() ;
+        for (int ctr2 = 0; ctr2 < numArrays; ctr2++) {
+            sb.append("_array");
+        }
+
+        return sb.toString();
     }
 
-    private void doTests () {
+    private void doTests() {
         try {
             // Make sure we fail with null and empty names...
 
-            loadClass(null,LOCAL,FAIL_NULL_PTR);
-            loadClass("",LOCAL,FAIL_NOT_FOUND12_OR_ILLEGAL_ARG11);
-            
+            loadClass(null, LOCAL, FAIL_NULL_PTR);
+            loadClass("", LOCAL, FAIL_NOT_FOUND12_OR_ILLEGAL_ARG11);
+
             // Make sure we can load an array of primitive class...
-            
-            loadClass("[[B",LOCAL,SUCCEED);          
-            loadClass("[[[[Z",LOCAL,SUCCEED);          
-            
+
+            loadClass("[[B", LOCAL, SUCCEED);
+            loadClass("[[[[Z", LOCAL, SUCCEED);
+
             // Make sure we cannot load an array of primitive class when
             // the name is bogus...
-            
-            loadClass("[[Q",LOCAL,FAIL_NOT_FOUND12_OR_ILLEGAL_ARG11);
-            
+
+            loadClass("[[Q", LOCAL, FAIL_NOT_FOUND12_OR_ILLEGAL_ARG11);
+
             // Make sure we can load a system class array...
-            
-            loadClass("[Ljava.applet.AppletStub;",LOCAL,SUCCEED);            
-            
+
+            loadClass("[Ljava.applet.AppletStub;", LOCAL, SUCCEED);
+
             // Make sure we can load a system class...
-            
-            loadClass("java.applet.Applet",LOCAL,SUCCEED);            
-            
+
+            loadClass("java.applet.Applet", LOCAL, SUCCEED);
+
             // Make sure we can load a system class array...
-            
-            loadClass("[Ljava.applet.AppletStub;",LOCAL,SUCCEED);            
-            
+
+            loadClass("[Ljava.applet.AppletStub;", LOCAL, SUCCEED);
+
             // Make sure we can load an application class...
-            
-            loadClass("rmic.HelloTest",LOCAL,SUCCEED);            
-            
+
+            loadClass("rmic.HelloTest", LOCAL, SUCCEED);
+
             // Make sure we can load an application class array...
-            
-            loadClass("[[[Lrmic.MangleMethods;",LOCAL,SUCCEED);            
-            
+
+            loadClass("[[[Lrmic.MangleMethods;", LOCAL, SUCCEED);
+
             // Make sure we can load a remote class...
-            
-            loadClass("javax.rmi.download.values.DownloadA",REMOTE,SUCCEED);            
-            
+
+            loadClass("javax.rmi.download.values.DownloadA", REMOTE, SUCCEED);
+
             // Make sure we cannot load a class array when the
             // name is formatted wrong...
-            
-            loadClass("[[Ljavax.rmi.download.values.DownloadB",REMOTE,FAIL_NOT_FOUND12_OR_ILLEGAL_ARG11);    
-            loadClass("[[Xjavax.rmi.download.values.DownloadB;",REMOTE,FAIL_NOT_FOUND12_OR_ILLEGAL_ARG11);    
-            loadClass("[[",REMOTE,FAIL_NOT_FOUND12_OR_ILLEGAL_ARG11);    
-            loadClass("[[[;",REMOTE,FAIL_NOT_FOUND12_OR_ILLEGAL_ARG11);    
-            loadClass("[",REMOTE,FAIL_NOT_FOUND12_OR_ILLEGAL_ARG11);    
-            
+
+            loadClass("[[Ljavax.rmi.download.values.DownloadB", REMOTE, FAIL_NOT_FOUND12_OR_ILLEGAL_ARG11);
+            loadClass("[[Xjavax.rmi.download.values.DownloadB;", REMOTE, FAIL_NOT_FOUND12_OR_ILLEGAL_ARG11);
+            loadClass("[[", REMOTE, FAIL_NOT_FOUND12_OR_ILLEGAL_ARG11);
+            loadClass("[[[;", REMOTE, FAIL_NOT_FOUND12_OR_ILLEGAL_ARG11);
+            loadClass("[", REMOTE, FAIL_NOT_FOUND12_OR_ILLEGAL_ARG11);
+
             // Make sure we can load a remote class array...
-            
-            loadClass("[[Ljavax.rmi.download.values.DownloadB;",REMOTE,SUCCEED);    
-            
+
+            loadClass("[[Ljavax.rmi.download.values.DownloadB;", REMOTE, SUCCEED);
+
             // Make sure we can load a local inner class...
-            
-            loadClass("javax.rmi.ClassLoadTest$InnerA",LOCAL,SUCCEED);    
-            
+
+            loadClass("javax.rmi.ClassLoadTest$InnerA", LOCAL, SUCCEED);
+
             // Make sure we can load a local inner class array...
-            
-            loadClass("[Ljavax.rmi.ClassLoadTest$InnerB;",LOCAL,SUCCEED);    
-            
+
+            loadClass("[Ljavax.rmi.ClassLoadTest$InnerB;", LOCAL, SUCCEED);
+
             // Make sure we can load a remote inner class...
-            
-            loadClass("javax.rmi.download.values.DownloadA$Inner",REMOTE,SUCCEED);    
-            
+
+            loadClass("javax.rmi.download.values.DownloadA$Inner", REMOTE, SUCCEED);
+
             // Make sure we can load a remote inner class array...
-            
-            loadClass("[Ljavax.rmi.download.values.DownloadB$Inner;",REMOTE,SUCCEED);
-            
+
+            loadClass("[Ljavax.rmi.download.values.DownloadB$Inner;", REMOTE, SUCCEED);
+
             // Now test that our special JDKClassLoader.loadClass() actually walks
             // the stack as expected, and that Class.forName() does not...
             
@@ -195,167 +201,167 @@ public class ClassLoadTest extends Test {
             }
     */
         } finally {
-            helper.done() ;
+            helper.done();
         }
     }
-    
-    private Class loadClass (String className, int where, int shouldFail) {
-        helper.start( makeTestName( className ) ) ;
+
+    private Class loadClass(String className, int where, int shouldFail) {
+        helper.start(makeTestName(className));
         Class result = null;
 
         try {
-            result = Util.loadClass(className,remoteCodebase,null);
+            result = Util.loadClass(className, remoteCodebase, null);
         } catch (ClassNotFoundException e) {
             if (shouldFail == FAIL_NOT_FOUND ||
-                (shouldFail == FAIL_NOT_FOUND12_OR_ILLEGAL_ARG11 &&
-                 is12VM)) {
-                helper.pass() ;
+                    (shouldFail == FAIL_NOT_FOUND12_OR_ILLEGAL_ARG11 &&
+                            is12VM)) {
+                helper.pass();
                 return null;
             }
             e.printStackTrace();
-            String msg = className+": Expected "+failure[shouldFail]+", got "+e.toString();
-            helper.fail( msg ) ;
-            throw new Error( msg ) ;
+            String msg = className + ": Expected " + failure[shouldFail] + ", got " + e.toString();
+            helper.fail(msg);
+            throw new Error(msg);
         } catch (IllegalArgumentException e) {
             if (shouldFail == FAIL_ILLEGAL_ARG ||
-                (shouldFail == FAIL_NOT_FOUND12_OR_ILLEGAL_ARG11 &&
-                 isPre12VM)) {
-                helper.pass() ;
+                    (shouldFail == FAIL_NOT_FOUND12_OR_ILLEGAL_ARG11 &&
+                            isPre12VM)) {
+                helper.pass();
                 return null;
             }
             e.printStackTrace();
-            String msg = className+": Expected "+failure[shouldFail]+", got "+e.toString();
-            helper.fail( msg ) ;
-            throw new Error( msg ) ;
+            String msg = className + ": Expected " + failure[shouldFail] + ", got " + e.toString();
+            helper.fail(msg);
+            throw new Error(msg);
         } catch (NullPointerException e) {
-            if (shouldFail == FAIL_NULL_PTR)  {
-                helper.pass() ;
+            if (shouldFail == FAIL_NULL_PTR) {
+                helper.pass();
                 return null;
             }
             e.printStackTrace();
-            String msg = className+": Expected "+failure[shouldFail]+", got "+e.toString();
-            helper.fail( msg ) ;
-            throw new Error(msg) ;
+            String msg = className + ": Expected " + failure[shouldFail] + ", got " + e.toString();
+            helper.fail(msg);
+            throw new Error(msg);
         }
-        
+
         if (result == null) {
-            String msg = "Got null from Util.loadClass("+className+")!";
-            helper.fail( msg ) ;
-            throw new Error(msg) ;
+            String msg = "Got null from Util.loadClass(" + className + ")!";
+            helper.fail(msg);
+            throw new Error(msg);
         } else {
             if (shouldFail != SUCCEED) {
-                String msg ="Loaded "+className+" but expected it to fail";
-                helper.fail( msg ) ;
-                throw new Error(msg) ;
+                String msg = "Loaded " + className + " but expected it to fail";
+                helper.fail(msg);
+                throw new Error(msg);
             }
-        }  
-        
-        // Make sure we got the name we expected...
-        
-        if (!result.getName().equals(className)) {
-            String msg = "Returned class name '"+result.getName()+"' != expected '"+className+"'";
-            helper.fail( msg ) ;
-            throw new Error( msg ) ;
         }
-        
+
+        // Make sure we got the name we expected...
+
+        if (!result.getName().equals(className)) {
+            String msg = "Returned class name '" + result.getName() + "' != expected '" + className + "'";
+            helper.fail(msg);
+            throw new Error(msg);
+        }
+
         // Make sure we get the codebase we expected...
-        
+
         if (where == REMOTE) {
             if (result.getClassLoader() == null) {
-                String msg = "Got null class loader for "+result;    
-                helper.fail( msg ) ;
-                throw new Error(msg) ;
+                String msg = "Got null class loader for " + result;
+                helper.fail(msg);
+                throw new Error(msg);
             }
-            
+
             String codebase = RMIClassLoader.getClassAnnotation(result);
-            
+
             if (codebase == null) {
                 // On 1.2, multi-dimensional class arrays will return
                 // null. Sigh. _REVISIT_ this special case should be
                 // removed when the 1.2 bug in RMIClassLoader.getClassAnnotation()
                 // is fixed.
-                   
+
                 if (is12VM && className.charAt(0) == '[') {
                     int last = className.lastIndexOf('[');
-                    if (last > 0 && className.charAt(last+1) == 'L') {
-                        helper.pass() ;
-                        return null;   
+                    if (last > 0 && className.charAt(last + 1) == 'L') {
+                        helper.pass();
+                        return null;
                     }
                 }
-            
-                String msg = "Got null codebase from JDKBridge.getCodebase("+result+")";
-                helper.fail( msg ) ;
-                throw new Error(msg) ;
+
+                String msg = "Got null codebase from JDKBridge.getCodebase(" + result + ")";
+                helper.fail(msg);
+                throw new Error(msg);
             }
 
             if (!codebase.equals(remoteCodebase)) {
-                String msg = "getCodebase('"+result+"') returned '"+codebase+"' != expected '"+remoteCodebase+"'";    
-                helper.fail( msg ) ;
-                throw new Error(msg) ;
+                String msg = "getCodebase('" + result + "') returned '" + codebase + "' != expected '" + remoteCodebase + "'";
+                helper.fail(msg);
+                throw new Error(msg);
             }
         }
-        
-        helper.pass() ;
+
+        helper.pass();
         return result;
     }
-    
+
     private WebServer webServer = null;
     private String remoteCodebase = null;
-    
-    public void setup () {        
+
+    public void setup() {
         try {
-            
+
             // Make sure WE know the codebase...
-            
+
             remoteCodebase = System.getProperty("java.rmi.server.codebase");
             if (remoteCodebase == null) {
                 throw new Error("No codebase set");
             }
 
             // Pull the port # out of the codebase...
-            
+
             int port = 9090; // Default;
-            
+
             int host = remoteCodebase.indexOf("//");
             if (host > 0) {
                 host += 2;
-                int colon = remoteCodebase.indexOf(":",host);
+                int colon = remoteCodebase.indexOf(":", host);
                 if (colon > 0) {
                     int length = remoteCodebase.length();
-                    int slash = remoteCodebase.indexOf('/',colon);
+                    int slash = remoteCodebase.indexOf('/', colon);
                     if (slash > 0) {
-                        length = slash;   
+                        length = slash;
                     }
-                    String portStr = remoteCodebase.substring(colon+1,length);
+                    String portStr = remoteCodebase.substring(colon + 1, length);
                     port = Integer.parseInt(portStr);
                 }
             }
 
             // Make sure that JDKBridge does not know the codebase...
-            
+
             JDKBridge.setLocalCodebase(null);
             if (JDKBridge.getLocalCodebase() != null) {
                 throw new Error("Could not clear local codebase.");
             }
-            
+
             // Start the webserver pointing at the correct doc root...
-            
+
             String rootPath = System.getProperty("http.server.root.directory");
             if (rootPath == null) {
                 throw new Error("http.server.root.directory not set");
             }
             File rootDir = new File(rootPath);
-            webServer = new WebServer(port,rootDir,1);
+            webServer = new WebServer(port, rootDir, 1);
             webServer.start();
-            if (!webServer.waitTillReady()){
+            if (!webServer.waitTillReady()) {
                 throw new Error("WebServer died");
             }
-            
+
         } catch (Exception e) {
-            throw new Error ("setup() failed, caught "+e);
+            throw new Error("setup() failed, caught " + e);
         }
     }
-    
+
     public void run() {
         try {
             doTests();
@@ -366,6 +372,9 @@ public class ClassLoadTest extends Test {
         }
     }
 
-    public class InnerA {}
-    public interface InnerB {}
+    public class InnerA {
+    }
+
+    public interface InnerB {
+    }
 }

@@ -21,20 +21,19 @@ package corba.rmipoacounter;
 
 import test.Test;
 import corba.framework.*;
+
 import java.util.*;
+
 import com.sun.corba.ee.spi.misc.ORBConstants;
 
-public class RMIPOACounterTest extends CORBATest
-{
-    protected Controller newClientController()
-    {
+public class RMIPOACounterTest extends CORBATest {
+    protected Controller newClientController() {
         return new InternalExec();
     }
 
-    protected void doTest() throws Throwable
-    {
+    protected void doTest() throws Throwable {
         // try this one. the report dir was already set to gen/corba/rmipoacounter
-        Options.setOutputDirectory((String)getArgs().get(test.Test.OUTPUT_DIRECTORY));
+        Options.setOutputDirectory((String) getArgs().get(test.Test.OUTPUT_DIRECTORY));
         Options.addServerArg("-debug");
 
         Controller orbd = createORBD();

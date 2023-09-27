@@ -24,6 +24,7 @@ package com.sun.tools.corba.ee.idl;
 // NOTES:
 
 import com.sun.tools.corba.ee.idl.constExpr.Expression;
+
 import java.util.Vector;
 
 /**
@@ -48,13 +49,18 @@ import java.util.Vector;
  * <dd>&lt;char c, &lt;0, 2&gt;, true&gt;
  * </dl>
  **/
-public class UnionBranch
-{
-  /** The type definition for the branch. */
-  public TypedefEntry typedef;
-  /** A vector of Expression's, one for each label in the order in which
-      they appear in the IDL file.  The default branch has no label. */
-  public Vector<Expression> labels = new Vector<>();
-  /** true if this is the default branch. */
-  public boolean isDefault = false;
+public class UnionBranch {
+    /**
+     * The type definition for the branch.
+     */
+    public TypedefEntry typedef;
+    /**
+     * A vector of Expression's, one for each label in the order in which
+     * they appear in the IDL file.  The default branch has no label.
+     */
+    public Vector<Expression> labels = new Vector<>();
+    /**
+     * true if this is the default branch.
+     */
+    public boolean isDefault = false;
 } // class UnionBranch

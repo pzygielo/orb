@@ -27,18 +27,18 @@ import IORInterceptorTest.*;    // for IDL
  * ORTStateChangeEvaluator after completion with the notificationToken.
  */
 public class DelayServant extends delayPOA {
-    public void forInMillis( int timeInMillis, String notificationToken ) {
+    public void forInMillis(int timeInMillis, String notificationToken) {
         try {
-            System.out.println( "DelayServant.forInMillis() called with " +
-                timeInMillis );
-            System.out.flush( );
-            Thread.sleep( timeInMillis );
-            ORTStateChangeEvaluator.getInstance( ).notificationTokenFromDelayServant( notificationToken );
-        } catch( Exception e ) {
-            System.err.println( "The Thread.sleep() in DelayServant crashed " +
-                e );
-            e.printStackTrace( );
-            System.exit( 1 );
+            System.out.println("DelayServant.forInMillis() called with " +
+                                       timeInMillis);
+            System.out.flush();
+            Thread.sleep(timeInMillis);
+            ORTStateChangeEvaluator.getInstance().notificationTokenFromDelayServant(notificationToken);
+        } catch (Exception e) {
+            System.err.println("The Thread.sleep() in DelayServant crashed " +
+                                       e);
+            e.printStackTrace();
+            System.exit(1);
         }
     }
 }

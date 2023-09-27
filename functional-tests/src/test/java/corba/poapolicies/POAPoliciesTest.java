@@ -20,24 +20,23 @@
 package corba.poapolicies;
 
 import java.util.*;
+
 import test.Test;
 import corba.framework.*;
 
-public class POAPoliciesTest extends CORBATest
-{
-    private void testWithFactory(String poaFactory) throws Throwable
-    {
-        Test.dprint("Using POA Factory: " 
-                    + (poaFactory == null ? "(Default)" : poaFactory));
+public class POAPoliciesTest extends CORBATest {
+    private void testWithFactory(String poaFactory) throws Throwable {
+        Test.dprint("Using POA Factory: "
+                            + (poaFactory == null ? "(Default)" : poaFactory));
 
         if (poaFactory != null) {
             Properties serverProps = Options.getServerProperties();
             serverProps.setProperty("POAFactory", poaFactory);
         }
-        
+
         Controller server = createServer("corba.poapolicies.HelloServer");
 
-        Controller client = createClient("corba.poapolicies.HelloClient", poaFactory );
+        Controller client = createClient("corba.poapolicies.HelloClient", poaFactory);
 
         server.start();
 
@@ -50,8 +49,7 @@ public class POAPoliciesTest extends CORBATest
         server.stop();
     }
 
-    protected void doTest() throws Throwable
-    {
+    protected void doTest() throws Throwable {
         String prefix = "corba.poapolicies.";
         testWithFactory(prefix + "FactoryForRetainAndUseActiveMapOnly");
         testWithFactory(prefix + "FactoryForRetainAndUseServantManager");

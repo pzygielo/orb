@@ -44,38 +44,54 @@ package org.glassfish.rmic.iiop;
  * The <code>buckets</code> array will contain a set of arrays, one for
  * each key in the <code>keys</code>, where <code>buckets[x][y]</code>
  * is an index into the <code>strings</code> array.
- * @author      Bryan Atsatt
+ *
+ * @author Bryan Atsatt
  */
 public class StaticStringsHash {
 
-    /** The set of strings upon which the hash info is created */
+    /**
+     * The set of strings upon which the hash info is created
+     */
     public String[] strings = null;
 
-    /** Unique hash keys */
+    /**
+     * Unique hash keys
+     */
     public int[] keys = null;
 
-    /** Buckets for each key, where buckets[x][y] is an index
-     * into the strings[] array. */
+    /**
+     * Buckets for each key, where buckets[x][y] is an index
+     * into the strings[] array.
+     */
     public int[][] buckets = null;
 
-    /** The method to invoke on String to produce the hash key */
+    /**
+     * The method to invoke on String to produce the hash key
+     */
     public String method = null;
 
-    /** Get a key for the given string using the
+    /**
+     * Get a key for the given string using the
      * selected hash method.
+     *
      * @param str the string to return a key for.
      * @return the key.
      */
     public int getKey(String str) {
         switch (keyKind) {
-        case LENGTH: return str.length();
-        case CHAR_AT: return str.charAt(charAt);
-        case HASH_CODE: return str.hashCode();
+        case LENGTH:
+            return str.length();
+        case CHAR_AT:
+            return str.charAt(charAt);
+        case HASH_CODE:
+            return str.hashCode();
         }
         throw new Error("Bad keyKind");
     }
 
-    /** Constructor
+    /**
+     * Constructor
+     *
      * @param strings the set of strings upon which to
      * find an optimal hash method. Must not contain
      * duplicates.
@@ -108,8 +124,8 @@ public class StaticStringsHash {
 
             int minLength = minStringLength;
             if (length > CHAR_AT_MAX_LINES &&
-                length * minLength > CHAR_AT_MAX_CHARS) {
-                minLength = length/CHAR_AT_MAX_CHARS;
+                    length * minLength > CHAR_AT_MAX_CHARS) {
+                minLength = length / CHAR_AT_MAX_CHARS;
             }
 
             charAt = 0;
@@ -126,7 +142,6 @@ public class StaticStringsHash {
             }
             charAt = useCharAt;
 
-
             if (currentMaxDepth > 1) {
 
                 // At least one bucket had more than one
@@ -140,7 +155,7 @@ public class StaticStringsHash {
                 // with some further analysis ;^)
 
                 int hashCodeDepth = getKeys(HASH_CODE);
-                if (hashCodeDepth < currentMaxDepth-3) {
+                if (hashCodeDepth < currentMaxDepth - 3) {
 
                     // Using the full hashCode results in at least
                     // 3 fewer entries in the worst bucket, so will
@@ -177,7 +192,7 @@ public class StaticStringsHash {
         // Now allocate and fill our real hashKeys array...
 
         keys = new int[bucketCount];
-        System.arraycopy(tempKeys,0,keys,0,bucketCount);
+        System.arraycopy(tempKeys, 0, keys, 0, bucketCount);
 
         // Sort keys and bucketSizes arrays...
 
@@ -185,13 +200,13 @@ public class StaticStringsHash {
         do {
             didSwap = false;
             for (int i = 0; i < bucketCount - 1; i++) {
-                if (keys[i] > keys[i+1]) {
+                if (keys[i] > keys[i + 1]) {
                     int temp = keys[i];
-                    keys[i] = keys[i+1];
-                    keys[i+1] = temp;
+                    keys[i] = keys[i + 1];
+                    keys[i + 1] = temp;
                     temp = bucketSizes[i];
-                    bucketSizes[i] = bucketSizes[i+1];
-                    bucketSizes[i+1] = temp;
+                    bucketSizes[i] = bucketSizes[i + 1];
+                    bucketSizes[i + 1] = temp;
                     didSwap = true;
                 }
             }
@@ -213,7 +228,7 @@ public class StaticStringsHash {
 
         // And fill it in...
 
-        for(int i = 0; i < strings.length; i++) {
+        for (int i = 0; i < strings.length; i++) {
             int key = getKey(strings[i]);
             for (int j = 0; j < bucketCount; j++) {
                 if (keys[j] == key) {
@@ -228,23 +243,24 @@ public class StaticStringsHash {
         }
     }
 
-    /** Print an optimized 'contains' method for the
+    /**
+     * Print an optimized 'contains' method for the
      * argument strings
      */
-    public static void main (String[] args) {
+    public static void main(String[] args) {
         StaticStringsHash hash = new StaticStringsHash(args);
         System.out.println();
         System.out.println("    public boolean contains(String key) {");
-        System.out.println("        switch (key."+hash.method+") {");
+        System.out.println("        switch (key." + hash.method + ") {");
         for (int i = 0; i < hash.buckets.length; i++) {
-            System.out.println("            case "+hash.keys[i]+": ");
+            System.out.println("            case " + hash.keys[i] + ": ");
             for (int j = 0; j < hash.buckets[i].length; j++) {
                 if (j > 0) {
                     System.out.print("                } else ");
                 } else {
                     System.out.print("                ");
                 }
-                System.out.println("if (key.equals(\""+ hash.strings[hash.buckets[i][j]] +"\")) {");
+                System.out.println("if (key.equals(\"" + hash.strings[hash.buckets[i][j]] + "\")) {");
                 System.out.println("                    return true;");
             }
             System.out.println("                }");
@@ -282,9 +298,15 @@ public class StaticStringsHash {
     private void resetKeys(int keyKind) {
         this.keyKind = keyKind;
         switch (keyKind) {
-        case LENGTH: method = "length()"; break;
-        case CHAR_AT: method = "charAt("+charAt+")"; break;
-        case HASH_CODE: method = "hashCode()"; break;
+        case LENGTH:
+            method = "length()";
+            break;
+        case CHAR_AT:
+            method = "charAt(" + charAt + ")";
+            break;
+        case HASH_CODE:
+            method = "hashCode()";
+            break;
         }
         maxDepth = 1;
         bucketCount = 0;
@@ -330,7 +352,7 @@ public class StaticStringsHash {
 
     private int getKeys(int methodKind) {
         resetKeys(methodKind);
-        for(int i = 0; i < strings.length; i++) {
+        for (int i = 0; i < strings.length; i++) {
             addKey(getKey(strings[i]));
         }
         return maxDepth;

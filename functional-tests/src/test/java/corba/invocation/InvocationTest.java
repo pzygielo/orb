@@ -21,6 +21,7 @@ package corba.invocation;
 
 import test.Test;
 import corba.framework.*;
+
 import java.util.*;
 
 /**
@@ -34,7 +35,7 @@ public class InvocationTest extends CORBATest {
         Properties clientProps = Options.getClientProperties();
         clientProps.setProperty(URL_PROPERTY,
                                 "corbaloc:iiop:1.2@localhost:" + 3050 + '/' +
-                                "HelloService");
+                                        "HelloService");
         Controller client = createClient("corba.invocation.Client");
         client.start();
 

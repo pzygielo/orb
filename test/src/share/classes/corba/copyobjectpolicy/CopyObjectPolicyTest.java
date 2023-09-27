@@ -21,17 +21,15 @@ package corba.copyobjectpolicy;
 
 import test.Test;
 import corba.framework.*;
+
 import java.util.*;
 
-public class CopyObjectPolicyTest extends CORBATest
-{
-    protected Controller newClientController()
-    {
+public class CopyObjectPolicyTest extends CORBATest {
+    protected Controller newClientController() {
         return new InternalExec();
     }
 
-    protected void doTest() throws Throwable
-    {
+    protected void doTest() throws Throwable {
         Options.addServerArg("-debug");
 
         Controller client = createClient("corba.copyobjectpolicy.Client");

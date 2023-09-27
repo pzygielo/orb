@@ -33,44 +33,37 @@ import java.math.BigInteger;
 /**
  *
  **/
-public class Divide extends BinaryExpr
-{
-  /**
-   * Constructor: set operation and operands.
-   **/
-  protected Divide (com.sun.tools.corba.ee.idl.constExpr.Expression leftOperand, com.sun.tools.corba.ee.idl.constExpr.Expression rightOperand)
-  {
-    super ("/", leftOperand, rightOperand);
-  } // ctor
+public class Divide extends BinaryExpr {
+    /**
+     * Constructor: set operation and operands.
+     **/
+    protected Divide(com.sun.tools.corba.ee.idl.constExpr.Expression leftOperand, com.sun.tools.corba.ee.idl.constExpr.Expression rightOperand) {
+        super("/", leftOperand, rightOperand);
+    } // ctor
 
-  /**
-   *
-   **/
-  public Object evaluate () throws com.sun.tools.corba.ee.idl.constExpr.EvaluationException
-  {
-    try
-    {
-      Number l = (Number)left ().evaluate ();
-      Number r = (Number)right ().evaluate ();
+    /**
+     *
+     **/
+    public Object evaluate() throws com.sun.tools.corba.ee.idl.constExpr.EvaluationException {
+        try {
+            Number l = (Number) left().evaluate();
+            Number r = (Number) right().evaluate();
 
-      boolean lIsNonInteger = l instanceof Float || l instanceof Double;
-      boolean rIsNonInteger = r instanceof Float || r instanceof Double;
+            boolean lIsNonInteger = l instanceof Float || l instanceof Double;
+            boolean rIsNonInteger = r instanceof Float || r instanceof Double;
 
-      if (lIsNonInteger && rIsNonInteger)
-        value (new Double (l.doubleValue () / r.doubleValue ()));
-      else if (lIsNonInteger || rIsNonInteger)
-      {
-        String[] parameters = {Util.getMessage ("EvaluationException.divide"),
-            left ().value ().getClass ().getName (),
-            right ().value ().getClass ().getName ()};
-        throw new com.sun.tools.corba.ee.idl.constExpr.EvaluationException(Util.getMessage ("EvaluationException.1", parameters));
-      }
-      else
-      {
-        BigInteger tmpL = (BigInteger)l,  tmpR = (BigInteger)r;
-        value (tmpL.divide (tmpR));
-      }
-      // <d52042> Allow evaluation over mixed operands.  Supplant code above.
+            if (lIsNonInteger && rIsNonInteger) {
+                value(new Double(l.doubleValue() / r.doubleValue()));
+            } else if (lIsNonInteger || rIsNonInteger) {
+                String[] parameters = { Util.getMessage("EvaluationException.divide"),
+                        left().value().getClass().getName(),
+                        right().value().getClass().getName() };
+                throw new com.sun.tools.corba.ee.idl.constExpr.EvaluationException(Util.getMessage("EvaluationException.1", parameters));
+            } else {
+                BigInteger tmpL = (BigInteger) l, tmpR = (BigInteger) r;
+                value(tmpL.divide(tmpR));
+            }
+            // <d52042> Allow evaluation over mixed operands.  Supplant code above.
       /*
       Number l = (Number)left ().evaluate ();
       Number r = (Number)right ().evaluate ();
@@ -107,12 +100,10 @@ public class Divide extends BinaryExpr
         }
       }
       */
-    }
-    catch (ClassCastException e)
-    {
-      String[] parameters = {Util.getMessage ("EvaluationException.divide"), left ().value ().getClass ().getName (), right ().value ().getClass ().getName ()};
-      throw new com.sun.tools.corba.ee.idl.constExpr.EvaluationException(Util.getMessage ("EvaluationException.1", parameters));
-    }
-    return value ();
-  } // evaluate
+        } catch (ClassCastException e) {
+            String[] parameters = { Util.getMessage("EvaluationException.divide"), left().value().getClass().getName(), right().value().getClass().getName() };
+            throw new com.sun.tools.corba.ee.idl.constExpr.EvaluationException(Util.getMessage("EvaluationException.1", parameters));
+        }
+        return value();
+    } // evaluate
 } // class Divide

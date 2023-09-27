@@ -32,13 +32,12 @@ import org.omg.PortableInterceptor.ClientRequestInterceptor;
  * performed on interceptor number 2 and only if the target() is not
  * helloRefForward.
  */
-public class SampleClientRequestInterceptor 
-    extends org.omg.CORBA.LocalObject 
-    implements ClientRequestInterceptor
-{
+public class SampleClientRequestInterceptor
+        extends org.omg.CORBA.LocalObject
+        implements ClientRequestInterceptor {
     // The dyanmic strategy that will be used for this round.
     public static InterceptorStrategy strategy = null;
-    
+
     // The name of this interceptor
     private String name;
 
@@ -67,8 +66,8 @@ public class SampleClientRequestInterceptor
     public static boolean invokeOnForwardedObject = false;
 
     private static int invokeCount = 0;
-    
-    public SampleClientRequestInterceptor( String name ) {
+
+    public SampleClientRequestInterceptor(String name) {
         this.name = name;
     }
 
@@ -79,105 +78,139 @@ public class SampleClientRequestInterceptor
     public void destroy() {
     }
 
-    public void send_request (ClientRequestInfo ri) 
-        throws ForwardRequest 
-    {
+    public void send_request(ClientRequestInfo ri)
+            throws ForwardRequest {
         // Only execute if the interceptor is enabled, this interception
         // point is enabled, we are the second interceptor, and we are 
         // executing on hello, not helloForward.
-        if( !enabled ) return;
-        if( !sendRequestEnabled ) return;
-        if( !name.equals( "2" ) ) return;
-        if( !invokeOnForwardedObject && 
-            TestInitializer.helloRefForward._is_equivalent(
-            ri.effective_target() ) ) return;
+        if (!enabled) {
+            return;
+        }
+        if (!sendRequestEnabled) {
+            return;
+        }
+        if (!name.equals("2")) {
+            return;
+        }
+        if (!invokeOnForwardedObject &&
+                TestInitializer.helloRefForward._is_equivalent(
+                        ri.effective_target())) {
+            return;
+        }
 
-        strategy.send_request( this, ri );
+        strategy.send_request(this, ri);
 
-        if( recursiveInvoke ) {
-            if( invokeCount == 0 ) {
+        if (recursiveInvoke) {
+            if (invokeCount == 0) {
                 invokeCount++;
                 try {
-                    ClientCommon.client.invokeMethod( "sayHello" );
-                }
-                catch( Exception e ) {
+                    ClientCommon.client.invokeMethod("sayHello");
+                } catch (Exception e) {
                     // If this throws an exception, convert it into a 
                     // SystemException.
-                    throw new BAD_OPERATION( e.getMessage() );
+                    throw new BAD_OPERATION(e.getMessage());
                 }
                 invokeCount--;
             }
         }
     }
 
-    public void send_poll (ClientRequestInfo ri) {
+    public void send_poll(ClientRequestInfo ri) {
         // Only execute if the interceptor is enabled, this interception
         // point is enabled, we are the second interceptor, and we are 
         // executing on hello, not helloForward.
-        if( !enabled ) return;
-        if( !sendPollEnabled ) return;
-        if( !name.equals( "2" ) ) return;
-        if( !invokeOnForwardedObject &&
-            TestInitializer.helloRefForward._is_equivalent(
-            ri.effective_target() ) ) return;
+        if (!enabled) {
+            return;
+        }
+        if (!sendPollEnabled) {
+            return;
+        }
+        if (!name.equals("2")) {
+            return;
+        }
+        if (!invokeOnForwardedObject &&
+                TestInitializer.helloRefForward._is_equivalent(
+                        ri.effective_target())) {
+            return;
+        }
 
-        strategy.send_poll( this, ri );
+        strategy.send_poll(this, ri);
     }
 
-    public void receive_reply (ClientRequestInfo ri) {
+    public void receive_reply(ClientRequestInfo ri) {
         // Only execute if the interceptor is enabled, this interception
         // point is enabled, we are the second interceptor, and we are 
         // executing on hello, not helloForward.
-        if( !enabled ) return;
-        if( !receiveReplyEnabled ) return;
-        if( !name.equals( "2" ) ) return;
-        if( !invokeOnForwardedObject &&
-            TestInitializer.helloRefForward._is_equivalent(
-            ri.effective_target() ) ) return;
+        if (!enabled) {
+            return;
+        }
+        if (!receiveReplyEnabled) {
+            return;
+        }
+        if (!name.equals("2")) {
+            return;
+        }
+        if (!invokeOnForwardedObject &&
+                TestInitializer.helloRefForward._is_equivalent(
+                        ri.effective_target())) {
+            return;
+        }
 
-        strategy.receive_reply( this, ri );
+        strategy.receive_reply(this, ri);
     }
 
-    public void receive_exception (ClientRequestInfo ri) 
-        throws ForwardRequest
-    {
+    public void receive_exception(ClientRequestInfo ri)
+            throws ForwardRequest {
         // Only execute if the interceptor is enabled, this interception
         // point is enabled, we are the second interceptor, and we are 
         // executing on hello, not helloForward.
-        if( !enabled ) return;
-        if( !receiveExceptionEnabled ) return;
-        if( !name.equals( "2" ) ) return;
-        if( !invokeOnForwardedObject &&
-            TestInitializer.helloRefForward._is_equivalent(
-            ri.effective_target() ) ) return;
+        if (!enabled) {
+            return;
+        }
+        if (!receiveExceptionEnabled) {
+            return;
+        }
+        if (!name.equals("2")) {
+            return;
+        }
+        if (!invokeOnForwardedObject &&
+                TestInitializer.helloRefForward._is_equivalent(
+                        ri.effective_target())) {
+            return;
+        }
 
-        if( exceptionRedirectToOther &&
-            !TestInitializer.helloRefForward._is_equivalent(
-            ri.effective_target() ) ) 
-        {
+        if (exceptionRedirectToOther &&
+                !TestInitializer.helloRefForward._is_equivalent(
+                        ri.effective_target())) {
             // Override strategy, and cause this exception to redirect to
             // a receive_other on interceptor number 1.
-            throw new ForwardRequest( TestInitializer.helloRefForward );
-        }
-        else {
-            strategy.receive_exception( this, ri );
+            throw new ForwardRequest(TestInitializer.helloRefForward);
+        } else {
+            strategy.receive_exception(this, ri);
         }
     }
 
-    public void receive_other (ClientRequestInfo ri) 
-        throws ForwardRequest 
-    {
+    public void receive_other(ClientRequestInfo ri)
+            throws ForwardRequest {
         // Only execute if the interceptor is enabled, this interception
         // point is enabled, we are the second interceptor, and we are 
         // executing on hello, not helloForward.
-        if( !enabled ) return;
-        if( !receiveOtherEnabled ) return;
-        if( !name.equals( "1" ) ) return;
-        if( !invokeOnForwardedObject &&
-            TestInitializer.helloRefForward._is_equivalent(
-            ri.effective_target() ) ) return;
+        if (!enabled) {
+            return;
+        }
+        if (!receiveOtherEnabled) {
+            return;
+        }
+        if (!name.equals("1")) {
+            return;
+        }
+        if (!invokeOnForwardedObject &&
+                TestInitializer.helloRefForward._is_equivalent(
+                        ri.effective_target())) {
+            return;
+        }
 
-        strategy.receive_other( this, ri );
+        strategy.receive_other(this, ri);
     }
 
 }

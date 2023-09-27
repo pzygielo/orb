@@ -69,12 +69,12 @@ import java.util.Vector;
  * </pre>
  * Client-side features include:
  * <ul>
- * <li> {@link #lookup(java.lang.String,java.lang.Class) lookup methods} to retrieve published objects.
+ * <li> {@link #lookup(java.lang.String, java.lang.Class) lookup methods} to retrieve published objects.
  * <li> Context information for all {@link PortableContext.Client client} instances.
  * </ul>
  * <a name="_clientexample_"></a>
- * Client code can get access to published servants using the {@link #lookup(java.lang.String,java.lang.Class) lookup} or
- * {@link #lookupClient(java.lang.String,java.lang.Class) lookupClient} methods. For example, to lookup a servant which
+ * Client code can get access to published servants using the {@link #lookup(java.lang.String, java.lang.Class) lookup} or
+ * {@link #lookupClient(java.lang.String, java.lang.Class) lookupClient} methods. For example, to lookup a servant which
  * implements the 'Hello' interface, is running on IIOP, and has been published as 'myHello' with
  * default host and port:
  * <pre>
@@ -96,14 +96,14 @@ import java.util.Vector;
  * It's not as convenient, but does solve both problems.
  * </td></tr>
  * </table>
- * @version     1.0, 6/23/98
- * @author      Bryan Atsatt
+ *
+ * @author Bryan Atsatt
+ * @version 1.0, 6/23/98
  */
 public class PortableContext {
 
     public static final int RMI_RUNTIME = 0;
     public static final int IIOP_RUNTIME = 1;
-
 
     private ORB orb = null;
     private InitialContext nameContext = null;
@@ -138,27 +138,29 @@ public class PortableContext {
      * <pre>
      *    Hello ref = (Hello) PortableContext.lookup("iiop://bob",Hello.class)
      * </pre>
+     *
      * @param clientURL A url naming the client.
      * @param narrowTo The Class of the interface to which to narrow the remote object.
-     * @exception NamingException Thrown if lookup fails.
+     * @throws NamingException Thrown if lookup fails.
      * @see #lookupClient(java.lang.String, java.lang.Class)
      */
-    public static Object lookup (String clientURL, Class narrowTo) throws NamingException {
+    public static Object lookup(String clientURL, Class narrowTo) throws NamingException {
         PortableContext.Client client = getClient(clientURL);
-        return PortableRemoteObject.narrow(client.client,narrowTo);
+        return PortableRemoteObject.narrow(client.client, narrowTo);
     }
 
     /**
-     * Lookup a remote object. Same as {@link #lookup(java.lang.String,java.lang.Class) lookup} except that it
+     * Lookup a remote object. Same as {@link #lookup(java.lang.String, java.lang.Class) lookup} except that it
      * returns a Client instance.
+     *
      * @param clientURL A url naming the client.
      * @param narrowTo The Class of the interface to which to narrow the remote object.
-     * @exception NamingException Thrown if lookup fails.
+     * @throws NamingException Thrown if lookup fails.
      * @see #lookup(java.lang.String, java.lang.Class)
      */
-    public static Client lookupClient (String clientURL, Class narrowTo) throws NamingException {
+    public static Client lookupClient(String clientURL, Class narrowTo) throws NamingException {
         PortableContext.Client client = getClient(clientURL);
-        PortableRemoteObject.narrow(client.client,narrowTo);
+        PortableRemoteObject.narrow(client.client, narrowTo);
         return client;
     }
 
@@ -208,10 +210,11 @@ public class PortableContext {
      *   -startNameServer        Start the name server if needed. Not allowed with -host option.
      *   -verbose                Print message describing each started servant.
      * </pre>
+     *
      * @param args See description above.
      * @see #startServant
      */
-    public static void main (String[] args) {
+    public static void main(String[] args) {
 
         String hostOption = null;
         String portOption = null;
@@ -264,8 +267,10 @@ public class PortableContext {
                 for (int i = 0; i < argLen; i++) {
                     if (args[i] != null) {
 
-                        Servant servant = startServant(args[i],hostOption,portOption,startNameServer);
-                        if (servant.getContext().getRuntime() == RMI_RUNTIME) haveJRMP = true;   // _REVISIT_ REMOVE
+                        Servant servant = startServant(args[i], hostOption, portOption, startNameServer);
+                        if (servant.getContext().getRuntime() == RMI_RUNTIME) {
+                            haveJRMP = true;   // _REVISIT_ REMOVE
+                        }
 
                         if (verbose) {
                             String env = servant.getContext().getRuntime() == IIOP_RUNTIME ? "IIOP" : "RMI";
@@ -285,7 +290,9 @@ public class PortableContext {
                     // Wait forever...
 
                     Object sync = new Object();
-                    synchronized (sync) { sync.wait(); }
+                    synchronized (sync) {
+                        sync.wait();
+                    }
                 }
             } else {
                 usage();
@@ -299,48 +306,49 @@ public class PortableContext {
     /**
      * Startup a servant, using a name server running on the local host with
      * default port.
+     *
      * @param servantSpec The <a href="#servantSpec">servant specification</a>.
      * @param startNameServer True if the name server should be started if needed.
-     * @exception ClassNotFoundException If servant class cannot be found.
-     * @exception InstantiationException If servant class cannot be instantiated.
-     * @exception IllegalAccessException If servant class initializer not accessible.
-     * @exception NamingException If an error occurs when publishing the servant.
+     * @throws ClassNotFoundException If servant class cannot be found.
+     * @throws InstantiationException If servant class cannot be instantiated.
+     * @throws IllegalAccessException If servant class initializer not accessible.
+     * @throws NamingException If an error occurs when publishing the servant.
      * @see #startServant(java.lang.String, java.lang.String, java.lang.String, boolean)
      */
     public static Servant startServant(String servantSpec,
                                        boolean startNameServer)
-        throws  ClassNotFoundException,
-                InstantiationException,
-                IllegalAccessException,
-                RemoteException,
-                NamingException {
-        return startServant(servantSpec,null,null,startNameServer);
+            throws ClassNotFoundException,
+            InstantiationException,
+            IllegalAccessException,
+            RemoteException,
+            NamingException {
+        return startServant(servantSpec, null, null, startNameServer);
     }
 
     /**
      * Startup a servant.
+     *
      * @param servantSpec The <a href="#servantSpec">servant specification</a>.
      * @param defaultHost The name server host to use if not specified in servantSpec. May be
      * null (local host).
      * @param defaultPort The name server port to use if not specified in servantSpec. May be
      * null (use default for runtime).
      * @param startNameServer True if the name server should be started if needed.
-     * @exception ClassNotFoundException If servant class cannot be found.
-     * @exception InstantiationException If servant class cannot be instantiated.
-     * @exception IllegalAccessException If servant class initializer not accessible.
-     * @exception NamingException If an error occurs when publishing the servant.
+     * @throws ClassNotFoundException If servant class cannot be found.
+     * @throws InstantiationException If servant class cannot be instantiated.
+     * @throws IllegalAccessException If servant class initializer not accessible.
+     * @throws NamingException If an error occurs when publishing the servant.
      * @see #startServant(java.lang.String, boolean)
      */
-    public static Servant startServant( String servantSpec,
-                                        String defaultHost,
-                                        String defaultPort,
-                                        boolean startNameServer)
-        throws  ClassNotFoundException,
-                InstantiationException,
-                IllegalAccessException,
-                RemoteException,
-                NamingException {
-
+    public static Servant startServant(String servantSpec,
+                                       String defaultHost,
+                                       String defaultPort,
+                                       boolean startNameServer)
+            throws ClassNotFoundException,
+            InstantiationException,
+            IllegalAccessException,
+            RemoteException,
+            NamingException {
 
         int runtime = -1;
         String host = defaultHost;
@@ -358,24 +366,24 @@ public class PortableContext {
             int end = servantSpec.length();
             int nameOffset = servantSpec.indexOf("?name=");
             if (nameOffset >= 0) {
-                servantName = servantSpec.substring(nameOffset+6);
+                servantName = servantSpec.substring(nameOffset + 6);
                 end = nameOffset;
             }
 
-            int slashOffset = servantSpec.indexOf('/',10);
+            int slashOffset = servantSpec.indexOf('/', 10);
             if (slashOffset >= 0) {
-                servantClass = servantSpec.substring(slashOffset+1,end);
+                servantClass = servantSpec.substring(slashOffset + 1, end);
                 end = slashOffset;
 
-                int portOffset = servantSpec.indexOf(':',10);
+                int portOffset = servantSpec.indexOf(':', 10);
                 if (portOffset >= 0) {
-                    host = servantSpec.substring(10,portOffset);
-                    port = servantSpec.substring(portOffset+1,end);
+                    host = servantSpec.substring(10, portOffset);
+                    port = servantSpec.substring(portOffset + 1, end);
                 } else {
-                    host = servantSpec.substring(10,slashOffset);
+                    host = servantSpec.substring(10, slashOffset);
                 }
             } else {
-                servantClass = servantSpec.substring(10,end);
+                servantClass = servantSpec.substring(10, end);
             }
         } else {
 
@@ -385,15 +393,19 @@ public class PortableContext {
             if (offset < 0) {
                 servantClass = servantSpec;
             } else {
-                servantName = servantSpec.substring(0,offset);
-                servantClass = servantSpec.substring(offset+1);
+                servantName = servantSpec.substring(0, offset);
+                servantClass = servantSpec.substring(offset + 1);
             }
         }
 
         // Do some cleanup...
 
-        if (host != null && host.length() == 0) host = null;
-        if (port != null && port.length() == 0) port = null;
+        if (host != null && host.length() == 0) {
+            host = null;
+        }
+        if (port != null && port.length() == 0) {
+            port = null;
+        }
 
         // Instantiate the servant...
 
@@ -419,40 +431,49 @@ public class PortableContext {
 
         // Get a context...
 
-        PortableContext context = getContext(runtime,host,port,startNameServer);
+        PortableContext context = getContext(runtime, host, port, startNameServer);
 
         // Create and start the servant...
 
-        Servant servant = context.startServant(servantClass,servantName,servantInstance);
+        Servant servant = context.startServant(servantClass, servantName, servantInstance);
 
         return servant;
     }
 
-
     /**
      * Return the runtime in use by this context.
      */
-    public int getRuntime() {return runtime;}
+    public int getRuntime() {
+        return runtime;
+    }
 
     /**
      * Return the ORB in use by this context. Will be null if runtime == RMI_RUNTIME.
      */
-    public ORB getORB () {return orb;}
+    public ORB getORB() {
+        return orb;
+    }
 
     /**
      * Return the name context in use by this context.
      */
-    public Context getNameContext() {return nameContext;}
+    public Context getNameContext() {
+        return nameContext;
+    }
 
     /**
      * Return the name server host in use by this context. Will be null if local host.
      */
-    public String getNameServerHost() {return nameServerHost;}
+    public String getNameServerHost() {
+        return nameServerHost;
+    }
 
     /**
      * Return the name server port in use by this context.
      */
-    public int getNameServerPort() {return nameServerPort;}
+    public int getNameServerPort() {
+        return nameServerPort;
+    }
 
     //____________________________________________________________________________________________
     // Implementation Methods
@@ -460,16 +481,16 @@ public class PortableContext {
 
     // REMIND: Need support for Applet.
 
-    protected PortableContext (int runtime, boolean startNameServer) throws NamingException {
+    protected PortableContext(int runtime, boolean startNameServer) throws NamingException {
         this.runtime = runtime;
         this.startNameServer = startNameServer;
         init();
     }
 
-    protected PortableContext (String nameServerHost,
-                               String nameServerPort,
-                               int runtime,
-                               boolean startNameServer) throws NamingException {
+    protected PortableContext(String nameServerHost,
+                              String nameServerPort,
+                              int runtime,
+                              boolean startNameServer) throws NamingException {
 
         this.runtime = runtime;
         this.startNameServer = startNameServer;
@@ -485,8 +506,7 @@ public class PortableContext {
         init();
     }
 
-
-    protected static Client getClient( String clientSpec) throws NamingException {
+    protected static Client getClient(String clientSpec) throws NamingException {
 
         // clientSpec:  rmi|iiop://[host][:port]/publishedName;
         //
@@ -523,20 +543,20 @@ public class PortableContext {
         // Yep.
 
         int end = clientSpec.length();
-        int slashOffset = clientSpec.indexOf('/',startOffset);
+        int slashOffset = clientSpec.indexOf('/', startOffset);
         if (slashOffset >= 0) {
-            clientName = clientSpec.substring(slashOffset+1,end);
+            clientName = clientSpec.substring(slashOffset + 1, end);
             end = slashOffset;
 
-            int portOffset = clientSpec.indexOf(':',startOffset);
+            int portOffset = clientSpec.indexOf(':', startOffset);
             if (portOffset >= 0) {
-                host = clientSpec.substring(startOffset,portOffset);
-                port = clientSpec.substring(portOffset+1,end);
+                host = clientSpec.substring(startOffset, portOffset);
+                port = clientSpec.substring(portOffset + 1, end);
             } else {
-                host = clientSpec.substring(startOffset,slashOffset);
+                host = clientSpec.substring(startOffset, slashOffset);
             }
         } else {
-            clientName = clientSpec.substring(startOffset,end);
+            clientName = clientSpec.substring(startOffset, end);
         }
 
         if (clientName == null) {
@@ -545,8 +565,12 @@ public class PortableContext {
 
         // Do some cleanup...
 
-        if (host != null && host.length() == 0) host = null;
-        if (port != null && port.length() == 0) port = null;
+        if (host != null && host.length() == 0) {
+            host = null;
+        }
+        if (port != null && port.length() == 0) {
+            port = null;
+        }
 
         // Make sure we have a valid port number for the name service...
 
@@ -559,21 +583,23 @@ public class PortableContext {
 
         // Get a context...
 
-        PortableContext context = getContext(runtime,host,port,false);
+        PortableContext context = getContext(runtime, host, port, false);
 
         // Lookup the client instance...
 
         Object temp = context.getNameContext().lookup(clientName);
-        clientInstance = (Remote) PortableRemoteObject.narrow(temp,Remote.class);
+        clientInstance = (Remote) PortableRemoteObject.narrow(temp, Remote.class);
 
         // Create the client...
 
-        Client client = context.getClient(clientName,clientInstance);
+        Client client = context.getClient(clientName, clientInstance);
 
         return client;
     }
 
-    /** Find an RMI-IIOP Tie given a server object */
+    /**
+     * Find an RMI-IIOP Tie given a server object
+     */
     private static Tie findTie(java.rmi.Remote obj) {
         Tie result = Util.getTie(obj);
         if (result == null) {
@@ -584,16 +610,16 @@ public class PortableContext {
 
     // _REVISIT_ Security problem with multiple Applets?? Made private for now.
 
-    private static PortableContext getContext(  int runtime,
-                                                String host,
-                                                String port,
-                                                boolean startNameServer) throws NamingException {
-        String key = createContextKey(runtime,host,port);
+    private static PortableContext getContext(int runtime,
+                                              String host,
+                                              String port,
+                                              boolean startNameServer) throws NamingException {
+        String key = createContextKey(runtime, host, port);
         PortableContext result = (PortableContext) cache.get(key);
 
         if (result == null) {
-            result = new PortableContext(host,port,runtime,startNameServer);
-            cache.put(key,result);
+            result = new PortableContext(host, port, runtime, startNameServer);
+            cache.put(key, result);
         }
 
         return result;
@@ -627,7 +653,6 @@ public class PortableContext {
 
         } else if (runtime == RMI_RUNTIME) {
 
-
             args.addElement("javax.rmi.RMIRegistry");
             args.addElement(port);
             handshake = HANDSHAKE;
@@ -638,27 +663,27 @@ public class PortableContext {
 
         // Start her up...
 
-        return test.Util.startProcess(args,handshake);
+        return test.Util.startProcess(args, handshake);
     }
 
     private Client getClient(String clientName, Remote client) {
-        return new Client(clientName,client);
+        return new Client(clientName, client);
     }
 
-    private Servant startServant(   String servantClass,
-                                    String servantName,
-                                    Remote servant)
-        throws  ClassNotFoundException,
-                InstantiationException,
-                IllegalAccessException,
-                RemoteException,
-                NamingException {
-        Servant result = new Servant(servantClass,servantName,servant);
+    private Servant startServant(String servantClass,
+                                 String servantName,
+                                 Remote servant)
+            throws ClassNotFoundException,
+            InstantiationException,
+            IllegalAccessException,
+            RemoteException,
+            NamingException {
+        Servant result = new Servant(servantClass, servantName, servant);
 
         // Export it if we need to...
 
         if (!(servant instanceof PortableRemoteObject) &&
-            !(servant instanceof UnicastRemoteObject)) {
+                !(servant instanceof UnicastRemoteObject)) {
 
             PortableRemoteObject.exportObject(servant);
         }
@@ -666,13 +691,13 @@ public class PortableContext {
         // Publish it if we need to...
 
         if (servantName != null) {
-            nameContext.rebind(servantName,servant);
+            nameContext.rebind(servantName, servant);
         }
 
         return result;
     }
 
-    protected void init () throws NamingException {
+    protected void init() throws NamingException {
 
         Hashtable nameEnv = new Hashtable();
 
@@ -729,8 +754,8 @@ public class PortableContext {
 
             serverUrl += ":" + Integer.toString(nameServerPort);
 
-            nameEnv.put("java.naming.factory.initial",JndiConstants.REGISTRY_CONTEXT_FACTORY);
-            nameEnv.put("java.naming.provider.url",serverUrl);
+            nameEnv.put("java.naming.factory.initial", JndiConstants.REGISTRY_CONTEXT_FACTORY);
+            nameEnv.put("java.naming.provider.url", serverUrl);
 
         } else {
             throw new Error("Unknown runtime: " + runtime);
@@ -757,7 +782,9 @@ public class PortableContext {
             }
         } catch (Throwable e) {
 
-            if (e instanceof ThreadDeath) throw (ThreadDeath)e;
+            if (e instanceof ThreadDeath) {
+                throw (ThreadDeath) e;
+            }
 
             String server = runtime == IIOP_RUNTIME ? "TransientNameServer" : "RMIRegistry";
 
@@ -766,7 +793,7 @@ public class PortableContext {
                 System.out.println("Starting " + server + "...");
 
                 try {
-                    startNameServer(Integer.toString(nameServerPort),runtime);
+                    startNameServer(Integer.toString(nameServerPort), runtime);
                 } catch (Exception e1) {
                     throw new NamingException("Could not start name server: " + e1.toString());
                 }
@@ -790,10 +817,10 @@ public class PortableContext {
 
         // Finally, create our key...
 
-        key = createContextKey(runtime,nameServerHost,Integer.toString(nameServerPort));
+        key = createContextKey(runtime, nameServerHost, Integer.toString(nameServerPort));
     }
 
-    private ORB initORB (String[] nameServerArgs) {
+    private ORB initORB(String[] nameServerArgs) {
 
         // Setup the ORB properties...
 
@@ -806,11 +833,11 @@ public class PortableContext {
         }
 
         if (props.getProperty("org.omg.CORBA.ORBClass") == null) {
-            props.put("org.omg.CORBA.ORBClass","com.sun.corba.ee.impl.orb.ORBImpl");
+            props.put("org.omg.CORBA.ORBClass", "com.sun.corba.ee.impl.orb.ORBImpl");
         }
 
         if (props.getProperty("org.omg.CORBA.ORBSingletonClass") == null) {
-            props.put("org.omg.CORBA.ORBSingletonClass","com.sun.corba.ee.impl.orb.ORBSingleton");
+            props.put("org.omg.CORBA.ORBSingletonClass", "com.sun.corba.ee.impl.orb.ORBSingleton");
         }
 
         // Create and return the ORB...
@@ -822,8 +849,7 @@ public class PortableContext {
         return runtime + ":" + host + ":" + port;
     }
 
-
-    private static void usage () {
+    private static void usage() {
         System.out.println("\nUsage: PortableContext [options] servantSpec [servantSpec...]\n");
 
         System.out.println("Where servantSpec can be either of two forms:\n");
@@ -876,7 +902,8 @@ public class PortableContext {
             this.servant = servant;
         }
 
-        private Servant(){}
+        private Servant() {
+        }
     }
 
     /**
@@ -905,7 +932,9 @@ public class PortableContext {
             this.clientName = clientName;
             this.client = client;
         }
-        private Client(){}
+
+        private Client() {
+        }
     }
 }
 
@@ -941,7 +970,7 @@ class RMIRegistry {
             System.out.println("Port is not a number.");
         } catch (Exception e) {
             System.out.println("RegistryImpl.main: an exception occurred: " +
-                               e.getMessage());
+                                       e.getMessage());
             e.printStackTrace();
         }
         System.exit(1);

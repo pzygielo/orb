@@ -23,14 +23,14 @@ import org.glassfish.rmic.tools.java.Constants;
 import org.glassfish.rmic.tools.java.Environment;
 import org.glassfish.rmic.tools.java.Identifier;
 
-import java.io.IOException;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
  * This class is used to represent an attribute from a binary class.
  * This class should go away once arrays are objects.
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
@@ -57,7 +57,7 @@ class BinaryAttribute implements Constants {
         BinaryAttribute atts = null;
         int natt = in.readUnsignedShort();  // JVM 4.6 method_info.attrutes_count
 
-        for (int i = 0 ; i < natt ; i++) {
+        for (int i = 0; i < natt; i++) {
             // id from JVM 4.7 attribute_info.attribute_name_index
             Identifier id = cpool.getIdentifier(in.readUnsignedShort());
             // id from JVM 4.7 attribute_info.attribute_length
@@ -80,8 +80,9 @@ class BinaryAttribute implements Constants {
                       BinaryConstantPool cpool, Environment env) throws IOException {
         // count the number of attributes
         int attributeCount = 0;
-        for (BinaryAttribute att = attributes; att != null; att = att.next)
+        for (BinaryAttribute att = attributes; att != null; att = att.next) {
             attributeCount++;
+        }
         out.writeShort(attributeCount);
 
         // write out each attribute
@@ -101,10 +102,16 @@ class BinaryAttribute implements Constants {
      * Accessors
      */
 
-    public Identifier getName() { return name; }
+    public Identifier getName() {
+        return name;
+    }
 
-    public byte getData()[] { return data; }
+    public byte getData()[] {
+        return data;
+    }
 
-    public BinaryAttribute getNextAttribute() { return next; }
+    public BinaryAttribute getNextAttribute() {
+        return next;
+    }
 
 }

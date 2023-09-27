@@ -19,8 +19,9 @@
 
 package org.glassfish.rmic.tools.tree;
 
+import org.glassfish.rmic.tools.asm.Assembler;
 import org.glassfish.rmic.tools.java.*;
-import org.glassfish.rmic.tools.asm.*;
+
 import java.io.PrintStream;
 import java.util.Hashtable;
 
@@ -49,6 +50,7 @@ class FieldExpression extends UnaryExpression {
         super(FIELD, where, Type.tError, right);
         this.id = id;
     }
+
     public FieldExpression(long where, Expression right, MemberDefinition field) {
         super(FIELD, where, field.getType(), right);
         this.id = field.getName();
@@ -56,8 +58,9 @@ class FieldExpression extends UnaryExpression {
     }
 
     public Expression getImplementation() {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation;
+        }
         return this;
     }
 
@@ -75,7 +78,7 @@ class FieldExpression extends UnaryExpression {
     static public Identifier toIdentifier(Expression e) {
         StringBuilder sb = new StringBuilder();
         while (e.op == FIELD) {
-            FieldExpression fe = (FieldExpression)e;
+            FieldExpression fe = (FieldExpression) e;
             if (fe.id == idThis || fe.id == idClass) {
                 return null;
             }
@@ -251,9 +254,10 @@ class FieldExpression extends UnaryExpression {
                                           boolean mustBeType) {
         // Find the leftmost component, and put the blame on it.
         Expression idp = right;
-        while (idp instanceof UnaryExpression)
-            idp = ((UnaryExpression)idp).right;
-        IdentifierExpression ie = (IdentifierExpression)idp;
+        while (idp instanceof UnaryExpression) {
+            idp = ((UnaryExpression) idp).right;
+        }
+        IdentifierExpression ie = (IdentifierExpression) idp;
 
         // It may be that 'ie' refers to an ambiguous class.  Check this
         // with a call to env.resolve(). Part of solution for 4059855.
@@ -298,7 +302,7 @@ class FieldExpression extends UnaryExpression {
             // to simplify the initial value expression, which must not occur until
             // after the checking phase, for example, after definite assignment checks.
             if (field.isFinal()) {
-                Expression e = (Expression)field.getValue();
+                Expression e = (Expression) field.getValue();
                 // Must not be LHS here.  Test as a precaution,
                 // as we may not be careful to avoid this when
                 // compiling an erroneous program.
@@ -322,9 +326,9 @@ class FieldExpression extends UnaryExpression {
                 // expression is a valid assignment target.
                 // (See 'checkLHS'.)
                 if (field.isStatic()) {
-                    Expression args[] = { };
+                    Expression args[] = {};
                     Expression call =
-                        new MethodExpression(where, null, af, args);
+                            new MethodExpression(where, null, af, args);
                     return new CommaExpression(where, base, call);
                 } else {
                     Expression args[] = { base };
@@ -344,7 +348,7 @@ class FieldExpression extends UnaryExpression {
         if (field.isPrivate()) {
             ClassDefinition cdef = field.getClassDefinition();
             ClassDefinition ctxClass = ctx.field.getClassDefinition();
-            if (cdef == ctxClass){
+            if (cdef == ctxClass) {
                 // If access from same class as field, then no access
                 // method is needed.
                 return null;
@@ -387,7 +391,7 @@ class FieldExpression extends UnaryExpression {
                                     Type t,
                                     ClassDefinition c) {
         switch (t.getTypeCode()) {
-          case TC_CLASS:
+        case TC_CLASS:
             try {
                 Identifier nm = t.getClassName();
                 // Why not just use 'Environment.getClassDeclaration' here?
@@ -396,11 +400,12 @@ class FieldExpression extends UnaryExpression {
                 // was adapted from 'Environment.resolve'.
                 ClassDefinition def = env.getClassDefinition(t);
                 return c.canAccess(env, def.getClassDeclaration());
-            } catch (ClassNotFound e) {}  // Ignore -- reported elsewhere.
+            } catch (ClassNotFound e) {
+            }  // Ignore -- reported elsewhere.
             return true;
-          case TC_ARRAY:
+        case TC_ARRAY:
             return isTypeAccessible(where, env, t.getElementType(), c);
-          default:
+        default:
             return true;
         }
     }
@@ -426,20 +431,38 @@ class FieldExpression extends UnaryExpression {
                 }
                 String wrc = null;
                 switch (t.getTypeCode()) {
-                  case TC_VOID: wrc = "Void"; break;
-                  case TC_BOOLEAN: wrc = "Boolean"; break;
-                  case TC_BYTE: wrc = "Byte"; break;
-                  case TC_CHAR: wrc = "Character"; break;
-                  case TC_SHORT: wrc = "Short"; break;
-                  case TC_INT: wrc = "Integer"; break;
-                  case TC_FLOAT: wrc = "Float"; break;
-                  case TC_LONG: wrc = "Long"; break;
-                  case TC_DOUBLE: wrc = "Double"; break;
-                  default:
-                      env.error(right.where, "invalid.type.expr");
-                      return vset;
+                case TC_VOID:
+                    wrc = "Void";
+                    break;
+                case TC_BOOLEAN:
+                    wrc = "Boolean";
+                    break;
+                case TC_BYTE:
+                    wrc = "Byte";
+                    break;
+                case TC_CHAR:
+                    wrc = "Character";
+                    break;
+                case TC_SHORT:
+                    wrc = "Short";
+                    break;
+                case TC_INT:
+                    wrc = "Integer";
+                    break;
+                case TC_FLOAT:
+                    wrc = "Float";
+                    break;
+                case TC_LONG:
+                    wrc = "Long";
+                    break;
+                case TC_DOUBLE:
+                    wrc = "Double";
+                    break;
+                default:
+                    env.error(right.where, "invalid.type.expr");
+                    return vset;
                 }
-                Identifier wid = Identifier.lookup(idJavaLang+"."+wrc);
+                Identifier wid = Identifier.lookup(idJavaLang + "." + wrc);
                 Expression wcls = new TypeExpression(where, Type.tClass(wid));
                 implementation = new FieldExpression(where, wcls, idTYPE);
                 vset = implementation.checkValue(env, ctx, vset, exp);
@@ -464,8 +487,8 @@ class FieldExpression extends UnaryExpression {
             if (t.isType(TC_CLASS)) {
                 // sig is like "Lfoo/bar;", name is like "foo.bar".
                 // We assume SIG_CLASS and SIG_ENDCLASS are 1 char each.
-                className = sig.substring(1, sig.length()-1)
-                    .replace(SIGC_PACKAGE, '.');
+                className = sig.substring(1, sig.length() - 1)
+                        .replace(SIGC_PACKAGE, '.');
             } else {
                 // sig is like "[Lfoo/bar;" or "[I";
                 // name is like "[Lfoo.bar" or (again) "[I".
@@ -479,15 +502,15 @@ class FieldExpression extends UnaryExpression {
                 // lose if many initializations use the same class literal,
                 // but saves time and code space otherwise.)
                 implementation =
-                    makeClassLiteralInlineRef(env, ctx, lookup, className);
+                        makeClassLiteralInlineRef(env, ctx, lookup, className);
             } else {
                 // Cache the call to the helper, as it may be executed
                 // many times (e.g., if the class literal is inside a loop).
                 ClassDefinition inClass = lookup.getClassDefinition();
                 MemberDefinition cfld =
-                    getClassLiteralCache(env, ctx, className, inClass);
+                        getClassLiteralCache(env, ctx, className, inClass);
                 implementation =
-                    makeClassLiteralCacheRef(env, ctx, lookup, cfld, className);
+                        makeClassLiteralCacheRef(env, ctx, lookup, cfld, className);
             }
 
             vset = implementation.checkValue(env, ctx, vset, exp);
@@ -508,7 +531,7 @@ class FieldExpression extends UnaryExpression {
 
             implementation = implementFieldAccess(env, ctx, right, isLHS);
             return (right == null) ?
-                vset : right.checkAmbigName(env, ctx, vset, exp, this);
+                    vset : right.checkAmbigName(env, ctx, vset, exp, this);
         }
 
         // Does the qualifier have a meaning of its own?
@@ -587,11 +610,11 @@ class FieldExpression extends UnaryExpression {
 
             ClassDefinition sourceClass = ctxClass;
             if (right instanceof FieldExpression) {
-                Identifier id = ((FieldExpression)right).id;
+                Identifier id = ((FieldExpression) right).id;
                 if (id == idThis) {
-                    sourceClass = ((FieldExpression)right).clazz;
+                    sourceClass = ((FieldExpression) right).clazz;
                 } else if (id == idSuper) {
-                    sourceClass = ((FieldExpression)right).clazz;
+                    sourceClass = ((FieldExpression) right).clazz;
                     superBase = sourceClass;
                 }
             }
@@ -621,8 +644,9 @@ class FieldExpression extends UnaryExpression {
                 // outer class, which is necessarily accessible.
 
                 /*** Temporary assertion check ***/
-                if (ctx.field.isSynthetic())
+                if (ctx.field.isSynthetic()) {
                     throw new CompilerError("synthetic qualified this");
+                }
                 /*********************************/
 
                 // A.this means we're inside an A and we want its self ptr.
@@ -709,11 +733,11 @@ class FieldExpression extends UnaryExpression {
 
             // Check for invalid access to protected field.
             if (field.isProtected()
-                && !(right instanceof SuperExpression
-                     // Extension of JLS 6.6.2 for qualified 'super'.
-                     || (right instanceof FieldExpression &&
-                         ((FieldExpression)right).id == idSuper))
-                && !sourceClass.protectedAccess(env, field, right.type)) {
+                    && !(right instanceof SuperExpression
+                    // Extension of JLS 6.6.2 for qualified 'super'.
+                    || (right instanceof FieldExpression &&
+                    ((FieldExpression) right).id == idSuper))
+                    && !sourceClass.protectedAccess(env, field, right.type)) {
                 env.error(where, "invalid.protected.field.use",
                           field.getName(), field.getClassDeclaration(),
                           right.type);
@@ -721,12 +745,12 @@ class FieldExpression extends UnaryExpression {
             }
 
             if ((!field.isStatic()) &&
-                (right.op == THIS) && !vset.testVar(ctx.getThisNumber())) {
+                    (right.op == THIS) && !vset.testVar(ctx.getThisNumber())) {
                 env.error(where, "access.inst.before.super", id);
             }
 
             if (field.reportDeprecated(env)) {
-                env.error(where, "warn."+"field.is.deprecated",
+                env.error(where, "warn." + "field.is.deprecated",
                           id, field.getClassDefinition());
             }
 
@@ -743,8 +767,8 @@ class FieldExpression extends UnaryExpression {
             if (sourceClass == ctxClass) {
                 ClassDefinition declarer = field.getClassDefinition();
                 if (declarer.isPackagePrivate() &&
-                    !declarer.getName().getQualifier()
-                    .equals(sourceClass.getName().getQualifier())) {
+                        !declarer.getName().getQualifier()
+                                .equals(sourceClass.getName().getQualifier())) {
 
                     //System.out.println("The access of member " +
                     //             field + " declared in class " +
@@ -758,7 +782,7 @@ class FieldExpression extends UnaryExpression {
                     // Construct a member which will stand for this
                     // field in ctxClass and set `field' to refer to it.
                     field =
-                        MemberDefinition.makeProxyMember(field, clazz, env);
+                            MemberDefinition.makeProxyMember(field, clazz, env);
                 }
             }
 
@@ -787,7 +811,6 @@ class FieldExpression extends UnaryExpression {
      * <p>
      * Must be called after 'checkValue', else 'right' will be invalid.
      */
-
 
     public FieldUpdater getAssigner(Environment env, Context ctx) {
         if (field == null) {
@@ -868,11 +891,11 @@ class FieldExpression extends UnaryExpression {
             }
 
             if (field.isProtected()
-                && !(right instanceof SuperExpression
-                     // Extension of JLS 6.6.2 for qualified 'super'.
-                     || (right instanceof FieldExpression &&
-                         ((FieldExpression)right).id == idSuper))
-                && !ctxClass.protectedAccess(env, field, right.type)){
+                    && !(right instanceof SuperExpression
+                    // Extension of JLS 6.6.2 for qualified 'super'.
+                    || (right instanceof FieldExpression &&
+                    ((FieldExpression) right).id == idSuper))
+                    && !ctxClass.protectedAccess(env, field, right.type)) {
                 env.error(where, "invalid.protected.field.use",
                           field.getName(), field.getClassDeclaration(),
                           right.type);
@@ -887,8 +910,10 @@ class FieldExpression extends UnaryExpression {
 
         ctxClass.addDependency(field.getClassDeclaration());
         if (loc == null)
-            // Complain about a free-floating type name.
+        // Complain about a free-floating type name.
+        {
             return te.checkValue(env, ctx, vset, exp);
+        }
         loc.right = te;
         return vset;
     }
@@ -974,7 +999,7 @@ class FieldExpression extends UnaryExpression {
                                         Vset vset, long where,
                                         MemberDefinition field) {
         if (field.isBlankFinal()
-            && field.getClassDefinition() == ctx.field.getClassDefinition()) {
+                && field.getClassDefinition() == ctx.field.getClassDefinition()) {
             int number = ctx.getFieldNumber(field);
             if (number >= 0 && vset.testVarUnassigned(number)) {
                 // definite single assignment
@@ -1059,13 +1084,13 @@ class FieldExpression extends UnaryExpression {
                                                 String className) {
         Expression ccls = new TypeExpression(where,
                                              cfld.getClassDefinition()
-                                             .getType());
+                                                     .getType());
         Expression cache = new FieldExpression(where, ccls, cfld);
         Expression cacheOK =
-            new NotEqualExpression(where, cache.copyInline(ctx),
-                                   new NullExpression(where));
+                new NotEqualExpression(where, cache.copyInline(ctx),
+                                       new NullExpression(where));
         Expression lcls =
-            new TypeExpression(where, lookup.getClassDefinition() .getType());
+                new TypeExpression(where, lookup.getClassDefinition().getType());
         Expression name = new StringExpression(where, className);
         Expression namearg[] = { name };
         Expression setCache = new MethodExpression(where, lcls,
@@ -1079,7 +1104,7 @@ class FieldExpression extends UnaryExpression {
                                                  MemberDefinition lookup,
                                                  String className) {
         Expression lcls =
-            new TypeExpression(where, lookup.getClassDefinition().getType());
+                new TypeExpression(where, lookup.getClassDefinition().getType());
         Expression name = new StringExpression(where, className);
         Expression namearg[] = { name };
         Expression getClass = new MethodExpression(where, lcls,
@@ -1087,15 +1112,15 @@ class FieldExpression extends UnaryExpression {
         return getClass;
     }
 
-
     /**
      * Check if constant:  Will it inline away?
      */
     public boolean isConstant() {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation.isConstant();
+        }
         if ((field != null)
-            && (right == null || right instanceof TypeExpression
+                && (right == null || right instanceof TypeExpression
                 || (right.op == THIS && right.where == where))) {
             return field.isConstant();
         }
@@ -1106,8 +1131,9 @@ class FieldExpression extends UnaryExpression {
      * Inline
      */
     public Expression inline(Environment env, Context ctx) {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation.inline(env, ctx);
+        }
         // A field expression may have the side effect of causing
         // a NullPointerException, so evaluate it even though
         // the value is not needed.  Similarly, static field dereferences
@@ -1120,25 +1146,28 @@ class FieldExpression extends UnaryExpression {
         Expression e = inlineValue(env, ctx);
         if (e instanceof FieldExpression) {
             FieldExpression fe = (FieldExpression) e;
-            if ((fe.right != null) && (fe.right.op==THIS))
+            if ((fe.right != null) && (fe.right.op == THIS)) {
                 return null;
+            }
             // It should be possible to split this into two checks: one using
             // isNonNull() for non-statics and a different check for statics.
             // That would make the inlining slightly less conservative by
             // allowing, for example, dotting into String constants.
-            }
+        }
         return e;
     }
+
     public Expression inlineValue(Environment env, Context ctx) {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation.inlineValue(env, ctx);
+        }
         try {
             if (field == null) {
                 return this;
             }
 
             if (field.isFinal()) {
-                Expression e = (Expression)field.getValue(env);
+                Expression e = (Expression) field.getValue(env);
                 if ((e != null) && e.isConstant()) {
                     // remove bogus line-number info
                     e = e.copyInline(ctx);
@@ -1164,9 +1193,11 @@ class FieldExpression extends UnaryExpression {
             throw new CompilerError(e);
         }
     }
+
     public Expression inlineLHS(Environment env, Context ctx) {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation.inlineLHS(env, ctx);
+        }
         if (right != null) {
             if (field.isStatic()) {
                 Expression e = right.inline(env, ctx);
@@ -1182,8 +1213,9 @@ class FieldExpression extends UnaryExpression {
     }
 
     public Expression copyInline(Context ctx) {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation.copyInline(ctx);
+        }
         return super.copyInline(ctx);
     }
 
@@ -1191,19 +1223,20 @@ class FieldExpression extends UnaryExpression {
      * The cost of inlining this expression
      */
     public int costInline(int thresh, Environment env, Context ctx) {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation.costInline(thresh, env, ctx);
+        }
         if (ctx == null) {
             return 3 + ((right == null) ? 0
-                                        : right.costInline(thresh, env, ctx));
+                    : right.costInline(thresh, env, ctx));
         }
         // ctxClass is the current class trying to inline this method
         ClassDefinition ctxClass = ctx.field.getClassDefinition();
         try {
             // We only allow the inlining if the current class can access
             // the field, the field's class, and right's declared type.
-            if (    ctxClass.permitInlinedAccess(env, field.getClassDeclaration())
-                 && ctxClass.permitInlinedAccess(env, field)) {
+            if (ctxClass.permitInlinedAccess(env, field.getClassDeclaration())
+                    && ctxClass.permitInlinedAccess(env, field)) {
                 if (right == null) {
                     return 3;
                 } else {
@@ -1222,8 +1255,9 @@ class FieldExpression extends UnaryExpression {
      * Code
      */
     int codeLValue(Environment env, Context ctx, Assembler asm) {
-        if (implementation != null)
+        if (implementation != null) {
             throw new CompilerError("codeLValue");
+        }
         if (field.isStatic()) {
             if (right != null) {
                 right.code(env, ctx, asm);
@@ -1234,6 +1268,7 @@ class FieldExpression extends UnaryExpression {
         right.codeValue(env, ctx, asm);
         return 1;
     }
+
     void codeLoad(Environment env, Context ctx, Assembler asm) {
         if (field == null) {
             throw new CompilerError("should not be null");
@@ -1244,6 +1279,7 @@ class FieldExpression extends UnaryExpression {
             asm.add(where, opc_getfield, field);
         }
     }
+
     void codeStore(Environment env, Context ctx, Assembler asm) {
         if (field.isStatic()) {
             asm.add(where, opc_putstatic, field);

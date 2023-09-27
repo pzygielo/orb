@@ -26,6 +26,7 @@ import java.io.OutputStreamWriter;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Vector;
+
 import sun.tools.java.Type;
 import sun.tools.java.Identifier;
 import sun.tools.java.ClassDefinition;
@@ -38,10 +39,10 @@ import com.sun.corba.ee.impl.util.Utility;
 /**
  * A Generator object will generate the Java source code of the stub
  * and skeleton classes for an RMI remote implementation class, using
- * a particular stub protocol version.  
+ * a particular stub protocol version.
  *
- * @version     1.27, 07/27/07
- * @author      Peter Jones,  Bryan Atsatt
+ * @author Peter Jones,  Bryan Atsatt
+ * @version 1.27, 07/27/07
  */
 public class RMIGenerator implements RMIConstants, Generator {
 
@@ -54,6 +55,7 @@ public class RMIGenerator implements RMIConstants, Generator {
 
     /**
      * Examine and consume command line arguments.
+     *
      * @param argv The command line arguments. Ignore null
      * and unknown arguments. Set each consumed argument to null.
      * @param error Report any errors using the main.error() methods.
@@ -84,16 +86,18 @@ public class RMIGenerator implements RMIConstants, Generator {
      * Generate the source files for the stub and/or skeleton classes
      * needed by RMI for the given remote implementation class.
      *
-     * @param env       compiler environment
-     * @param cdef      definition of remote implementation class
-     *                  to generate stubs and/or skeletons for
-     * @param destDir   directory for the root of the package hierarchy
-     *                  for generated files
+     * @param env compiler environment
+     * @param cdef definition of remote implementation class
+     * to generate stubs and/or skeletons for
+     * @param destDir directory for the root of the package hierarchy
+     * for generated files
      */
     public void generate(BatchEnvironment env, ClassDefinition cdef, File destDir) {
         RemoteClass remoteClass = RemoteClass.forClass(env, cdef);
         if (remoteClass == null)        // exit if an error occurred
+        {
             return;
+        }
 
         RMIGenerator gen;
         try {
@@ -110,7 +114,7 @@ public class RMIGenerator implements RMIConstants, Generator {
 
         try {
             IndentingWriter out = new IndentingWriter(
-                new OutputStreamWriter(new FileOutputStream(stubFile)));
+                    new OutputStreamWriter(new FileOutputStream(stubFile)));
             writeStub(out);
             out.close();
             if (env.verbose()) {
@@ -123,19 +127,18 @@ public class RMIGenerator implements RMIConstants, Generator {
         }
 
         if (version == STUB_VERSION_1_1 ||
-            version == STUB_VERSION_FAT)
-        {
+                version == STUB_VERSION_FAT) {
             env.addGeneratedFile(skeletonFile);
 
             try {
                 IndentingWriter out = new IndentingWriter(
-                    new OutputStreamWriter(
-                        new FileOutputStream(skeletonFile)));
+                        new OutputStreamWriter(
+                                new FileOutputStream(skeletonFile)));
                 writeSkeleton(out);
                 out.close();
                 if (env.verbose()) {
                     env.output(Main.getText("rmic.wrote",
-                        skeletonFile.getPath()));
+                                            skeletonFile.getPath()));
                 }
                 env.parseFile(new ClassFile(skeletonFile));
             } catch (IOException e) {
@@ -151,8 +154,8 @@ public class RMIGenerator implements RMIConstants, Generator {
              * confusion from extraneous or inconsistent generated files.
              */
 
-            File outputDir = Util.getOutputDirectoryFor(remoteClassName,destDir,env);
-            File skeletonClassFile = new File(outputDir,skeletonClassName.getName().toString() + ".class");
+            File outputDir = Util.getOutputDirectoryFor(remoteClassName, destDir, env);
+            File skeletonClassFile = new File(outputDir, skeletonClassName.getName().toString() + ".class");
 
             skeletonFile.delete();      // ignore failures (no big deal)
             skeletonClassFile.delete();
@@ -167,9 +170,8 @@ public class RMIGenerator implements RMIConstants, Generator {
     protected static File sourceFileForClass(Identifier className,
                                              Identifier outputClassName,
                                              File destDir,
-                                             BatchEnvironment env)
-    {
-        File packageDir = Util.getOutputDirectoryFor(className,destDir,env);
+                                             BatchEnvironment env) {
+        File packageDir = Util.getOutputDirectoryFor(className, destDir, env);
         String outputName = Names.mangleClass(outputClassName).getName().toString();
 
         // Is there any existing _Tie equivalent leftover from a
@@ -180,14 +182,14 @@ public class RMIGenerator implements RMIConstants, Generator {
             String classNameStr = className.getName().toString();
             File temp = new File(packageDir, Utility.tieName(classNameStr) + ".class");
             if (temp.exists()) {
-                
+
                 // Found a tie. Is IIOP generation also being done?
-                
+
                 if (!env.getMain().iiopGeneration) {
-                    
+
                     // No, so write a warning...
-                
-                    env.error(0,"warn.rmic.tie.found",
+
+                    env.error(0, "warn.rmic.tie.found",
                               classNameStr,
                               temp.getAbsolutePath());
                 }
@@ -198,17 +200,24 @@ public class RMIGenerator implements RMIConstants, Generator {
         return new File(packageDir, outputFileName);
     }
 
-
-    /** rmic environment for this object */
+    /**
+     * rmic environment for this object
+     */
     private BatchEnvironment env;
 
-    /** the remote class that this instance is generating code for */
+    /**
+     * the remote class that this instance is generating code for
+     */
     private RemoteClass remoteClass;
 
-    /** version of the stub protocol to use in code generation */
+    /**
+     * version of the stub protocol to use in code generation
+     */
     private int version;
 
-    /** remote methods for remote class, indexed by operation number */
+    /**
+     * remote methods for remote class, indexed by operation number
+     */
     private RemoteClass.Method[] remoteMethods;
 
     /**
@@ -230,7 +239,9 @@ public class RMIGenerator implements RMIConstants, Generator {
      */
     private String[] methodFieldNames;
 
-    /** cached definition for certain exception classes in this environment */
+    /**
+     * cached definition for certain exception classes in this environment
+     */
     private ClassDefinition defException;
     private ClassDefinition defRemoteException;
     private ClassDefinition defRuntimeException;
@@ -241,14 +252,13 @@ public class RMIGenerator implements RMIConstants, Generator {
      * the given stub protocol version.
      */
     private RMIGenerator(BatchEnvironment env, ClassDefinition cdef,
-                           File destDir, RemoteClass remoteClass, int version)
-        throws ClassNotFound
-    {
-        this.destDir     = destDir;
-        this.cdef        = cdef;
-        this.env         = env;
+                         File destDir, RemoteClass remoteClass, int version)
+            throws ClassNotFound {
+        this.destDir = destDir;
+        this.cdef = cdef;
+        this.env = env;
         this.remoteClass = remoteClass;
-        this.version     = version;
+        this.version = version;
 
         remoteMethods = remoteClass.getRemoteMethods();
 
@@ -258,22 +268,22 @@ public class RMIGenerator implements RMIConstants, Generator {
 
         methodFieldNames = nameMethodFields(remoteMethods);
 
-        stubFile = sourceFileForClass(remoteClassName,stubClassName, destDir , env);
-        skeletonFile = sourceFileForClass(remoteClassName,skeletonClassName, destDir, env);
+        stubFile = sourceFileForClass(remoteClassName, stubClassName, destDir, env);
+        skeletonFile = sourceFileForClass(remoteClassName, skeletonClassName, destDir, env);
 
         /*
          * Initialize cached definitions for exception classes used
          * in the generation process.
          */
         defException =
-            env.getClassDeclaration(idJavaLangException).
-                getClassDefinition(env);
+                env.getClassDeclaration(idJavaLangException).
+                        getClassDefinition(env);
         defRemoteException =
-            env.getClassDeclaration(idRemoteException).
-                getClassDefinition(env);
+                env.getClassDeclaration(idRemoteException).
+                        getClassDefinition(env);
         defRuntimeException =
-            env.getClassDeclaration(idJavaLangRuntimeException).
-                getClassDefinition(env);
+                env.getClassDeclaration(idJavaLangRuntimeException).
+                        getClassDefinition(env);
     }
 
     /**
@@ -301,14 +311,15 @@ public class RMIGenerator implements RMIConstants, Generator {
          * Declare the stub class; implement all remote interfaces.
          */
         p.plnI("public final class " +
-            Names.mangleClass(stubClassName.getName()));
+                       Names.mangleClass(stubClassName.getName()));
         p.pln("extends " + idRemoteStub);
         ClassDefinition[] remoteInterfaces = remoteClass.getRemoteInterfaces();
         if (remoteInterfaces.length > 0) {
             p.p("implements ");
             for (int i = 0; i < remoteInterfaces.length; i++) {
-                if (i > 0)
+                if (i > 0) {
                     p.p(", ");
+                }
                 p.p(remoteInterfaces[i].getName().toString());
             }
             p.pln();
@@ -316,8 +327,7 @@ public class RMIGenerator implements RMIConstants, Generator {
         p.pOlnI("{");
 
         if (version == STUB_VERSION_1_1 ||
-            version == STUB_VERSION_FAT)
-        {
+                version == STUB_VERSION_FAT) {
             writeOperationsArray(p);
             p.pln();
             writeInterfaceHash(p);
@@ -325,10 +335,9 @@ public class RMIGenerator implements RMIConstants, Generator {
         }
 
         if (version == STUB_VERSION_FAT ||
-            version == STUB_VERSION_1_2)
-        {
+                version == STUB_VERSION_1_2) {
             p.pln("private static final long serialVersionUID = " +
-                STUB_SERIAL_VERSION_UID + ";");
+                          STUB_SERIAL_VERSION_UID + ";");
             p.pln();
 
             /*
@@ -416,8 +425,7 @@ public class RMIGenerator implements RMIConstants, Generator {
      * Write the constructors for the stub class.
      */
     private void writeStubConstructors(IndentingWriter p)
-        throws IOException
-    {
+            throws IOException {
         p.pln("// constructors");
 
         /*
@@ -426,16 +434,15 @@ public class RMIGenerator implements RMIConstants, Generator {
          * the constructor that directly takes a RemoteRef argument.
          */
         if (version == STUB_VERSION_1_1 ||
-            version == STUB_VERSION_FAT)
-        {
+                version == STUB_VERSION_FAT) {
             p.plnI("public " + Names.mangleClass(stubClassName.getName()) +
-                "() {");
+                           "() {");
             p.pln("super();");
             p.pOln("}");
         }
 
         p.plnI("public " + Names.mangleClass(stubClassName.getName()) +
-            "(" + idRemoteRef + " ref) {");
+                       "(" + idRemoteRef + " ref) {");
         p.pln("super(ref);");
         p.pOln("}");
     }
@@ -444,8 +451,7 @@ public class RMIGenerator implements RMIConstants, Generator {
      * Write the stub method for the remote method with the given "opnum".
      */
     private void writeStubMethod(IndentingWriter p, int opnum)
-        throws IOException
-    {
+            throws IOException {
         RemoteClass.Method method = remoteMethods[opnum];
         Identifier methodName = method.getName();
         Type methodType = method.getType();
@@ -459,19 +465,21 @@ public class RMIGenerator implements RMIConstants, Generator {
          * interface(s).
          */
         p.pln("// implementation of " +
-            methodType.typeString(methodName.toString(), true, false));
+                      methodType.typeString(methodName.toString(), true, false));
         p.p("public " + returnType + " " + methodName + "(");
         for (int i = 0; i < paramTypes.length; i++) {
-            if (i > 0)
+            if (i > 0) {
                 p.p(", ");
+            }
             p.p(paramTypes[i] + " " + paramNames[i]);
         }
         p.plnI(")");
         if (exceptions.length > 0) {
             p.p("throws ");
             for (int i = 0; i < exceptions.length; i++) {
-                if (i > 0)
+                if (i > 0) {
                     p.p(", ");
+                }
                 p.p(exceptions[i].getName().toString());
             }
             p.pln();
@@ -510,8 +518,7 @@ public class RMIGenerator implements RMIConstants, Generator {
             p.plnI("if (useNewInvoke) {");
         }
         if (version == STUB_VERSION_FAT ||
-            version == STUB_VERSION_1_2)
-        {
+                version == STUB_VERSION_1_2) {
             if (!returnType.isType(TC_VOID)) {
                 p.p("Object $result = ");               // REMIND: why $?
             }
@@ -519,8 +526,9 @@ public class RMIGenerator implements RMIConstants, Generator {
             if (paramTypes.length > 0) {
                 p.p("new java.lang.Object[] {");
                 for (int i = 0; i < paramTypes.length; i++) {
-                    if (i > 0)
+                    if (i > 0) {
                         p.p(", ");
+                    }
                     p.p(wrapArgumentCode(paramTypes[i], paramNames[i]));
                 }
                 p.p("}");
@@ -530,17 +538,16 @@ public class RMIGenerator implements RMIConstants, Generator {
             p.pln(", " + method.getMethodHash() + "L);");
             if (!returnType.isType(TC_VOID)) {
                 p.pln("return " +
-                    unwrapArgumentCode(returnType, "$result") + ";");
+                              unwrapArgumentCode(returnType, "$result") + ";");
             }
         }
         if (version == STUB_VERSION_FAT) {
             p.pOlnI("} else {");
         }
         if (version == STUB_VERSION_1_1 ||
-            version == STUB_VERSION_FAT)
-        {
+                version == STUB_VERSION_FAT) {
             p.pln(idRemoteCall + " call = ref.newCall((" + idRemoteObject +
-                ") this, operations, " + opnum + ", interfaceHash);");
+                          ") this, operations, " + opnum + ", interfaceHash);");
 
             if (paramTypes.length > 0) {
                 p.plnI("try {");
@@ -548,7 +555,7 @@ public class RMIGenerator implements RMIConstants, Generator {
                 writeMarshalArguments(p, "out", paramTypes, paramNames);
                 p.pOlnI("} catch (java.io.IOException e) {");
                 p.pln("throw new " + idMarshalException +
-                    "(\"error marshalling arguments\", e);");
+                              "(\"error marshalling arguments\", e);");
                 p.pOln("}");
             }
 
@@ -561,11 +568,11 @@ public class RMIGenerator implements RMIConstants, Generator {
                 p.plnI("try {");
                 p.pln("java.io.ObjectInput in = call.getInputStream();");
                 boolean objectRead =
-                    writeUnmarshalArgument(p, "in", returnType, "$result");
+                        writeUnmarshalArgument(p, "in", returnType, "$result");
                 p.pln(";");
                 p.pOlnI("} catch (java.io.IOException e) {");
                 p.pln("throw new " + idUnmarshalException +
-                    "(\"error unmarshalling return\", e);");
+                              "(\"error unmarshalling return\", e);");
                 /*
                  * If any only if readObject has been invoked, we must catch
                  * ClassNotFoundException as well as IOException.
@@ -573,7 +580,7 @@ public class RMIGenerator implements RMIConstants, Generator {
                 if (objectRead) {
                     p.pOlnI("} catch (java.lang.ClassNotFoundException e) {");
                     p.pln("throw new " + idUnmarshalException +
-                        "(\"error unmarshalling return\", e);");
+                                  "(\"error unmarshalling return\", e);");
                 }
                 p.pOlnI("} finally {");
                 p.pln("ref.done(call);");
@@ -592,15 +599,14 @@ public class RMIGenerator implements RMIConstants, Generator {
          */
         if (catchList.size() > 0) {
             for (Enumeration enumeration = catchList.elements();
-                 enumeration.hasMoreElements();)
-            {
+                 enumeration.hasMoreElements(); ) {
                 ClassDefinition def = (ClassDefinition) enumeration.nextElement();
                 p.pOlnI("} catch (" + def.getName() + " e) {");
                 p.pln("throw e;");
             }
             p.pOlnI("} catch (java.lang.Exception e) {");
             p.pln("throw new " + idUnexpectedException +
-                "(\"undeclared checked exception\", e);");
+                          "(\"undeclared checked exception\", e);");
             p.pOln("}");                // end try/catch block
         }
 
@@ -616,12 +622,12 @@ public class RMIGenerator implements RMIConstants, Generator {
      * i.e. not a subclass of any of the other exceptions in the Vector,
      * so the catch blocks for these exceptions may be generated in any
      * order relative to each other.
-     *
+     * <p>
      * RemoteException and RuntimeException are each automatically placed
      * in the returned Vector (if none of their superclasses are already
      * present), since those exceptions should always be directly rethrown
      * by a stub method.
-     *
+     * <p>
      * The returned Vector will be empty if java.lang.Exception or one
      * of its superclasses is in the throws clause of the method, indicating
      * that no exceptions need to be caught.
@@ -633,7 +639,7 @@ public class RMIGenerator implements RMIConstants, Generator {
         uniqueList.addElement(defRemoteException);
 
         /* For each exception declared by the stub method's throws clause: */
-    nextException:
+        nextException:
         for (int i = 0; i < exceptions.length; i++) {
             ClassDeclaration decl = exceptions[i];
             try {
@@ -657,9 +663,9 @@ public class RMIGenerator implements RMIConstants, Generator {
                  * Compare this exception against the current list of
                  * exceptions that need to be caught:
                  */
-                for (int j = 0; j < uniqueList.size();) {
+                for (int j = 0; j < uniqueList.size(); ) {
                     ClassDefinition def =
-                        (ClassDefinition) uniqueList.elementAt(j);
+                            (ClassDefinition) uniqueList.elementAt(j);
                     if (def.superClassOf(env, decl)) {
                         /*
                          * If a superclass of this exception is already on
@@ -718,7 +724,7 @@ public class RMIGenerator implements RMIConstants, Generator {
          * Declare the skeleton class.
          */
         p.plnI("public final class " +
-            Names.mangleClass(skeletonClassName.getName()));
+                       Names.mangleClass(skeletonClassName.getName()));
         p.pln("implements " + idSkeleton);
         p.pOlnI("{");
 
@@ -740,7 +746,7 @@ public class RMIGenerator implements RMIConstants, Generator {
          * Define the dispatch() method.
          */
         p.plnI("public void dispatch(" + idRemote + " obj, " +
-            idRemoteCall + " call, int opnum, long hash)");
+                       idRemoteCall + " call, int opnum, long hash)");
         p.pln("throws java.lang.Exception");
         p.pOlnI("{");
 
@@ -748,10 +754,11 @@ public class RMIGenerator implements RMIConstants, Generator {
             p.plnI("if (opnum < 0) {");
             if (remoteMethods.length > 0) {
                 for (int opnum = 0; opnum < remoteMethods.length; opnum++) {
-                    if (opnum > 0)
+                    if (opnum > 0) {
                         p.pO("} else ");
+                    }
                     p.plnI("if (hash == " +
-                        remoteMethods[opnum].getMethodHash() + "L) {");
+                                   remoteMethods[opnum].getMethodHash() + "L) {");
                     p.pln("opnum = " + opnum + ";");
                 }
                 p.pOlnI("} else {");
@@ -762,7 +769,7 @@ public class RMIGenerator implements RMIConstants, Generator {
              * would do.
              */
             p.pln("throw new " +
-                idUnmarshalException + "(\"invalid method hash\");");
+                          idUnmarshalException + "(\"invalid method hash\");");
             if (remoteMethods.length > 0) {
                 p.pOln("}");
             }
@@ -776,7 +783,7 @@ public class RMIGenerator implements RMIConstants, Generator {
 
         p.plnI("if (hash != interfaceHash)");
         p.pln("throw new " +
-            idSkeletonMismatchException + "(\"interface hash mismatch\");");
+                      idSkeletonMismatchException + "(\"interface hash mismatch\");");
         p.pO();
 
         if (version == STUB_VERSION_FAT) {
@@ -803,9 +810,9 @@ public class RMIGenerator implements RMIConstants, Generator {
          * unrecognized method hash.
          */
         p.pln("throw new " + idUnmarshalException +
-            "(\"invalid method number\");");
+                      "(\"invalid method number\");");
         p.pOln("}");                    // end switch statement
-        
+
         p.pOln("}");                    // end dispatch() method
 
         p.pOln("}");                    // end skeleton class
@@ -816,8 +823,7 @@ public class RMIGenerator implements RMIConstants, Generator {
      * the remote method with the given "opnum".
      */
     private void writeSkeletonDispatchCase(IndentingWriter p, int opnum)
-        throws IOException
-    {
+            throws IOException {
         RemoteClass.Method method = remoteMethods[opnum];
         Identifier methodName = method.getName();
         Type methodType = method.getType();
@@ -826,7 +832,7 @@ public class RMIGenerator implements RMIConstants, Generator {
         Type returnType = methodType.getReturnType();
 
         p.pOlnI("case " + opnum + ": // " +
-            methodType.typeString(methodName.toString(), true, false));
+                        methodType.typeString(methodName.toString(), true, false));
         /*
          * Use nested block statement inside case to provide an independent
          * namespace for local variables used to unmarshal parameters for
@@ -848,10 +854,10 @@ public class RMIGenerator implements RMIConstants, Generator {
             p.plnI("try {");
             p.pln("java.io.ObjectInput in = call.getInputStream();");
             boolean objectsRead = writeUnmarshalArguments(p, "in",
-                paramTypes, paramNames);
+                                                          paramTypes, paramNames);
             p.pOlnI("} catch (java.io.IOException e) {");
             p.pln("throw new " + idUnmarshalException +
-                "(\"error unmarshalling arguments\", e);");
+                          "(\"error unmarshalling arguments\", e);");
             /*
              * If any only if readObject has been invoked, we must catch
              * ClassNotFoundException as well as IOException.
@@ -859,7 +865,7 @@ public class RMIGenerator implements RMIConstants, Generator {
             if (objectsRead) {
                 p.pOlnI("} catch (java.lang.ClassNotFoundException e) {");
                 p.pln("throw new " + idUnmarshalException +
-                    "(\"error unmarshalling arguments\", e);");
+                              "(\"error unmarshalling arguments\", e);");
             }
             p.pOlnI("} finally {");
             p.pln("call.releaseInputStream();");
@@ -880,8 +886,9 @@ public class RMIGenerator implements RMIConstants, Generator {
          */
         p.p("server." + methodName + "(");
         for (int i = 0; i < paramNames.length; i++) {
-            if (i > 0)
+            if (i > 0) {
                 p.p(", ");
+            }
             p.p(paramNames[i]);
         }
         p.pln(");");
@@ -903,9 +910,9 @@ public class RMIGenerator implements RMIConstants, Generator {
         }
         p.pOlnI("} catch (java.io.IOException e) {");
         p.pln("throw new " +
-            idMarshalException + "(\"error marshalling return\", e);");
+                      idMarshalException + "(\"error marshalling return\", e);");
         p.pOln("}");
-        
+
         p.pln("break;");                // break from switch statement
 
         p.pOlnI("}");                   // end nested block statement
@@ -916,14 +923,14 @@ public class RMIGenerator implements RMIConstants, Generator {
      * Write declaration and initializer for "operations" static array.
      */
     private void writeOperationsArray(IndentingWriter p)
-        throws IOException
-    {
+            throws IOException {
         p.plnI("private static final " + idOperation + "[] operations = {");
         for (int i = 0; i < remoteMethods.length; i++) {
-            if (i > 0)
+            if (i > 0) {
                 p.pln(",");
+            }
             p.p("new " + idOperation + "(\"" +
-                remoteMethods[i].getOperationString() + "\")");
+                        remoteMethods[i].getOperationString() + "\")");
         }
         p.pln();
         p.pOln("};");
@@ -933,10 +940,9 @@ public class RMIGenerator implements RMIConstants, Generator {
      * Write declaration and initializer for "interfaceHash" static field.
      */
     private void writeInterfaceHash(IndentingWriter p)
-        throws IOException
-    {
+            throws IOException {
         p.pln("private static final long interfaceHash = " +
-            remoteClass.getInterfaceHash() + "L;");
+                      remoteClass.getInterfaceHash() + "L;");
     }
 
     /**
@@ -944,11 +950,10 @@ public class RMIGenerator implements RMIConstants, Generator {
      * corresponding to each remote method in a stub.
      */
     private void writeMethodFieldDeclarations(IndentingWriter p)
-        throws IOException
-    {
+            throws IOException {
         for (int i = 0; i < methodFieldNames.length; i++) {
             p.pln("private static java.lang.reflect.Method " +
-                methodFieldNames[i] + ";");
+                          methodFieldNames[i] + ";");
         }
     }
 
@@ -957,8 +962,7 @@ public class RMIGenerator implements RMIConstants, Generator {
      * using the Java Reflection API.
      */
     private void writeMethodFieldInitializers(IndentingWriter p)
-        throws IOException
-    {
+            throws IOException {
         for (int i = 0; i < methodFieldNames.length; i++) {
             p.p(methodFieldNames[i] + " = ");
             /*
@@ -975,10 +979,11 @@ public class RMIGenerator implements RMIConstants, Generator {
             Type paramTypes[] = methodType.getArgumentTypes();
 
             p.p(def.getClassDefinition().getName() + ".class.getMethod(\"" +
-                methodName + "\", new java.lang.Class[] {");
+                        methodName + "\", new java.lang.Class[] {");
             for (int j = 0; j < paramTypes.length; j++) {
-                if (j > 0)
+                if (j > 0) {
                     p.p(", ");
+                }
                 p.p(paramTypes[j] + ".class");
             }
             p.pln("});");
@@ -995,7 +1000,7 @@ public class RMIGenerator implements RMIConstants, Generator {
      * Generate an array of names for fields that correspond to the given
      * array of remote methods.  Each name in the returned array is
      * guaranteed to be unique.
-     *
+     * <p>
      * The name of a method is included in its corresponding field name
      * to enhance readability of the generated code.
      */
@@ -1011,7 +1016,7 @@ public class RMIGenerator implements RMIConstants, Generator {
      * Generate an array of names for parameters corresponding to the
      * given array of types for the parameters.  Each name in the returned
      * array is guaranteed to be unique.
-     *
+     * <p>
      * A representation of the type of a parameter is included in its
      * corresponding field name to enhance the readability of the generated
      * code.
@@ -1020,7 +1025,7 @@ public class RMIGenerator implements RMIConstants, Generator {
         String[] names = new String[types.length];
         for (int i = 0; i < names.length; i++) {
             names[i] = "$param_" +
-                generateNameFromType(types[i]) + "_" + (i + 1);
+                    generateNameFromType(types[i]) + "_" + (i + 1);
         }
         return names;
     }
@@ -1053,7 +1058,7 @@ public class RMIGenerator implements RMIConstants, Generator {
     /**
      * Write a snippet of Java code to marshal a value named "name" of
      * type "type" to the java.io.ObjectOutput stream named "stream".
-     *
+     * <p>
      * Primitive types are marshalled with their corresponding methods
      * in the java.io.DataOutput interface, and objects (including arrays)
      * are marshalled using the writeObject method.
@@ -1061,8 +1066,7 @@ public class RMIGenerator implements RMIConstants, Generator {
     private static void writeMarshalArgument(IndentingWriter p,
                                              String streamName,
                                              Type type, String name)
-        throws IOException
-    {
+            throws IOException {
         int typeCode = type.getTypeCode();
         switch (typeCode) {
         case TC_BOOLEAN:
@@ -1106,8 +1110,7 @@ public class RMIGenerator implements RMIConstants, Generator {
     private static void writeMarshalArguments(IndentingWriter p,
                                               String streamName,
                                               Type[] types, String[] names)
-        throws IOException
-    {
+            throws IOException {
         if (types.length != names.length) {
             throw new Error("paramter type and name arrays different sizes");
         }
@@ -1123,7 +1126,7 @@ public class RMIGenerator implements RMIConstants, Generator {
      * from the java.io.ObjectInput stream named "stream" into a variable
      * named "name" (if "name" is null, the value in unmarshalled and
      * discarded).
-     *
+     * <p>
      * Primitive types are unmarshalled with their corresponding methods
      * in the java.io.DataInput interface, and objects (including arrays)
      * are unmarshalled using the readObject method.
@@ -1131,8 +1134,7 @@ public class RMIGenerator implements RMIConstants, Generator {
     private static boolean writeUnmarshalArgument(IndentingWriter p,
                                                   String streamName,
                                                   Type type, String name)
-        throws IOException
-    {
+            throws IOException {
         boolean readObject = false;
 
         if (name != null) {
@@ -1187,8 +1189,7 @@ public class RMIGenerator implements RMIConstants, Generator {
                                                    String streamName,
                                                    Type[] types,
                                                    String[] names)
-        throws IOException
-    {
+            throws IOException {
         if (types.length != names.length) {
             throw new Error("paramter type and name arrays different sizes");
         }
@@ -1207,7 +1208,7 @@ public class RMIGenerator implements RMIConstants, Generator {
      * Return a snippet of Java code to wrap a value named "name" of
      * type "type" into an object as appropriate for use by the
      * Java Reflection API.
-     *
+     * <p>
      * For primitive types, an appropriate wrapper class instantiated
      * with the primitive value.  For object types (including arrays),
      * no wrapping is necessary, so the value is named directly.
@@ -1242,7 +1243,7 @@ public class RMIGenerator implements RMIConstants, Generator {
     /**
      * Return a snippet of Java code to unwrap a value named "name" into
      * a value of type "type", as appropriate for the Java Reflection API.
-     *
+     * <p>
      * For primitive types, the value is assumed to be of the corresponding
      * wrapper type, and a method is called on the wrapper type to retrieve
      * the primitive value.  For object types (include arrays), no

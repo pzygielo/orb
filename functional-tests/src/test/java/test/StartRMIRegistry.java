@@ -28,7 +28,7 @@ import java.rmi.RMISecurityManager;
 public class StartRMIRegistry {
 
     private static Registry registry = null;
-    
+
     /**
      * Main program to start a registry. <br>
      * The port number can be specified on the command line.
@@ -45,7 +45,6 @@ public class StartRMIRegistry {
             registry = LocateRegistry.createRegistry(port);
             System.out.println(Util.HANDSHAKE);
 
-
             // prevent registry from exiting
             while (true) {
                 try {
@@ -60,7 +59,7 @@ public class StartRMIRegistry {
             System.out.println("Port is not a number.");
         } catch (Exception e) {
             System.out.println("RegistryImpl.main: an exception occurred: " +
-                               e.getMessage());
+                                       e.getMessage());
             e.printStackTrace();
         }
         System.exit(1);

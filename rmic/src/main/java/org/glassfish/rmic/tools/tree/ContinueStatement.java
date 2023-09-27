@@ -19,9 +19,10 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
-import org.glassfish.rmic.tools.asm.Label;
+import org.glassfish.rmic.tools.java.Environment;
+import org.glassfish.rmic.tools.java.Identifier;
+
 import java.io.PrintStream;
 import java.util.Hashtable;
 
@@ -52,18 +53,18 @@ class ContinueStatement extends Statement {
         // A new context is established here because the 'continue' statement
         // itself may be labelled, however erroneously.  A 'CheckContext' must
         // be used here, as 'getContinueContext' is expected to return one.
-        CheckContext destctx = (CheckContext)new CheckContext(ctx, this).getContinueContext(lbl);
+        CheckContext destctx = (CheckContext) new CheckContext(ctx, this).getContinueContext(lbl);
         if (destctx != null) {
             switch (destctx.node.op) {
-              case FOR:
-              case DO:
-              case WHILE:
+            case FOR:
+            case DO:
+            case WHILE:
                 if (destctx.frameNumber != ctx.frameNumber) {
                     env.error(where, "branch.to.uplevel", lbl);
                 }
                 destctx.vsContinue = destctx.vsContinue.join(vset);
                 break;
-              default:
+            default:
                 env.error(where, "invalid.continue");
             }
         } else {
@@ -91,7 +92,7 @@ class ContinueStatement extends Statement {
      * Code
      */
     public void code(Environment env, Context ctx, Assembler asm) {
-        CodeContext destctx = (CodeContext)ctx.getContinueContext(lbl);
+        CodeContext destctx = (CodeContext) ctx.getContinueContext(lbl);
         codeFinally(env, ctx, asm, destctx, null);
         asm.add(where, opc_goto, destctx.contLabel);
     }

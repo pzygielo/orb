@@ -20,12 +20,11 @@
 package corba.poatest;
 
 import corba.framework.*;
+
 import java.util.*;
 
-public class OneWayTest extends CORBATest
-{
-    protected void doTest() throws Throwable
-    {
+public class OneWayTest extends CORBATest {
+    protected void doTest() throws Throwable {
         Controller orbd = createORBD();
 
         orbd.start();
@@ -35,7 +34,7 @@ public class OneWayTest extends CORBATest
         server.start();
 
         Controller client = createClient("corba.poatest.helloClient");
-    
+
         client.start();
 
         client.waitFor();

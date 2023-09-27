@@ -21,6 +21,7 @@ package naming.rinameservice;
 
 import test.Test;
 import corba.framework.*;
+
 import java.util.*;
 
 /**
@@ -28,27 +29,25 @@ import java.util.*;
  * Simple Client to test INS functionality ) and starts RINameServer
  * and a simple client to test that StandAlone NameServer works.
  */
-public class RINameServiceTest extends CORBATest
-{
-    public static String[] javaFiles = {"NameServer.java",
-                                        "NameServiceClient.java"};
+public class RINameServiceTest extends CORBATest {
+    public static String[] javaFiles = { "NameServer.java",
+            "NameServiceClient.java" };
 
-    protected void doTest() throws Throwable
-    {
+    protected void doTest() throws Throwable {
         Options.setJavaFiles(javaFiles);
 
-        compileJavaFiles( );
- 
+        compileJavaFiles();
+
         Controller client = createClient(
-            "naming.rinameservice.NameServiceClient" );
+                "naming.rinameservice.NameServiceClient");
         Controller server = createServer(
-            "naming.rinameservice.NameServer" );
+                "naming.rinameservice.NameServer");
 
         server.start();
-        Thread.sleep( 10000 );
+        Thread.sleep(10000);
         client.start();
-        Thread.sleep( 10000 );
-        
+        Thread.sleep(10000);
+
         server.stop();
         client.stop();
     }

@@ -19,23 +19,18 @@
 
 package com.sun.corba.ee.impl.protocol.giopmsgheaders;
 
+import com.sun.corba.ee.impl.encoding.CDRInputObject;
+import com.sun.corba.ee.impl.misc.ORBUtility;
+import com.sun.corba.ee.spi.ior.IOR;
+import com.sun.corba.ee.spi.ior.IORFactories;
+import com.sun.corba.ee.spi.ior.iiop.GIOPVersion;
+import com.sun.corba.ee.spi.logging.ORBUtilSystemException;
+import com.sun.corba.ee.spi.orb.ORB;
+import com.sun.corba.ee.spi.servicecontext.ServiceContextDefaults;
+import com.sun.corba.ee.spi.servicecontext.ServiceContexts;
 import org.omg.CORBA.CompletionStatus;
 import org.omg.CORBA.SystemException;
 import org.omg.CORBA_2_3.portable.InputStream;
-
-import com.sun.corba.ee.spi.ior.IORFactories;
-
-import com.sun.corba.ee.spi.orb.ORB;
-
-import com.sun.corba.ee.spi.servicecontext.ServiceContextDefaults;
-import com.sun.corba.ee.spi.servicecontext.ServiceContexts;
-import com.sun.corba.ee.spi.ior.iiop.GIOPVersion;
-import com.sun.corba.ee.spi.ior.IOR;
-
-import com.sun.corba.ee.impl.misc.ORBUtility;
-import com.sun.corba.ee.impl.encoding.CDRInputObject;
-
-import com.sun.corba.ee.spi.logging.ORBUtilSystemException;
 
 /**
  * This implements the GIOP 1.1 Reply header.
@@ -69,7 +64,7 @@ public final class ReplyMessage_1_1 extends Message_1_1
     ReplyMessage_1_1(ORB orb, ServiceContexts _service_contexts,
                      int _request_id, int _reply_status, IOR _ior) {
         super(Message.GIOPBigMagic, GIOPVersion.V1_1, FLAG_NO_FRAG_BIG_ENDIAN,
-                Message.GIOPReply, 0);
+              Message.GIOPReply, 0);
         this.orb = orb;
         service_contexts = _service_contexts;
         request_id = _request_id;
@@ -128,17 +123,17 @@ public final class ReplyMessage_1_1 extends Message_1_1
             int status = istream.read_long();
 
             switch (status) {
-                case CompletionStatus._COMPLETED_YES:
-                    this.completionStatus = CompletionStatus.COMPLETED_YES;
-                    break;
-                case CompletionStatus._COMPLETED_NO:
-                    this.completionStatus = CompletionStatus.COMPLETED_NO;
-                    break;
-                case CompletionStatus._COMPLETED_MAYBE:
-                    this.completionStatus = CompletionStatus.COMPLETED_MAYBE;
-                    break;
-                default:
-                    throw wrapper.badCompletionStatusInReply(status);
+            case CompletionStatus._COMPLETED_YES:
+                this.completionStatus = CompletionStatus.COMPLETED_YES;
+                break;
+            case CompletionStatus._COMPLETED_NO:
+                this.completionStatus = CompletionStatus.COMPLETED_NO;
+                break;
+            case CompletionStatus._COMPLETED_MAYBE:
+                this.completionStatus = CompletionStatus.COMPLETED_MAYBE;
+                break;
+            default:
+                throw wrapper.badCompletionStatusInReply(status);
             }
         } else if (this.reply_status == USER_EXCEPTION) {
             // do nothing. The client stub will read the exception from body.
@@ -163,13 +158,13 @@ public final class ReplyMessage_1_1 extends Message_1_1
 
     public static void isValidReplyStatus(int replyStatus) {
         switch (replyStatus) {
-            case NO_EXCEPTION:
-            case USER_EXCEPTION:
-            case SYSTEM_EXCEPTION:
-            case LOCATION_FORWARD:
-                break;
-            default:
-                throw wrapper.illegalReplyStatus();
+        case NO_EXCEPTION:
+        case USER_EXCEPTION:
+        case SYSTEM_EXCEPTION:
+        case LOCATION_FORWARD:
+            break;
+        default:
+            throw wrapper.illegalReplyStatus();
         }
     }
 

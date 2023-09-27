@@ -17,7 +17,7 @@
  * Classpath-exception-2.0
  */
 
-package performance.eesample.wspex ;
+package performance.eesample.wspex;
 
 import java.io.Serializable;
 
@@ -32,7 +32,6 @@ public class LineItem implements Serializable {
 
     /**
      * Gets the value of the orderId property.
-     * 
      */
     public int getOrderId() {
         return orderId;
@@ -40,7 +39,6 @@ public class LineItem implements Serializable {
 
     /**
      * Sets the value of the orderId property.
-     * 
      */
     public void setOrderId(int value) {
         this.orderId = value;
@@ -48,7 +46,6 @@ public class LineItem implements Serializable {
 
     /**
      * Gets the value of the itemId property.
-     * 
      */
     public int getItemId() {
         return itemId;
@@ -56,7 +53,6 @@ public class LineItem implements Serializable {
 
     /**
      * Sets the value of the itemId property.
-     * 
      */
     public void setItemId(int value) {
         this.itemId = value;
@@ -64,7 +60,6 @@ public class LineItem implements Serializable {
 
     /**
      * Gets the value of the productId property.
-     * 
      */
     public int getProductId() {
         return productId;
@@ -72,7 +67,6 @@ public class LineItem implements Serializable {
 
     /**
      * Sets the value of the productId property.
-     * 
      */
     public void setProductId(int value) {
         this.productId = value;
@@ -80,11 +74,9 @@ public class LineItem implements Serializable {
 
     /**
      * Gets the value of the productDescription property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getProductDescription() {
         return productDescription;
@@ -92,11 +84,9 @@ public class LineItem implements Serializable {
 
     /**
      * Sets the value of the productDescription property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     * {@link String }
      */
     public void setProductDescription(String value) {
         this.productDescription = value;
@@ -104,7 +94,6 @@ public class LineItem implements Serializable {
 
     /**
      * Gets the value of the orderQuantity property.
-     * 
      */
     public int getOrderQuantity() {
         return orderQuantity;
@@ -112,7 +101,6 @@ public class LineItem implements Serializable {
 
     /**
      * Sets the value of the orderQuantity property.
-     * 
      */
     public void setOrderQuantity(int value) {
         this.orderQuantity = value;
@@ -120,7 +108,6 @@ public class LineItem implements Serializable {
 
     /**
      * Gets the value of the unitPrice property.
-     * 
      */
     public float getUnitPrice() {
         return unitPrice;
@@ -128,7 +115,6 @@ public class LineItem implements Serializable {
 
     /**
      * Sets the value of the unitPrice property.
-     * 
      */
     public void setUnitPrice(float value) {
         this.unitPrice = value;

@@ -17,21 +17,20 @@
  * Classpath-exception-2.0
  */
 
-package testtools ;
+package testtools;
 
-import java.lang.annotation.Target ;
-import java.lang.annotation.Documented ;
-import java.lang.annotation.ElementType ;
-import java.lang.annotation.Retention ;
-import java.lang.annotation.RetentionPolicy ;
+import java.lang.annotation.Target;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
- *
  * @author ken
  */
 @Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Test {
-    String value() default "" ;
+    String value() default "";
 }

@@ -19,9 +19,11 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
 import org.glassfish.rmic.tools.asm.Label;
+import org.glassfish.rmic.tools.java.Environment;
+import org.glassfish.rmic.tools.java.Type;
+
 import java.io.PrintStream;
 import java.util.Hashtable;
 
@@ -56,7 +58,6 @@ class BooleanExpression extends ConstantExpression {
         return value == b;
     }
 
-
     /**
      * Check if the expression is equal to its default static value
      */
@@ -90,7 +91,6 @@ class BooleanExpression extends ConstantExpression {
         }
     }
 
-
     /**
      * Code
      */
@@ -99,6 +99,7 @@ class BooleanExpression extends ConstantExpression {
             asm.add(where, opc_goto, lbl);
         }
     }
+
     public void codeValue(Environment env, Context ctx, Assembler asm) {
         asm.add(where, opc_ldc, value ? 1 : 0);
     }

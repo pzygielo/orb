@@ -27,6 +27,7 @@ package corba.legacybootstrapserver;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Properties;
+
 import org.omg.CORBA.ORB;
 import org.omg.CosNaming.*;
 import org.omg.CosNaming.NamingContextPackage.*;
@@ -34,8 +35,7 @@ import corba.framework.Controller;
 import corba.framework.Options;
 import com.sun.corba.ee.spi.misc.ORBConstants;
 
-public class Client 
-{
+public class Client {
     public static final String baseMsg = Client.class.getName();
     public static final String main = baseMsg + ".main";
 
@@ -45,8 +45,7 @@ public class Client
 
     public static ORB orb;
 
-    public static void main(String av[])
-    {
+    public static void main(String av[]) {
         try {
             System.out.println(main + " starting");
             System.out.println(main + " " + getBootstrapFilePathAndName());
@@ -57,9 +56,9 @@ public class Client
             */
 
             String[] args = { "-ORBInitialPort",
-                              getORBInitialPort() };
+                    getORBInitialPort() };
 
-            orb = ORB.init(args, (Properties)null);
+            orb = ORB.init(args, (Properties) null);
 
             lookup(false, "foo");
             org.omg.CORBA.Object o = lookup(true, initialEntryName);
@@ -84,21 +83,20 @@ public class Client
         System.exit(Controller.SUCCESS);
     }
 
-    public static org.omg.CORBA.Object lookup(boolean shouldBeThere, 
+    public static org.omg.CORBA.Object lookup(boolean shouldBeThere,
                                               String name)
-        throws
-            Exception
-    {
+            throws
+            Exception {
         String filename = getBootstrapFilePathAndName();
         System.out.println(filename
-                           + " lookup(" 
-                           + (shouldBeThere ? "shouldFind" : "shouldNotFind") + ", "
-                           + name + ")");
+                                   + " lookup("
+                                   + (shouldBeThere ? "shouldFind" : "shouldNotFind") + ", "
+                                   + name + ")");
 
         org.omg.CORBA.Object o = null;
         try {
             o = orb.resolve_initial_references(name);
-            if (! shouldBeThere) {
+            if (!shouldBeThere) {
                 throw new Exception("Should not have found: " + name);
             }
             // Use the reference to make sure it works.
@@ -112,32 +110,29 @@ public class Client
         return o;
     }
 
-    public static String getORBInitialPort()
-    {
+    public static String getORBInitialPort() {
         return orbInitialPort;
     }
 
-    public static String getBootstrapFilePathAndName()
-    {
-        return 
-            //Options.getOutputDirectory()
-            System.getProperty("output.dir")
-            + System.getProperty("file.separator")
-            + Client.bootstrapFilename;
+    public static String getBootstrapFilePathAndName() {
+        return
+                //Options.getOutputDirectory()
+                System.getProperty("output.dir")
+                        + System.getProperty("file.separator")
+                        + Client.bootstrapFilename;
     }
 
     public static void update(boolean shouldAdd,
                               String name,
                               org.omg.CORBA.Object o)
-        throws
-            Exception
-    {
+            throws
+            Exception {
         String filename = getBootstrapFilePathAndName();
         System.out.println(filename
-                           + " update(" 
-                           + (shouldAdd ? "add" : "remove") + ", "
-                           + name + ", "
-                           + (o == null ? "null" : "IOR") + ")");
+                                   + " update("
+                                   + (shouldAdd ? "add" : "remove") + ", "
+                                   + name + ", "
+                                   + (o == null ? "null" : "IOR") + ")");
         FileInputStream is = new FileInputStream(filename);
         Properties props = new Properties();
         props.load(is);
@@ -151,9 +146,8 @@ public class Client
     }
 
     public static void writeProperties(Properties props, String filename)
-        throws
-            Exception
-    {
+            throws
+            Exception {
         FileOutputStream os = new FileOutputStream(filename);
         props.store(os, null);
         os.close();

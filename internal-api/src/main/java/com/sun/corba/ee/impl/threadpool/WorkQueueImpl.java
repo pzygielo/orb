@@ -19,19 +19,17 @@
 
 package com.sun.corba.ee.impl.threadpool;
 
-import java.util.LinkedList;
-import java.util.Queue;
-
 import com.sun.corba.ee.spi.threadpool.ThreadPool;
 import com.sun.corba.ee.spi.threadpool.Work;
 import com.sun.corba.ee.spi.threadpool.WorkQueue;
+import org.glassfish.gmbal.Description;
+import org.glassfish.gmbal.ManagedAttribute;
+import org.glassfish.gmbal.NameValue;
 
-import org.glassfish.gmbal.Description ;
-import org.glassfish.gmbal.ManagedAttribute ;
-import org.glassfish.gmbal.NameValue ;
+import java.util.LinkedList;
+import java.util.Queue;
 
-public class WorkQueueImpl implements WorkQueue
-{
+public class WorkQueueImpl implements WorkQueue {
     public static final String WORKQUEUE_DEFAULT_NAME = "default-workqueue";
 
     final private Queue<Work> queue;
@@ -74,18 +72,18 @@ public class WorkQueueImpl implements WorkQueue
         int threadCount = workerThreadPool.currentNumberOfThreads();
         int maxThreads = workerThreadPool.maximumNumberOfThreads();
         if (threadCount < maxThreads && waitingThreads < getWorkQueueSize()) {
-        // NOTE: It is possible that the Work that was just added may unblock
-        //       Worker Threads waiting on the Work just added and all Worker
-        //       Threads are busy, (blocked & waiting for a response). This
-        //       situation can lead to a deadlock.  The solution to such a
-        //       a problem should it occur is to increase the maximum number
-        //       of threads.
-        // REVISIT - A possible solution to the above issue is check the
-        //           enqueued Work timestamp periodically by another thread
-        //           and create a Worker Thread if a piece of Work sits on 
-        //           Work Queue for longer than some threshold.
+            // NOTE: It is possible that the Work that was just added may unblock
+            //       Worker Threads waiting on the Work just added and all Worker
+            //       Threads are busy, (blocked & waiting for a response). This
+            //       situation can lead to a deadlock.  The solution to such a
+            //       a problem should it occur is to increase the maximum number
+            //       of threads.
+            // REVISIT - A possible solution to the above issue is check the
+            //           enqueued Work timestamp periodically by another thread
+            //           and create a Worker Thread if a piece of Work sits on
+            //           Work Queue for longer than some threshold.
             // add a WorkerThread
-            ((ThreadPoolImpl)workerThreadPool).createWorkerThread();
+            ((ThreadPoolImpl) workerThreadPool).createWorkerThread();
         }
     }
 
@@ -93,10 +91,10 @@ public class WorkQueueImpl implements WorkQueue
     // and avoid the race conditions.  The change is a little too large to make
     // right now (a few days before GFv3 HCF).  See issue 7722.
     synchronized Work requestWork(long waitTime) throws WorkerThreadNotNeededException,
-        InterruptedException {
+            InterruptedException {
 
         try {
-            ((ThreadPoolImpl)workerThreadPool).incrementNumberOfAvailableThreads();
+            ((ThreadPoolImpl) workerThreadPool).incrementNumberOfAvailableThreads();
 
             // Wait for the queue to become non-empty.
             // Loop in case the wait() call returns early. This ensures that the full wait time is spent.
@@ -114,7 +112,7 @@ public class WorkQueueImpl implements WorkQueue
                 wait(remainingWaitTime);
             }
         } finally {
-            ((ThreadPoolImpl)workerThreadPool).decrementNumberOfAvailableThreads();
+            ((ThreadPoolImpl) workerThreadPool).decrementNumberOfAvailableThreads();
         }
 
         Work work = queue.poll();
@@ -128,7 +126,7 @@ public class WorkQueueImpl implements WorkQueue
                 // NOTE: It is expected that the WorkerThread calling this
                 //       method will gracefully exit as a result of
                 //       catching the WorkerThreadNotNeededException.
-                ((ThreadPoolImpl)workerThreadPool).
+                ((ThreadPoolImpl) workerThreadPool).
                         decrementCurrentNumberOfThreads();
                 throw new WorkerThreadNotNeededException();
             }
@@ -152,7 +150,7 @@ public class WorkQueueImpl implements WorkQueue
      * Returns the total number of Work items added to the Queue.
      */
     @ManagedAttribute
-    @Description( "Total number of items added to the queue" )
+    @Description("Total number of items added to the queue")
     public synchronized long totalWorkItemsAdded() {
         return workItemsAdded;
     }
@@ -161,7 +159,7 @@ public class WorkQueueImpl implements WorkQueue
      * Returns the total number of Work items in the Queue to be processed.
      */
     @ManagedAttribute
-    @Description( "Total number of items in the queue to be processed" )
+    @Description("Total number of items in the queue to be processed")
     public synchronized int workItemsInQueue() {
         return queue.size();
     }
@@ -171,12 +169,12 @@ public class WorkQueueImpl implements WorkQueue
      * to be processed.
      */
     @ManagedAttribute
-    @Description( "Average time work items spend waiting in the queue in milliseconds" )
+    @Description("Average time work items spend waiting in the queue in milliseconds")
     public synchronized long averageTimeInQueue() {
         if (workItemsDequeued == 0) {
-            return 0 ;
-        } else { 
-            return (totalTimeInQueue/workItemsDequeued);
+            return 0;
+        } else {
+            return (totalTimeInQueue / workItemsDequeued);
         }
     }
 

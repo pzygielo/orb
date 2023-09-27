@@ -23,32 +23,33 @@ import WombatStuff.Wombat;
 import WombatStuff.WombatHelper;
 import corba.framework.Controller;
 import corba.framework.ThreadProcess;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+
 import org.omg.CORBA.ORB;
 
-public class WombatClient extends ThreadProcess
-{
+public class WombatClient extends ThreadProcess {
     ORB orb;
 
     public org.omg.CORBA.Object readObjref(String file) throws IOException {
 
         String fil = environment.getProperty("output.dir")
-            + File.separator
-            + file;
+                + File.separator
+                + file;
 
         String ior = null;
 
         try {
-            java.io.DataInputStream in = 
-                new java.io.DataInputStream(new FileInputStream(fil));
+            java.io.DataInputStream in =
+                    new java.io.DataInputStream(new FileInputStream(fil));
             ior = in.readLine();
-            out.println("IOR: "+ ior);
+            out.println("IOR: " + ior);
             in.close();
 
         } catch (java.io.IOException e) {
-            err.println("Unable to open file "+ fil);
+            err.println("Unable to open file " + fil);
             throw e;
         }
 
@@ -59,12 +60,12 @@ public class WombatClient extends ThreadProcess
 
         try {
 
-            orb = (ORB)extra.get("orb");
+            orb = (ORB) extra.get("orb");
 
             Wombat w = WombatHelper.narrow(readObjref("WombatObjRef"));
 
             out.println("Invoking...");
-            
+
             out.println("Result: " + w.squawk() + " squawked");
 
             setExitValue(Controller.SUCCESS);

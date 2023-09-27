@@ -21,14 +21,13 @@ package corba.travelmuse;
 
 import test.Test;
 import corba.framework.*;
+
 import java.util.*;
 
-public class TravelMuseTest extends CORBATest
-{
+public class TravelMuseTest extends CORBATest {
 
-    protected void doTest() throws Throwable
-    {
-        Controller client = createClient( "corba.travelmuse.Client" ) ;
+    protected void doTest() throws Throwable {
+        Controller client = createClient("corba.travelmuse.Client");
 
         client.start();
 

@@ -22,18 +22,15 @@ package javax.rmi.download;
 
 import java.io.Serializable;
 
-public class IIOPTestSerializable implements Serializable
-{
+public class IIOPTestSerializable implements Serializable {
     Servant ref;
 
-    public void setRef(Servant t)
-    {
+    public void setRef(Servant t) {
         //System.out.println("setRef "+t);
         ref = t;
     }
 
-    public Servant getRef()
-    {
+    public Servant getRef() {
         //System.out.println("getRef "+ref);
         return ref;
     }

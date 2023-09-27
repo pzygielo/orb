@@ -25,16 +25,16 @@ package org.glassfish.rmic.tools.asm;
  * they are subject to change or removal without notice.
  */
 public class Cover {
-public int Type;
-public long Addr;
-public int NumCommand;
+    public int Type;
+    public long Addr;
+    public int NumCommand;
 
-     /**
-      * Constructor
-      */
-     public Cover(int type, long addr, int command) {
-        Type=type;
-        Addr=addr;
-        NumCommand=command;
-     }
+    /**
+     * Constructor
+     */
+    public Cover(int type, long addr, int command) {
+        Type = type;
+        Addr = addr;
+        NumCommand = command;
+    }
 }

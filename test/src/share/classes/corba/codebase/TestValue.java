@@ -18,7 +18,8 @@
  */
 
 // Simple value
+
 import java.io.Serializable;
 
-public class TestValue implements Serializable
-{}
+public class TestValue implements Serializable {
+}

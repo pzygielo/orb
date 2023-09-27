@@ -27,19 +27,17 @@ import corba.framework.*;
  * compiled correctly.
  */
 
-public class ValidateIdlModules extends CORBATest
-{
+public class ValidateIdlModules extends CORBATest {
     public static final String[] idlFiles = { "service.idl" };
 
     public static final String[] javaFiles = { "pi/serviceexample/*.java" };
 
-    protected void doTest() throws Throwable 
-    {
-        Options.addIDLCompilerArgs("-fall" );
-        Options.setIDLFiles( idlFiles );
-        Options.setJavaFiles( javaFiles );
+    protected void doTest() throws Throwable {
+        Options.addIDLCompilerArgs("-fall");
+        Options.setIDLFiles(idlFiles);
+        Options.setJavaFiles(javaFiles);
 
-        compileIDLFiles( );
-        compileJavaFiles( );
+        compileIDLFiles();
+        compileJavaFiles();
     }
 }

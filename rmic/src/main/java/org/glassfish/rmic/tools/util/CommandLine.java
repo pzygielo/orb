@@ -19,17 +19,13 @@
 
 package org.glassfish.rmic.tools.util;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.FileReader;
-import java.io.BufferedReader;
-import java.io.StreamTokenizer;
-import java.util.List;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Various utility methods for processing Java tool command line arguments.
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
@@ -46,8 +42,7 @@ public class CommandLine {
      * the sequence '@@'.
      */
     public static String[] parse(String[] args)
-        throws IOException
-    {
+            throws IOException {
         ArrayList<String> newArgs = new ArrayList<>(args.length);
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
@@ -66,8 +61,7 @@ public class CommandLine {
     }
 
     private static void loadCmdFile(String name, List<String> args)
-        throws IOException
-    {
+            throws IOException {
         Reader r = new BufferedReader(new FileReader(name));
         StreamTokenizer st = new StreamTokenizer(r);
         st.resetSyntax();

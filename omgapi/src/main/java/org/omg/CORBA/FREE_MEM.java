@@ -27,10 +27,10 @@ package org.omg.CORBA;
  * what caused the exception, and a completion status. It may also contain
  * a string describing the exception.
  *
+ * @version 1.16, 09/09/97
  * @see <A href="../../../../guide/idl/jidlExceptions.html">documentation on
  * Java&nbsp;IDL exceptions</A>
- * @version     1.16, 09/09/97
- * @since       JDK1.2
+ * @since JDK1.2
  */
 
 public final class FREE_MEM extends SystemException {
@@ -55,6 +55,7 @@ public final class FREE_MEM extends SystemException {
     /**
      * Constructs a <code>FREE_MEM</code> exception with the specified
      * minor code and completion status.
+     *
      * @param minor the minor code
      * @param completed the completion status
      */
@@ -66,6 +67,7 @@ public final class FREE_MEM extends SystemException {
      * Constructs a <code>FREE_MEM</code> exception with the specified detail
      * message, minor code, and completion status.
      * A detail message is a String that describes this particular exception.
+     *
      * @param s the String containing a detail message
      * @param minor the minor code
      * @param completed the completion status

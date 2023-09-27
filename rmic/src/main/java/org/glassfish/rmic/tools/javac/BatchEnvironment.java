@@ -19,46 +19,23 @@
 
 package org.glassfish.rmic.tools.javac;
 
-import static java.lang.Character.isDigit;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Vector;
-import java.util.stream.Collectors;
 import org.glassfish.rmic.BatchEnvironmentError;
 import org.glassfish.rmic.asm.AsmClassFactory;
 import org.glassfish.rmic.tools.binaryclass.BinaryClassFactory;
-import org.glassfish.rmic.tools.java.ClassDeclaration;
-import org.glassfish.rmic.tools.java.ClassDefinition;
-import org.glassfish.rmic.tools.java.ClassDefinitionFactory;
-import org.glassfish.rmic.tools.java.ClassFile;
-import org.glassfish.rmic.tools.java.ClassNotFound;
-import org.glassfish.rmic.tools.java.ClassPath;
-import org.glassfish.rmic.tools.java.CompilerError;
-import org.glassfish.rmic.tools.java.Constants;
-import org.glassfish.rmic.tools.java.Environment;
-import org.glassfish.rmic.tools.java.Identifier;
-import org.glassfish.rmic.tools.java.IdentifierToken;
-import org.glassfish.rmic.tools.java.MemberDefinition;
 import org.glassfish.rmic.tools.java.Package;
-import org.glassfish.rmic.tools.java.Type;
+import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.tree.Node;
+
+import java.io.*;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.lang.Character.isDigit;
 
 /**
  * Main environment of the batch version of the Java compiler,
  * this needs more work.
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
@@ -74,8 +51,10 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
         try {
             return useBinaryClassFactory() ? new BinaryClassFactory() : new AsmClassFactory();
         } catch (NoClassDefFoundError e) {
-            if (!mayUseBinaryClassFactory())
-                throw new BatchEnvironmentError("RMIC is unable to parse class files at this JDK level without an appropriate version of ASM in its class path");
+            if (!mayUseBinaryClassFactory()) {
+                throw new BatchEnvironmentError(
+                        "RMIC is unable to parse class files at this JDK level without an appropriate version of ASM in its class path");
+            }
 
             return new BinaryClassFactory();
         }
@@ -98,10 +77,12 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
     }
 
     private static int getVersionPortion(String versionString) {
-        for (int i = 0; i < versionString.length(); i++)
-            if (!isDigit(versionString.charAt(i)))
+        for (int i = 0; i < versionString.length(); i++) {
+            if (!isDigit(versionString.charAt(i))) {
                 return Integer.parseInt(versionString.substring(0, i));
-        
+            }
+        }
+
         return Integer.parseInt(versionString);
     }
 
@@ -139,19 +120,19 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
      * Major and minor versions to use for generated class files.
      * Environments that extend BatchEnvironment (such as javadoc's
      * Env class) get the default values below.
-     *
+     * <p>
      * javac itself may override these versions with values determined
      * from the command line "-target" option.
      */
     public short majorVersion = JAVA_DEFAULT_VERSION;
     public short minorVersion = JAVA_DEFAULT_MINOR_VERSION;
 
-// JCOV
+    // JCOV
     /**
      * coverage data file
      */
     private File covFile;
-// end JCOV
+    // end JCOV
 
     /**
      * The number of errors and warnings
@@ -165,9 +146,9 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
      */
     private Vector<Object> deprecationFiles = new Vector<>();
 
-        /**
-         * writes out error messages
-         */
+    /**
+     * writes out error messages
+     */
 
     private ErrorConsumer errorConsumer;
 
@@ -205,14 +186,15 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
         return minorVersion;
     }
 
-// JCOV
+    // JCOV
+
     /**
      * Return coverage data file
      */
     public File getcovFile() {
         return covFile;
     }
-// end JCOV
+    // end JCOV
 
     /**
      * Return an enumeration of all the currently defined classes
@@ -279,8 +261,9 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
         // Add all of the current packages and their prefixes to our set.
         for (ClassDeclaration c : getGeneratedClasses()) {
             SourceClass def = (SourceClass) c.getClassDefinition();
-            if (def.isLocal())
+            if (def.isLocal()) {
                 continue;
+            }
 
             Identifier pkg = def.getImports().getCurrentPackage();
 
@@ -356,7 +339,7 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
         ClassDeclaration c = classes.get(t);
         return (c != null) ? c.getName().equals(nm) : getPackage(nm.getQualifier()).classExists(nm.getName());
     }
-    
+
     /**
      * Get the package path for a package
      */
@@ -376,7 +359,9 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
         InputStream input;
         BatchParser p;
 
-        if (tracing) dtEnter("parseFile: PARSING SOURCE " + file);
+        if (tracing) {
+            dtEnter("parseFile: PARSING SOURCE " + file);
+        }
 
         Environment env = new Environment(this, file);
 
@@ -385,14 +370,16 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
             env.setCharacterEncoding(getCharacterEncoding());
             //      p = new BatchParser(e, new BufferedInputStream(input));
             p = new BatchParser(env, input);
-        } catch(IOException ex) {
-            if (tracing) dtEvent("parseFile: IO EXCEPTION " + file);
+        } catch (IOException ex) {
+            if (tracing) {
+                dtEvent("parseFile: IO EXCEPTION " + file);
+            }
             throw new FileNotFoundException();
         }
 
         try {
             p.parseFile();
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new CompilerError(e);
         }
 
@@ -468,7 +455,9 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
             }
         }
 
-        if (tracing) dtExit("parseFile: SOURCE PARSED " + file);
+        if (tracing) {
+            dtExit("parseFile: SOURCE PARSED " + file);
+        }
     }
 
     /**
@@ -479,13 +468,17 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
         InputStream input = file.getInputStream();
         ClassDefinition c;
 
-        if (tracing) dtEnter("loadFile: LOADING CLASSFILE " + file);
+        if (tracing) {
+            dtEnter("loadFile: LOADING CLASSFILE " + file);
+        }
 
         try {
             c = classDefinitionFactory.loadDefinition(input, new Environment(this, file));
         } catch (ClassFormatError e) {
             error(0, "class.format", file.getPath(), e.getMessage());
-            if (tracing) dtExit("loadFile: CLASS FORMAT ERROR " + file);
+            if (tracing) {
+                dtExit("loadFile: CLASS FORMAT ERROR " + file);
+            }
             return null;
         } catch (java.io.EOFException e) {
             // If we get an EOF while processing a class file, then
@@ -502,7 +495,9 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
                                 Long.toString(tm)));
         }
 
-        if (tracing) dtExit("loadFile: CLASSFILE LOADED " + file);
+        if (tracing) {
+            dtExit("loadFile: CLASSFILE LOADED " + file);
+        }
 
         return c;
     }
@@ -513,31 +508,39 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
     private boolean needsCompilation(Hashtable<ClassDeclaration, ClassDeclaration> check, ClassDeclaration c) {
         switch (c.getStatus()) {
 
-          case CS_UNDEFINED:
-            if (tracing) dtEnter("needsCompilation: UNDEFINED " + c.getName());
+        case CS_UNDEFINED:
+            if (tracing) {
+                dtEnter("needsCompilation: UNDEFINED " + c.getName());
+            }
             loadDefinition(c);
             return needsCompilation(check, c);
 
-          case CS_UNDECIDED:
-            if (tracing) dtEnter("needsCompilation: UNDECIDED " + c.getName());
+        case CS_UNDECIDED:
+            if (tracing) {
+                dtEnter("needsCompilation: UNDECIDED " + c.getName());
+            }
             if (check.get(c) == null) {
                 check.put(c, c);
 
                 ClassDefinition def = c.getClassDefinition();
-                for (Iterator<ClassDeclaration> e = def.getDependencies(); e.hasNext() ;) {
+                for (Iterator<ClassDeclaration> e = def.getDependencies(); e.hasNext(); ) {
                     ClassDeclaration dep = e.next();
                     if (needsCompilation(check, dep)) {
                         // It must be source, dependencies need compilation
                         c.setDefinition(def, CS_SOURCE);
-                        if (tracing) dtExit("needsCompilation: YES (source) " + c.getName());
+                        if (tracing) {
+                            dtExit("needsCompilation: YES (source) " + c.getName());
+                        }
                         return true;
                     }
                 }
             }
-            if (tracing) dtExit("needsCompilation: NO (undecided) " + c.getName());
+            if (tracing) {
+                dtExit("needsCompilation: NO (undecided) " + c.getName());
+            }
             return false;
 
-          case CS_BINARY:
+        case CS_BINARY:
             if (tracing) {
                 dtEnter("needsCompilation: BINARY " + c.getName());
                 dtExit("needsCompilation: NO (binary) " + c.getName());
@@ -546,7 +549,9 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
 
         }
 
-        if (tracing) dtExit("needsCompilation: YES " + c.getName());
+        if (tracing) {
+            dtExit("needsCompilation: YES " + c.getName());
+        }
         return true;
     }
 
@@ -555,32 +560,38 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
      * or at least determine how to load it.
      * The caller must repeat calls to this method
      * until it the state converges to CS_BINARY, CS_PARSED, or the like..
+     *
      * @see ClassDeclaration#getClassDefinition
      */
     public void loadDefinition(ClassDeclaration c) {
-        if (tracing) dtEnter("loadDefinition: ENTER " +
-                             c.getName() + ", status " + c.getStatus());
+        if (tracing) {
+            dtEnter("loadDefinition: ENTER " +
+                            c.getName() + ", status " + c.getStatus());
+        }
         switch (c.getStatus()) {
-          case CS_UNDEFINED: {
-            if (tracing)
+        case CS_UNDEFINED: {
+            if (tracing) {
                 dtEvent("loadDefinition: STATUS IS UNDEFINED");
+            }
             Identifier nm = c.getName();
             Package pkg;
-              pkg = getPackage(nm.getQualifier());
-              ClassFile binfile = pkg.getBinaryFile(nm.getName());
+            pkg = getPackage(nm.getQualifier());
+            ClassFile binfile = pkg.getBinaryFile(nm.getName());
             if (binfile == null) {
                 // must be source, there is no binary
                 c.setDefinition(null, CS_SOURCE);
-                if (tracing)
+                if (tracing) {
                     dtExit("loadDefinition: MUST BE SOURCE (no binary) " +
-                           c.getName());
+                                   c.getName());
+                }
                 return;
             }
 
             ClassFile srcfile = pkg.getSourceFile(nm.getName());
             if (srcfile == null) {
-                if (tracing)
+                if (tracing) {
                     dtEvent("loadDefinition: NO SOURCE " + c.getName());
+                }
                 ClassDefinition cDef;
                 try {
                     cDef = loadFile(binfile);
@@ -590,73 +601,84 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
                     c.setDefinition(null, CS_NOTFOUND);
 
                     error(0, "io.exception", binfile);
-                    if (tracing)
+                    if (tracing) {
                         dtExit("loadDefinition: IO EXCEPTION (binary)");
+                    }
                     return;
                 }
                 if ((cDef != null) && !cDef.getName().equals(nm)) {
                     error(0, "wrong.class", binfile.getPath(), c, cDef);
                     cDef = null;
-                    if (tracing)
+                    if (tracing) {
                         dtEvent("loadDefinition: WRONG CLASS (binary)");
+                    }
                 }
                 if (cDef == null) {
                     // no source nor binary found
                     c.setDefinition(null, CS_NOTFOUND);
-                    if (tracing)
+                    if (tracing) {
                         dtExit("loadDefinition: NOT FOUND (source or binary)");
+                    }
                     return;
                 }
 
                 // Couldn't find the source, try the one mentioned in the binary
                 if (cDef.getSource() != null) {
-                    srcfile = ClassFile.newClassFile(new File((String)cDef.getSource()));
+                    srcfile = ClassFile.newClassFile(new File((String) cDef.getSource()));
                     // Look for the source file
                     srcfile = pkg.getSourceFile(srcfile.getName());
                     if ((srcfile != null) && srcfile.exists()) {
-                        if (tracing)
+                        if (tracing) {
                             dtEvent("loadDefinition: FILENAME IN BINARY " +
-                                    srcfile);
+                                            srcfile);
+                        }
                         if (srcfile.lastModified() > binfile.lastModified()) {
                             // must be source, it is newer than the binary
                             c.setDefinition(cDef, CS_SOURCE);
-                            if (tracing)
+                            if (tracing) {
                                 dtEvent("loadDefinition: SOURCE IS NEWER " +
-                                        srcfile);
+                                                srcfile);
+                            }
                             cDef.loadNested(this);
-                            if (tracing)
+                            if (tracing) {
                                 dtExit("loadDefinition: MUST BE SOURCE " +
-                                       c.getName());
+                                               c.getName());
+                            }
                             return;
                         }
                         if (dependencies()) {
                             c.setDefinition(cDef, CS_UNDECIDED);
-                            if (tracing)
+                            if (tracing) {
                                 dtEvent("loadDefinition: UNDECIDED " +
-                                        c.getName());
+                                                c.getName());
+                            }
                         } else {
                             c.setDefinition(cDef, CS_BINARY);
-                            if (tracing)
+                            if (tracing) {
                                 dtEvent("loadDefinition: MUST BE BINARY " +
-                                        c.getName());
+                                                c.getName());
+                            }
                         }
                         cDef.loadNested(this);
-                        if (tracing)
+                        if (tracing) {
                             dtExit("loadDefinition: EXIT " +
-                                   c.getName() + ", status " + c.getStatus());
+                                           c.getName() + ", status " + c.getStatus());
+                        }
                         return;
                     }
                 }
 
                 // It must be binary, there is no source
                 c.setDefinition(cDef, CS_BINARY);
-                if (tracing)
+                if (tracing) {
                     dtEvent("loadDefinition: MUST BE BINARY (no source) " +
-                                     c.getName());
+                                    c.getName());
+                }
                 cDef.loadNested(this);
-                if (tracing)
+                if (tracing) {
                     dtExit("loadDefinition: EXIT " +
-                           c.getName() + ", status " + c.getStatus());
+                                   c.getName() + ", status " + c.getStatus());
+                }
                 return;
             }
             ClassDefinition cDef = null;
@@ -664,91 +686,110 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
                 if (srcfile.lastModified() > binfile.lastModified()) {
                     // must be source, it is newer than the binary
                     c.setDefinition(null, CS_SOURCE);
-                    if (tracing)
+                    if (tracing) {
                         dtEvent("loadDefinition: MUST BE SOURCE (younger than binary) " +
-                                c.getName());
+                                        c.getName());
+                    }
                     return;
                 }
                 cDef = loadFile(binfile);
             } catch (IOException e) {
                 error(0, "io.exception", binfile);
-                if (tracing)
+                if (tracing) {
                     dtEvent("loadDefinition: IO EXCEPTION (binary)");
+                }
             }
             if ((cDef != null) && !cDef.getName().equals(nm)) {
                 error(0, "wrong.class", binfile.getPath(), c, cDef);
                 cDef = null;
-                if (tracing)
+                if (tracing) {
                     dtEvent("loadDefinition: WRONG CLASS (binary)");
+                }
             }
             if (cDef != null) {
                 Identifier name = cDef.getName();
                 if (name.equals(c.getName())) {
                     if (dependencies()) {
                         c.setDefinition(cDef, CS_UNDECIDED);
-                        if (tracing)
+                        if (tracing) {
                             dtEvent("loadDefinition: UNDECIDED " + name);
+                        }
                     } else {
                         c.setDefinition(cDef, CS_BINARY);
-                        if (tracing)
+                        if (tracing) {
                             dtEvent("loadDefinition: MUST BE BINARY " + name);
+                        }
                     }
                 } else {
                     c.setDefinition(null, CS_NOTFOUND);
-                    if (tracing)
+                    if (tracing) {
                         dtEvent("loadDefinition: NOT FOUND (source or binary)");
+                    }
                     if (dependencies()) {
                         getClassDeclaration(name).setDefinition(cDef, CS_UNDECIDED);
-                        if (tracing)
+                        if (tracing) {
                             dtEvent("loadDefinition: UNDECIDED " + name);
+                        }
                     } else {
                         getClassDeclaration(name).setDefinition(cDef, CS_BINARY);
-                        if (tracing)
+                        if (tracing) {
                             dtEvent("loadDefinition: MUST BE BINARY " + name);
+                        }
                     }
                 }
             } else {
                 c.setDefinition(null, CS_NOTFOUND);
-                if (tracing)
+                if (tracing) {
                     dtEvent("loadDefinition: NOT FOUND (source or binary)");
+                }
             }
-            if (cDef != null && cDef == c.getClassDefinition())
+            if (cDef != null && cDef == c.getClassDefinition()) {
                 cDef.loadNested(this);
-            if (tracing) dtExit("loadDefinition: EXIT " +
-                                c.getName() + ", status " + c.getStatus());
+            }
+            if (tracing) {
+                dtExit("loadDefinition: EXIT " +
+                               c.getName() + ", status " + c.getStatus());
+            }
             return;
-          }
+        }
 
-          case CS_UNDECIDED: {
-            if (tracing) dtEvent("loadDefinition: STATUS IS UNDECIDED");
+        case CS_UNDECIDED: {
+            if (tracing) {
+                dtEvent("loadDefinition: STATUS IS UNDECIDED");
+            }
             Hashtable<ClassDeclaration, ClassDeclaration> tab = new Hashtable<>();
             if (!needsCompilation(tab, c)) {
                 // All undecided classes that this class depends on must be binary
-                for (Enumeration<ClassDeclaration> e = tab.keys() ; e.hasMoreElements() ; ) {
+                for (Enumeration<ClassDeclaration> e = tab.keys(); e.hasMoreElements(); ) {
                     ClassDeclaration dep = e.nextElement();
                     if (dep.getStatus() == CS_UNDECIDED) {
                         // must be binary, dependencies need compilation
                         dep.setDefinition(dep.getClassDefinition(), CS_BINARY);
-                        if (tracing)
+                        if (tracing) {
                             dtEvent("loadDefinition: MUST BE BINARY " + dep);
+                        }
                     }
                 }
             }
-            if (tracing) dtExit("loadDefinition: EXIT " +
-                                c.getName() + ", status " + c.getStatus());
+            if (tracing) {
+                dtExit("loadDefinition: EXIT " +
+                               c.getName() + ", status " + c.getStatus());
+            }
             return;
-          }
+        }
 
-          case CS_SOURCE: {
-            if (tracing) dtEvent("loadDefinition: STATUS IS SOURCE");
+        case CS_SOURCE: {
+            if (tracing) {
+                dtEvent("loadDefinition: STATUS IS SOURCE");
+            }
             ClassFile srcfile;
             Package pkg;
             if (c.getClassDefinition() != null) {
                 // Use the source file name from the binary class file
                 pkg = getPackage(c.getName().getQualifier());
-                srcfile = pkg.getSourceFile((String)c.getClassDefinition().getSource());
+                srcfile = pkg.getSourceFile((String) c.getClassDefinition().getSource());
                 if (srcfile == null) {
-                    String fn = (String)c.getClassDefinition().getSource();
+                    String fn = (String) c.getClassDefinition().getSource();
                     srcfile = ClassFile.newClassFile(new File(fn));
                 }
             } else {
@@ -759,9 +800,10 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
                 if (srcfile == null) {
                     // not found, there is no source
                     c.setDefinition(null, CS_NOTFOUND);
-                    if (tracing)
+                    if (tracing) {
                         dtExit("loadDefinition: SOURCE NOT FOUND " +
-                               c.getName() + ", status " + c.getStatus());
+                                       c.getName() + ", status " + c.getStatus());
+                    }
                     return;
                 }
             }
@@ -769,23 +811,30 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
                 parseFile(srcfile);
             } catch (FileNotFoundException e) {
                 error(0, "io.exception", srcfile);
-                if (tracing) dtEvent("loadDefinition: IO EXCEPTION (source)");
+                if (tracing) {
+                    dtEvent("loadDefinition: IO EXCEPTION (source)");
+                }
             }
             if ((c.getClassDefinition() == null) || (c.getStatus() == CS_SOURCE)) {
                 // not found after parsing the file
                 error(0, "wrong.source", srcfile.getPath(), c, pkg);
                 c.setDefinition(null, CS_NOTFOUND);
-                if (tracing)
+                if (tracing) {
                     dtEvent("loadDefinition: WRONG CLASS (source) " +
-                            c.getName());
+                                    c.getName());
+                }
             }
-            if (tracing) dtExit("loadDefinition: EXIT " +
-                                c.getName() + ", status " + c.getStatus());
+            if (tracing) {
+                dtExit("loadDefinition: EXIT " +
+                               c.getName() + ", status " + c.getStatus());
+            }
             return;
-          }
         }
-        if (tracing) dtExit("loadDefinition: EXIT " +
-                            c.getName() + ", status " + c.getStatus());
+        }
+        if (tracing) {
+            dtExit("loadDefinition: EXIT " +
+                           c.getName() + ", status " + c.getStatus());
+        }
     }
 
     /**
@@ -832,7 +881,7 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
             // of a serialization-related workaround, and satisfies an obscure
             // requirement that the name of a local class be of the form
             // 'PackageMember$1$localName' when this name is unique.
-            for (int i = 1 ; ; i++) {
+            for (int i = 1; ; i++) {
                 mangledName = i + (nm.equals(idNull) ? "" : SIG_INNERCLASS + nm);
                 if (localContextClass.getLocalClass(mangledName) == null) {
                     break;
@@ -862,7 +911,7 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
             toplevelEnv.error(nmpos, "class.multidef",
                               c.getName(), c.getClassDefinition().getSource());
             // Don't mess with the existing class declarations with same name
-            c = new ClassDeclaration (pkgNm);
+            c = new ClassDeclaration(pkgNm);
         }
 
         if (superClass == null && !pkgNm.equals(idJavaLangObject)) {
@@ -870,9 +919,9 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
         }
 
         ClassDefinition sourceClass =
-            new SourceClass(toplevelEnv, where, c, doc,
-                            modifiers, superClass, interfaces,
-                            (SourceClass) outerClass, localName);
+                new SourceClass(toplevelEnv, where, c, doc,
+                                modifiers, superClass, interfaces,
+                                (SourceClass) outerClass, localName);
 
         if (outerClass != null) {
             // It is a member of its enclosing class.
@@ -905,15 +954,17 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
     /**
      * Create a new field.
      */
-    @SuppressWarnings({"rawtypes","unchecked"})
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public MemberDefinition makeMemberDefinition(Environment origEnv, long where,
-                                               ClassDefinition clazz,
-                                               String doc, int modifiers,
-                                               Type type, Identifier name,
-                                               IdentifierToken argNames[],
-                                               IdentifierToken expIds[],
-                                               Object value) {
-        if (tracing) dtEvent("makeMemberDefinition: " + name + " IN " + clazz);
+                                                 ClassDefinition clazz,
+                                                 String doc, int modifiers,
+                                                 Type type, Identifier name,
+                                                 IdentifierToken argNames[],
+                                                 IdentifierToken expIds[],
+                                                 Object value) {
+        if (tracing) {
+            dtEvent("makeMemberDefinition: " + name + " IN " + clazz);
+        }
         Vector v = null;
         if (argNames != null) {
             v = new Vector(argNames.length);
@@ -922,7 +973,7 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
             }
         }
         SourceMember f = new SourceMember(where, clazz, doc, modifiers,
-                                        type, name, v, expIds, (Node)value);
+                                          type, name, v, expIds, (Node) value);
         clazz.addMember(origEnv, f);
         return f;
     }
@@ -947,14 +998,14 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
     /**
      * Error String
      */
-    public
-    String errorString(String err, Object arg1, Object arg2, Object arg3) {
+    public String errorString(String err, Object arg1, Object arg2, Object arg3) {
         String key;
 
-        if(err.startsWith("warn."))
+        if (err.startsWith("warn.")) {
             key = "javac.err." + err.substring(5);
-        else
+        } else {
             key = "javac.err." + err;
+        }
 
         return Main.getText(key,
                             arg1 != null ? arg1.toString() : null,
@@ -977,7 +1028,7 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
      * The list is sorted on input position and contains no duplicates.
      * The return value indicates whether or not the message was
      * actually inserted.
-     *
+     * <p>
      * The method flushErrors() used to check for duplicate error messages.
      * It would only detect duplicates if they were contiguous.  Removing
      * non-contiguous duplicate error messages is slightly less complicated
@@ -988,7 +1039,7 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
         //output("ERR = " + message);
 
         if (errors == null
-            ||  errors.where > where) {
+                || errors.where > where) {
             // If the list is empty, or the error comes before any other
             // errors, insert it at the beginning of the list.
             ErrorMessage newMsg = new ErrorMessage(where, message);
@@ -996,7 +1047,7 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
             errors = newMsg;
 
         } else if (errors.where == where
-                   && errors.message.equals(message)) {
+                && errors.message.equals(message)) {
             // The new message is an exact duplicate of the first message
             // in the list.  Don't insert it.
             return false;
@@ -1008,7 +1059,7 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
             ErrorMessage next;
 
             while ((next = current.next) != null
-                   && next.where < where) {
+                    && next.where < where) {
                 current = next;
             }
 
@@ -1016,7 +1067,7 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
             // for duplicates.  If we find a duplicate, don't insert the
             // error.
             while ((next = current.next) != null
-                   && next.where == where) {
+                    && next.where == where) {
                 if (next.message.equals(message)) {
                     // We have found an exact duplicate.  Don't bother to
                     // insert the error.
@@ -1048,28 +1099,28 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
      * Flush outstanding errors
      */
 
-        public void pushError(String errorFileName, int line, String message,
-                                    String referenceText, String referenceTextPointer) {
-                int limit = errorLimit + nwarnings;
-                if (++errorsPushed >= limit && errorLimit >= 0) {
-                    if (!hitErrorLimit) {
-                        hitErrorLimit = true;
-                        output(errorString("too.many.errors",
-                                           errorLimit,null,null));
-                    }
-                    return;
-                }
-                if (errorFileName.endsWith(".java")) {
-                    output(errorFileName + ":" + line + ": " + message);
-                    output(referenceText);
-                    output(referenceTextPointer);
-                } else {
-                    // It wasn't really a source file (probably an error or
-                    // warning because of a malformed or badly versioned
-                    // class file.
-                    output(errorFileName + ": " + message);
-                }
+    public void pushError(String errorFileName, int line, String message,
+                          String referenceText, String referenceTextPointer) {
+        int limit = errorLimit + nwarnings;
+        if (++errorsPushed >= limit && errorLimit >= 0) {
+            if (!hitErrorLimit) {
+                hitErrorLimit = true;
+                output(errorString("too.many.errors",
+                                   errorLimit, null, null));
+            }
+            return;
         }
+        if (errorFileName.endsWith(".java")) {
+            output(errorFileName + ":" + line + ": " + message);
+            output(referenceText);
+            output(referenceTextPointer);
+        } else {
+            // It wasn't really a source file (probably an error or
+            // warning because of a malformed or badly versioned
+            // class file.
+            output(errorFileName + ": " + message);
+        }
+    }
 
     public void flushErrors() {
         if (errors == null) {
@@ -1087,18 +1138,18 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
             FileInputStream in = new FileInputStream(errorFileName);
             data = new char[in.available()];
             InputStreamReader reader =
-                (getCharacterEncoding() != null ?
-                 new InputStreamReader(in, getCharacterEncoding()) :
-                 new InputStreamReader(in));
+                    (getCharacterEncoding() != null ?
+                            new InputStreamReader(in, getCharacterEncoding()) :
+                            new InputStreamReader(in));
             dataLength = reader.read(data);
             reader.close();
             inputAvail = true;
-        } catch(IOException e) {
+        } catch (IOException e) {
             // inputAvail will not be set
         }
 
         // Report the errors
-        for (ErrorMessage msg = errors ; msg != null ; msg = msg.next) {
+        for (ErrorMessage msg = errors; msg != null; msg = msg.next) {
             // There used to be code here which checked
             // for duplicate error messages.  This functionality
             // has been moved to the method insertError().  See
@@ -1106,26 +1157,30 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
 
             int ln = (int) (msg.where >>> WHEREOFFSETBITS);
             int off = (int) (msg.where & ((1L << WHEREOFFSETBITS) - 1));
-            if (off > dataLength)  off = dataLength;
+            if (off > dataLength) {
+                off = dataLength;
+            }
 
             String referenceString = "";
             String markerString = "";
-            if(inputAvail) {
+            if (inputAvail) {
                 int i, j;
-                for (i = off ; (i > 0) && (data[i - 1] != '\n') && (data[i - 1] != '\r') ; i--);
-                for (j = off ; (j < dataLength) && (data[j] != '\n') && (data[j] != '\r') ; j++);
+                for (i = off; (i > 0) && (data[i - 1] != '\n') && (data[i - 1] != '\r'); i--)
+                    ;
+                for (j = off; (j < dataLength) && (data[j] != '\n') && (data[j] != '\r'); j++)
+                    ;
                 referenceString = new String(data, i, j - i);
 
                 char strdata[] = new char[(off - i) + 1];
-                for (j = i ; j < off ; j++) {
-                    strdata[j-i] = (data[j] == '\t') ? '\t' : ' ';
+                for (j = i; j < off; j++) {
+                    strdata[j - i] = (data[j] == '\t') ? '\t' : ' ';
                 }
-                strdata[off-i] = '^';
+                strdata[off - i] = '^';
                 markerString = new String(strdata);
             }
 
             errorConsumer.pushError(errorFileName, ln, msg.message,
-                                        referenceString, markerString);
+                                    referenceString, markerString);
         }
         errors = null;
     }
@@ -1151,7 +1206,7 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
             flags |= F_ERRORSREPORTED;
 
         } else if (src instanceof String) {
-            String fileName = (String)src;
+            String fileName = (String) src;
 
             // Flush errors if we've moved on to a new file.
             if (!fileName.equals(errorFileName)) {
@@ -1200,26 +1255,26 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
                 }
             }
         } else if (src instanceof ClassFile) {
-            reportError(((ClassFile)src).getPath(), where, err, msg);
+            reportError(((ClassFile) src).getPath(), where, err, msg);
 
         } else if (src instanceof Identifier) {
             reportError(src.toString(), where, err, msg);
 
         } else if (src instanceof ClassDeclaration) {
             try {
-                reportError(((ClassDeclaration)src).getClassDefinition(this), where, err, msg);
+                reportError(((ClassDeclaration) src).getClassDefinition(this), where, err, msg);
             } catch (ClassNotFound e) {
-                reportError(((ClassDeclaration)src).getName(), where, err, msg);
+                reportError(((ClassDeclaration) src).getName(), where, err, msg);
             }
         } else if (src instanceof ClassDefinition) {
-            ClassDefinition c = (ClassDefinition)src;
+            ClassDefinition c = (ClassDefinition) src;
             if (!err.startsWith("warn.")) {
                 c.setError();
             }
             reportError(c.getSource(), where, err, msg);
 
         } else if (src instanceof MemberDefinition) {
-            reportError(((MemberDefinition)src).getClassDeclaration(), where, err, msg);
+            reportError(((MemberDefinition) src).getClassDeclaration(), where, err, msg);
 
         } else {
             output(src + ":error=" + err + ":" + msg);
@@ -1235,7 +1290,7 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
             return;
         }
         if (System.getProperty("javac.dump.stack") != null) {
-            output("javac.err."+err+": "+errorString(err, arg1, arg2, arg3));
+            output("javac.err." + err + ": " + errorString(err, arg1, arg2, arg3));
             new Exception("Stack trace").printStackTrace(new PrintStream(out));
         }
         reportError(source, where, err, errorString(err, arg1, arg2, arg3));
@@ -1247,8 +1302,8 @@ class BatchEnvironment extends Environment implements ErrorConsumer {
      */
     public void output(String msg) {
         PrintStream out =
-            this.out instanceof PrintStream ? (PrintStream)this.out
-                                            : new PrintStream(this.out, true);
+                this.out instanceof PrintStream ? (PrintStream) this.out
+                        : new PrintStream(this.out, true);
         out.println(msg);
     }
 

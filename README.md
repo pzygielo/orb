@@ -1,7 +1,7 @@
 # Glassfish CORBA ORB
 
 This is the [glassfish-corba project](https://javaee.github.io/glassfish-corba/).
- 
+
 ## Releasing
 
 * Make sure `gpg-agent` is running.

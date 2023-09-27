@@ -19,7 +19,7 @@
 
 package org.glassfish.rmic.tools.java;
 
-import org.glassfish.rmic.tools.tree.*;
+import org.glassfish.rmic.tools.tree.Node;
 
 /**
  * This is the protocol by which a Parser makes callbacks
@@ -30,12 +30,12 @@ import org.glassfish.rmic.tools.tree.*;
  * can handle its own actions.  The preferred way to use a
  * Parser, however, is to instantiate it directly with a
  * reference to your own ParserActions implementation.)
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
  *
- * @author      John R. Rose
+ * @author John R. Rose
  */
 public interface ParserActions {
     /**
@@ -55,6 +55,7 @@ public interface ParserActions {
 
     /**
      * Define class
+     *
      * @return a cookie for the class
      * This cookie is used by the parser when calling defineField
      * and endClass, and is not examined otherwise.
@@ -63,15 +64,16 @@ public interface ParserActions {
                                int mod, IdentifierToken nm,
                                IdentifierToken sup, IdentifierToken impl[]);
 
-
     /**
      * End class
+     *
      * @param c a cookie returned by the corresponding beginClass call
      */
     void endClass(long off, ClassDefinition c);
 
     /**
      * Define a field
+     *
      * @param c a cookie returned by the corresponding beginClass call
      */
     void defineField(long where, ClassDefinition c,

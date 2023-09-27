@@ -21,7 +21,7 @@ package org.omg.CORBA.portable;
 
 /**
  * Java to IDL ptc 02-01-12 1.5.1.3
- *
+ * <p>
  * ValueOutputStream is used for implementing RMI-IIOP
  * stream format version 2.
  */
@@ -31,6 +31,7 @@ public interface ValueOutputStream {
      * writes a valuetype header for a nested custom valuetype
      * (with a null codebase and the specified repository ID),
      * and increments the valuetype nesting depth.
+     *
      * @param rep_id the repository id
      */
     void start_value(java.lang.String rep_id);

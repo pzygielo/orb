@@ -20,7 +20,6 @@
 package org.glassfish.rmic.tools.tree;
 
 import org.glassfish.rmic.tools.java.*;
-import org.glassfish.rmic.tools.asm.Assembler;
 
 /**
  * WARNING: The contents of this source file are not part of any
@@ -53,7 +52,7 @@ class Context implements Constants {
             this.locals = ctx.locals;
             this.classes = ctx.classes;
             if (field != null &&
-                  (field.isVariable() || field.isInitializer())) {
+                    (field.isVariable() || field.isInitializer())) {
                 // Variables and initializers are inlined into a constructor.
                 // Model this by inheriting the frame number of the parent,
                 // which will contain a "this" parameter.
@@ -71,7 +70,7 @@ class Context implements Constants {
      * Create a new context, for initializing a class.
      */
     public Context(Context ctx, ClassDefinition c) {
-        this(ctx, (MemberDefinition)null);
+        this(ctx, (MemberDefinition) null);
     }
 
     /**
@@ -97,7 +96,7 @@ class Context implements Constants {
     }
 
     public Context(Context ctx) {
-        this(ctx, (Node)null);
+        this(ctx, (Node) null);
     }
 
     /**
@@ -149,9 +148,8 @@ class Context implements Constants {
     /**
      * Get a local variable by name
      */
-    public
-    LocalMember getLocalField(Identifier name) {
-        for (LocalMember f = locals ; f != null ; f = f.prev) {
+    public LocalMember getLocalField(Identifier name) {
+        for (LocalMember f = locals; f != null; f = f.prev) {
             if (name.equals(f.getName())) {
                 return f;
             }
@@ -162,12 +160,14 @@ class Context implements Constants {
     /**
      * Get the scope number for a reference to a member of this class
      * (Larger scope numbers are more deeply nested.)
+     *
      * @see LocalMember#scopeNumber
      */
-    public
-    int getScopeNumber(ClassDefinition c) {
+    public int getScopeNumber(ClassDefinition c) {
         for (Context ctx = this; ctx != null; ctx = ctx.prev) {
-            if (ctx.field == null)  continue;
+            if (ctx.field == null) {
+                continue;
+            }
             if (ctx.field.getClassDefinition() == c) {
                 return ctx.frameNumber;
             }
@@ -175,9 +175,8 @@ class Context implements Constants {
         return -1;
     }
 
-    private
-    MemberDefinition getFieldCommon(Environment env, Identifier name,
-                                   boolean apparentOnly) throws AmbiguousMember, ClassNotFound {
+    private MemberDefinition getFieldCommon(Environment env, Identifier name,
+                                            boolean apparentOnly) throws AmbiguousMember, ClassNotFound {
         // Note:  This is structured as a pair of parallel lookups.
         // If we were to redesign Context, we might prefer to walk
         // along a single chain of scopes.
@@ -216,7 +215,7 @@ class Context implements Constants {
      * Return -1 if there was no such assignment in this context.
      */
     public int getFieldNumber(MemberDefinition field) {
-        for (LocalMember f = locals ; f != null ; f = f.prev) {
+        for (LocalMember f = locals; f != null; f = f.prev) {
             if (f.getMember() == field) {
                 return f.number;
             }
@@ -229,7 +228,7 @@ class Context implements Constants {
      * Return null if there is no such field.
      */
     public MemberDefinition getElement(int number) {
-        for (LocalMember f = locals ; f != null ; f = f.prev) {
+        for (LocalMember f = locals; f != null; f = f.prev) {
             if (f.number == number) {
                 MemberDefinition field = f.getMember();
                 return (field != null) ? field : f;
@@ -241,9 +240,8 @@ class Context implements Constants {
     /**
      * Get a local class by name
      */
-    public
-    LocalMember getLocalClass(Identifier name) {
-        for (LocalMember f = classes ; f != null ; f = f.prev) {
+    public LocalMember getLocalClass(Identifier name) {
+        for (LocalMember f = classes; f != null; f = f.prev) {
             if (name.equals(f.getName())) {
                 return f;
             }
@@ -251,9 +249,8 @@ class Context implements Constants {
         return null;
     }
 
-    private
-    MemberDefinition getClassCommon(Environment env, Identifier name,
-                                   boolean apparentOnly) throws ClassNotFound {
+    private MemberDefinition getClassCommon(Environment env, Identifier name,
+                                            boolean apparentOnly) throws ClassNotFound {
         LocalMember lf = getLocalClass(name);
         int ls = (lf == null) ? -2 : lf.scopeNumber;
 
@@ -283,8 +280,7 @@ class Context implements Constants {
     /**
      * Get either a local variable, or a field in a current class
      */
-    public final
-    MemberDefinition getField(Environment env, Identifier name) throws AmbiguousMember, ClassNotFound {
+    public final MemberDefinition getField(Environment env, Identifier name) throws AmbiguousMember, ClassNotFound {
         return getFieldCommon(env, name, false);
     }
 
@@ -292,8 +288,7 @@ class Context implements Constants {
      * Like getField, except that it skips over inherited fields.
      * Used for error checking.
      */
-    public final
-    MemberDefinition getApparentField(Environment env, Identifier name) throws AmbiguousMember, ClassNotFound {
+    public final MemberDefinition getApparentField(Environment env, Identifier name) throws AmbiguousMember, ClassNotFound {
         return getFieldCommon(env, name, true);
     }
 
@@ -301,7 +296,7 @@ class Context implements Constants {
      * Check if the given field is active in this context.
      */
     public boolean isInScope(LocalMember field) {
-        for (LocalMember f = locals ; f != null ; f = f.prev) {
+        for (LocalMember f = locals; f != null; f = f.prev) {
             if (field == f) {
                 return true;
             }
@@ -389,9 +384,9 @@ class Context implements Constants {
         // reqc is the base pointer type required to use f
         ClassDefinition fc = f.getClassDefinition();
         ClassDefinition reqc = f.isStatic() ? null
-                             : !f.isConstructor() ? fc
-                             : fc.isTopLevel() ? null
-                             : fc.getOuterClass();
+                : !f.isConstructor() ? fc
+                : fc.isTopLevel() ? null
+                : fc.getOuterClass();
         if (reqc == null) {
             return null;
         }
@@ -402,7 +397,7 @@ class Context implements Constants {
                                  ClassDefinition thisc, ClassDefinition reqc) {
         try {
             return thisc == reqc
-                || reqc.implementedBy(env, thisc.getClassDeclaration());
+                    || reqc.implementedBy(env, thisc.getClassDeclaration());
         } catch (ClassNotFound ee) {
             return false;
         }
@@ -416,7 +411,7 @@ class Context implements Constants {
             if (f == null) {
                 // say something like: undefined variable A.this
                 Identifier nm = reqc.getName().getFlatName().getName();
-                env.error(where, "undef.var", Identifier.lookup(nm,idThis));
+                env.error(where, "undef.var", Identifier.lookup(nm, idThis));
             } else if (f.isConstructor()) {
                 env.error(where, "no.outer.arg", reqc, f.getClassDeclaration());
             } else if (f.isMethod()) {
@@ -480,7 +475,7 @@ class Context implements Constants {
             // 'needExactMatch' true.  This is done when checking
             // the '<class>.this' syntax.  Fixes 4102393 and 4133457.
             if (thisc == reqc ||
-                (!needExactMatch && match(env, thisc, reqc))) {
+                    (!needExactMatch && match(env, thisc, reqc))) {
                 break;
             }
 
@@ -516,7 +511,7 @@ class Context implements Constants {
         if (f == null) {
             // say something like: undefined variable A.this
             Identifier nm = reqc.getName().getFlatName().getName();
-            env.error(where, "undef.var", Identifier.lookup(nm,idThis));
+            env.error(where, "undef.var", Identifier.lookup(nm, idThis));
         } else if (f.isConstructor()) {
             env.error(where, "no.outer.arg", reqc, f.getClassDefinition());
         } else {
@@ -557,6 +552,7 @@ class Context implements Constants {
 
     /**
      * Resolve a type name from within a local scope.
+     *
      * @see Environment#resolveName
      */
     Identifier resolveName(Environment env, Identifier name) {
@@ -581,7 +577,7 @@ class Context implements Constants {
             }
             try {
                 return env.getClassDefinition(rhead).
-                    resolveInnerClass(env, name.getTail());
+                        resolveInnerClass(env, name.getTail());
             } catch (ClassNotFound ee) {
                 // return partially-resolved name someone else can fail on
                 return Identifier.lookupInner(rhead, name.getTail());
@@ -608,16 +604,15 @@ class Context implements Constants {
      * the current pacakge and imports.
      * This is used for error checking.
      */
-    public
-    Identifier getApparentClassName(Environment env, Identifier name) {
+    public Identifier getApparentClassName(Environment env, Identifier name) {
         if (name.isQualified()) {
             // Try to resolve the first identifier component,
             // because inner class names take precedence over
             // package prefixes.  (Cf. Environment.resolveName.)
             Identifier rhead = getApparentClassName(env, name.getHead());
             return (rhead == null) ? idNull
-                : Identifier.lookup(rhead,
-                                    name.getTail());
+                    : Identifier.lookup(rhead,
+                                        name.getTail());
         }
 
         // Look for an unqualified name in enclosing scopes.
@@ -646,10 +641,10 @@ class Context implements Constants {
      */
     public void checkBackBranch(Environment env, Statement loop,
                                 Vset vsEntry, Vset vsBack) {
-        for (LocalMember f = locals ; f != null ; f = f.prev) {
+        for (LocalMember f = locals; f != null; f = f.prev) {
             if (f.isBlankFinal()
-                && vsEntry.testVarUnassigned(f.number)
-                && !vsBack.testVarUnassigned(f.number)) {
+                    && vsEntry.testVarUnassigned(f.number)
+                    && !vsBack.testVarUnassigned(f.number)) {
                 env.error(loop.where, "assign.to.blank.final.in.loop",
                           f.getName());
             }
@@ -668,12 +663,12 @@ class Context implements Constants {
      * Get the context that corresponds to a label, return null if
      * not found.
      */
-    public
-    Context getLabelContext(Identifier lbl) {
-        for (Context ctx = this ; ctx != null ; ctx = ctx.prev) {
+    public Context getLabelContext(Identifier lbl) {
+        for (Context ctx = this; ctx != null; ctx = ctx.prev) {
             if ((ctx.node != null) && (ctx.node instanceof Statement)) {
-                if (((Statement)(ctx.node)).hasLabel(lbl))
+                if (((Statement) (ctx.node)).hasLabel(lbl)) {
                     return ctx;
+                }
             }
         }
         return null;
@@ -682,18 +677,17 @@ class Context implements Constants {
     /**
      * Get the destination context of a break
      */
-    public
-    Context getBreakContext(Identifier lbl) {
+    public Context getBreakContext(Identifier lbl) {
         if (lbl != null) {
             return getLabelContext(lbl);
         }
-        for (Context ctx = this ; ctx != null ; ctx = ctx.prev) {
+        for (Context ctx = this; ctx != null; ctx = ctx.prev) {
             if (ctx.node != null) {
                 switch (ctx.node.op) {
-                  case SWITCH:
-                  case FOR:
-                  case DO:
-                  case WHILE:
+                case SWITCH:
+                case FOR:
+                case DO:
+                case WHILE:
                     return ctx;
                 }
             }
@@ -704,17 +698,16 @@ class Context implements Constants {
     /**
      * Get the destination context of a continue
      */
-    public
-    Context getContinueContext(Identifier lbl) {
+    public Context getContinueContext(Identifier lbl) {
         if (lbl != null) {
             return getLabelContext(lbl);
         }
-        for (Context ctx = this ; ctx != null ; ctx = ctx.prev) {
+        for (Context ctx = this; ctx != null; ctx = ctx.prev) {
             if (ctx.node != null) {
                 switch (ctx.node.op) {
-                  case FOR:
-                  case DO:
-                  case WHILE:
+                case FOR:
+                case DO:
+                case WHILE:
                     return ctx;
                 }
             }
@@ -725,12 +718,11 @@ class Context implements Constants {
     /**
      * Get the destination context of a return (the method body)
      */
-    public
-    CheckContext getReturnContext() {
-        for (Context ctx = this ; ctx != null ; ctx = ctx.prev) {
+    public CheckContext getReturnContext() {
+        for (Context ctx = this; ctx != null; ctx = ctx.prev) {
             // The METHOD node is set up by Statement.checkMethod().
             if (ctx.node != null && ctx.node.op == METHOD) {
-                return (CheckContext)ctx;
+                return (CheckContext) ctx;
             }
         }
         return null;
@@ -745,13 +737,12 @@ class Context implements Constants {
      * all abnormal transfers of control: break, continue, return,
      * and throw.
      */
-    public
-    CheckContext getTryExitContext() {
+    public CheckContext getTryExitContext() {
         for (Context ctx = this;
              ctx != null && ctx.node != null && ctx.node.op != METHOD;
              ctx = ctx.prev) {
             if (ctx.node.op == TRY) {
-                return (CheckContext)ctx;
+                return (CheckContext) ctx;
             }
         }
         return null;
@@ -761,11 +752,11 @@ class Context implements Constants {
      * Get the nearest inlined context
      */
     Context getInlineContext() {
-        for (Context ctx = this ; ctx != null ; ctx = ctx.prev) {
+        for (Context ctx = this; ctx != null; ctx = ctx.prev) {
             if (ctx.node != null) {
                 switch (ctx.node.op) {
-                  case INLINEMETHOD:
-                  case INLINENEWINSTANCE:
+                case INLINEMETHOD:
+                case INLINENEWINSTANCE:
                     return ctx;
                 }
             }
@@ -777,16 +768,16 @@ class Context implements Constants {
      * Get the context of a field that is being inlined
      */
     Context getInlineMemberContext(MemberDefinition field) {
-        for (Context ctx = this ; ctx != null ; ctx = ctx.prev) {
+        for (Context ctx = this; ctx != null; ctx = ctx.prev) {
             if (ctx.node != null) {
                 switch (ctx.node.op) {
-                  case INLINEMETHOD:
-                    if (((InlineMethodExpression)ctx.node).field.equals(field)) {
+                case INLINEMETHOD:
+                    if (((InlineMethodExpression) ctx.node).field.equals(field)) {
                         return ctx;
                     }
                     break;
-                  case INLINENEWINSTANCE:
-                    if (((InlineNewInstanceExpression)ctx.node).field.equals(field)) {
+                case INLINENEWINSTANCE:
+                    if (((InlineNewInstanceExpression) ctx.node).field.equals(field)) {
                         return ctx;
                     }
                 }
@@ -813,7 +804,7 @@ class Context implements Constants {
     public int getThisNumber() {
         LocalMember thisf = getLocalField(idThis);
         if (thisf != null
-            && thisf.getClassDefinition() == field.getClassDefinition()) {
+                && thisf.getClassDefinition() == field.getClassDefinition()) {
             return thisf.number;
         }
         // this is a variable; there is no "this" (should not happen)

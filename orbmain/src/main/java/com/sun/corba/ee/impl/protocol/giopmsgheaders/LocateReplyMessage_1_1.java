@@ -19,19 +19,14 @@
 
 package com.sun.corba.ee.impl.protocol.giopmsgheaders;
 
-import org.omg.CORBA.CompletionStatus;
-import org.omg.CORBA.SystemException;
-import org.omg.CORBA_2_3.portable.InputStream;
-
+import com.sun.corba.ee.impl.encoding.CDRInputObject;
 import com.sun.corba.ee.spi.ior.IOR;
 import com.sun.corba.ee.spi.ior.IORFactories;
-
-import com.sun.corba.ee.spi.orb.ORB;
-
 import com.sun.corba.ee.spi.ior.iiop.GIOPVersion;
-import com.sun.corba.ee.impl.encoding.CDRInputObject;
-
-import com.sun.corba.ee.spi.logging.ORBUtilSystemException ;
+import com.sun.corba.ee.spi.logging.ORBUtilSystemException;
+import com.sun.corba.ee.spi.orb.ORB;
+import org.omg.CORBA.SystemException;
+import org.omg.CORBA_2_3.portable.InputStream;
 
 /**
  * This implements the GIOP 1.1 LocateReply header.
@@ -44,7 +39,7 @@ public final class LocateReplyMessage_1_1 extends Message_1_1
         implements LocateReplyMessage {
 
     private static final ORBUtilSystemException wrapper =
-        ORBUtilSystemException.self ;
+            ORBUtilSystemException.self;
 
     // Instance variables
 
@@ -60,9 +55,9 @@ public final class LocateReplyMessage_1_1 extends Message_1_1
     }
 
     LocateReplyMessage_1_1(ORB orb, int _request_id,
-            int _reply_status, IOR _ior) {
+                           int _reply_status, IOR _ior) {
         super(Message.GIOPBigMagic, GIOPVersion.V1_1, FLAG_NO_FRAG_BIG_ENDIAN,
-            Message.GIOPLocateReply, 0);
+              Message.GIOPLocateReply, 0);
         this.orb = orb;
         request_id = _request_id;
         reply_status = _reply_status;
@@ -82,7 +77,7 @@ public final class LocateReplyMessage_1_1 extends Message_1_1
     public short getAddrDisposition() {
         return KeyAddr.value;
     }
-        
+
     public SystemException getSystemException(String message) {
         return null; // 1.0 LocateReply body does not contain SystemException
     }
@@ -103,7 +98,7 @@ public final class LocateReplyMessage_1_1 extends Message_1_1
         // The code below reads the reply body if status is OBJECT_FORWARD
         if (this.reply_status == OBJECT_FORWARD) {
             CDRInputObject cdr = (CDRInputObject) istream;
-            this.ior = IORFactories.makeIOR( orb, (InputStream)cdr ) ;
+            this.ior = IORFactories.makeIOR(orb, (InputStream) cdr);
         }
     }
 
@@ -120,18 +115,17 @@ public final class LocateReplyMessage_1_1 extends Message_1_1
 
     public static void isValidReplyStatus(int replyStatus) {
         switch (replyStatus) {
-        case UNKNOWN_OBJECT :
-        case OBJECT_HERE :
-        case OBJECT_FORWARD :
+        case UNKNOWN_OBJECT:
+        case OBJECT_HERE:
+        case OBJECT_FORWARD:
             break;
-        default :
+        default:
             throw wrapper.illegalReplyStatus();
         }
     }
 
     public void callback(MessageHandler handler)
-        throws java.io.IOException
-    {
+            throws java.io.IOException {
         handler.handleInput(this);
     }
 } // class LocateReplyMessage_1_1

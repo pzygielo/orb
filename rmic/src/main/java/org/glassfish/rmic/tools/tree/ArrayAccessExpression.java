@@ -19,8 +19,10 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
+import org.glassfish.rmic.tools.java.Environment;
+import org.glassfish.rmic.tools.java.Type;
+
 import java.io.PrintStream;
 import java.util.Hashtable;
 
@@ -137,6 +139,7 @@ class ArrayAccessExpression extends UnaryExpression {
     Type toType(Environment env, Context ctx) {
         return toType(env, right.toType(env, ctx));
     }
+
     Type toType(Environment env, Type t) {
         if (index != null) {
             env.error(index.where, "array.dim.in.type");
@@ -156,6 +159,7 @@ class ArrayAccessExpression extends UnaryExpression {
         index = index.inlineValue(env, ctx);
         return this;
     }
+
     public Expression inlineValue(Environment env, Context ctx) {
         // inlineValue() should not end up being called when the index is
         // null.  If it is null, we let this method fail with a
@@ -165,6 +169,7 @@ class ArrayAccessExpression extends UnaryExpression {
         index = index.inlineValue(env, ctx);
         return this;
     }
+
     public Expression inlineLHS(Environment env, Context ctx) {
         return inlineValue(env, ctx);
     }
@@ -173,7 +178,7 @@ class ArrayAccessExpression extends UnaryExpression {
      * Create a copy of the expression for method inlining
      */
     public Expression copyInline(Context ctx) {
-        ArrayAccessExpression e = (ArrayAccessExpression)clone();
+        ArrayAccessExpression e = (ArrayAccessExpression) clone();
         e.right = right.copyInline(ctx);
         if (index == null) {
             // The index can be null when this node is being used to
@@ -195,7 +200,7 @@ class ArrayAccessExpression extends UnaryExpression {
         // NullPointerException.
 
         return 1 + right.costInline(thresh, env, ctx)
-            + index.costInline(thresh, env, ctx);
+                + index.costInline(thresh, env, ctx);
     }
 
     /**
@@ -210,43 +215,45 @@ class ArrayAccessExpression extends UnaryExpression {
         index.codeValue(env, ctx, asm);
         return 2;
     }
+
     void codeLoad(Environment env, Context ctx, Assembler asm) {
         switch (type.getTypeCode()) {
-          case TC_BOOLEAN:
-          case TC_BYTE:
+        case TC_BOOLEAN:
+        case TC_BYTE:
             asm.add(where, opc_baload);
             break;
-          case TC_CHAR:
+        case TC_CHAR:
             asm.add(where, opc_caload);
             break;
-          case TC_SHORT:
+        case TC_SHORT:
             asm.add(where, opc_saload);
             break;
-          default:
+        default:
             asm.add(where, opc_iaload + type.getTypeCodeOffset());
         }
     }
+
     void codeStore(Environment env, Context ctx, Assembler asm) {
         switch (type.getTypeCode()) {
-          case TC_BOOLEAN:
-          case TC_BYTE:
+        case TC_BOOLEAN:
+        case TC_BYTE:
             asm.add(where, opc_bastore);
             break;
-          case TC_CHAR:
+        case TC_CHAR:
             asm.add(where, opc_castore);
             break;
-          case TC_SHORT:
+        case TC_SHORT:
             asm.add(where, opc_sastore);
             break;
-          default:
+        default:
             asm.add(where, opc_iastore + type.getTypeCodeOffset());
         }
     }
+
     public void codeValue(Environment env, Context ctx, Assembler asm) {
         codeLValue(env, ctx, asm);
         codeLoad(env, ctx, asm);
     }
-
 
     /**
      * Print
@@ -258,7 +265,7 @@ class ArrayAccessExpression extends UnaryExpression {
         if (index != null) {
             index.print(out);
         } else {
-        out.print("<empty>");
+            out.print("<empty>");
         }
         out.print(")");
     }

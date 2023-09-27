@@ -29,20 +29,18 @@ import javax.naming.*;
 import ClientRequestInterceptor.*; // hello interface
 
 /**
- * RMI/IIOP implementation.  
+ * RMI/IIOP implementation.
  */
-public class helloRMIIIOP 
-    extends PortableRemoteObject 
-    implements helloIF
-{
+public class helloRMIIIOP
+        extends PortableRemoteObject
+        implements helloIF {
     // Contains the actual implementation of the hello interface.
     private helloDelegate delegate = null;
-    
-    public helloRMIIIOP( PrintStream out ) 
-        throws RemoteException 
-    {
+
+    public helloRMIIIOP(PrintStream out)
+            throws RemoteException {
         super();
-        this.delegate = new helloDelegate( out );
+        this.delegate = new helloDelegate(out);
     }
 
     public helloDelegate getDelegate() {
@@ -52,19 +50,19 @@ public class helloRMIIIOP
     public String sayHello() {
         return delegate.sayHello();
     }
-    
+
     public String saySystemException() {
         return delegate.saySystemException();
     }
-    
+
     public void sayOneway() {
         delegate.sayOneway();
     }
-    
+
     public void clearInvoked() {
         delegate.clearInvoked();
     }
-    
+
     public boolean wasInvoked() {
         return delegate.wasInvoked();
     }

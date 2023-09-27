@@ -23,13 +23,14 @@ package rmic;
 
 import org.glassfish.rmic.iiop.Constants;
 import org.glassfish.rmic.tools.java.ClassPath;
+
 import java.lang.reflect.Method;
 
-import corba.framework.TestngRunner ;
+import corba.framework.TestngRunner;
 
 public class ParseTest extends test.Test implements Constants {
     public static ClassPath createClassPath() {
-            
+
         String path = System.getProperty("java.class.path");
 
         // Use reflection to call sun.rmi.rmic.BatchEnvironment.createClassPath(path)
@@ -38,20 +39,22 @@ public class ParseTest extends test.Test implements Constants {
 
         try {
             Class env = org.glassfish.rmic.BatchEnvironment.class;
-            Method method = env.getMethod("createClassPath",new Class[]{java.lang.String.class});
-            return (ClassPath) method.invoke(null,new Object[]{path});
+            Method method = env.getMethod("createClassPath", new Class[] { java.lang.String.class });
+            return (ClassPath) method.invoke(null, new Object[] { path });
         } catch (Throwable e) {
-            if (e instanceof ThreadDeath) 
-                throw (ThreadDeath)e;
-            throw new Error("ParseTest.createClassPath() caught "+e);
+            if (e instanceof ThreadDeath) {
+                throw (ThreadDeath) e;
+            }
+            throw new Error("ParseTest.createClassPath() caught " + e);
         }
     }
-    
-    public void run( ) {
-        TestngRunner runner = new TestngRunner() ;
-        runner.registerClass( TestExecutor.class ) ;
-        runner.run() ;
-        if (runner.hasFailure()) 
-            status = new Error( "test failed" ) ;
+
+    public void run() {
+        TestngRunner runner = new TestngRunner();
+        runner.registerClass(TestExecutor.class);
+        runner.run();
+        if (runner.hasFailure()) {
+            status = new Error("test failed");
+        }
     }
 }

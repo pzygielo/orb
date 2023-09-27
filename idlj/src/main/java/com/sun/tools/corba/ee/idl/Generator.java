@@ -22,7 +22,6 @@ package com.sun.tools.corba.ee.idl;
 
 // NOTES:
 
-public interface Generator
-{
+public interface Generator {
 } // interface Generator
 

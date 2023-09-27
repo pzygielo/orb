@@ -21,13 +21,13 @@ package corba.fragment2;
 
 import test.Test;
 import corba.framework.*;
+
 import java.util.*;
+
 import com.sun.corba.ee.spi.misc.ORBConstants;
 
-public class FragmentTest extends CORBATest
-{
-    protected void doTest() throws Throwable
-    {
+public class FragmentTest extends CORBATest {
+    protected void doTest() throws Throwable {
         Properties clientProps = Options.getClientProperties();
 
         int fragmentSize = 1024;

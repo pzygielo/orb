@@ -28,23 +28,22 @@ import org.omg.CORBA.INTERNAL;
 import org.omg.PortableInterceptor.ClientRequestInfo;
 
 public class CRIOrdered
-    extends
+        extends
         org.omg.CORBA.LocalObject
-    implements
+        implements
         org.omg.PortableInterceptor.ClientRequestInterceptor,
-        Comparable
-{
+        Comparable {
     public static final String baseMsg = CRIOrdered.class.getName();
     public String name;
     public int order;
-    public CRIOrdered(String name, int order)
-    {
+
+    public CRIOrdered(String name, int order) {
         this.name = name;
         this.order = order;
     }
-    public int compareTo(Object o)
-    {
-        int otherOrder = ((CRIOrdered)o).order;
+
+    public int compareTo(Object o) {
+        int otherOrder = ((CRIOrdered) o).order;
         if (order < otherOrder) {
             return -1;
         } else if (order == otherOrder) {
@@ -52,10 +51,12 @@ public class CRIOrdered
         }
         return 1;
     }
-    public String name() { return name; }
 
-    public void destroy() 
-    {
+    public String name() {
+        return name;
+    }
+
+    public void destroy() {
         try {
             Common.up(order);
         } catch (INTERNAL e) {
@@ -66,24 +67,23 @@ public class CRIOrdered
         }
     }
 
-    public void send_request(ClientRequestInfo cri)
-    {
+    public void send_request(ClientRequestInfo cri) {
         Common.up(order);
     }
-    public void send_poll(ClientRequestInfo cri)
-    {
+
+    public void send_poll(ClientRequestInfo cri) {
         Common.up(order);
     }
-    public void receive_reply(ClientRequestInfo cri)
-    {
+
+    public void receive_reply(ClientRequestInfo cri) {
         Common.down(order);
     }
-    public void receive_exception(ClientRequestInfo cri)
-    {
+
+    public void receive_exception(ClientRequestInfo cri) {
         Common.down(order);
     }
-    public void receive_other(ClientRequestInfo cri)
-    {
+
+    public void receive_other(ClientRequestInfo cri) {
         Common.down(order);
     }
 }

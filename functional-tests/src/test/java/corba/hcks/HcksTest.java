@@ -28,17 +28,15 @@ import corba.framework.Controller;
 import corba.framework.CORBATest;
 
 public class HcksTest
-    extends
-        CORBATest
-{
+        extends
+        CORBATest {
     public static final String thisPackage =
-        HcksTest.class.getPackage().getName();
+            HcksTest.class.getPackage().getName();
 
     protected void doTest()
-        throws
-            Throwable
-    {
-        Controller orbd   = createORBD();
+            throws
+            Throwable {
+        Controller orbd = createORBD();
         orbd.start();
 
         doTestType("Server", "remoteServerStream",
@@ -48,9 +46,9 @@ public class HcksTest
         doTestType("Server_1_1", "remoteServer_1_1",
                    "Client_1_1", "remoteClient_1_1");
 
-        Controller colocatedClientServer = 
-            createClient(thisPackage + ".ColocatedClientServer",
-                         "colocatedClientServer");
+        Controller colocatedClientServer =
+                createClient(thisPackage + ".ColocatedClientServer",
+                             "colocatedClientServer");
         colocatedClientServer.start();
         colocatedClientServer.waitFor();
         colocatedClientServer.stop();
@@ -60,9 +58,8 @@ public class HcksTest
 
     protected void doTestType(String serverMainClass, String serverTestName,
                               String clientMainClass, String clientTestName)
-        throws
-            Throwable
-    {
+            throws
+            Throwable {
         Controller server = createServer(thisPackage + "." + serverMainClass,
                                          serverTestName);
         server.start();

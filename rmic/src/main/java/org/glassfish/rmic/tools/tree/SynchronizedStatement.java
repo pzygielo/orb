@@ -19,11 +19,14 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
+import org.glassfish.rmic.tools.asm.CatchData;
 import org.glassfish.rmic.tools.asm.Label;
 import org.glassfish.rmic.tools.asm.TryData;
-import org.glassfish.rmic.tools.asm.CatchData;
+import org.glassfish.rmic.tools.java.ClassDefinition;
+import org.glassfish.rmic.tools.java.Environment;
+import org.glassfish.rmic.tools.java.Type;
+
 import java.io.PrintStream;
 import java.util.Hashtable;
 
@@ -78,7 +81,7 @@ class SynchronizedStatement extends Statement {
      * Create a copy of the statement for method inlining
      */
     public Statement copyInline(Context ctx, boolean valNeeded) {
-        SynchronizedStatement s = (SynchronizedStatement)clone();
+        SynchronizedStatement s = (SynchronizedStatement) clone();
         s.expr = expr.copyInline(ctx);
         if (body != null) {
             s.body = body.copyInline(ctx, valNeeded);
@@ -89,14 +92,16 @@ class SynchronizedStatement extends Statement {
     /**
      * Compute cost of inlining this statement
      */
-    public int costInline(int thresh, Environment env, Context ctx){
+    public int costInline(int thresh, Environment env, Context ctx) {
         int cost = 1;
         if (expr != null) {
-            cost += expr.costInline(thresh, env,ctx);
-            if (cost >= thresh) return cost;
+            cost += expr.costInline(thresh, env, ctx);
+            if (cost >= thresh) {
+                return cost;
+            }
         }
         if (body != null) {
-            cost += body.costInline(thresh, env,ctx);
+            cost += body.costInline(thresh, env, ctx);
         }
         return cost;
     }
@@ -112,7 +117,7 @@ class SynchronizedStatement extends Statement {
         if (needReturnSlot) {
             Type returnType = ctx.field.getType().getReturnType();
             LocalMember localfield = new LocalMember(0, clazz, 0, returnType,
-                                                   idFinallyReturnValue);
+                                                     idFinallyReturnValue);
             ctx.declare(env, localfield);
             Environment.debugOutput("Assigning return slot to " + localfield.number);
         }

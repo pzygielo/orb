@@ -27,35 +27,34 @@ import java.io.*;
 import ClientRequestInterceptor.*; // hello interface
 
 /**
- * Servant implementation.  
+ * Servant implementation.
  */
-public class helloServant 
-        extends helloPOA 
-{
+public class helloServant
+        extends helloPOA {
     // contains implementations of methods.
     private helloDelegate delegate;
 
-    public helloServant( PrintStream out ) {
+    public helloServant(PrintStream out) {
         super();
-        delegate = new helloDelegate( out );
+        delegate = new helloDelegate(out);
     }
 
     public String sayHello() {
         return delegate.sayHello();
     }
-    
+
     public String saySystemException() {
         return delegate.saySystemException();
     }
-    
+
     public void sayOneway() {
         delegate.sayOneway();
     }
-    
+
     public void clearInvoked() {
         delegate.clearInvoked();
     }
-    
+
     public boolean wasInvoked() {
         return delegate.wasInvoked();
     }

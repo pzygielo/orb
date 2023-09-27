@@ -32,10 +32,10 @@ public class RmiIIServant extends PortableRemoteObject implements RmiII {
         return "Hello, World!";
     }
 
-    public int sendBytes (byte[] x)
-    {
-        if (x == null)
+    public int sendBytes(byte[] x) {
+        if (x == null) {
             return -1;
+        }
         return x.length;
     }
 
@@ -43,8 +43,7 @@ public class RmiIIServant extends PortableRemoteObject implements RmiII {
         return x;
     }
 
-    public Object sendTwoObjects (Object x, Object y)
-    {
+    public Object sendTwoObjects(Object x, Object y) {
         return x;
     }
 
@@ -52,15 +51,15 @@ public class RmiIIServant extends PortableRemoteObject implements RmiII {
         return "";
     }
 
-    public String colocatedCallFromServant (String a) throws RemoteException {
+    public String colocatedCallFromServant(String a) throws RemoteException {
         return "B" + a;
     }
 
-    public String throwThreadDeathInServant (String a) throws RemoteException, ThreadDeath {
+    public String throwThreadDeathInServant(String a) throws RemoteException, ThreadDeath {
         throw new ThreadDeath();
     }
 
-    public Object returnObjectFromServer (boolean isSerializable) throws RemoteException {
+    public Object returnObjectFromServer(boolean isSerializable) throws RemoteException {
         return isSerializable ? "" : new RmiIIServant();
     }
 

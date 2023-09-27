@@ -37,18 +37,10 @@ import org.omg.IOP.CodecFactoryPackage.UnknownEncoding;
 import org.omg.IOP.CodecPackage.InvalidTypeForEncoding;
 import org.omg.IOP.ServiceContext;
 import org.omg.IOP.TaggedComponent;
-import org.omg.PortableInterceptor.ClientRequestInfo;
-import org.omg.PortableInterceptor.ClientRequestInterceptor;
-import org.omg.PortableInterceptor.ForwardRequest;
-import org.omg.PortableInterceptor.ORBInitInfo;
+import org.omg.PortableInterceptor.*;
 import org.omg.PortableInterceptor.ORBInitInfoPackage.DuplicateName;
-import org.omg.PortableInterceptor.ORBInitializer;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.meterware.simplestub.Stub.createStrictStub;
 import static org.junit.Assert.*;
@@ -62,8 +54,8 @@ public class GroupManagerServiceInterceptorsTest implements GroupInfoServiceObse
     private final TestClientRequestInfo clientRequestInfo = createStrictStub(TestClientRequestInfo.class);
     private final TestContactInfo contactInfo = createStrictStub(TestContactInfo.class);
 
-    private static final byte[] COMPONENT_DATA_1 = new byte[]{0, 1, 2, 5, 6};
-    private static final byte[] COMPONENT_DATA_2 = new byte[]{9, 3, 3};
+    private static final byte[] COMPONENT_DATA_1 = new byte[] { 0, 1, 2, 5, 6 };
+    private static final byte[] COMPONENT_DATA_2 = new byte[] { 9, 3, 3 };
 
     private int numMembershipChanges;
     private IOR locatedIOR;
@@ -85,13 +77,15 @@ public class GroupManagerServiceInterceptorsTest implements GroupInfoServiceObse
     }
 
     private void preInitInitializers() {
-        for (ORBInitializer initializer : orbData.getORBInitializers())
+        for (ORBInitializer initializer : orbData.getORBInitializers()) {
             initializer.pre_init(orbInitInfo);
+        }
     }
 
     private void postInitInitializers() {
-        for (ORBInitializer initializer : orbData.getORBInitializers())
+        for (ORBInitializer initializer : orbData.getORBInitializers()) {
             initializer.post_init(orbInitInfo);
+        }
     }
 
     @Test
@@ -149,15 +143,14 @@ public class GroupManagerServiceInterceptorsTest implements GroupInfoServiceObse
         receiveReply();
 
         assertEquals(1, numMembershipChanges);
-        assertEquals(ior,locatedIOR);
+        assertEquals(ior, locatedIOR);
     }
 
     private void setFolbIorUpdateContext(TestIOR ior) {
-        byte[] encodedIOR = {1,1,1,1};
-        clientGroupManager.setIORWithEncoding(ior,encodedIOR);
+        byte[] encodedIOR = { 1, 1, 1, 1 };
+        clientGroupManager.setIORWithEncoding(ior, encodedIOR);
         clientRequestInfo.setReplyServiceContext(new ServiceContext(ORBConstants.FOLB_IOR_UPDATE_SERVICE_CONTEXT_ID, encodedIOR));
     }
-
 
     public void clientInterceptorOnReceive_addsNewIORForListeners() {
         // when we receive a reply, if it has a service context of type ORBConstants.FOLB_IOR_UPDATE_SERVICE_CONTEXT_ID,
@@ -165,9 +158,10 @@ public class GroupManagerServiceInterceptorsTest implements GroupInfoServiceObse
         // (need this for receive_request, receive_exception, and receive_other)
     }
 
-    private void assertEqualData( byte[] expected, byte[] actual) {
-        if (!Arrays.equals(expected, actual))
-            fail( "expected " + Arrays.toString(expected) + " but was " + Arrays.toString(actual));
+    private void assertEqualData(byte[] expected, byte[] actual) {
+        if (!Arrays.equals(expected, actual)) {
+            fail("expected " + Arrays.toString(expected) + " but was " + Arrays.toString(actual));
+        }
     }
 
     private ServiceContext getFolbMembershipServiceContext() {
@@ -175,18 +169,21 @@ public class GroupManagerServiceInterceptorsTest implements GroupInfoServiceObse
     }
 
     private void sendRequest() throws ForwardRequest {
-        for (ClientRequestInterceptor interceptor : orbInitInfo.clientRequestInterceptors)
+        for (ClientRequestInterceptor interceptor : orbInitInfo.clientRequestInterceptors) {
             interceptor.send_request(clientRequestInfo);
+        }
     }
 
     private void receiveReply() throws ForwardRequest {
-        for (ClientRequestInterceptor interceptor : orbInitInfo.clientRequestInterceptors)
+        for (ClientRequestInterceptor interceptor : orbInitInfo.clientRequestInterceptors) {
             interceptor.receive_reply(clientRequestInfo);
+        }
     }
 
     private void receiveException() throws ForwardRequest {
-        for (ClientRequestInterceptor interceptor : orbInitInfo.clientRequestInterceptors)
+        for (ClientRequestInterceptor interceptor : orbInitInfo.clientRequestInterceptors) {
             interceptor.receive_exception(clientRequestInfo);
+        }
     }
 
     private void defineOperation(String operationName) {
@@ -204,12 +201,12 @@ public class GroupManagerServiceInterceptorsTest implements GroupInfoServiceObse
 
     private static TestIOR createIORWithFolbMembershipTaggedComponents(byte[]... componentData) {
         TaggedComponent[] taggedComponents = new TaggedComponent[componentData.length];
-        for (int i = 0; i < taggedComponents.length; i++)
+        for (int i = 0; i < taggedComponents.length; i++) {
             taggedComponents[i] = new TaggedComponent(ORBConstants.FOLB_MEMBERSHIP_LABEL_TAGGED_COMPONENT_ID, componentData[i]);
+        }
 
         return TestIOR.createIORWithTaggedComponents(ORBConstants.FOLB_MEMBERSHIP_LABEL_TAGGED_COMPONENT_ID, taggedComponents);
     }
-
 
     abstract static class TestORBInitInfo extends StubCorbaObject implements ORBInitInfo {
         List<ClientRequestInterceptor> clientRequestInterceptors = new ArrayList<ClientRequestInterceptor>();
@@ -222,13 +219,12 @@ public class GroupManagerServiceInterceptorsTest implements GroupInfoServiceObse
 
     class TestClientGroupManager extends ClientGroupManager {
 
-
         private TestIOR ior;
         private byte[] encodedIOR;
 
         @Override
         protected IOR extractIOR(byte[] data) {
-            assertEqualData(encodedIOR,data);
+            assertEqualData(encodedIOR, data);
             return ior;
         }
 
@@ -273,7 +269,6 @@ public class GroupManagerServiceInterceptorsTest implements GroupInfoServiceObse
         }
     }
 
-
     abstract static class TestORB extends ORB {
         private ORBData ORBData;
         private Map<String, Object> initialReferences = new HashMap<String, Object>();
@@ -295,12 +290,11 @@ public class GroupManagerServiceInterceptorsTest implements GroupInfoServiceObse
         }
     }
 
-
     abstract static public class TestClientRequestInfo implements ClientRequestInfo {
         private Object effectiveTarget;
         private String operation = "";
-        private Map<Integer,ServiceContext> requestServiceContexts = new HashMap<Integer, ServiceContext>();
-        private Map<Integer,ServiceContext> replyServiceContexts = new HashMap<Integer, ServiceContext>();
+        private Map<Integer, ServiceContext> requestServiceContexts = new HashMap<Integer, ServiceContext>();
+        private Map<Integer, ServiceContext> replyServiceContexts = new HashMap<Integer, ServiceContext>();
 
         public Object effective_target() {
             return effectiveTarget;
@@ -340,6 +334,5 @@ public class GroupManagerServiceInterceptorsTest implements GroupInfoServiceObse
             return 1000;
         }
     }
-
 
 }

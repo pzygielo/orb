@@ -23,20 +23,21 @@ import org.omg.CORBA.*;
 
 import java.util.*;
 import java.io.*;
+
 import org.omg.PortableInterceptor.*;
 
 import ServerRequestInterceptor.*;
 
 /**
- * Servant implementation.  
+ * Servant implementation.
  */
 class helloServant extends helloPOA {
     // The object to delegate all calls to:
     helloDelegate delegate;
 
-    public helloServant( PrintStream out, String symbol ) {
+    public helloServant(PrintStream out, String symbol) {
         super();
-        this.delegate = new helloDelegate( out, symbol );
+        this.delegate = new helloDelegate(out, symbol);
     }
 
     public String sayHello() {
@@ -46,19 +47,18 @@ class helloServant extends helloPOA {
     public void sayOneway() {
         delegate.sayOneway();
     }
-    
+
     public void saySystemException() {
         delegate.saySystemException();
     }
 
-    public void sayUserException() 
-        throws ForwardRequest
-    {
+    public void sayUserException()
+            throws ForwardRequest {
         delegate.sayUserException();
     }
-    
-    public String syncWithServer( boolean exceptionRaised ) {
-        return delegate.syncWithServer( exceptionRaised );
+
+    public String syncWithServer(boolean exceptionRaised) {
+        return delegate.syncWithServer(exceptionRaised);
     }
 
 }

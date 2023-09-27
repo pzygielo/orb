@@ -23,50 +23,49 @@ import org.omg.CORBA.*;
 
 import java.util.*;
 import java.io.*;
+
 import org.omg.CORBA.*;
 
 import ClientRequestInfo.*; // hello interface
 
 /**
- * Servant implementation.  
+ * Servant implementation.
  */
-public class helloServant 
-        extends helloPOA 
-{
+public class helloServant
+        extends helloPOA {
     // contains implementations of methods.
     private helloDelegate delegate;
 
-    public helloServant( PrintStream out ) {
+    public helloServant(PrintStream out) {
         super();
-        delegate = new helloDelegate( out );
+        delegate = new helloDelegate(out);
     }
 
     public String sayHello() {
         return delegate.sayHello();
     }
-    
+
     public String saySystemException() {
         return delegate.saySystemException();
     }
-    
-    public void sayUserException() 
-        throws ExampleException 
-    {
+
+    public void sayUserException()
+            throws ExampleException {
         delegate.sayUserException();
     }
-    
+
     public void sayOneway() {
         delegate.sayOneway();
     }
 
-    public String sayArguments( String arg1, int arg2, boolean arg3 ) {
-        return delegate.sayArguments( arg1, arg2, arg3 );
+    public String sayArguments(String arg1, int arg2, boolean arg3) {
+        return delegate.sayArguments(arg1, arg2, arg3);
     }
 
     public void clearInvoked() {
         delegate.clearInvoked();
     }
-    
+
     public boolean wasInvoked() {
         return delegate.wasInvoked();
     }

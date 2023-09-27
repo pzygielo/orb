@@ -36,12 +36,10 @@ import com.sun.corba.ee.spi.misc.ORBConstants;
  * @author Harold Carr
  */
 public class RetryPluginTest
-    extends
-        CORBATest
-{
+        extends
+        CORBATest {
     protected void doTest()
-        throws Exception
-    {
+            throws Exception {
         String thisPackage = RetryPluginTest.class.getPackage().getName();
 
         Controller orbd = createORBD();
@@ -50,8 +48,8 @@ public class RetryPluginTest
 
         orbd.start();
 
-        server = createServer(thisPackage+"."+"Server", "Server");
-        client = createClient(thisPackage+"."+"Client", "Client");
+        server = createServer(thisPackage + "." + "Server", "Server");
+        client = createClient(thisPackage + "." + "Client", "Client");
 
         server.start();
         client.start();

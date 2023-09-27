@@ -19,13 +19,15 @@
 
 package org.glassfish.rmic.tools.asm;
 
-import org.glassfish.rmic.tools.java.*;
-import java.io.IOException;
+import org.glassfish.rmic.tools.java.Environment;
+import org.glassfish.rmic.tools.java.MemberDefinition;
+
 import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
  * This is a field constant pool data item
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.

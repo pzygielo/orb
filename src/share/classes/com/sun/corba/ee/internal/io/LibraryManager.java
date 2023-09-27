@@ -20,8 +20,7 @@
 
 package com.sun.corba.ee.internal.io;
 
-public class LibraryManager
-{
+public class LibraryManager {
     native private static int getMajorVersion();
 
     native private static int getMinorVersion();

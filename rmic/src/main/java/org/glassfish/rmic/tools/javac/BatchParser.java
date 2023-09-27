@@ -19,14 +19,7 @@
 
 package org.glassfish.rmic.tools.javac;
 
-import org.glassfish.rmic.tools.java.ClassDefinition;
-import org.glassfish.rmic.tools.java.Environment;
-import org.glassfish.rmic.tools.java.Identifier;
-import org.glassfish.rmic.tools.java.IdentifierToken;
-import org.glassfish.rmic.tools.java.Imports;
-import org.glassfish.rmic.tools.java.MemberDefinition;
-import org.glassfish.rmic.tools.java.Parser;
-import org.glassfish.rmic.tools.java.Type;
+import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.tree.Node;
 
 import java.io.IOException;
@@ -35,7 +28,7 @@ import java.util.Vector;
 
 /**
  * Batch file parser, this needs more work.
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
@@ -57,7 +50,6 @@ class BatchParser extends Parser {
      * The classes defined in this file
      */
     protected Vector<SourceClass> classes;
-
 
     /**
      * The current class
@@ -132,7 +124,9 @@ class BatchParser extends Parser {
         // masked off while writing the class file, but are preserved in
         // the InnerClasses attributes.
 
-        if (tracing) toplevelEnv.dtEnter("beginClass: " + sourceClass);
+        if (tracing) {
+            toplevelEnv.dtEnter("beginClass: " + sourceClass);
+        }
 
         SourceClass outerClass = sourceClass;
 
@@ -177,8 +171,9 @@ class BatchParser extends Parser {
             // cases in order to avoid interfering with error detection
             // and reporting.  This is patched up, after reporting an
             // error, by 'SourceClass.addMember'.
-            if ((mod & (M_PRIVATE | M_PROTECTED)) == 0)
+            if ((mod & (M_PRIVATE | M_PROTECTED)) == 0) {
                 mod |= M_PUBLIC;
+            }
             // Rule 3b.
             mod |= M_STATIC;
         }
@@ -194,24 +189,30 @@ class BatchParser extends Parser {
         // of interfaces.
 
         sourceClass = (SourceClass)
-            toplevelEnv.makeClassDefinition(toplevelEnv, where, t,
-                                            doc, mod, sup,
-                                            interfaces, outerClass);
+                toplevelEnv.makeClassDefinition(toplevelEnv, where, t,
+                                                doc, mod, sup,
+                                                interfaces, outerClass);
 
         sourceClass.getClassDeclaration().setDefinition(sourceClass, CS_PARSED);
         env = new Environment(toplevelEnv, sourceClass);
 
-        if (tracing) toplevelEnv.dtEvent("beginClass: SETTING UP DEPENDENCIES");
+        if (tracing) {
+            toplevelEnv.dtEvent("beginClass: SETTING UP DEPENDENCIES");
+        }
 
         // The code which adds artificial dependencies between
         // classes in the same source file has been moved to
         // BatchEnvironment#parseFile().
 
-        if (tracing) toplevelEnv.dtEvent("beginClass: ADDING TO CLASS LIST");
+        if (tracing) {
+            toplevelEnv.dtEvent("beginClass: ADDING TO CLASS LIST");
+        }
 
         classes.addElement(sourceClass);
 
-        if (tracing) toplevelEnv.dtExit("beginClass: " + sourceClass);
+        if (tracing) {
+            toplevelEnv.dtExit("beginClass: " + sourceClass);
+        }
 
         return sourceClass;
     }
@@ -228,17 +229,22 @@ class BatchParser extends Parser {
      */
     public void endClass(long where, ClassDefinition c) {
 
-        if (tracing) toplevelEnv.dtEnter("endClass: " + sourceClass);
+        if (tracing) {
+            toplevelEnv.dtEnter("endClass: " + sourceClass);
+        }
 
         // c == sourceClass; don't bother to check
         sourceClass.setEndPosition(where);
         SourceClass outerClass = (SourceClass) sourceClass.getOuterClass();
         sourceClass = outerClass;
         env = toplevelEnv;
-        if (sourceClass != null)
+        if (sourceClass != null) {
             env = new Environment(env, sourceClass);
+        }
 
-        if (tracing) toplevelEnv.dtExit("endClass: " + sourceClass);
+        if (tracing) {
+            toplevelEnv.dtExit("endClass: " + sourceClass);
+        }
     }
 
     /**
@@ -255,11 +261,13 @@ class BatchParser extends Parser {
         if (sourceClass.isInterface()) {
             // Members of interfaces are implicitly public.
             if ((mod & (M_PRIVATE | M_PROTECTED)) == 0)
-                // For interface members, neither 'private' nor 'protected'
-                // are legal modifiers.  Avoid setting M_PUBLIC in some cases
-                // to avoid interfering with later error detection.  This will
-                // be fixed up after the error is reported.
+            // For interface members, neither 'private' nor 'protected'
+            // are legal modifiers.  Avoid setting M_PUBLIC in some cases
+            // to avoid interfering with later error detection.  This will
+            // be fixed up after the error is reported.
+            {
                 mod |= M_PUBLIC;
+            }
             // Methods of interfaces are implicitly abstract.
             // Fields of interfaces are implicitly static and final.
             if (t.isType(TC_METHOD)) {
@@ -274,7 +282,7 @@ class BatchParser extends Parser {
             // So, decide if it's really a constructor, or a syntax error.
             Type rt = t.getReturnType();
             Identifier retname = !rt.isType(TC_CLASS) ? idStar /*no match*/
-                                                      : rt.getClassName();
+                    : rt.getClassName();
             Identifier clsname = sourceClass.getLocalName();
             if (clsname.equals(retname)) {
                 t = Type.tMethod(Type.tVoid, t.getArgumentTypes());
@@ -304,8 +312,8 @@ class BatchParser extends Parser {
         }
 
         MemberDefinition f = env.makeMemberDefinition(env, where, sourceClass,
-                                                    doc, mod, t, nm,
-                                                    args, exp, val);
+                                                      doc, mod, t, nm,
+                                                      args, exp, val);
         if (env.dump()) {
             f.print(System.out);
         }

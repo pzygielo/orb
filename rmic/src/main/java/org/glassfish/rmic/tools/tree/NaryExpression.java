@@ -19,7 +19,9 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
+import org.glassfish.rmic.tools.java.Environment;
+import org.glassfish.rmic.tools.java.Type;
+
 import java.io.PrintStream;
 
 /**
@@ -43,12 +45,12 @@ class NaryExpression extends UnaryExpression {
      * Create a copy of the expression for method inlining
      */
     public Expression copyInline(Context ctx) {
-        NaryExpression e = (NaryExpression)clone();
+        NaryExpression e = (NaryExpression) clone();
         if (right != null) {
             e.right = right.copyInline(ctx);
         }
         e.args = new Expression[args.length];
-        for (int i = 0 ; i < args.length ; i++) {
+        for (int i = 0; i < args.length; i++) {
             if (args[i] != null) {
                 e.args[i] = args[i].copyInline(ctx);
             }
@@ -61,9 +63,10 @@ class NaryExpression extends UnaryExpression {
      */
     public int costInline(int thresh, Environment env, Context ctx) {
         int cost = 3;
-        if (right != null)
+        if (right != null) {
             cost += right.costInline(thresh, env, ctx);
-        for (int i = 0 ; (i < args.length) && (cost < thresh) ; i++) {
+        }
+        for (int i = 0; (i < args.length) && (cost < thresh); i++) {
             if (args[i] != null) {
                 cost += args[i].costInline(thresh, env, ctx);
             }
@@ -80,7 +83,7 @@ class NaryExpression extends UnaryExpression {
             out.print(" ");
             right.print(out);
         }
-        for (int i = 0 ; i < args.length ; i++) {
+        for (int i = 0; i < args.length; i++) {
             out.print(" ");
             if (args[i] != null) {
                 args[i].print(out);

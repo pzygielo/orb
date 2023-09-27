@@ -28,29 +28,27 @@ import corba.framework.Controller;
 import corba.framework.CORBATest;
 
 public class ServiceExampleTest
-    extends
-        CORBATest
-{
+        extends
+        CORBATest {
     public static final String thisPackage =
-        ServiceExampleTest.class.getPackage().getName();
+            ServiceExampleTest.class.getPackage().getName();
 
     protected void doTest()
-        throws
-            Throwable
-    {
-        Controller orbd   = createORBD();
+            throws
+            Throwable {
+        Controller orbd = createORBD();
         orbd.start();
 
         // Remote.
 
         Controller loggingServer =
-            createServer(thisPackage + ".LoggingServiceImpl",
-                         "loggingServer") ;
+                createServer(thisPackage + ".LoggingServiceImpl",
+                             "loggingServer");
         loggingServer.start();
 
         Controller arbitraryObjectServer =
-            createServer(thisPackage + ".ArbitraryObjectServiceImpl",
-                         "arbitraryObjectServer") ;
+                createServer(thisPackage + ".ArbitraryObjectServiceImpl",
+                             "arbitraryObjectServer");
         arbitraryObjectServer.start();
 
         Controller client = createClient(thisPackage + ".Client",
@@ -64,9 +62,9 @@ public class ServiceExampleTest
 
         // Colocated.
 
-        Controller colocatedServers = 
-            createServer(thisPackage + ".ColocatedServers",
-                         "colocatedClientServer");
+        Controller colocatedServers =
+                createServer(thisPackage + ".ColocatedServers",
+                             "colocatedClientServer");
         colocatedServers.start();
         client.start();
         client.waitFor();

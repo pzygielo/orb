@@ -17,16 +17,16 @@
  * Classpath-exception-2.0
  */
 
-package corba.ortremote ;
+package corba.ortremote;
 
-import java.rmi.Remote ;
-import java.rmi.RemoteException ;
-import org.omg.PortableInterceptor.ObjectReferenceTemplate ;
-import org.omg.PortableInterceptor.ObjectReferenceFactory ;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 
-public interface ORTEcho extends Remote 
-{
-    ObjectReferenceTemplate getORT() throws RemoteException ;
+import org.omg.PortableInterceptor.ObjectReferenceTemplate;
+import org.omg.PortableInterceptor.ObjectReferenceFactory;
 
-    ObjectReferenceFactory getORF() throws RemoteException ;
+public interface ORTEcho extends Remote {
+    ObjectReferenceTemplate getORT() throws RemoteException;
+
+    ObjectReferenceFactory getORF() throws RemoteException;
 }

@@ -27,12 +27,12 @@ package orb.folb;
 import javax.ejb.Remote;
 
 /**
- *
  * @author hv51393
  */
 @Remote
 public interface LocationBeanRemote extends Location {
-   public String getHostName();
-   public void printSystemProperties();
+    public String getHostName();
+
+    public void printSystemProperties();
 
 }

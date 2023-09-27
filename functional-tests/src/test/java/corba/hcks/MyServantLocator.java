@@ -35,42 +35,41 @@ import org.omg.PortableServer.ServantLocator;
 import org.omg.PortableServer.ServantLocatorPackage.CookieHolder;
 
 public class MyServantLocator
-    extends
+        extends
         org.omg.CORBA.LocalObject
-    implements
-        ServantLocator
-{
+        implements
+        ServantLocator {
     public static final String baseMsg = MyServantLocator.class.getName();
 
     public ORB orb;
 
-    public MyServantLocator(ORB orb) { this.orb = orb; }
+    public MyServantLocator(ORB orb) {
+        this.orb = orb;
+    }
 
     public Servant preinvoke(byte[] oid, POA poa, String operation,
                              CookieHolder cookieHolder)
-        throws
-            ForwardRequest
-    {
+            throws
+            ForwardRequest {
         String soid = new String(oid);
         U.sop(baseMsg + ".preinvoke " + soid);
 
         if (soid.equals(C.idlAlwaysForward)) {
 
             throw new ForwardRequest(
-               poa.create_reference_with_id(C.idlAlwaysForwardedToo.getBytes(),
-                                            idlSLIHelper.id()));
+                    poa.create_reference_with_id(C.idlAlwaysForwardedToo.getBytes(),
+                                                 idlSLIHelper.id()));
 
         } else if (soid.startsWith("idl")) {
 
             // IDL.
 
             if (operation.equals(C.raiseForwardRequestInPreinvoke) &&
-                soid.equals(C.idlSLI1)) 
-            {
+                    soid.equals(C.idlSLI1)) {
 
                 throw new ForwardRequest(
-                    poa.create_reference_with_id(C.idlSLI2.getBytes(),
-                                                 idlSLIHelper.id()));
+                        poa.create_reference_with_id(C.idlSLI2.getBytes(),
+                                                     idlSLIHelper.id()));
 
             } else if (operation.equals(C.raiseObjectNotExistInPreinvoke)) {
 
@@ -112,14 +111,12 @@ public class MyServantLocator
     }
 
     public void postinvoke(byte[] oid, POA poa, String operation,
-                           java.lang.Object cookie, Servant servant)
-    {
+                           java.lang.Object cookie, Servant servant) {
         String soid = new String(oid);
         U.sop(baseMsg + ".postinvoke " + soid);
-        if (operation.equals(C.raiseSystemExceptionInPostinvoke) || 
-            operation.equals(C.raiseUserInServantThenSystemInPOThenSE) ||
-            operation.equals(C.raiseSystemInServantThenPOThenSE))
-        {
+        if (operation.equals(C.raiseSystemExceptionInPostinvoke) ||
+                operation.equals(C.raiseUserInServantThenSystemInPOThenSE) ||
+                operation.equals(C.raiseSystemInServantThenPOThenSE)) {
 
             throw new IMP_LIMIT();
 
@@ -127,12 +124,10 @@ public class MyServantLocator
 
             throw new ThreadDeath();
 
-        } else if (operation.equals(C.throwThreadDeathInServantThenSysInPostThenSysInSendException))
-        {
+        } else if (operation.equals(C.throwThreadDeathInServantThenSysInPostThenSysInSendException)) {
 
             throw new IMP_LIMIT();
         }
-
 
         // Test server-side PICurrent.
         boolean ensure = false;

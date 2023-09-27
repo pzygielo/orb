@@ -37,18 +37,20 @@ import org.omg.PortableServer.portable.Delegate;
 abstract public class Servant {
 
     private transient Delegate _delegate = null;
+
     /**
      * Gets the ORB vendor-specific implementation of
      * <code>PortableServer::Servant</code>.
+     *
      * @return <code>_delegate</code> the ORB vendor-specific
      * implementation of <code>PortableServer::Servant</code>.
      */
     final public Delegate _get_delegate() {
         if (_delegate == null) {
             throw
-                new
-                org.omg.CORBA.BAD_INV_ORDER
-                ("The Servant has not been associated with an ORB instance");
+                    new
+                            org.omg.CORBA.BAD_INV_ORDER
+                            ("The Servant has not been associated with an ORB instance");
         }
         return _delegate;
     }
@@ -57,8 +59,9 @@ abstract public class Servant {
      * Supports the Java ORB portability
      * interfaces by providing a method for classes that support
      * ORB portability through delegation to set their delegate.
+     *
      * @param delegate ORB vendor-specific implementation of
-     *                 the <code>PortableServer::Servant</code>.
+     * the <code>PortableServer::Servant</code>.
      */
     final public void _set_delegate(Delegate delegate) {
         _delegate = delegate;
@@ -67,6 +70,7 @@ abstract public class Servant {
     /**
      * Allows the servant to obtain the object reference for
      * the target CORBA object it is incarnating for that request.
+     *
      * @return <code>this_object</code> <code>Object</code> reference
      * associated with the request.
      */
@@ -77,18 +81,18 @@ abstract public class Servant {
     /**
      * Allows the servant to obtain the object reference for
      * the target CORBA Object it is incarnating for that request.
+     *
      * @param orb ORB with which the servant is associated.
      * @return <code>_this_object</code> reference associated with the request.
      */
     final public org.omg.CORBA.Object _this_object(ORB orb) {
         try {
-            ((org.omg.CORBA_2_3.ORB)orb).set_delegate(this);
-        }
-        catch(ClassCastException e) {
+            ((org.omg.CORBA_2_3.ORB) orb).set_delegate(this);
+        } catch (ClassCastException e) {
             throw
-                new
-                org.omg.CORBA.BAD_PARAM
-                ("POA Servant requires an instance of org.omg.CORBA_2_3.ORB");
+                    new
+                            org.omg.CORBA.BAD_PARAM
+                            ("POA Servant requires an instance of org.omg.CORBA_2_3.ORB");
         }
         return _this_object();
     }
@@ -96,6 +100,7 @@ abstract public class Servant {
     /**
      * Returns the instance of the ORB
      * currently associated with the <code>Servant</code> (convenience method).
+     *
      * @return <code>orb</code> the instance of the ORB currently
      * associated with the <code>Servant</code>.
      */
@@ -106,6 +111,7 @@ abstract public class Servant {
     /**
      * Allows easy execution of common methods, equivalent to
      * <code>PortableServer::Current:get_POA</code>.
+     *
      * @return <code>poa</code> POA associated with the servant.
      */
     final public POA _poa() {
@@ -116,6 +122,7 @@ abstract public class Servant {
      * Allows easy execution of
      * common methods, equivalent
      * to calling <code>PortableServer::Current::get_object_id</code>.
+     *
      * @return <code>object_id</code> the <code>Object</code> ID associated
      * with this servant.
      */
@@ -127,6 +134,7 @@ abstract public class Servant {
      * Returns the
      * root POA from the ORB instance associated with the servant.
      * Subclasses may override this method to return a different POA.
+     *
      * @return <code>default_POA</code> the POA associated with the
      * <code>Servant</code>.
      */
@@ -138,13 +146,14 @@ abstract public class Servant {
      * Checks to see if the specified <code>repository_id</code> is present
      * on the list returned by <code>_all_interfaces()</code> or is the
      * <code>repository_id</code> for the generic CORBA Object.
+     *
      * @param repository_id the <code>repository_id</code>
-     *          to be checked in the repository list or against the id
-     *          of generic CORBA objects.
+     * to be checked in the repository list or against the id
+     * of generic CORBA objects.
      * @return <code>is_a</code> boolean indicating whether the specified
-     *          <code>repository_id</code> is
-     *         in the repository list or is same as a generic CORBA
-     *         object.
+     * <code>repository_id</code> is
+     * in the repository list or is same as a generic CORBA
+     * object.
      */
     public boolean _is_a(String repository_id) {
         return _get_delegate().is_a(this, repository_id);
@@ -155,8 +164,9 @@ abstract public class Servant {
      * <code>Object</code>.
      * The <code>Servant</code> provides a default implementation of
      * <code>_non_existent()</code> that can be overridden by derived servants.
+     *
      * @return <code>non_existent</code> <code>true</code> if that object does
-     *           not exist,  <code>false</code> otherwise.
+     * not exist,  <code>false</code> otherwise.
      */
     public boolean _non_existent() {
         return _get_delegate().non_existent(this);
@@ -200,13 +210,13 @@ abstract public class Servant {
      * This behavior must
      * be supported by the <code>Delegate</code> that implements the
      * <code>Servant</code>.
+     *
      * @return <code>get_interface_def</code> an <code>InterfaceDef</code>
      * object as a
      * <code>CORBA::Object</code> that defines the runtime type of the
      * <code>CORBA::Object</code> implemented by the <code>Servant</code>.
      */
-    public org.omg.CORBA.Object _get_interface_def()
-    {
+    public org.omg.CORBA.Object _get_interface_def() {
         // First try to call the delegate implementation class's
         // "Object get_interface_def(..)" method (will work for ORBs
         // whose delegates implement this method).
@@ -222,15 +232,15 @@ abstract public class Servant {
             // "Object get_interface_def(..)", this will throw
             // an AbstractMethodError.
             return delegate.get_interface_def(this);
-        } catch( AbstractMethodError aex ) {
+        } catch (AbstractMethodError aex) {
             // Call "InterfaceDef get_interface(..)" method using reflection.
             try {
                 Class[] argc = { org.omg.PortableServer.Servant.class };
                 java.lang.reflect.Method meth =
-                     delegate.getClass().getMethod("get_interface", argc);
+                        delegate.getClass().getMethod("get_interface", argc);
                 Object[] argx = { this };
-                return (org.omg.CORBA.Object)meth.invoke(delegate, argx);
-            } catch( java.lang.reflect.InvocationTargetException exs ) {
+                return (org.omg.CORBA.Object) meth.invoke(delegate, argx);
+            } catch (java.lang.reflect.InvocationTargetException exs) {
                 Throwable t = exs.getTargetException();
                 if (t instanceof Error) {
                     throw (Error) t;
@@ -239,9 +249,9 @@ abstract public class Servant {
                 } else {
                     throw new org.omg.CORBA.NO_IMPLEMENT();
                 }
-            } catch( RuntimeException rex ) {
+            } catch (RuntimeException rex) {
                 throw rex;
-            } catch( Exception exr ) {
+            } catch (Exception exr) {
                 throw new org.omg.CORBA.NO_IMPLEMENT();
             }
         }
@@ -249,13 +259,15 @@ abstract public class Servant {
 
     // methods for which the user must provide an
     // implementation
+
     /**
      * Used by the ORB to obtain complete type
      * information from the servant.
+     *
      * @param poa POA with which the servant is associated.
      * @param objectId is the id corresponding to the object
-     *         associated with this servant.
+     * associated with this servant.
      * @return list of type information for the object.
      */
-    abstract public String[] _all_interfaces( POA poa, byte[] objectId);
+    abstract public String[] _all_interfaces(POA poa, byte[] objectId);
 }

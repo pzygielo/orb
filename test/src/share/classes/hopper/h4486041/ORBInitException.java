@@ -20,13 +20,11 @@
 package hopper.h4486041;
 
 public class ORBInitException
-    extends
-        RuntimeException
-{
-    public ORBInitException(String reason)
-    {
+        extends
+        RuntimeException {
+    public ORBInitException(String reason) {
         super(reason);
     }
 }
-                
+
 // End of file.

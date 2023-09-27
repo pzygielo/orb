@@ -19,7 +19,8 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
+import org.glassfish.rmic.tools.java.Environment;
+import org.glassfish.rmic.tools.java.Type;
 
 /**
  * WARNING: The contents of this source file are not part of any
@@ -44,8 +45,8 @@ class BinaryShiftExpression extends BinaryExpression {
         // where the left and right operand may legitimately be of mixed
         // types (long and int).  This is a fix for 4082814.
         if (left.op == LONGVAL && right.op == INTVAL) {
-            return eval(((LongExpression)left).value,
-                        ((IntExpression)right).value);
+            return eval(((LongExpression) left).value,
+                        ((IntExpression) right).value);
         }
 
         // Delegate the rest of the cases to our parent, so as to minimize

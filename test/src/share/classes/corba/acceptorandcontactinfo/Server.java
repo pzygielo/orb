@@ -39,18 +39,17 @@ import com.sun.corba.ee.spi.transport.TransportManager;
 import com.sun.corba.ee.spi.orb.ORB;
 import com.sun.corba.ee.impl.legacy.connection.LegacyServerSocketManagerImpl;
 
-public class Server 
-{
+public class Server {
     public static final String baseMsg = Server.class.getName();
     public static final String main = baseMsg + ".main";
-    public static final String thisPackage = 
-        Server.class.getPackage().getName();
+    public static final String thisPackage =
+            Server.class.getPackage().getName();
 
-    public static final String rmiiIServantPOA_Tie = 
-        thisPackage + "._rmiiIServantPOA_Tie";
+    public static final String rmiiIServantPOA_Tie =
+            thisPackage + "._rmiiIServantPOA_Tie";
 
-    public static final String rmiiIPOA     = "rmiiIPOA";
-    public static final String SLPOA        = "SLPOA";
+    public static final String rmiiIPOA = "rmiiIPOA";
+    public static final String SLPOA = "SLPOA";
 
     public static ORB orb;
     public static InitialContext initialContext;
@@ -58,12 +57,11 @@ public class Server
     public static POA rootPOA;
     public static POA slPOA;
 
-    public static void main(String[] av)
-    {
+    public static void main(String[] av) {
         try {
             U.sop(main + " starting");
 
-            if (! ColocatedClientServer.isColocated) {
+            if (!ColocatedClientServer.isColocated) {
                 U.sop(main + " : creating ORB.");
                 orb = (ORB) ORB.init(av, null);
                 U.sop(main + " : creating InitialContext.");
@@ -74,14 +72,13 @@ public class Server
             rootPOA.the_POAManager().activate();
 
             Policy[] policies = U.createUseServantManagerPolicies(
-                rootPOA, ServantRetentionPolicyValue.NON_RETAIN);
+                    rootPOA, ServantRetentionPolicyValue.NON_RETAIN);
 
             slPOA = U.createPOAWithServantManager(
-                rootPOA, SLPOA, policies, new ServantLocator());
-
+                    rootPOA, SLPOA, policies, new ServantLocator());
 
             U.createRMIPOABind(
-                C.rmiiSL, rmiiIServantPOA_Tie, slPOA, orb, initialContext);
+                    C.rmiiSL, rmiiIServantPOA_Tie, slPOA, orb, initialContext);
 
             U.sop(main + " ready");
             U.sop(Options.defServerHandshake);
@@ -90,7 +87,7 @@ public class Server
             synchronized (ColocatedClientServer.signal) {
                 ColocatedClientServer.signal.notifyAll();
             }
-            
+
             orb.run();
 
         } catch (Exception e) {

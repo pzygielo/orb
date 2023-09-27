@@ -21,14 +21,14 @@ package tools.ior;
 
 /**
  * Manages text output with an indentation level.
- *
+ * <p>
  * Default uses two spaces per indentation and System.out
  * for displaying.
  */
+
 import java.io.PrintWriter;
 
-public class TextOutputHandler
-{
+public class TextOutputHandler {
     private StringBuffer indentLevel;
     private String indentation;
     private PrintWriter writer;

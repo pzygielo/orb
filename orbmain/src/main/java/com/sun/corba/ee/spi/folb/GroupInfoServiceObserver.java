@@ -27,8 +27,7 @@ package com.sun.corba.ee.spi.folb;
 /**
  * @author Harold Carr
  */
-public interface GroupInfoServiceObserver
-{
+public interface GroupInfoServiceObserver {
     /**
      * Called when the GroupInfoService that you register with
      * has a change.  You should call the GroupInfoService

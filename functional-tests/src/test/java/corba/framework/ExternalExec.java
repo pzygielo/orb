@@ -39,10 +39,9 @@ import test.Test;
  * has a static main method, etc.  Output is redirected appropriately by
  * using test.ProcessMonitor.
  */
-public class ExternalExec extends ControllerAdapter
-{
-    private long startTime = 0 ;
-    private long duration = 0 ;
+public class ExternalExec extends ControllerAdapter {
+    private long startTime = 0;
+    private long duration = 0;
 
     public long duration() {
         if (startTime == 0) {
@@ -53,19 +52,19 @@ public class ExternalExec extends ControllerAdapter
             throw new IllegalStateException("Process has not yet completed");
         }
 
-        return duration ;
+        return duration;
     }
 
-    public static final String HANDSHAKE_KEY = "handshake" ;
-    protected String handshake = null ;
-    private boolean addOrbToXbootClasspath ;
-    
-    public ExternalExec( boolean addOrbToXbootClasspath ) {
-        this.addOrbToXbootClasspath = addOrbToXbootClasspath ;
+    public static final String HANDSHAKE_KEY = "handshake";
+    protected String handshake = null;
+    private boolean addOrbToXbootClasspath;
+
+    public ExternalExec(boolean addOrbToXbootClasspath) {
+        this.addOrbToXbootClasspath = addOrbToXbootClasspath;
     }
-    
+
     public ExternalExec() {
-        this( false ) ;
+        this(false);
     }
 
     /**
@@ -85,7 +84,7 @@ public class ExternalExec extends ControllerAdapter
     protected ProcessMonitor monitor;
 
     /**
-     * Exit value of the process.  Will be INVALID_STATE, 
+     * Exit value of the process.  Will be INVALID_STATE,
      * Controller.STOPPED, Controller.SUCCESS, or a positive value
      * indicating failure.
      */
@@ -99,8 +98,7 @@ public class ExternalExec extends ControllerAdapter
                            String programArgs[],
                            OutputStream out,
                            OutputStream err,
-                           Hashtable extra) throws Exception
-    {
+                           Hashtable extra) throws Exception {
         if (extra != null) {
             handshake = (String) extra.get(HANDSHAKE_KEY);
         }
@@ -120,38 +118,34 @@ public class ExternalExec extends ControllerAdapter
     /**
      * Adds the class path to the current VMArgs.
      */
-    protected void addClasspath()
-    {
-        String[] cp = new String[] { "-classpath", 
-            Options.getClasspath() };
+    protected void addClasspath() {
+        String[] cp = new String[] { "-classpath",
+                Options.getClasspath() };
         VMArgs = CORBAUtil.combine(cp, VMArgs);
-    
+
         if (addOrbToXbootClasspath) {
-            String[] bcp = new String[] { "-Xbootclasspath/p:" + 
-                System.getProperty( "corba.test.orb.classpath" ) } ;
+            String[] bcp = new String[] { "-Xbootclasspath/p:" +
+                    System.getProperty("corba.test.orb.classpath") };
             VMArgs = CORBAUtil.combine(bcp, VMArgs);
-        }       
-    }
-   
-    protected String[] getDebugVMArgs() 
-    {
-        return new String[0] ;
+        }
     }
 
-    protected long getMaximumTimeout()
-    {
-        return Options.getMaximumTimeout() ;
+    protected String[] getDebugVMArgs() {
+        return new String[0];
+    }
+
+    protected long getMaximumTimeout() {
+        return Options.getMaximumTimeout();
     }
 
     /**
-     * Create a String array with the complete command to execute, 
+     * Create a String array with the complete command to execute,
      * including the java executable path.
      *
-     *@return   Complete command line
+     * @return Complete command line
      */
-    protected String[] buildCommand()
-    {
-        List<String> cmd = new ArrayList<String>() ; 
+    protected String[] buildCommand() {
+        List<String> cmd = new ArrayList<String>();
         // Command line array:
 
         // [java executable]
@@ -161,32 +155,32 @@ public class ExternalExec extends ControllerAdapter
         // [class name]
         // [arguments to the program]
 
-        String[] debugArgs = getDebugVMArgs() ;
+        String[] debugArgs = getDebugVMArgs();
 
         // Java executable
-        cmd.add( Options.getJavaExec() ) ;
+        cmd.add(Options.getJavaExec());
         cmd.addAll(Arrays.asList(VMArgs));
-      
+
         // -D environment variables
         Enumeration names = environment.propertyNames();
-        while(names.hasMoreElements()) {
+        while (names.hasMoreElements()) {
             String name = (String) names.nextElement();
-            cmd.add( "-D" + name + "=" + environment.getProperty(name) ) ;
+            cmd.add("-D" + name + "=" + environment.getProperty(name));
         }
 
-        cmd.add( "-Dcorba.test.process.name=" + getProcessName() ) ;
+        cmd.add("-Dcorba.test.process.name=" + getProcessName());
         cmd.addAll(Arrays.asList(debugArgs));
 
-        cmd.add( className ) ;
+        cmd.add(className);
         cmd.addAll(Arrays.asList(programArgs));
 
         Test.dprint("--------");
-        for(String str : cmd) {
+        for (String str : cmd) {
             Test.dprint(str);
         }
         Test.dprint("--------");
 
-        return cmd.toArray( new String[cmd.size()] ) ;
+        return cmd.toArray(new String[cmd.size()]);
     }
 
     /**
@@ -195,23 +189,23 @@ public class ExternalExec extends ControllerAdapter
      */
     public void start() throws Exception {
         try {
-            startTime = System.currentTimeMillis() ;
-            String[] cmd = buildCommand() ;
+            startTime = System.currentTimeMillis();
+            String[] cmd = buildCommand();
 
             if (Test.forkDebugLevel >= Test.DISPLAY) {
-                System.out.println( 
-                    "-----------------------------------------------------------------" ) ;
-                System.out.println( "Current working directory: " +
-                System.getProperty( "user.dir" ) ) ;
-                System.out.println( "ExternalExec.start: Command to be executed:" ) ;
+                System.out.println(
+                        "-----------------------------------------------------------------");
+                System.out.println("Current working directory: " +
+                                           System.getProperty("user.dir"));
+                System.out.println("ExternalExec.start: Command to be executed:");
                 for (String str : cmd) {
                     System.out.println("\t" + str);
                 }
-                System.out.println( 
-                    "-----------------------------------------------------------------" ) ;
+                System.out.println(
+                        "-----------------------------------------------------------------");
             }
 
-            process = Runtime.getRuntime().exec(cmd) ;
+            process = Runtime.getRuntime().exec(cmd);
 
             if (handshake == null) {
                 monitor = new ProcessMonitor(process, out, err);
@@ -225,16 +219,15 @@ public class ExternalExec extends ControllerAdapter
                 monitor.waitForHandshake(getMaximumTimeout());
             }
         } catch (Exception exc) {
-            duration = System.currentTimeMillis() - startTime ;
-            throw exc ;
+            duration = System.currentTimeMillis() - startTime;
+            throw exc;
         }
     }
 
     /**
      * Destroy the process and stop piping output.
      */
-    private void terminate()
-    {
+    private void terminate() {
         if (process != null) {
             try {
                 exitValue = exitValue();
@@ -252,36 +245,32 @@ public class ExternalExec extends ControllerAdapter
             } catch (InterruptedException e) {
             }
 
-            duration = System.currentTimeMillis() - startTime ;
+            duration = System.currentTimeMillis() - startTime;
         }
     }
 
-    public void stop()
-    {
-        terminate() ;
+    public void stop() {
+        terminate();
     }
 
-    public final void kill() 
-    {
-        terminate() ;
+    public final void kill() {
+        terminate();
     }
 
-    public int waitFor() throws InterruptedException
-    {
+    public int waitFor() throws InterruptedException {
         try {
-            exitValue = process.waitFor() ;
-            return exitValue ;
+            exitValue = process.waitFor();
+            return exitValue;
         } catch (InterruptedException exc) {
-            throw exc ;    
+            throw exc;
         } finally {
-            duration = System.currentTimeMillis() - startTime ;
+            duration = System.currentTimeMillis() - startTime;
         }
     }
 
-    public int waitFor(long timeout) throws Exception
-    {
+    public int waitFor(long timeout) throws Exception {
         long stop = System.currentTimeMillis() + timeout;
-        
+
         do {
             if (finished()) {
                 break;
@@ -291,18 +280,17 @@ public class ExternalExec extends ControllerAdapter
 
         } while (System.currentTimeMillis() < stop);
 
-        duration = System.currentTimeMillis() - startTime ;
+        duration = System.currentTimeMillis() - startTime;
 
         if (finished()) {
-            exitValue = process.exitValue() ;
-            return exitValue ;
+            exitValue = process.exitValue();
+            return exitValue;
         } else {
             throw new Exception("waitFor timed out for " + getProcessName());
         }
     }
 
-    public int exitValue() throws IllegalThreadStateException
-    {
+    public int exitValue() throws IllegalThreadStateException {
         // Process is running or ended on its own.  In the latter
         // case, it will return the exit code.  In the former, it
         // will throw an exception.
@@ -319,12 +307,10 @@ public class ExternalExec extends ControllerAdapter
         }
     }
 
-    public boolean finished() throws IllegalThreadStateException
-    {
+    public boolean finished() throws IllegalThreadStateException {
         if (process != null) {
             return CORBAUtil.processFinished(process);
-        }
-        else if (exitValue == INVALID_STATE) {
+        } else if (exitValue == INVALID_STATE) {
             throw new IllegalThreadStateException(processName + " was never started");
         } else {
             return true;
@@ -337,18 +323,16 @@ public class ExternalExec extends ControllerAdapter
     /**
      * Print a line of characters to mark the start of a debug statement.
      */
-    protected void printDebugBreak()
-    {
+    protected void printDebugBreak() {
         System.out.println("=====================================================");
     }
 
     /**
      * Print the message and wait for the user to press enter.
      *
-     *@param message  Message to give the user
+     * @param message Message to give the user
      */
-    protected void waitForEnter(String message)
-    {
+    protected void waitForEnter(String message) {
         try {
             System.out.println(message);
             System.in.read();
@@ -361,12 +345,10 @@ public class ExternalExec extends ControllerAdapter
     /**
      * Print the message and prompt the user for a string response.
      *
-     *@param message  Message to give the user
-     *@return String The user's response
-     *
+     * @param message Message to give the user
+     * @return String The user's response
      */
-    protected String promptUser(String message)
-    {
+    protected String promptUser(String message) {
         System.out.print(message);
 
         try {
@@ -375,7 +357,7 @@ public class ExternalExec extends ControllerAdapter
 
             return br.readLine();
 
-        } catch(IOException ex) {
+        } catch (IOException ex) {
             return null;
         }
     }

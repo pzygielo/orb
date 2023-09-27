@@ -32,25 +32,23 @@ import org.omg.CORBA.Any;
 
 import com.sun.corba.ee.spi.ior.IOR;
 import com.sun.corba.ee.spi.ior.TaggedComponent;
-import com.sun.corba.ee.spi.ior.iiop.IIOPProfileTemplate ;
-import com.sun.corba.ee.spi.ior.iiop.IIOPAddress ;
+import com.sun.corba.ee.spi.ior.iiop.IIOPProfileTemplate;
+import com.sun.corba.ee.spi.ior.iiop.IIOPAddress;
 import com.sun.corba.ee.spi.transport.IORToSocketInfo;
 import com.sun.corba.ee.spi.transport.SocketInfo;
 
 import com.sun.corba.ee.impl.misc.ORBUtility;
 
 public class IORToSocketInfoImpl
-    implements IORToSocketInfo
-{
-    public List getSocketInfo(IOR ior, List previous)
-    {
+        implements IORToSocketInfo {
+    public List getSocketInfo(IOR ior, List previous) {
         boolean debug = ior.getORB().transportDebugFlag;
 
         if (debug) {
             dprint(".getSocketInfo->: " + previous);
         }
 
-        if (! previous.isEmpty()) {
+        if (!previous.isEmpty()) {
             if (debug) {
                 dprint(".getSocketInfo<-: returning previous: " + previous);
             }
@@ -65,11 +63,11 @@ public class IORToSocketInfoImpl
         //
 
         IIOPProfileTemplate iiopProfileTemplate = (IIOPProfileTemplate)
-            ior.getProfile().getTaggedProfileTemplate() ;
-        IIOPAddress primary = iiopProfileTemplate.getPrimaryAddress() ;
+                ior.getProfile().getTaggedProfileTemplate();
+        IIOPAddress primary = iiopProfileTemplate.getPrimaryAddress();
         String hostname = primary.getHost().toLowerCase();
-        int    port     = primary.getPort();
-        socketInfo = createSocketInfo("Primary", 
+        int port = primary.getPort();
+        socketInfo = createSocketInfo("Primary",
                                       SocketInfo.IIOP_CLEAR_TEXT,
                                       hostname, port);
         result.add(socketInfo);
@@ -100,15 +98,15 @@ public class IORToSocketInfoImpl
         //
 
         iterator = iiopProfileTemplate.iteratorById(
-            TAG_TAGGED_CUSTOM_SOCKET_INFO.value);
+                TAG_TAGGED_CUSTOM_SOCKET_INFO.value);
 
         while (iterator.hasNext()) {
             Object o = iterator.next();
-            if (! Common.timing) {
+            if (!Common.timing) {
                 System.out.println(o);
             }
-            byte[] data = ((TaggedComponent)o).getIOPComponent( ior.getORB() ).
-                component_data ;
+            byte[] data = ((TaggedComponent) o).getIOPComponent(ior.getORB()).
+                    component_data;
             Any any = null;
             try {
                 any = Common.getCodec(ior.getORB()).decode(data);
@@ -116,8 +114,8 @@ public class IORToSocketInfoImpl
                 System.out.println("Unexpected: " + e);
                 System.exit(1);
             }
-            TaggedCustomSocketInfo taggedSocketInfo = 
-                TaggedCustomSocketInfoHelper.extract(any);
+            TaggedCustomSocketInfo taggedSocketInfo =
+                    TaggedCustomSocketInfoHelper.extract(any);
             socketInfo = createSocketInfo("custom",
                                           taggedSocketInfo.type,
                                           taggedSocketInfo.host,
@@ -136,28 +134,34 @@ public class IORToSocketInfoImpl
 
     private SocketInfo createSocketInfo(String testMessage,
                                         final String type,
-                                        final String hostname, final int port)
-    {
-        if (! Common.timing) {
-            System.out.println(testMessage + " " + type 
-                               + " " + hostname + " " + port);
+                                        final String hostname, final int port) {
+        if (!Common.timing) {
+            System.out.println(testMessage + " " + type
+                                       + " " + hostname + " " + port);
         }
         return new SocketInfo() {
-            public String getType() { return type; }
-            public String getHost() { return hostname; }
-            public int    getPort() { return port; }
-            @Override
-            public String toString()
-            {
-                return "SocketInfo[" + type + " " + hostname + " " + port +"]";
+            public String getType() {
+                return type;
             }
-       };
+
+            public String getHost() {
+                return hostname;
+            }
+
+            public int getPort() {
+                return port;
+            }
+
+            @Override
+            public String toString() {
+                return "SocketInfo[" + type + " " + hostname + " " + port + "]";
+            }
+        };
     }
 
-    private void dprint(String msg)
-    {
+    private void dprint(String msg) {
         ORBUtility.dprint("IORToSocketInfoImpl", msg);
-    }   
+    }
 }
 
 // End of file.

@@ -19,9 +19,11 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
-import java.io.PrintStream;
+import org.glassfish.rmic.tools.java.CompilerError;
+import org.glassfish.rmic.tools.java.Constants;
+import org.glassfish.rmic.tools.java.Environment;
+import org.glassfish.rmic.tools.java.MemberDefinition;
 
 /**
  * This class encapsulates the information required to generate an update to a private
@@ -33,7 +35,7 @@ import java.io.PrintStream;
  * the old value is first retrieved and then a new value is computed and stored.
  * Simple assignment expressions in which a value is copied without modification are
  * handled by another mechanism.
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
@@ -78,7 +80,6 @@ class FieldUpdater implements Constants {
         this.setter = setter;
     }
 
-
     /**
      * Since the object reference expression may be captured before it has been inlined,
      * we must inline it later.  A <code>FieldUpdater</code> is inlined essentially as if
@@ -118,34 +119,33 @@ class FieldUpdater implements Constants {
 
     // This code was cribbed from 'Expression.java'.  We cannot reuse that code here,
     // because we do not inherit from class 'Expression'.
-
     private void codeDup(Assembler asm, int items, int depth) {
         switch (items) {
-          case 0:
+        case 0:
             return;
-          case 1:
+        case 1:
             switch (depth) {
-              case 0:
+            case 0:
                 asm.add(where, opc_dup);
                 return;
-              case 1:
+            case 1:
                 asm.add(where, opc_dup_x1);
                 return;
-              case 2:
+            case 2:
                 asm.add(where, opc_dup_x2);
                 return;
 
             }
             break;
-          case 2:
+        case 2:
             switch (depth) {
-              case 0:
+            case 0:
                 asm.add(where, opc_dup2);
                 return;
-              case 1:
+            case 1:
                 asm.add(where, opc_dup2_x1);
                 return;
-              case 2:
+            case 2:
                 asm.add(where, opc_dup2_x2);
                 return;
 

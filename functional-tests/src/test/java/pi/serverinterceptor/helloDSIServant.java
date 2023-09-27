@@ -29,7 +29,7 @@ import java.io.*;
 import ServerRequestInterceptor.*;
 
 /**
- * Servant implementation.  
+ * Servant implementation.
  */
 class helloDSIServant extends org.omg.PortableServer.DynamicImplementation {
     // The object to delegate to
@@ -37,16 +37,16 @@ class helloDSIServant extends org.omg.PortableServer.DynamicImplementation {
 
     public static String[] __ids = { "IDL:ServerRequestInterceptor/hello:1.0" };
 
-    public String[] _all_interfaces( POA poa, byte[] oid ) { 
-        return __ids; 
+    public String[] _all_interfaces(POA poa, byte[] oid) {
+        return __ids;
     }
 
-    public helloDSIServant( ORB orb, PrintStream out, String symbol ) {
-        impl = new DSIImpl( orb, out, symbol );
+    public helloDSIServant(ORB orb, PrintStream out, String symbol) {
+        impl = new DSIImpl(orb, out, symbol);
     }
 
-    public void invoke( ServerRequest r ) {
-        impl.invoke( r );
+    public void invoke(ServerRequest r) {
+        impl.invoke(r);
     }
 
 }

@@ -19,9 +19,11 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
 import org.glassfish.rmic.tools.asm.Label;
+import org.glassfish.rmic.tools.java.Environment;
+import org.glassfish.rmic.tools.java.Type;
+
 import java.io.PrintStream;
 import java.util.Hashtable;
 
@@ -54,7 +56,7 @@ class IfStatement extends Statement {
         CheckContext newctx = new CheckContext(ctx, this);
         // Vset vsExtra = vset.copy();  // See comment below.
         ConditionVars cvars =
-              cond.checkCondition(env, newctx, reach(env, vset), exp);
+                cond.checkCondition(env, newctx, reach(env, vset), exp);
         cond = convert(env, newctx, Type.tBoolean, cond);
         // The following code, now deleted, was apparently an erroneous attempt
         // at providing better error diagnostics.  The comment read: 'If either
@@ -78,11 +80,12 @@ class IfStatement extends Statement {
         // the entire statement is unreachable.  This is consistent with the error
         // recovery policy that reports the only the first unreachable statement
         // along an acyclic execution path.
-        Vset vsTrue  = cvars.vsTrue.clearDeadEnd();
+        Vset vsTrue = cvars.vsTrue.clearDeadEnd();
         Vset vsFalse = cvars.vsFalse.clearDeadEnd();
         vsTrue = ifTrue.check(env, newctx, vsTrue, exp);
-        if (ifFalse != null)
+        if (ifFalse != null) {
             vsFalse = ifFalse.check(env, newctx, vsFalse, exp);
+        }
         vset = vsTrue.join(vsFalse.join(newctx.vsBreak));
         return ctx.removeAdditionalVars(vset);
     }
@@ -133,7 +136,7 @@ class IfStatement extends Statement {
      * Create a copy of the statement for method inlining
      */
     public Statement copyInline(Context ctx, boolean valNeeded) {
-        IfStatement s = (IfStatement)clone();
+        IfStatement s = (IfStatement) clone();
         s.cond = cond.copyInline(ctx);
         if (ifTrue != null) {
             s.ifTrue = ifTrue.copyInline(ctx, valNeeded);

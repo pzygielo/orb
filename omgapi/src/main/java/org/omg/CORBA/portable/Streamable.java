@@ -27,7 +27,7 @@ import org.omg.CORBA.TypeCode;
  * the methods for marshalling and unmarshalling.
  *
  * @version 1.11, 03/18/98
- * @since   JDK1.2
+ * @since JDK1.2
  */
 
 public interface Streamable {
@@ -35,14 +35,15 @@ public interface Streamable {
      * Reads data from <code>istream</code> and initalizes the
      * <code>value</code> field of the Holder with the unmarshalled data.
      *
-     * @param     istream   the InputStream that represents the CDR data from the wire.
+     * @param istream the InputStream that represents the CDR data from the wire.
      */
     void _read(InputStream istream);
+
     /**
-     * Marshals to <code>ostream</code> the value in the 
+     * Marshals to <code>ostream</code> the value in the
      * <code>value</code> field of the Holder.
      *
-     * @param     ostream   the CDR OutputStream
+     * @param ostream the CDR OutputStream
      */
     void _write(OutputStream ostream);
 
@@ -50,7 +51,7 @@ public interface Streamable {
      * Retrieves the <code>TypeCode</code> object corresponding to the value
      * in the <code>value</code> field of the Holder.
      *
-     * @return    the <code>TypeCode</code> object for the value held in the holder
+     * @return the <code>TypeCode</code> object for the value held in the holder
      */
     TypeCode _type();
 }

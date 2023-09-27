@@ -22,15 +22,22 @@
 
 <html>
 <head>
-  <meta HTTP-EQUIV=CONTENT-TYPE CONTENT="text/html; charset=utf-8">
-  <title>How does ORB monitor optional data?</title>
+    <meta HTTP-EQUIV=CONTENT-TYPE CONTENT="text/html; charset=utf-8">
+    <title>How does ORB monitor optional data?</title>
 </head>
 <body text="#000000" bgcolor="#FFFFFF" link="#0000CC" vlink="#000080" alink="#0000CC">
 <center>
-<a href="text0.html">First page</a> <a href="text20.html">Back</a> <a href="text22.html">Continue</a> <a href="text22.html">Last page</a> <a href="serial5pres.html">Overview</a> <a href="img21.html">Graphics</a></center><br>
+    <a href="text0.html">First page</a> <a href="text20.html">Back</a> <a href="text22.html">Continue</a> <a href="text22.html">Last page</a> <a
+        href="serial5pres.html">Overview</a> <a href="img21.html">Graphics</a></center>
+<br>
 <h1>How does ORB input stream monitor optional data?</h1>
-<ul><li><h2>If the optional data only has a null, the ORB stream (CDRInputStream_1_0) uses a specialNoOptionalDataState boolean to throw the specified MARSHAL exception.</h2></li>
-<li><h2>If what the ValueHandler wants to read won't fit in the current chunk, we know it can't be compatible since one can't break primitives, arrays of primitives, Strings, etc, across chunks.</h2></li>
-<li><h2>If we're at the end of a chunk and the next thing is an end tag, we know we must have reached the end of the current valuetype's data, so requesting more would be an error.</h2></li>
-</ul></body>
+<ul>
+    <li><h2>If the optional data only has a null, the ORB stream (CDRInputStream_1_0) uses a specialNoOptionalDataState boolean to throw the specified MARSHAL
+        exception.</h2></li>
+    <li><h2>If what the ValueHandler wants to read won't fit in the current chunk, we know it can't be compatible since one can't break primitives, arrays of
+        primitives, Strings, etc, across chunks.</h2></li>
+    <li><h2>If we're at the end of a chunk and the next thing is an end tag, we know we must have reached the end of the current valuetype's data, so requesting
+        more would be an error.</h2></li>
+</ul>
+</body>
 </html>

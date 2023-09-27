@@ -34,18 +34,16 @@ import com.sun.corba.ee.spi.misc.ORBConstants;
 /**
  * @author Harold Carr
  */
-public abstract class Common
-{
+public abstract class Common {
     public static final String SOCKET_FACTORY_CLASS_PROPERTY =
-        ORBConstants.LEGACY_SOCKET_FACTORY_CLASS_PROPERTY;
+            ORBConstants.LEGACY_SOCKET_FACTORY_CLASS_PROPERTY;
 
     public static final String CUSTOM_FACTORY_CLASS =
-        SocketFactory.class.getName();
+            SocketFactory.class.getName();
 
     public static final String serverName1 = "I1";
 
-    public static NamingContext getNameService(ORB orb)
-    {
+    public static NamingContext getNameService(ORB orb) {
         org.omg.CORBA.Object objRef = null;
         try {
             objRef = orb.resolve_initial_references("NameService");
@@ -57,10 +55,9 @@ public abstract class Common
         return NamingContextHelper.narrow(objRef);
     }
 
-    public static NameComponent[] makeNameComponent(String name)
-    {
+    public static NameComponent[] makeNameComponent(String name) {
         NameComponent nc = new NameComponent(name, "");
-        NameComponent path[] = {nc};
+        NameComponent path[] = { nc };
         return path;
     }
 }

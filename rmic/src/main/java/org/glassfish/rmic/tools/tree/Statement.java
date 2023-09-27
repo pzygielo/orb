@@ -19,9 +19,10 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
 import org.glassfish.rmic.tools.asm.Label;
+import org.glassfish.rmic.tools.java.*;
+
 import java.io.PrintStream;
 import java.util.Hashtable;
 
@@ -51,8 +52,8 @@ class Statement extends Node {
      * The largest possible interesting inline cost value.
      */
     public static final int MAXINLINECOST =
-                      Integer.getInteger("javac.maxinlinecost",
-                                         30).intValue();
+            Integer.getInteger("javac.maxinlinecost",
+                               30).intValue();
 
     /**
      * Insert a bit of code at the front of a statement.
@@ -63,7 +64,7 @@ class Statement extends Node {
             s2 = s1;
         } else if (s2 instanceof CompoundStatement) {
             // Do not add another level of block nesting.
-            ((CompoundStatement)s2).insertStatement(s1);
+            ((CompoundStatement) s2).insertStatement(s1);
         } else {
             Statement body[] = { s1, s2 };
             s2 = new CompoundStatement(s1.getWhere(), body);
@@ -85,7 +86,7 @@ class Statement extends Node {
                 System.arraycopy(labels, 0, newLabels, 1, labels.length);
                 labels = newLabels;
             }
-            labels[0] = ((IdentifierExpression)e).id;
+            labels[0] = ((IdentifierExpression) e).id;
         } else {
             env.error(e.where, "invalid.label");
         }
@@ -124,6 +125,7 @@ class Statement extends Node {
 
         return vset;
     }
+
     Vset checkDeclaration(Environment env, Context ctx, Vset vset, int mod, Type t, Hashtable<Object, Object> exp) {
         throw new CompilerError("checkDeclaration");
     }
@@ -135,9 +137,10 @@ class Statement extends Node {
      */
     protected void checkLabel(Environment env, Context ctx) {
         if (labels != null) {
-            loop: for (int i = 0; i < labels.length; i++) {
+            loop:
+            for (int i = 0; i < labels.length; i++) {
                 // Make sure there is not a double label on this statement.
-                for (int j = i+1; j < labels.length; j++) {
+                for (int j = i + 1; j < labels.length; j++) {
                     if (labels[i] == labels[j]) {
                         env.error(where, "nested.duplicate.label", labels[i]);
                         continue loop;
@@ -146,7 +149,7 @@ class Statement extends Node {
 
                 // Make sure no enclosing statement has the same label.
                 CheckContext destCtx =
-                    (CheckContext) ctx.getLabelContext(labels[i]);
+                        (CheckContext) ctx.getLabelContext(labels[i]);
 
                 if (destCtx != null) {
                     // Check to make sure the label is in not uplevel.
@@ -162,7 +165,9 @@ class Statement extends Node {
         throw new CompilerError("check");
     }
 
-    /** This is called in contexts where declarations are valid. */
+    /**
+     * This is called in contexts where declarations are valid.
+     */
     Vset checkBlockStatement(Environment env, Context ctx, Vset vset, Hashtable<Object, Object> exp) {
         return check(env, ctx, vset, exp);
     }
@@ -187,13 +192,12 @@ class Statement extends Node {
      */
     public Statement eliminate(Environment env, Statement s) {
         if ((s != null) && (labels != null)) {
-            Statement args[] = {s};
+            Statement args[] = { s };
             s = new CompoundStatement(where, args);
             s.labels = labels;
         }
         return s;
     }
-
 
     /**
      * Code
@@ -209,21 +213,22 @@ class Statement extends Node {
      * If 'save' isn't null, there is also a value on the top of the stack
      */
     void codeFinally(Environment env, Context ctx, Assembler asm,
-                        Context stopctx, Type save) {
+                     Context stopctx, Type save) {
         Integer num = null;
         boolean haveCleanup = false; // there is a finally or synchronize;
         boolean haveNonLocalFinally = false; // some finally doesn't return;
 
         for (Context c = ctx; (c != null) && (c != stopctx); c = c.prev) {
-            if (c.node == null)
+            if (c.node == null) {
                 continue;
+            }
             if (c.node.op == SYNCHRONIZED) {
                 haveCleanup = true;
             } else if (c.node.op == FINALLY
-                          && ((CodeContext)c).contLabel != null) {
+                    && ((CodeContext) c).contLabel != null) {
                 // c.contLabel == null indicates we're in the "finally" part
                 haveCleanup = true;
-                FinallyStatement st = ((FinallyStatement)(c.node));
+                FinallyStatement st = ((FinallyStatement) (c.node));
                 if (!st.finallyCanFinish) {
                     haveNonLocalFinally = true;
                     // after hitting a non-local finally, no need generating
@@ -247,26 +252,30 @@ class Statement extends Node {
                 asm.add(where, opc_istore + save.getTypeCodeOffset(), num);
             } else {
                 // Pop the return value.
-                switch(ctx.field.getType().getReturnType().getTypeCode()) {
-                    case TC_VOID:
-                        break;
-                    case TC_DOUBLE: case TC_LONG:
-                        asm.add(where, opc_pop2); break;
-                    default:
-                        asm.add(where, opc_pop); break;
+                switch (ctx.field.getType().getReturnType().getTypeCode()) {
+                case TC_VOID:
+                    break;
+                case TC_DOUBLE:
+                case TC_LONG:
+                    asm.add(where, opc_pop2);
+                    break;
+                default:
+                    asm.add(where, opc_pop);
+                    break;
                 }
             }
         }
         // Call each of the cleanup functions, as necessary.
-        for (Context c = ctx ; (c != null)  && (c != stopctx) ; c = c.prev) {
-            if (c.node == null)
+        for (Context c = ctx; (c != null) && (c != stopctx); c = c.prev) {
+            if (c.node == null) {
                 continue;
+            }
             if (c.node.op == SYNCHRONIZED) {
-                asm.add(where, opc_jsr, ((CodeContext)c).contLabel);
+                asm.add(where, opc_jsr, ((CodeContext) c).contLabel);
             } else if (c.node.op == FINALLY
-                          && ((CodeContext)c).contLabel != null) {
-                FinallyStatement st = ((FinallyStatement)(c.node));
-                Label label = ((CodeContext)c).contLabel;
+                    && ((CodeContext) c).contLabel != null) {
+                FinallyStatement st = ((FinallyStatement) (c.node));
+                Label label = ((CodeContext) c).contLabel;
                 if (st.finallyCanFinish) {
                     asm.add(where, opc_jsr, label);
                 } else {
@@ -285,7 +294,7 @@ class Statement extends Node {
     /*
      * Return true if the statement has the given label
      */
-    public boolean hasLabel (Identifier lbl) {
+    public boolean hasLabel(Identifier lbl) {
         Identifier labels[] = this.labels;
         if (labels != null) {
             for (int i = labels.length; --i >= 0; ) {
@@ -308,28 +317,30 @@ class Statement extends Node {
      * Create a copy of the statement for method inlining
      */
     public Statement copyInline(Context ctx, boolean valNeeded) {
-        return (Statement)clone();
+        return (Statement) clone();
     }
 
     public int costInline(int thresh, Environment env, Context ctx) {
         return thresh;
     }
 
-
     /**
      * Print
      */
     void printIndent(PrintStream out, int indent) {
-        for (int i = 0 ; i < indent ; i++) {
+        for (int i = 0; i < indent; i++) {
             out.print("    ");
         }
     }
+
     public void print(PrintStream out, int indent) {
         if (labels != null) {
-            for (int i = labels.length; --i >= 0; )
+            for (int i = labels.length; --i >= 0; ) {
                 out.print(labels[i] + ": ");
+            }
         }
     }
+
     public void print(PrintStream out) {
         print(out, 0);
     }

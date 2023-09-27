@@ -23,21 +23,20 @@ package tools.ior;
  * If you don't have a Helper class for a certain
  * tagged component or tagged profile, you can implement
  * this interface to display it's data properly.
- *
+ * <p>
  * Otherwise, it will merely be printed as hex.
- *
+ * <p>
  * See CodeBaseHandler for an example.
- *
+ * <p>
  * See the two configuration files and TaggedMapFileReader
  * for how to associate your handler with a certain tag.
  */
-public interface EncapsHandler
-{
+public interface EncapsHandler {
     /**
      * Decode and display the given data (which represents
      * a tagged profile or tagged component).
      */
-    public void display(byte[] data, 
+    public void display(byte[] data,
                         TextOutputHandler out,
                         Utility util) throws DecodingException;
 }

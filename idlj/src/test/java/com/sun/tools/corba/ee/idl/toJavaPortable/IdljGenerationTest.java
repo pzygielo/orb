@@ -24,14 +24,17 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.arrayContaining;
 import static org.junit.Assert.fail;
 
 /**
@@ -100,11 +103,13 @@ public class IdljGenerationTest {
 
     @SuppressWarnings("ConstantConditions")
     private void appendFiles(ArrayList<String> files, File currentDir, int rootDirLength, String suffix) {
-        for (File file : currentDir.listFiles())
-            if (file.isDirectory())
+        for (File file : currentDir.listFiles()) {
+            if (file.isDirectory()) {
                 appendFiles(files, file, rootDirLength, suffix);
-            else if (file.getName().endsWith(suffix))
+            } else if (file.getName().endsWith(suffix)) {
                 files.add(getRelativePath(file, rootDirLength));
+            }
+        }
     }
 
     private String getRelativePath(File file, int rootDirLength) {
@@ -112,8 +117,9 @@ public class IdljGenerationTest {
     }
 
     private void compareGeneratedFiles(File expectedDir, File actualDir, String... generatedFileNames) throws IOException {
-        for (String filePath : generatedFileNames)
+        for (String filePath : generatedFileNames) {
             compareFiles(filePath, expectedDir, actualDir);
+        }
     }
 
     private void compareFiles(String filePath, File masterDirectory, File generationDirectory) throws IOException {
@@ -134,16 +140,19 @@ public class IdljGenerationTest {
             actualLine = actual.readLine();
         }
 
-        if (expectedLine == null && actualLine == null) return;
+        if (expectedLine == null && actualLine == null) {
+            return;
+        }
 
-        if (expectedLine == null)
+        if (expectedLine == null) {
             fail("Unexpected line in generated file at " + actual.getLineNumber() + ": " + actualLine);
-        else if (actualLine == null)
+        } else if (actualLine == null) {
             fail("Actual file ends unexpectedly at line " + expected.getLineNumber());
-        else
+        } else {
             fail("Generated file mismatch in " + actualFile + " at line " + actual.getLineNumber() +
-                    "\nshould be <" + expectedLine + "> " +
-                    "\nbut found <" + actualLine + ">");
+                         "\nshould be <" + expectedLine + "> " +
+                         "\nbut found <" + actualLine + ">");
+        }
 
     }
 
@@ -151,15 +160,13 @@ public class IdljGenerationTest {
         return expectedLine.equals(actualLine) || expectedLine.trim().startsWith("* ");
     }
 
-
     private class GenerationControl {
         private ArrayList<String> argList = new ArrayList<>();
         private String[] idlFiles;
         private File destDir;
         private String warning;
 
-        @SuppressWarnings("ResultOfMethodCallIgnored")
-        GenerationControl(String... idlFiles) {
+        @SuppressWarnings("ResultOfMethodCallIgnored") GenerationControl(String... idlFiles) {
             this.idlFiles = idlFiles;
 
             destDir = new File(rootDir + "/" + (++testNum));
@@ -184,9 +191,12 @@ public class IdljGenerationTest {
         }
 
         private void generate() throws IOException {
-            if (argList.contains("-iiop") && !COMPILE_GENERATED) addArgs("-Xnocompile");
-            for (String name : idlFiles)
+            if (argList.contains("-iiop") && !COMPILE_GENERATED) {
+                addArgs("-Xnocompile");
+            }
+            for (String name : idlFiles) {
                 addArgs(new File(getModuleRoot(), name).getAbsolutePath());
+            }
             Compile.compiler = new Compile();
             String[] argv = argList.toArray(new String[argList.size()]);
             Compile.compiler.start(argv);
@@ -196,8 +206,9 @@ public class IdljGenerationTest {
 
     private static String[] toNameList(Class<?>[] classes) {
         String[] nameList = new String[classes.length];
-        for (int i = 0; i < classes.length; i++)
+        for (int i = 0; i < classes.length; i++) {
             nameList[i] = classes[i].getName();
+        }
         return nameList;
     }
 }

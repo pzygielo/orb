@@ -19,10 +19,10 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
 import org.glassfish.rmic.tools.asm.LocalVariable;
-import org.glassfish.rmic.tools.asm.Label;
+import org.glassfish.rmic.tools.java.*;
+
 import java.io.PrintStream;
 import java.util.Hashtable;
 
@@ -49,7 +49,10 @@ class CatchStatement extends Statement {
         this.id = id.getName();
         this.body = body;
     }
-    /** @deprecated */
+
+    /**
+     * @deprecated
+     */
     @Deprecated
     public CatchStatement(long where, Expression texpr, Identifier id, Statement body) {
         super(CATCH, where);
@@ -78,7 +81,7 @@ class CatchStatement extends Statement {
             } else {
                 ClassDefinition def = env.getClassDefinition(type);
                 if (!def.subClassOf(env,
-                               env.getClassDeclaration(idJavaLangThrowable))) {
+                                    env.getClassDeclaration(idJavaLangThrowable))) {
                     env.error(where, "catch.not.throwable", def);
                 }
             }
@@ -112,7 +115,7 @@ class CatchStatement extends Statement {
      * Create a copy of the statement for method inlining
      */
     public Statement copyInline(Context ctx, boolean valNeeded) {
-        CatchStatement s = (CatchStatement)clone();
+        CatchStatement s = (CatchStatement) clone();
         if (body != null) {
             s.body = body.copyInline(ctx, valNeeded);
         }
@@ -125,10 +128,10 @@ class CatchStatement extends Statement {
     /**
      * Compute cost of inlining this statement
      */
-    public int costInline(int thresh, Environment env, Context ctx){
+    public int costInline(int thresh, Environment env, Context ctx) {
         int cost = 1;
         if (body != null) {
-            cost += body.costInline(thresh, env,ctx);
+            cost += body.costInline(thresh, env, ctx);
         }
         return cost;
     }

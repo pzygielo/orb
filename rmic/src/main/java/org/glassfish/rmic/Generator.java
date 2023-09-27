@@ -20,8 +20,9 @@
 
 package org.glassfish.rmic;
 
-import java.io.File;
 import org.glassfish.rmic.tools.java.ClassDefinition;
+
+import java.io.File;
 
 /**
  * Generator defines the protocol for back-end implementations to be added
@@ -34,17 +35,18 @@ import org.glassfish.rmic.tools.java.ClassDefinition;
  * subclass, it will instantiate one and call parseArgs(...).  At some later
  * point, Main will invoke the generate(...) method once for _each_ class passed
  * on the command line.
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
  *
- * @author      Bryan Atsatt
+ * @author Bryan Atsatt
  */
 public interface Generator {
 
     /**
      * Examine and consume command line arguments.
+     *
      * @param argv The command line arguments. Ignore null
      * and unknown arguments. Set each consumed argument to null.
      * @param main Report any errors using the main.error() methods.
@@ -56,10 +58,11 @@ public interface Generator {
      * Generate output. Any source files created which need compilation should
      * be added to the compiler environment using the addGeneratedFile(File)
      * method.
-     *  @param env       The compiler environment
-     * @param destDir   The directory for the root of the package hierarchy
-     * @param cdef      The definition for the implementation class or interface from
- *              which to generate output
+     *
+     * @param env The compiler environment
+     * @param destDir The directory for the root of the package hierarchy
+     * @param cdef The definition for the implementation class or interface from
+     * which to generate output
      */
     public void generate(BatchEnvironment env, File destDir, ClassDefinition cdef);
 }

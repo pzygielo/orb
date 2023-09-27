@@ -19,12 +19,12 @@
 
 package org.glassfish.rmic.asm;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-
 import org.glassfish.rmic.tools.java.ClassDefinitionFactoryTest;
 import org.junit.Test;
 import org.objectweb.asm.Opcodes;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 public class AsmClassFactoryTest extends ClassDefinitionFactoryTest {
 

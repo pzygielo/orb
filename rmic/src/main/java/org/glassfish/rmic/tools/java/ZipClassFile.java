@@ -28,7 +28,7 @@ import java.util.zip.ZipFile;
 /**
  * This class is used to represent a file loaded from the class path, and
  * is a zip file entry.
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
@@ -85,12 +85,12 @@ class ZipClassFile extends ClassFile {
         return zipEntry.getName();
     }
 
-//JCOV
+    //JCOV
     @Override
     public String getAbsoluteName() {
         return zipFile.getName() + "(" + zipEntry.getName() + ")";
     }
-// end JCOV
+    // end JCOV
 
     @Override
     public long length() {

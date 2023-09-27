@@ -37,42 +37,44 @@ class TypeFactory {
 
     private static Type[] toTypeArray(org.objectweb.asm.Type[] argumentTypes) {
         Type[] result = new Type[argumentTypes.length];
-        for (int i = 0; i < result.length; i++)
+        for (int i = 0; i < result.length; i++) {
             result[i] = toRmicType(argumentTypes[i]);
+        }
         return result;
     }
 
     private static Type toRmicType(org.objectweb.asm.Type asmType) {
         switch (asmType.getSort()) {
-            case org.objectweb.asm.Type.VOID:
-                return Type.tVoid;
-            case org.objectweb.asm.Type.BOOLEAN:
-                return Type.tBoolean;
-            case org.objectweb.asm.Type.BYTE:
-                return Type.tByte;
-            case org.objectweb.asm.Type.SHORT:
-                return Type.tShort;
-            case org.objectweb.asm.Type.INT:
-                return Type.tInt;
-            case org.objectweb.asm.Type.LONG:
-                return Type.tLong;
-            case org.objectweb.asm.Type.FLOAT:
-                return Type.tFloat;
-            case org.objectweb.asm.Type.DOUBLE:
-                return Type.tDouble;
-            case org.objectweb.asm.Type.CHAR:
-                return Type.tChar;
-            case org.objectweb.asm.Type.ARRAY:
-                return toArrayType(asmType);
-            default:
-                return Type.tClass(Identifier.lookup(asmType.getClassName()));
+        case org.objectweb.asm.Type.VOID:
+            return Type.tVoid;
+        case org.objectweb.asm.Type.BOOLEAN:
+            return Type.tBoolean;
+        case org.objectweb.asm.Type.BYTE:
+            return Type.tByte;
+        case org.objectweb.asm.Type.SHORT:
+            return Type.tShort;
+        case org.objectweb.asm.Type.INT:
+            return Type.tInt;
+        case org.objectweb.asm.Type.LONG:
+            return Type.tLong;
+        case org.objectweb.asm.Type.FLOAT:
+            return Type.tFloat;
+        case org.objectweb.asm.Type.DOUBLE:
+            return Type.tDouble;
+        case org.objectweb.asm.Type.CHAR:
+            return Type.tChar;
+        case org.objectweb.asm.Type.ARRAY:
+            return toArrayType(asmType);
+        default:
+            return Type.tClass(Identifier.lookup(asmType.getClassName()));
         }
     }
 
     private static Type toArrayType(org.objectweb.asm.Type asmType) {
         Type type = toRmicType(asmType.getElementType());
-        for (int i = 0; i < asmType.getDimensions(); i++)
+        for (int i = 0; i < asmType.getDimensions(); i++) {
             type = Type.tArray(type);
+        }
         return type;
     }
 }

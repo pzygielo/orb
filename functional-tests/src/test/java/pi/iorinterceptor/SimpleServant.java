@@ -31,7 +31,7 @@ public class SimpleServant extends simplePOA {
         return x;
     }
 
-    public void x( short newX ) {
+    public void x(short newX) {
         this.x = newX;
     }
 }

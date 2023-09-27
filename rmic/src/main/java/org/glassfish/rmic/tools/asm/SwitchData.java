@@ -19,10 +19,9 @@
 
 package org.glassfish.rmic.tools.asm;
 
-import org.glassfish.rmic.tools.java.*;
-import java.util.Hashtable;
-import java.util.Enumeration;
 import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 /**
  * WARNING: The contents of this source file are not part of any
@@ -34,9 +33,9 @@ class SwitchData {
     int minValue, maxValue;
     Label defaultLabel = new Label();
     Hashtable<Integer, Label> tab = new Hashtable<>();
-// JCOV
+    // JCOV
     Hashtable<Integer, Long> whereCaseTab = null;
-// end JCOV
+    // end JCOV
 
     /**
      * Get a label
@@ -84,28 +83,34 @@ class SwitchData {
         return new SwitchDataEnumeration(tab);
     }
 
-// JCOV
+    // JCOV
     public void initTableCase() {
         whereCaseTab = new Hashtable<Integer, Long>();
     }
+
     public void addTableCase(int index, long where) {
-        if (whereCaseTab != null)
+        if (whereCaseTab != null) {
             whereCaseTab.put(Integer.valueOf(index), Long.valueOf(where));
+        }
     }
+
     // this puts String key into Hashtable<Integer, Long>
     @SuppressWarnings("unchecked")
     public void addTableDefault(long where) {
-        if (whereCaseTab != null)
-            ((Hashtable)whereCaseTab).put("default", Long.valueOf(where));
+        if (whereCaseTab != null) {
+            ((Hashtable) whereCaseTab).put("default", Long.valueOf(where));
+        }
     }
+
     public long whereCase(Object key) {
         Long i = whereCaseTab.get(key);
         return (i == null) ? 0L : i.longValue();
     }
+
     public boolean getDefault() {
-         return (whereCase("default") != 0L);
+        return (whereCase("default") != 0L);
     }
-// end JCOV
+    // end JCOV
 }
 
 class SwitchDataEnumeration implements Enumeration<Integer> {
@@ -120,7 +125,7 @@ class SwitchDataEnumeration implements Enumeration<Integer> {
     SwitchDataEnumeration(Hashtable<Integer, Label> tab) {
         table = new Integer[tab.size()];
         int i = 0;
-        for (Enumeration<Integer> e = tab.keys() ; e.hasMoreElements() ; ) {
+        for (Enumeration<Integer> e = tab.keys(); e.hasMoreElements(); ) {
             table[i++] = e.nextElement();
         }
         Arrays.sort(table);

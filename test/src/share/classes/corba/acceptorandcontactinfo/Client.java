@@ -26,6 +26,7 @@ package corba.acceptorandcontactinfo;
 
 import javax.naming.InitialContext;
 import javax.rmi.CORBA.Util;
+
 import org.omg.CORBA.ORB;
 
 import corba.framework.Controller;
@@ -34,23 +35,21 @@ import corba.hcks.U;
 
 import com.sun.corba.ee.impl.legacy.connection.LegacyServerSocketManagerImpl;
 
-public class Client 
-{
+public class Client {
     public static final String baseMsg = Client.class.getName();
     public static final String main = baseMsg + ".main";
-    
+
     public static ORB orb;
     public static InitialContext initialContext;
 
     public static rmiiI rmiiIPOA;
-    public static String rmiiIPOAArg     = Server.rmiiIPOA;
+    public static String rmiiIPOAArg = Server.rmiiIPOA;
 
-    public static void main(String[] av)
-    {
+    public static void main(String[] av) {
         try {
             U.sop(main + " starting");
 
-            if (! ColocatedClientServer.isColocated) {
+            if (!ColocatedClientServer.isColocated) {
                 U.sop(main + " : creating ORB.");
                 orb = ORB.init(av, null);
                 U.sop(main + " : creating InitialContext.");
@@ -58,8 +57,7 @@ public class Client
             }
 
             rmiiIPOA = (rmiiI)
-                U.lookupAndNarrow(C.rmiiSL, rmiiI.class, initialContext);
-
+                    U.lookupAndNarrow(C.rmiiSL, rmiiI.class, initialContext);
 
             U.sop("CLIENT: " + rmiiIPOA.m(rmiiIPOAArg));
 

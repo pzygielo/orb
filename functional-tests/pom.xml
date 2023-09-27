@@ -20,7 +20,8 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.glassfish.corba</groupId>
@@ -133,15 +134,30 @@
                                 <include>legacy/**/*.idl</include>
                             </includes>
                             <packagePrefixes>
-                                <packagePrefix><type>activation</type><prefix>com.sun.corba.ee.spi</prefix></packagePrefix>
+                                <packagePrefix>
+                                    <type>activation</type>
+                                    <prefix>com.sun.corba.ee.spi</prefix>
+                                </packagePrefix>
                             </packagePrefixes>
                         </source>
                         <source>
                             <packagePrefixes>
-                                <packagePrefix><type>IOP</type>                <prefix>org.omg</prefix></packagePrefix>
-                                <packagePrefix><type>Messaging</type>          <prefix>org.omg</prefix></packagePrefix>
-                                <packagePrefix><type>PortableServer</type>     <prefix>org.omg</prefix></packagePrefix>
-                                <packagePrefix><type>PortableInterceptor</type><prefix>org.omg</prefix></packagePrefix>
+                                <packagePrefix>
+                                    <type>IOP</type>
+                                    <prefix>org.omg</prefix>
+                                </packagePrefix>
+                                <packagePrefix>
+                                    <type>Messaging</type>
+                                    <prefix>org.omg</prefix>
+                                </packagePrefix>
+                                <packagePrefix>
+                                    <type>PortableServer</type>
+                                    <prefix>org.omg</prefix>
+                                </packagePrefix>
+                                <packagePrefix>
+                                    <type>PortableInterceptor</type>
+                                    <prefix>org.omg</prefix>
+                                </packagePrefix>
                             </packagePrefixes>
                             <compatible>false</compatible>
                             <defines>
@@ -156,7 +172,7 @@
                             <excludes>
                                 <exclude>legacy/**</exclude>
                             </excludes>
-                         </source>
+                        </source>
                     </sources>
                 </configuration>
             </plugin>
@@ -220,9 +236,9 @@
                         <configuration>
                             <target>
                                 <ant antfile="../make/build.xml" target="build-tests">
-                                    <property name="test-build.dir" value="${project.build.directory}/test" />
-                                    <property name="root.dir" value=".." />
-                                    <property name="maven.test.classpath" refid="maven.test.classpath" />
+                                    <property name="test-build.dir" value="${project.build.directory}/test"/>
+                                    <property name="root.dir" value=".."/>
+                                    <property name="maven.test.classpath" refid="maven.test.classpath"/>
                                 </ant>
                             </target>
                         </configuration>
@@ -245,14 +261,14 @@
                     <exists>${java.home}/../lib/tools.jar</exists>
                 </file>
             </activation>
-      	    <dependencies>
+            <dependencies>
                 <dependency>
-                <groupId>com.sun</groupId>
-                <artifactId>tools</artifactId>
-                <version>1.6.0</version>
-                <scope>system</scope>
-                <systemPath>${java.home}/../lib/tools.jar</systemPath>
-            </dependency>
+                    <groupId>com.sun</groupId>
+                    <artifactId>tools</artifactId>
+                    <version>1.6.0</version>
+                    <scope>system</scope>
+                    <systemPath>${java.home}/../lib/tools.jar</systemPath>
+                </dependency>
             </dependencies>
             <build>
                 <plugins>
@@ -287,14 +303,14 @@
                                 <configuration>
                                     <target>
                                         <ant antfile="../make/build.xml" target="build-tests">
-                                            <property name="test-build.dir" value="${project.build.directory}/test" />
-                                            <property name="root.dir" value=".." />
-                                            <property name="maven.test.classpath" refid="maven.test.classpath" />
+                                            <property name="test-build.dir" value="${project.build.directory}/test"/>
+                                            <property name="root.dir" value=".."/>
+                                            <property name="maven.test.classpath" refid="maven.test.classpath"/>
                                         </ant>
                                         <ant antfile="../make/build.xml" target="test-all">
-                                            <property name="test-build.dir" value="${project.build.directory}/test" />
-                                            <property name="root.dir" value=".." />
-                                            <property name="maven.test.classpath" refid="maven.test.classpath" />
+                                            <property name="test-build.dir" value="${project.build.directory}/test"/>
+                                            <property name="root.dir" value=".."/>
+                                            <property name="maven.test.classpath" refid="maven.test.classpath"/>
                                         </ant>
                                     </target>
                                 </configuration>
@@ -313,7 +329,7 @@
             <id>test-with-args</id>
             <activation>
                 <property>
-                   <name>test.args</name>
+                    <name>test.args</name>
                 </property>
             </activation>
             <build>
@@ -328,10 +344,10 @@
                                 <configuration>
                                     <target>
                                         <ant antfile="../make/build.xml" target="run-test-target-with-args">
-                                            <property name="test-build.dir" value="${project.build.directory}/test" />
-                                            <property name="root.dir" value=".." />
-                                            <property name="maven.test.classpath" refid="maven.test.classpath" />
-                                            <property name="test-args" value="${test.args}" />
+                                            <property name="test-build.dir" value="${project.build.directory}/test"/>
+                                            <property name="root.dir" value=".."/>
+                                            <property name="maven.test.classpath" refid="maven.test.classpath"/>
+                                            <property name="test-args" value="${test.args}"/>
                                         </ant>
                                     </target>
                                 </configuration>
@@ -349,7 +365,7 @@
             <id>add-debug-args</id>
             <activation>
                 <property>
-                   <name>debug.port</name>
+                    <name>debug.port</name>
                 </property>
             </activation>
             <properties>

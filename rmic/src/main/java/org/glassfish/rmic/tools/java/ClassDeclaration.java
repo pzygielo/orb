@@ -22,26 +22,26 @@ package org.glassfish.rmic.tools.java;
 /**
  * This class represents an Java class declaration. It refers
  * to either a binary or source definition.
- *
+ * <p>
  * ClassDefinitions are loaded on demand, this means that
  * class declarations are late bound. The definition of the
  * class is obtained in stages. The status field describes
  * the state of the class definition:
- *
+ * <p>
  * CS_UNDEFINED - the definition is not yet loaded
  * CS_UNDECIDED - a binary definition is loaded, but it is
- *                still unclear if the source definition need to
- *                be loaded
+ * still unclear if the source definition need to
+ * be loaded
  * CS_BINARY    - the binary class is loaded
  * CS_PARSED    - the class is loaded from the source file, the
- *                type information is available, but the class has
- *                not yet been compiled.
+ * type information is available, but the class has
+ * not yet been compiled.
  * CS_CHECKED   - the class is loaded from the source file and has
- *                been type-checked.
+ * been type-checked.
  * CS_COMPILED  - the class has been type checked, compiled,
- *                and written out.
+ * and written out.
  * CS_NOTFOUND  - no class definition could be found
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
@@ -71,7 +71,7 @@ class ClassDeclaration implements Constants {
      * Get the name of the class
      */
     public Identifier getName() {
-       return type.getClassName();
+        return type.getClassName();
     }
 
     /**
@@ -86,10 +86,10 @@ class ClassDeclaration implements Constants {
      */
     public boolean isDefined() {
         switch (status) {
-          case CS_BINARY:
-          case CS_PARSED:
-          case CS_CHECKED:
-          case CS_COMPILED:
+        case CS_BINARY:
+        case CS_PARSED:
+        case CS_CHECKED:
+        case CS_COMPILED:
             return true;
         }
         return false;
@@ -116,9 +116,11 @@ class ClassDeclaration implements Constants {
      * throw various exceptions.
      */
     public ClassDefinition getClassDefinition(Environment env)
-    throws ClassNotFound {
-        if (tracing) env.dtEvent("getClassDefinition: " +
-                                 getName() + ", status " + getStatus());
+            throws ClassNotFound {
+        if (tracing) {
+            env.dtEvent("getClassDefinition: " +
+                                getName() + ", status " + getStatus());
+        }
 
         // The majority of calls to getClassDefinition() are duplicates.
         // This check makes them fast.  It also allows us to avoid
@@ -128,35 +130,35 @@ class ClassDeclaration implements Constants {
             return definition;
         }
 
-        for(;;) {
+        for (; ; ) {
             switch (status) {
-                case CS_UNDEFINED:
-                case CS_UNDECIDED:
-                case CS_SOURCE:
-                    env.loadDefinition(this);
-                    break;
+            case CS_UNDEFINED:
+            case CS_UNDECIDED:
+            case CS_SOURCE:
+                env.loadDefinition(this);
+                break;
 
-                case CS_BINARY:
-                case CS_PARSED:
-                    //+FIX FOR BUGID 4056065
-                    //definition.basicCheck(env);
-                    if (!definition.isInsideLocal()) {
-                        // Classes inside a block, including anonymous classes,
-                        // are checked when their surrounding member is checked.
-                        definition.basicCheck(env);
-                    }
-                    //-FIX FOR BUGID 4056065
-                    found = true;
-                    return definition;
-
-                case CS_CHECKED:
-                case CS_COMPILED:
-                    found = true;
-                    return definition;
-
-                default:
-                    throw new ClassNotFound(getName());
+            case CS_BINARY:
+            case CS_PARSED:
+                //+FIX FOR BUGID 4056065
+                //definition.basicCheck(env);
+                if (!definition.isInsideLocal()) {
+                    // Classes inside a block, including anonymous classes,
+                    // are checked when their surrounding member is checked.
+                    definition.basicCheck(env);
                 }
+                //-FIX FOR BUGID 4056065
+                found = true;
+                return definition;
+
+            case CS_CHECKED:
+            case CS_COMPILED:
+                found = true;
+                return definition;
+
+            default:
+                throw new ClassNotFound(getName());
+            }
         }
     }
 
@@ -167,29 +169,31 @@ class ClassDeclaration implements Constants {
      * class.
      */
     public ClassDefinition getClassDefinitionNoCheck(Environment env) throws ClassNotFound {
-        if (tracing) env.dtEvent("getClassDefinition: " +
-                                 getName() + ", status " + getStatus());
-        for(;;) {
+        if (tracing) {
+            env.dtEvent("getClassDefinition: " +
+                                getName() + ", status " + getStatus());
+        }
+        for (; ; ) {
             switch (status) {
-                case CS_UNDEFINED:
-                case CS_UNDECIDED:
-                case CS_SOURCE:
-                    env.loadDefinition(this);
-                    break;
+            case CS_UNDEFINED:
+            case CS_UNDECIDED:
+            case CS_SOURCE:
+                env.loadDefinition(this);
+                break;
 
-                case CS_BINARY:
-                case CS_PARSED:
-                case CS_CHECKED:
-                case CS_COMPILED:
-                    return definition;
+            case CS_BINARY:
+            case CS_PARSED:
+            case CS_CHECKED:
+            case CS_COMPILED:
+                return definition;
 
-                default:
-                    throw new ClassNotFound(getName());
-                }
+            default:
+                throw new ClassNotFound(getName());
+            }
         }
     }
 
-   /**
+    /**
      * Set the class definition
      */
     public void setDefinition(ClassDefinition definition, int status) {
@@ -199,7 +203,7 @@ class ClassDeclaration implements Constants {
         // The name of the definition should match that of the declaration.
         if ((definition != null) && !getName().equals(definition.getName())) {
             throw new CompilerError("setDefinition: name mismatch: " +
-                                    this + ", " + definition);
+                                            this + ", " + definition);
         }
 
         // The status states can be considered ordered in the same
@@ -225,7 +229,7 @@ class ClassDeclaration implements Constants {
      */
     public boolean equals(Object obj) {
         if (obj instanceof ClassDeclaration) {
-            return type.equals(((ClassDeclaration)obj).type);
+            return type.equals(((ClassDeclaration) obj).type);
         }
         return false;
     }
@@ -254,7 +258,7 @@ class ClassDeclaration implements Constants {
                     nested = "local ";
                     if (!getClassDefinition().isAnonymous()) {
                         name = getClassDefinition().getLocalName() +
-                            " (" + name + ")";
+                                " (" + name + ")";
                     }
                 }
             }

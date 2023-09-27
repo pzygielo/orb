@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.Vector;
+
 import sun.tools.java.ClassPath;
 
 /**
@@ -37,10 +38,12 @@ import sun.tools.java.ClassPath;
  * 4. It provides access to the ClassPath passed to the constructor.
  */
 
-@SuppressWarnings({"deprecation"})
+@SuppressWarnings({ "deprecation" })
 public class BatchEnvironment extends sun.tools.javac.BatchEnvironment {
 
-    /** instance of Main which created this environment */
+    /**
+     * instance of Main which created this environment
+     */
     private Main main;
 
     /**
@@ -57,8 +60,7 @@ public class BatchEnvironment extends sun.tools.javac.BatchEnvironment {
      */
     public static ClassPath createClassPath(String classPathString,
                                             String sysClassPathString,
-                                            String extDirsString)
-    {
+                                            String extDirsString) {
         ClassPath[] paths = classPaths(null,
                                        classPathString,
                                        sysClassPathString,
@@ -89,7 +91,9 @@ public class BatchEnvironment extends sun.tools.javac.BatchEnvironment {
         return sourcePath;
     }
 
-    /** list of generated source files created in this environment */
+    /**
+     * list of generated source files created in this environment
+     */
     private Vector generatedFiles = new Vector();
 
     /**
@@ -106,7 +110,7 @@ public class BatchEnvironment extends sun.tools.javac.BatchEnvironment {
      * "addGeneratedFile" method).
      */
     public void deleteGeneratedFiles() {
-        synchronized(generatedFiles) {
+        synchronized (generatedFiles) {
             Enumeration enumeration = generatedFiles.elements();
             while (enumeration.hasMoreElements()) {
                 File file = (File) enumeration.nextElement();
@@ -132,13 +136,12 @@ public class BatchEnvironment extends sun.tools.javac.BatchEnvironment {
      * bundle; otherwise, defer to java's superclass method.
      */
     public String errorString(String err,
-                              Object arg0, Object arg1, Object arg2)
-    {
+                              Object arg0, Object arg1, Object arg2) {
         if (err.startsWith("rmic.") || err.startsWith("warn.rmic.")) {
-            String result =  Main.getText(err,
-                                          (arg0 != null ? arg0.toString() : null),
-                                          (arg1 != null ? arg1.toString() : null),
-                                          (arg2 != null ? arg2.toString() : null));
+            String result = Main.getText(err,
+                                         (arg0 != null ? arg0.toString() : null),
+                                         (arg1 != null ? arg1.toString() : null),
+                                         (arg2 != null ? arg2.toString() : null));
 
             if (err.startsWith("warn.")) {
                 result = "warning: " + result;
@@ -148,6 +151,7 @@ public class BatchEnvironment extends sun.tools.javac.BatchEnvironment {
             return super.errorString(err, arg0, arg1, arg2);
         }
     }
+
     public void reset() {
     }
 }

@@ -22,8 +22,7 @@ package corba.cdrext;
 import java.io.*;
 import java.util.*;
 
-public class CustomMarshalTester extends MarshalTester implements Serializable
-{
+public class CustomMarshalTester extends MarshalTester implements Serializable {
     private transient List items;
 
     public CustomMarshalTester() {
@@ -40,8 +39,8 @@ public class CustomMarshalTester extends MarshalTester implements Serializable
 
     public boolean equals(Object obj) {
         try {
-            return super.equals(obj) 
-                && items.equals(((CustomMarshalTester)obj).items);
+            return super.equals(obj)
+                    && items.equals(((CustomMarshalTester) obj).items);
         } catch (ClassCastException cce) {
             cce.printStackTrace();
             return false;
@@ -60,27 +59,31 @@ public class CustomMarshalTester extends MarshalTester implements Serializable
 
         Iterator iter = iterator();
 
-        while (iter.hasNext())
+        while (iter.hasNext()) {
             s.writeObject(iter.next());
+        }
     }
-    
-    private void readObject(java.io.ObjectInputStream s)
-        throws IOException, ClassNotFoundException {
 
-        if (items != null)
+    private void readObject(java.io.ObjectInputStream s)
+            throws IOException, ClassNotFoundException {
+
+        if (items != null) {
             throw new IOException("Default constructor was invoked [1]!");
+        }
 
         s.defaultReadObject();
 
-        if (items != null)
+        if (items != null) {
             throw new IOException("Default constructor was invoked [2]!");
+        }
 
         int numItems = s.readInt();
 
         items = new LinkedList();
 
-        for (int i = 0; i < numItems; i++)
+        for (int i = 0; i < numItems; i++) {
             items.add(s.readObject());
+        }
     }
 }
 

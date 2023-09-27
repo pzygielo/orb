@@ -17,20 +17,21 @@
  * Classpath-exception-2.0
  */
 
-package argparser ;
+package argparser;
 
-import java.io.Serializable ;
-import java.lang.reflect.InvocationHandler ;
+import java.io.Serializable;
+import java.lang.reflect.InvocationHandler;
 
 public interface CompositeInvocationHandler extends InvocationHandler,
-    Serializable
-{
-    /** Add an invocation handler for all methods on interface interf.
+        Serializable {
+    /**
+     * Add an invocation handler for all methods on interface interf.
      */
-    void addInvocationHandler( Class<?> interf, InvocationHandler handler ) ;
+    void addInvocationHandler(Class<?> interf, InvocationHandler handler);
 
-    /** Set the default invocation handler to use if none of the 
+    /**
+     * Set the default invocation handler to use if none of the
      * invocation handlers added by calls to addInvocationHandler apply.
      */
-    void setDefaultHandler( InvocationHandler handler ) ;
+    void setDefaultHandler(InvocationHandler handler);
 }

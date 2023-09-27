@@ -21,20 +21,21 @@ package corba.messagetrace;
 
 import test.Test;
 import corba.framework.*;
+
 import java.util.*;
+
 import com.sun.corba.ee.spi.orb.ORB;
 
 import com.sun.corba.ee.spi.misc.ORBConstants;
 
-public class MessageTraceTest extends CORBATest
-{
+public class MessageTraceTest extends CORBATest {
     protected void doTest() throws Throwable {
-        
+
         if (test.Test.useJavaSerialization()) {
             return;
         }
 
-        Controller client = createClient( "corba.messagetrace.Client" ) ;
+        Controller client = createClient("corba.messagetrace.Client");
 
         client.start();
 

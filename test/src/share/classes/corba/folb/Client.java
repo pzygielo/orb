@@ -24,23 +24,23 @@
 
 package corba.folb;
 
-import org.testng.Assert ;
-import org.testng.annotations.Test ;
-import org.testng.annotations.BeforeSuite ;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import org.testng.annotations.BeforeSuite;
 
 /**
  * @author Harold Carr
  */
 public class Client extends ClientBase {
-    
+
     // public CSIv2SSLTaggedComponentHandler csiv2SSLTaggedComponentHandler;
 
     public Client() {
     }
 
-    @BeforeSuite 
+    @BeforeSuite
     public void clientSetup() {
-        setup( getDefaultProperties() ) ;
+        setup(getDefaultProperties());
     }
 
     @Test
@@ -49,7 +49,7 @@ public class Client extends ClientBase {
         dprint("testBootstrap (missing label, therefore IORUpdate)");
         dprint("--------------------------------------------------");
 
-        makeCall(testRfmWithAddressesWithoutLabel, 
+        makeCall(testRfmWithAddressesWithoutLabel,
                  Common.TEST_RFM_WITH_ADDRESSES_WITHOUT_LABEL,
                  "BOOTSTRAP1 Test (missing label, therefore IORUpdate)",
                  corba.folb_8_1.Common.W,
@@ -61,7 +61,7 @@ public class Client extends ClientBase {
                  NO_MEMBERSHIP_LABEL, RECEIVE_IOR_UPDATE);
     }
 
-    @Test( dependsOnMethods={ "testBootstrap" } )
+    @Test(dependsOnMethods = { "testBootstrap" })
     public void testNormalOperation() {
         dprint("--------------------------------------------------");
         dprint("testNormalOperation (send label, no IORUpdate)");
@@ -79,7 +79,7 @@ public class Client extends ClientBase {
                  SEND_MEMBERSHIP_LABEL, NO_IOR_UPDATE);
     }
 
-    @Test( dependsOnMethods={ "testNormalOperation" } )
+    @Test(dependsOnMethods = { "testNormalOperation" })
     public void testIORUpdate() {
         try {
             dprint("--------------------------------------------------");
@@ -88,33 +88,33 @@ public class Client extends ClientBase {
             dprint("--------------------------------------------------");
             doRemoveInstance(gisPoaWithAddressesWithLabels, corba.folb_8_1.Common.Z);
             makeCall(testRfmWithAddressesWithLabel,
-                Common.TEST_RFM_WITH_ADDRESSES_WITH_LABEL,
-                "IORUpdate only1 (send label, receive IORUpdate)",
-                corba.folb_8_1.Common.W, SEND_MEMBERSHIP_LABEL,
-                RECEIVE_IOR_UPDATE);
+                     Common.TEST_RFM_WITH_ADDRESSES_WITH_LABEL,
+                     "IORUpdate only1 (send label, receive IORUpdate)",
+                     corba.folb_8_1.Common.W, SEND_MEMBERSHIP_LABEL,
+                     RECEIVE_IOR_UPDATE);
             makeCall(testRfmWithAddressesWithLabel,
-                Common.TEST_RFM_WITH_ADDRESSES_WITH_LABEL,
-                "IORUpdate only2 (send label, no IORUpdate)",
-                corba.folb_8_1.Common.W, SEND_MEMBERSHIP_LABEL,
-                NO_IOR_UPDATE);
+                     Common.TEST_RFM_WITH_ADDRESSES_WITH_LABEL,
+                     "IORUpdate only2 (send label, no IORUpdate)",
+                     corba.folb_8_1.Common.W, SEND_MEMBERSHIP_LABEL,
+                     NO_IOR_UPDATE);
 
             doAddInstance(gisPoaWithAddressesWithLabels, corba.folb_8_1.Common.Z);
             makeCall(testRfmWithAddressesWithLabel,
-                Common.TEST_RFM_WITH_ADDRESSES_WITH_LABEL,
-                "IORUpdate only3 (send label, receive IORUpdate)",
-                corba.folb_8_1.Common.W, SEND_MEMBERSHIP_LABEL,
-                RECEIVE_IOR_UPDATE);
+                     Common.TEST_RFM_WITH_ADDRESSES_WITH_LABEL,
+                     "IORUpdate only3 (send label, receive IORUpdate)",
+                     corba.folb_8_1.Common.W, SEND_MEMBERSHIP_LABEL,
+                     RECEIVE_IOR_UPDATE);
             makeCall(testRfmWithAddressesWithLabel,
-                Common.TEST_RFM_WITH_ADDRESSES_WITH_LABEL,
-                "IORUpdate only4 (send label, no IORUpdate)",
-                corba.folb_8_1.Common.W, SEND_MEMBERSHIP_LABEL,
-                NO_IOR_UPDATE);
+                     Common.TEST_RFM_WITH_ADDRESSES_WITH_LABEL,
+                     "IORUpdate only4 (send label, no IORUpdate)",
+                     corba.folb_8_1.Common.W, SEND_MEMBERSHIP_LABEL,
+                     NO_IOR_UPDATE);
         } catch (Exception ex) {
-            Assert.fail( "Caught exception in testIORUpdate", ex ) ;
+            Assert.fail("Caught exception in testIORUpdate", ex);
         }
     }
 
-    @Test( dependsOnMethods={ "testIORUpdate" } )
+    @Test(dependsOnMethods = { "testIORUpdate" })
     public void testFailoverWithoutUpdate() {
         try {
             dprint("--------------------------------------------------");
@@ -124,23 +124,23 @@ public class Client extends ClientBase {
             gisPoaWithAddressesWithLabels.removeAcceptorAndConnections(corba.folb_8_1.Common.W);
             Thread.sleep(2000);
             makeCall(testRfmWithAddressesWithLabel,
-                Common.TEST_RFM_WITH_ADDRESSES_WITH_LABEL,
-                "Failover without update (send label, no IORUpdate)",
-                corba.folb_8_1.Common.X, SEND_MEMBERSHIP_LABEL, NO_IOR_UPDATE);
+                     Common.TEST_RFM_WITH_ADDRESSES_WITH_LABEL,
+                     "Failover without update (send label, no IORUpdate)",
+                     corba.folb_8_1.Common.X, SEND_MEMBERSHIP_LABEL, NO_IOR_UPDATE);
 
             dprint("--------------------------------------------------");
             dprint("Check stuck to new instance (send label, no IORUpdate)");
             dprint("--------------------------------------------------");
             makeCall(testRfmWithAddressesWithLabel,
-                Common.TEST_RFM_WITH_ADDRESSES_WITH_LABEL,
-                "Check stuck to new instance (send label, no IORUpdate)",
-                corba.folb_8_1.Common.X, SEND_MEMBERSHIP_LABEL, NO_IOR_UPDATE);
+                     Common.TEST_RFM_WITH_ADDRESSES_WITH_LABEL,
+                     "Check stuck to new instance (send label, no IORUpdate)",
+                     corba.folb_8_1.Common.X, SEND_MEMBERSHIP_LABEL, NO_IOR_UPDATE);
         } catch (Exception ex) {
-            Assert.fail( "Caught exception in testFailoverWithoutUpdate", ex ) ;
+            Assert.fail("Caught exception in testFailoverWithoutUpdate", ex);
         }
     }
 
-    @Test( dependsOnMethods={ "testFailoverWithoutUpdate" } )
+    @Test(dependsOnMethods = { "testFailoverWithoutUpdate" })
     public void testFailoverWithUpdate() {
         try {
             dprint("--------------------------------------------------");
@@ -153,29 +153,29 @@ public class Client extends ClientBase {
             gisPoaWithAddressesWithLabels.removeAcceptorAndConnections(corba.folb_8_1.Common.X);
             Thread.sleep(2000);
             makeCall(testRfmWithAddressesWithLabel,
-                Common.TEST_RFM_WITH_ADDRESSES_WITH_LABEL,
-                "Failover with update (send label, IORUpdate)",
-                corba.folb_8_1.Common.Y, SEND_MEMBERSHIP_LABEL,
-                RECEIVE_IOR_UPDATE);
+                     Common.TEST_RFM_WITH_ADDRESSES_WITH_LABEL,
+                     "Failover with update (send label, IORUpdate)",
+                     corba.folb_8_1.Common.Y, SEND_MEMBERSHIP_LABEL,
+                     RECEIVE_IOR_UPDATE);
 
             dprint("--------------------------------------------------");
             dprint("Check stuck to new instance (send label, no IORUpdate)");
             dprint("--------------------------------------------------");
             makeCall(testRfmWithAddressesWithLabel,
-                Common.TEST_RFM_WITH_ADDRESSES_WITH_LABEL,
-                "Check stuck to new instance (send label, no IORUpdate)",
-                corba.folb_8_1.Common.Y, SEND_MEMBERSHIP_LABEL,
-                NO_IOR_UPDATE);
+                     Common.TEST_RFM_WITH_ADDRESSES_WITH_LABEL,
+                     "Check stuck to new instance (send label, no IORUpdate)",
+                     corba.folb_8_1.Common.Y, SEND_MEMBERSHIP_LABEL,
+                     NO_IOR_UPDATE);
         } catch (Exception ex) {
             Assert.fail("Caught exception in testFailoverWithUpdate", ex);
         }
     }
 
-    private void doAddInstance( 
-        GroupInfoServiceTest gist,
-        String arg ) throws Exception {
+    private void doAddInstance(
+            GroupInfoServiceTest gist,
+            String arg) throws Exception {
 
-        dprint( "Adding instance " + arg ) ;
+        dprint("Adding instance " + arg);
         gist.addInstance(arg);
 
         // Add a delay here to avoid race condition in test:
@@ -184,14 +184,14 @@ public class Client extends ClientBase {
         // does NOT get updated in order to avoid a serious
         // deadlock problem.
 
-        Thread.sleep( 2*1000 ) ;
+        Thread.sleep(2 * 1000);
     }
 
-    private void doRemoveInstance( 
-        GroupInfoServiceTest gist,
-        String arg ) throws Exception {
+    private void doRemoveInstance(
+            GroupInfoServiceTest gist,
+            String arg) throws Exception {
 
-        dprint( "Removing instance " + arg ) ;
+        dprint("Removing instance " + arg);
         gist.removeInstance(arg);
 
         // Add a delay here to avoid race condition in test:
@@ -200,11 +200,11 @@ public class Client extends ClientBase {
         // does NOT get updated in order to avoid a serious
         // deadlock problem.
 
-        Thread.sleep( 2*1000 ) ;
+        Thread.sleep(2 * 1000);
     }
 
     public static void main(String[] av) {
-        doMain( Client.class ) ;
+        doMain(Client.class);
     }
 }
 

@@ -19,6 +19,7 @@
 
 import sun.tools.java.*;
 import sun.io.*;
+
 import java.lang.reflect.*;
 import java.util.*;
 import java.io.*;
@@ -27,41 +28,41 @@ import java.io.*;
  * Given two classpaths and a list of common classes, this
  * will show differences between the same class in the
  * different classpaths.
- *
+ * <p>
  * Differences are for public or protected members only.
- *
+ * <p>
  * Requires tools.jar, but has no dependency on rip-int.
- *
+ * <p>
  * Should take into account:
- *       Methods
- *          Name
- *          Return value
- *          Parameter types
- *          Modifier differences of {public, protected, static}
- *
- *       Fields
- *          Name
- *          Type
- *          All Modifier differences
- *
- *       Classes
- *          Name
- *          Superclass name
- *          Implemented interfaces
- *          Defined classes
- *          Fields
- *          Methods
- *
+ * Methods
+ * Name
+ * Return value
+ * Parameter types
+ * Modifier differences of {public, protected, static}
+ * <p>
+ * Fields
+ * Name
+ * Type
+ * All Modifier differences
+ * <p>
+ * Classes
+ * Name
+ * Superclass name
+ * Implemented interfaces
+ * Defined classes
+ * Fields
+ * Methods
+ * <p>
  * This is a dirty tool, not a work of high performance art (though
  * it's pretty fast in practice).
- *
+ * <p>
  * WARNING: Possibility of infinite loop when each class has a field
  * of the other.
  */
 
-public class ClassComparer
-{
+public class ClassComparer {
     private static final String LINE_SEPARATOR;
+
     static {
         LINE_SEPARATOR = System.getProperty("line.separator");
     }
@@ -107,20 +108,22 @@ public class ClassComparer
 
         /**
          * Checks for
-         *
+         * <p>
          * 1. Equivalency
          * 2. Modifiers
          * 3. Type
          */
         public boolean equals(Object obj) {
 
-            if (obj == null)
+            if (obj == null) {
                 return false;
+            }
 
-            if (this == obj)
+            if (this == obj) {
                 return true;
+            }
 
-            CCField other = (CCField)obj;
+            CCField other = (CCField) obj;
 
             return (isEquivalent(other) &&
                     field.getModifiers() == other.field.getModifiers() &&
@@ -129,15 +132,16 @@ public class ClassComparer
 
         /**
          * Checks for
-         *
+         * <p>
          * 1. Name
          */
         public boolean isEquivalent(Object obj) {
 
-            CCField other = (CCField)obj;
+            CCField other = (CCField) obj;
 
-            if (other == null)
+            if (other == null) {
                 return false;
+            }
 
             return field.getName().equals(other.field.getName());
         }
@@ -160,24 +164,25 @@ public class ClassComparer
         public Method method;
 
         private static final int MODIFIER_MASK = (Modifier.PUBLIC &
-                                                  Modifier.PROTECTED &
-                                                  Modifier.STATIC);
+                Modifier.PROTECTED &
+                Modifier.STATIC);
 
         public CCMethod(Method method) {
             this.method = method;
         }
 
         /**
-         * Checks for 
-         *
+         * Checks for
+         * <p>
          * 1. Name
          * 2. Parameter types (in certain order)
          */
         public boolean isEquivalent(Object obj) {
-            CCMethod other = (CCMethod)obj;
+            CCMethod other = (CCMethod) obj;
 
-            if (other == null)
+            if (other == null) {
                 return false;
+            }
 
             return (method.getName().equals(other.method.getName()) &&
                     classNamesCheck(method.getParameterTypes(),
@@ -186,7 +191,7 @@ public class ClassComparer
 
         /**
          * Checks for
-         *
+         * <p>
          * 1. Equivalency
          * 2. Return type class names
          * 3. Exception types (in certain order)
@@ -194,13 +199,15 @@ public class ClassComparer
          */
         public boolean equals(Object obj) {
 
-            CCMethod other = (CCMethod)obj;
+            CCMethod other = (CCMethod) obj;
 
-            if (other == null)
+            if (other == null) {
                 return false;
+            }
 
-            if (this == obj)
+            if (this == obj) {
                 return true;
+            }
 
             return (isEquivalent(other) &&
                     method.getReturnType().getName().equals(other.method.getReturnType().getName()) &&
@@ -226,13 +233,16 @@ public class ClassComparer
          * are the same.  Will return false for any order mismatch.
          */
         private boolean classNamesCheck(Class[] classes1, Class[] classes2) {
-            if (classes1.length != classes2.length)
+            if (classes1.length != classes2.length) {
                 return false;
-            
-            for (int i = 0; i < classes1.length; i++)
-                if (!classes1[i].getName().equals(classes2[i].getName()))
+            }
+
+            for (int i = 0; i < classes1.length; i++) {
+                if (!classes1[i].getName().equals(classes2[i].getName())) {
                     return false;
-            
+                }
+            }
+
             return true;
         }
     }
@@ -264,21 +274,22 @@ public class ClassComparer
 
         /**
          * Checks for
-         *
+         * <p>
          * 1. Name
          */
         public boolean isEquivalent(Object obj) {
-            CCClass other = (CCClass)obj;
+            CCClass other = (CCClass) obj;
 
-            if (other == null)
+            if (other == null) {
                 return false;
+            }
 
             return cl.getName().equals(other.cl.getName());
         }
 
         /**
          * Checks for
-         *
+         * <p>
          * 1. Equivalency
          * 2. Superclass name
          * 3. Full non-ordered set comparison of Methods (CCMethod equals)
@@ -287,23 +298,25 @@ public class ClassComparer
          * 6. Full non-ordered set comparison of interface class names
          */
         public boolean equals(Object obj) {
-            CCClass other = (CCClass)obj;
+            CCClass other = (CCClass) obj;
 
-            if (other == null)
+            if (other == null) {
                 return false;
+            }
 
-            if (this == other)
+            if (this == other) {
                 return true;
+            }
 
             return (isEquivalent(other) &&
                     methods.equals(other.methods) &&
                     fields.equals(other.fields) &&
                     classes.equals(other.classes) &&
                     ((cl.getSuperclass() == null &&
-                      other.cl.getSuperclass() == null) ||
-                     (cl.getSuperclass() != null &&
-                      other.cl.getSuperclass() != null &&
-                      cl.getSuperclass().getName().equals(other.cl.getSuperclass().getName()))) &&
+                            other.cl.getSuperclass() == null) ||
+                            (cl.getSuperclass() != null &&
+                                    other.cl.getSuperclass() != null &&
+                                    cl.getSuperclass().getName().equals(other.cl.getSuperclass().getName()))) &&
                     interfaceNames.equals(other.interfaceNames));
         }
 
@@ -311,19 +324,20 @@ public class ClassComparer
         public int hashCode() {
             return cl.getName().hashCode();
         }
-        
+
         /**
          * Filter declared methods to get public and private method
          * Set of CCMethods.
          */
         private Set getMethods(Class cl) {
             Method[] declMethods = cl.getDeclaredMethods();
-            
+
             Set result = new HashSet(declMethods.length);
             for (int i = 0; i < declMethods.length; i++) {
                 if (!Modifier.isPublic(declMethods[i].getModifiers()) &&
-                    !Modifier.isProtected(declMethods[i].getModifiers()))
+                        !Modifier.isProtected(declMethods[i].getModifiers())) {
                     continue;
+                }
 
                 result.add(new CCMethod(declMethods[i]));
             }
@@ -337,8 +351,9 @@ public class ClassComparer
             Set result = new HashSet(declFields.length);
             for (int i = 0; i < declFields.length; i++) {
                 if (!Modifier.isPublic(declFields[i].getModifiers()) &&
-                    !Modifier.isProtected(declFields[i].getModifiers()))
+                        !Modifier.isProtected(declFields[i].getModifiers())) {
                     continue;
+                }
 
                 result.add(new CCField(declFields[i]));
             }
@@ -351,8 +366,9 @@ public class ClassComparer
 
             for (int i = 0; i < input.length; i++) {
                 if (!Modifier.isPublic(input[i].getModifiers()) &&
-                    !Modifier.isProtected(input[i].getModifiers()))
+                        !Modifier.isProtected(input[i].getModifiers())) {
                     continue;
+                }
 
                 result.add(new CCClass(newDesc, input[i]));
             }
@@ -365,8 +381,9 @@ public class ClassComparer
 
             Set result = new HashSet(interfaces.length);
 
-            for (int i = 0; i < interfaces.length; i++)
+            for (int i = 0; i < interfaces.length; i++) {
                 result.add(interfaces[i].getName());
+            }
 
             return result;
         }
@@ -378,16 +395,16 @@ public class ClassComparer
         public String compare(CCClass other) {
             StringBuffer sbuf = new StringBuffer();
 
-            CCClass.compareCCComparables(this, 
-                                         methods, 
-                                         other, 
-                                         other.methods, 
+            CCClass.compareCCComparables(this,
+                                         methods,
+                                         other,
+                                         other.methods,
                                          sbuf);
 
-            CCClass.compareCCComparables(this, 
-                                         fields, 
-                                         other, 
-                                         other.fields, 
+            CCClass.compareCCComparables(this,
+                                         fields,
+                                         other,
+                                         other.fields,
                                          sbuf);
 
             CCClass.compareCCComparables(this,
@@ -398,10 +415,11 @@ public class ClassComparer
 
             compareInterfaces(other, sbuf);
 
-            if (sbuf.length() > 0)
+            if (sbuf.length() > 0) {
                 return sbuf.toString();
-            else
+            } else {
                 return null;
+            }
         }
 
         /**
@@ -443,15 +461,15 @@ public class ClassComparer
                     sbuf.append(names.next());
                     sbuf.append(' ');
                 }
-                
+
                 sbuf.append(LINE_SEPARATOR);
             }
         }
 
-        /** 
+        /**
          * Used to diff Sets of CCMethods, CCFields, and CCClasses.
          */
-        public static void compareCCComparables(CCClass c1, 
+        public static void compareCCComparables(CCClass c1,
                                                 Set ccSet1,
                                                 CCClass c2,
                                                 Set ccSet2,
@@ -463,7 +481,7 @@ public class ClassComparer
 
             while (set1Iter.hasNext()) {
 
-                CCComparable c1Value = (CCComparable)set1Iter.next();
+                CCComparable c1Value = (CCComparable) set1Iter.next();
 
                 CCComparable c2Equiv = ClassComparer.findEquivalent(c1Value, ccSet2);
 
@@ -474,8 +492,7 @@ public class ClassComparer
                     sbuf.append(": ");
                     sbuf.append(c1Value.toString());
                     sbuf.append(LINE_SEPARATOR);
-                } else
-                if (!c1Value.equals(c2Equiv)) {
+                } else if (!c1Value.equals(c2Equiv)) {
 
                     // If there was an equivalent, but it isn't equal to
                     // the one in c1, note the difference.
@@ -500,7 +517,7 @@ public class ClassComparer
 
             while (set2Iter.hasNext()) {
 
-                CCComparable c2Value = (CCComparable)set2Iter.next();
+                CCComparable c2Value = (CCComparable) set2Iter.next();
 
                 CCComparable c1Equiv = ClassComparer.findEquivalent(c2Value,
                                                                     ccSet1);
@@ -533,7 +550,7 @@ public class ClassComparer
     public static void compareClasses(String classpath1,
                                       String classpath2,
                                       String[] classes)
-        throws ClassNotFoundException {
+            throws ClassNotFoundException {
 
         PrivateLoader cl1 = new PrivateLoader(classpath1);
         PrivateLoader cl2 = new PrivateLoader(classpath2);
@@ -554,25 +571,25 @@ public class ClassComparer
     public static CCComparable findEquivalent(CCComparable value,
                                               Set set) {
         Iterator iter = set.iterator();
-        
+
         while (iter.hasNext()) {
-            CCComparable testValue = (CCComparable)iter.next();
-            
-            if (value.isEquivalent(testValue))
+            CCComparable testValue = (CCComparable) iter.next();
+
+            if (value.isEquivalent(testValue)) {
                 return value;
+            }
         }
-        
+
         return null;
     }
-    
+
     /**
      * Arguments:
-     *
+     * <p>
      * 1. Class Path 1
      * 2. Class Path 2
      * 3. List of fully qualified class names to compare that are
      * common to both.
-     *
      */
     public static void main(String[] args) {
         try {
@@ -591,8 +608,7 @@ public class ClassComparer
         }
     }
 
-    private static class PrivateLoader extends ClassLoader
-    {
+    private static class PrivateLoader extends ClassLoader {
         private ClassPath classPath;
 
         public PrivateLoader(ClassPath classPath) {
@@ -604,15 +620,13 @@ public class ClassComparer
         }
 
         // Called by the super class 
-        protected Class findClass(String name) throws ClassNotFoundException 
-        {
+        protected Class findClass(String name) throws ClassNotFoundException {
             byte[] b = loadClassData(name);
             return defineClass(name, b, 0, b.length);
         }
 
         protected synchronized Class loadClass(String name, boolean resolve)
-            throws ClassNotFoundException
-        {
+                throws ClassNotFoundException {
             // First, check if the class has already been loaded
             Class c = findLoadedClass(name);
             if (c == null) {
@@ -624,8 +638,9 @@ public class ClassComparer
                 }
             }
 
-            if (resolve)
+            if (resolve) {
                 resolveClass(c);
+            }
 
             return c;
         }
@@ -633,19 +648,18 @@ public class ClassComparer
         /**
          * Load the class with the given fully qualified name from the ClassPath.
          */
-        private byte[] loadClassData(String className) 
-            throws ClassNotFoundException
-        {
+        private byte[] loadClassData(String className)
+                throws ClassNotFoundException {
             // Build the file name and subdirectory from the
             // class name
-            String filename = className.replace('.', File.separatorChar) 
-                + ".class";
+            String filename = className.replace('.', File.separatorChar)
+                    + ".class";
 
             // Have ClassPath find the file for us, and wrap it in a 
             // ClassFile.  Note:  This is where it looks inside jar files that
             // are specified in the path.
             ClassFile classFile = classPath.getFile(filename);
- 
+
             if (classFile != null) {
 
                 // Provide the most specific reason for failure in addition
@@ -657,16 +671,16 @@ public class ClassComparer
                     // ClassFile is beautiful because it shields us from
                     // knowing if it's a separate file or an entry in a
                     // jar file.
-                    DataInputStream input 
-                        = new DataInputStream(classFile.getInputStream());
+                    DataInputStream input
+                            = new DataInputStream(classFile.getInputStream());
 
                     // Can't rely on input available() since it will be 
                     // something unusual if it's a jar file!  May need
                     // to worry about a possible problem if someone
                     // makes a jar file entry with a size greater than
                     // max int.
-                    data = new byte[(int)classFile.length()];
-                
+                    data = new byte[(int) classFile.length()];
+
                     try {
                         input.readFully(data);
                     } catch (IOException ex) {
@@ -675,7 +689,10 @@ public class ClassComparer
                         data = null;
                         reportedError = ex;
                     } finally {
-                        try { input.close(); } catch (IOException ex) {}
+                        try {
+                            input.close();
+                        } catch (IOException ex) {
+                        }
                     }
                 } catch (IOException ex) {
                     // Couldn't get the input stream for the file.  This is
@@ -683,8 +700,9 @@ public class ClassComparer
                     reportedError = ex;
                 }
 
-                if (data == null)
+                if (data == null) {
                     throw new ClassNotFoundException(className, reportedError);
+                }
 
                 return data;
             }

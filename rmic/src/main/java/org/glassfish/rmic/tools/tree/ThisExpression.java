@@ -19,8 +19,10 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
+import org.glassfish.rmic.tools.java.Environment;
+import org.glassfish.rmic.tools.java.Type;
+
 import java.io.PrintStream;
 import java.util.Hashtable;
 
@@ -41,14 +43,17 @@ class ThisExpression extends Expression {
     public ThisExpression(long where) {
         super(THIS, where, Type.tObject);
     }
+
     protected ThisExpression(int op, long where) {
         super(op, where, Type.tObject);
     }
+
     public ThisExpression(long where, LocalMember field) {
         super(THIS, where, Type.tObject);
         this.field = field;
         field.readcount++;
     }
+
     public ThisExpression(long where, Context ctx) {
         super(THIS, where, Type.tObject);
         field = ctx.getLocalField(idThis);
@@ -64,8 +69,9 @@ class ThisExpression extends Expression {
     }
 
     public Expression getImplementation() {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation;
+        }
         return this;
     }
 
@@ -125,10 +131,11 @@ class ThisExpression extends Expression {
      * Inline
      */
     public Expression inlineValue(Environment env, Context ctx) {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation.inlineValue(env, ctx);
+        }
         if (field != null && field.isInlineable(env, false)) {
-            Expression e = (Expression)field.getValue(env);
+            Expression e = (Expression) field.getValue(env);
             //System.out.println("INLINE = "+ e + ", THIS");
             if (e != null) {
                 e = e.copyInline(ctx);
@@ -143,9 +150,10 @@ class ThisExpression extends Expression {
      * Create a copy of the expression for method inlining
      */
     public Expression copyInline(Context ctx) {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation.copyInline(ctx);
-        ThisExpression e = (ThisExpression)clone();
+        }
+        ThisExpression e = (ThisExpression) clone();
         if (field == null) {
             // The expression is copied into the context of a method
             e.field = ctx.getLocalField(idThis);
@@ -176,10 +184,11 @@ class ThisExpression extends Expression {
             out.print(" ");
         }
         String pfx = (field == null) ? ""
-            : field.getClassDefinition().getName().getFlatName().getName()+".";
+                : field.getClassDefinition().getName().getFlatName().getName() + ".";
         pfx += opNames[op];
         out.print(pfx + "#" + ((field != null) ? field.hashCode() : 0));
-        if (outerArg != null)
+        if (outerArg != null) {
             out.print(")");
+        }
     }
 }

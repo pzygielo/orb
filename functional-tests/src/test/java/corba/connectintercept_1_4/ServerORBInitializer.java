@@ -29,37 +29,36 @@ import org.omg.PortableInterceptor.ORBInitInfo;
 import org.omg.PortableInterceptor.ORBInitInfoPackage.DuplicateName;
 
 public class ServerORBInitializer
-    extends
+        extends
         org.omg.CORBA.LocalObject
-    implements
-        ORBInitializer
-{
+        implements
+        ORBInitializer {
     public static final String baseMsg = ServerORBInitializer.class.getName();
 
-    public void pre_init(ORBInitInfo orbInitInfo) { }
+    public void pre_init(ORBInitInfo orbInitInfo) {
+    }
 
-    public void post_init(ORBInitInfo orbInitInfo)
-    {
+    public void post_init(ORBInitInfo orbInitInfo) {
         try {
             // These are intentionally random to test ordering.
 
             orbInitInfo.add_client_request_interceptor(
-                new CRI());
+                    new CRI());
 
             orbInitInfo.add_server_request_interceptor(
-                new SRIOrdered("Three", 3));
+                    new SRIOrdered("Three", 3));
 
             orbInitInfo.add_ior_interceptor(
-                new ServerIORInterceptor());
+                    new ServerIORInterceptor());
 
             orbInitInfo.add_server_request_interceptor(
-                new SRIOrdered("One", 1));
+                    new SRIOrdered("One", 1));
 
             orbInitInfo.add_server_request_interceptor(
-                new SRI());
+                    new SRI());
 
             orbInitInfo.add_server_request_interceptor(
-                new SRIOrdered("Two", 2));
+                    new SRIOrdered("Two", 2));
 
             System.out.println(baseMsg + ".post_init: add_* completed.");
         } catch (DuplicateName ex) {

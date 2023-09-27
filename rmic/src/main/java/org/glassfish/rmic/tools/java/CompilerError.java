@@ -21,7 +21,7 @@ package org.glassfish.rmic.tools.java;
 
 /**
  * This exception is thrown when an internal compiler error occurs
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
@@ -48,9 +48,10 @@ class CompilerError extends Error {
     }
 
     public void printStackTrace() {
-        if (e == this)
+        if (e == this) {
             super.printStackTrace();
-        else
+        } else {
             e.printStackTrace();
+        }
     }
 }

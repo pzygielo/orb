@@ -21,13 +21,11 @@ package corba.connectioncache;
 
 import corba.framework.*;
 
-public class ConnectionCacheStressTest extends CORBATest
-{
+public class ConnectionCacheStressTest extends CORBATest {
     @Override
-    protected void doTest() throws Throwable
-    {
-        Controller client = createClient( "corba.connectioncache.StressClient",
-            "stressClient" ) ;
+    protected void doTest() throws Throwable {
+        Controller client = createClient("corba.connectioncache.StressClient",
+                                         "stressClient");
 
         client.start();
 

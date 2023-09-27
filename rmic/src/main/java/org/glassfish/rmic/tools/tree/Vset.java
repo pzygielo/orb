@@ -19,7 +19,7 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
+import org.glassfish.rmic.tools.java.Constants;
 
 /**
  * WARNING: The contents of this source file are not part of any
@@ -50,7 +50,7 @@ class Vset implements Constants {
     // reporting of DA/DU errors in unreachable code.
 
     static final long emptyX[] = new long[0]; // all zeroes
-    static final long fullX[]  = new long[0]; // all ones
+    static final long fullX[] = new long[0]; // all ones
 
     // For more thorough testing of long vset support, it is helpful to
     // temporarily redefine this value to a smaller number, such as 1 or 2.
@@ -202,15 +202,15 @@ class Vset implements Constants {
         if (varNumber >= VBITS) {
             int i = (varNumber / VBITS - 1) * 2;
             if (i >= x.length) {
-                growX(i+1);
+                growX(i + 1);
             }
             x[i] |= bit;
-            if (i+1 < x.length) {
-                x[i+1] &=~ bit;
+            if (i + 1 < x.length) {
+                x[i + 1] &= ~bit;
             }
         } else {
             vset |= bit;
-            uset &=~ bit;
+            uset &= ~bit;
         }
         return this;
     }
@@ -231,13 +231,13 @@ class Vset implements Constants {
             // index "uset" extension
             int i = ((varNumber / VBITS - 1) * 2) + 1;
             if (i >= x.length) {
-                growX(i+1);
+                growX(i + 1);
             }
             x[i] |= bit;
-            x[i-1] &=~ bit;
+            x[i - 1] &= ~bit;
         } else {
             uset |= bit;
-            vset &=~ bit;
+            vset &= ~bit;
         }
         return this;
     }
@@ -257,13 +257,13 @@ class Vset implements Constants {
             if (i >= x.length) {
                 return this;
             }
-            x[i] &=~ bit;
-            if (i+1 < x.length) {
-                x[i+1] &=~ bit;
+            x[i] &= ~bit;
+            if (i + 1 < x.length) {
+                x[i + 1] &= ~bit;
             }
         } else {
-            vset &=~ bit;
-            uset &=~ bit;
+            vset &= ~bit;
+            uset &= ~bit;
         }
         return this;
     }
@@ -363,8 +363,10 @@ class Vset implements Constants {
             while (i < otherLength) {
                 x[i] |= otherX[i];
                 i++;
-                if (i == otherLength) break;
-                x[i] = ((x[i] & otherX[i]) & ~otherX[i-1]);
+                if (i == otherLength) {
+                    break;
+                }
+                x[i] = ((x[i] & otherX[i]) & ~otherX[i - 1]);
                 i++;
             }
         }
@@ -378,7 +380,6 @@ class Vset implements Constants {
         }
         return this;
     }
-
 
     /**
      * Construct a vset consisting of the DA bits of the first argument
@@ -458,15 +459,18 @@ class Vset implements Constants {
     public int varLimit() {
         long vset;
         int result;
-    scan: {
+        scan:
+        {
             for (int i = (x.length / 2) * 2; i >= 0; i -= 2) {
-                if (i == x.length)  continue; // oops
+                if (i == x.length) {
+                    continue; // oops
+                }
                 vset = x[i];
-                if (i+1 < x.length) {
-                    vset |= x[i+1]; // check the "uset" also
+                if (i + 1 < x.length) {
+                    vset |= x[i + 1]; // check the "uset" also
                 }
                 if (vset != 0) {
-                    result = (i/2 + 1) * VBITS;
+                    result = (i / 2 + 1) * VBITS;
                     break scan;
                 }
             }
@@ -487,10 +491,11 @@ class Vset implements Constants {
     }
 
     public String toString() {
-        if (this == DEAD_END)
+        if (this == DEAD_END) {
             return "{DEAD_END}";
+        }
         StringBuilder sb = new StringBuilder("{");
-        int maxVar = VBITS * (1 + (x.length+1)/2);
+        int maxVar = VBITS * (1 + (x.length + 1) / 2);
         for (int i = 0; i < maxVar; i++) {
             if (!testVarUnassigned(i)) {
                 if (sb.length() > 1) {

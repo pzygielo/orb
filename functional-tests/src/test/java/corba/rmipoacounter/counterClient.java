@@ -21,18 +21,20 @@ package corba.rmipoacounter;
 
 import java.util.*;
 import java.io.*;
-import java.io.DataInputStream ;
+import java.io.DataInputStream;
+
 import org.omg.CORBA.*;
 import org.omg.CosNaming.*;
-import javax.rmi.PortableRemoteObject ;
+
+import javax.rmi.PortableRemoteObject;
+
 import corba.framework.*;
 
-public class counterClient implements InternalProcess
-{
+public class counterClient implements InternalProcess {
     // Temporary hack to get this test to work and keep the output
     // directory clean
-    private static final String outputDirOffset 
-        = "/corba/rmipoacounter/".replace('/', File.separatorChar);
+    private static final String outputDirOffset
+            = "/corba/rmipoacounter/".replace('/', File.separatorChar);
 
     /**
      * These counters are used to check that the values remain
@@ -43,31 +45,31 @@ public class counterClient implements InternalProcess
     private void performTest(PrintStream out,
                              PrintStream err,
                              counterIF counterRef1,
-                             counterIF counterRef2) throws Exception
-    {
+                             counterIF counterRef2) throws Exception {
         // call the counter server objects and print results
         long value = counterRef1.increment(1);
         out.println("Counter1 value = " + value);
-        if (++counterValue != value)
+        if (++counterValue != value) {
             throw new Exception("Invalid counter1: "
-                                + value + " but should be " + counterValue);
+                                        + value + " but should be " + counterValue);
+        }
 
         for (int i = 0; i < 2; i++) {
             value = counterRef2.increment(1);
-            out.println("Counter2 value = "+value);
-            if (++counterValue != value)
+            out.println("Counter2 value = " + value);
+            if (++counterValue != value) {
                 throw new Exception("Invalid counter2: "
-                                    + value + " but should be " + counterValue);
+                                            + value + " but should be " + counterValue);
+            }
         }
-        
+
     }
 
     public void run(Properties environment,
                     String args[],
                     PrintStream out,
                     PrintStream err,
-                    Hashtable extra) throws Exception
-    {
+                    Hashtable extra) throws Exception {
         environment.list(out);
 
         try {
@@ -76,27 +78,27 @@ public class counterClient implements InternalProcess
 
             // get counter objrefs from NameService
             org.omg.CORBA.Object objRef =
-                orb.resolve_initial_references("NameService");
+                    orb.resolve_initial_references("NameService");
             NamingContext ncRef = NamingContextHelper.narrow(objRef);
             NameComponent nc = new NameComponent("Counter1", "");
-            NameComponent[] path = {nc};
+            NameComponent[] path = { nc };
 
-            counterIF counterRef1 = 
-                (counterIF)PortableRemoteObject.narrow(ncRef.resolve(path),
-                                                       counterIF.class);
+            counterIF counterRef1 =
+                    (counterIF) PortableRemoteObject.narrow(ncRef.resolve(path),
+                                                            counterIF.class);
 
             // Read IOR from file and destringify it
-            InputStream inf = 
-                new FileInputStream(environment.getProperty("output.dir")
-                                    + outputDirOffset
-                                    + "counterior2");
+            InputStream inf =
+                    new FileInputStream(environment.getProperty("output.dir")
+                                                + outputDirOffset
+                                                + "counterior2");
             DataInputStream in = new DataInputStream(inf);
-            String ior = in.readLine() ;
-            org.omg.CORBA.Object obj = orb.string_to_object(ior) ;
-            counterIF counterRef2 
-                = (counterIF)PortableRemoteObject.narrow(obj, counterIF.class);
+            String ior = in.readLine();
+            org.omg.CORBA.Object obj = orb.string_to_object(ior);
+            counterIF counterRef2
+                    = (counterIF) PortableRemoteObject.narrow(obj, counterIF.class);
 
-            Controller server = (Controller)extra.get("server");
+            Controller server = (Controller) extra.get("server");
 
             for (int i = 0; i < 3; i++) {
                 out.println("Testing, pass #" + i);
@@ -112,8 +114,7 @@ public class counterClient implements InternalProcess
         }
     }
 
-    public static void main(String args[])
-    {
+    public static void main(String args[]) {
         try {
 
             (new counterClient()).run(System.getProperties(),
@@ -123,7 +124,7 @@ public class counterClient implements InternalProcess
                                       null);
 
         } catch (Exception e) {
-            System.err.println("ERROR : " + e) ;
+            System.err.println("ERROR : " + e);
             e.printStackTrace(System.err);
             System.exit(1);
         }

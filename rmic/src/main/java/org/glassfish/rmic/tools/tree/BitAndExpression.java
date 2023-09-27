@@ -19,8 +19,8 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
+import org.glassfish.rmic.tools.java.Environment;
 
 /**
  * WARNING: The contents of this source file are not part of any
@@ -42,9 +42,11 @@ class BitAndExpression extends BinaryBitExpression {
     Expression eval(boolean a, boolean b) {
         return new BooleanExpression(where, a & b);
     }
+
     Expression eval(int a, int b) {
         return new IntExpression(where, a & b);
     }
+
     Expression eval(long a, long b) {
         return new LongExpression(where, a & b);
     }
@@ -53,14 +55,18 @@ class BitAndExpression extends BinaryBitExpression {
      * Simplify
      */
     Expression simplify() {
-        if (left.equals(true))
+        if (left.equals(true)) {
             return right;
-        if (right.equals(true))
+        }
+        if (right.equals(true)) {
             return left;
-        if (left.equals(false) || left.equals(0))
+        }
+        if (left.equals(false) || left.equals(0)) {
             return new CommaExpression(where, right, left).simplify();
-        if (right.equals(false) || right.equals(0))
+        }
+        if (right.equals(false) || right.equals(0)) {
             return new CommaExpression(where, left, right).simplify();
+        }
         return this;
     }
 

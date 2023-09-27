@@ -19,7 +19,9 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
+import org.glassfish.rmic.tools.java.Environment;
+import org.glassfish.rmic.tools.java.Type;
+
 import java.util.Hashtable;
 
 /**
@@ -56,7 +58,6 @@ class BinaryLogicalExpression extends BinaryExpression {
     abstract
     public void checkCondition(Environment env, Context ctx, Vset vset,
                                Hashtable<Object, Object> exp, ConditionVars cvars);
-
 
     /**
      * Inline

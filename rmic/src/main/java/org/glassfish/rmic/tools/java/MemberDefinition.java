@@ -20,11 +20,7 @@
 package org.glassfish.rmic.tools.java;
 
 import org.glassfish.rmic.tools.asm.Assembler;
-import org.glassfish.rmic.tools.tree.Context;
-import org.glassfish.rmic.tools.tree.Expression;
-import org.glassfish.rmic.tools.tree.Node;
-import org.glassfish.rmic.tools.tree.Statement;
-import org.glassfish.rmic.tools.tree.Vset;
+import org.glassfish.rmic.tools.tree.*;
 
 import java.io.PrintStream;
 import java.util.HashMap;
@@ -34,7 +30,7 @@ import java.util.Vector;
 /**
  * This class defines a member of a Java class:
  * a variable, a method, or an inner class.
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
@@ -99,18 +95,18 @@ class MemberDefinition implements Constants {
      * uniqueness of proxy objects.  See the makeProxyMember method
      * defined below.
      */
-    static private Map<String,MemberDefinition> proxyCache;
+    static private Map<String, MemberDefinition> proxyCache;
 
     /**
      * Create a member which is externally the same as `field' but
      * is defined in class `classDef'.  This is used by code
      * in org.glassfish.rmic.tools.tree.(MethodExpression,FieldExpression) as
      * part of the fix for bug 4135692.
-     *
+     * <p>
      * Proxy members should not be added, ala addMember(), to classes.
      * They are merely "stand-ins" to produce modified MethodRef
      * constant pool entries during code generation.
-     *
+     * <p>
      * We keep a cache of previously created proxy members not to
      * save time or space, but to ensure uniqueness of the proxy
      * member for any (field,classDef) pair.  If these are not made
@@ -129,8 +125,9 @@ class MemberDefinition implements Constants {
         // System.out.println("Key is : " + key);
         MemberDefinition proxy = proxyCache.get(key);
 
-        if (proxy != null)
+        if (proxy != null) {
             return proxy;
+        }
 
         proxy = new MemberDefinition(field.getWhere(), classDef,
                                      field.getModifiers(), field.getType(),
@@ -193,9 +190,11 @@ class MemberDefinition implements Constants {
     public final int getModifiers() {
         return modifiers;
     }
+
     public final void subModifiers(int mod) {
         modifiers &= ~mod;
     }
+
     public final void addModifiers(int mod) {
         modifiers |= mod;
     }
@@ -226,11 +225,13 @@ class MemberDefinition implements Constants {
      */
     public ClassDeclaration[] getExceptions(Environment env) {
         if (expIds != null && exp == null) {
-            if (expIds.length == 0)
+            if (expIds.length == 0) {
                 exp = new ClassDeclaration[0];
-            else
-                // we should have translated this already!
-                throw new CompilerError("getExceptions "+this);
+            } else
+            // we should have translated this already!
+            {
+                throw new CompilerError("getExceptions " + this);
+            }
         }
         return exp;
     }
@@ -256,8 +257,8 @@ class MemberDefinition implements Constants {
         }
         String name = this.name.toString();
         return name.startsWith(prefixVal)
-            || name.startsWith(prefixLoc)
-            || name.startsWith(prefixThis);
+                || name.startsWith(prefixLoc)
+                || name.startsWith(prefixThis);
     }
 
     public boolean isAccessMethod() {
@@ -288,7 +289,6 @@ class MemberDefinition implements Constants {
         }
         return null;
     }
-
 
     public void setAccessMethodTarget(MemberDefinition target) {
         if (getAccessMethodTarget() != target) {
@@ -368,12 +368,15 @@ class MemberDefinition implements Constants {
     public Node getValue(Environment env) throws ClassNotFound {
         return value;
     }
+
     public final Node getValue() {
         return value;
     }
+
     public final void setValue(Node value) {
         this.value = value;
     }
+
     public Object getInitialValue() {
         return null;
     }
@@ -384,6 +387,7 @@ class MemberDefinition implements Constants {
     public final MemberDefinition getNextMember() {
         return nextMember;
     }
+
     public final MemberDefinition getNextMatch() {
         return nextMatch;
     }
@@ -414,6 +418,7 @@ class MemberDefinition implements Constants {
     public void code(Environment env, Assembler asm) throws ClassNotFound {
         throw new CompilerError("code");
     }
+
     public void codeInit(Environment env, Context ctx, Assembler asm) throws ClassNotFound {
         throw new CompilerError("codeInit");
     }
@@ -430,13 +435,15 @@ class MemberDefinition implements Constants {
      * forward references, not the access modifiers).
      */
     public final boolean canReach(Environment env, MemberDefinition f) {
-        if (f.isLocal() || !f.isVariable() || !(isVariable() || isInitializer()))
+        if (f.isLocal() || !f.isVariable() || !(isVariable() || isInitializer())) {
             return true;
+        }
         if ((getClassDeclaration().equals(f.getClassDeclaration())) &&
-            (isStatic() == f.isStatic())) {
+                (isStatic() == f.isStatic())) {
             // They are located in the same class, and are either both
             // static or both non-static.  Check the initialization order.
-            while (((f = f.getNextMember()) != null) && (f != this));
+            while (((f = f.getNextMember()) != null) && (f != this))
+                ;
             return f != null;
         }
         return true;
@@ -467,7 +474,7 @@ class MemberDefinition implements Constants {
      * access modifier of x is more restrictive than the access
      * modifier of y" with a simple inequality test:
      * "x.getAccessLevel() > y.getAccessLevel.
-     *
+     * <p>
      * This is an internal utility method.
      */
     private int getAccessLevel() {
@@ -577,8 +584,8 @@ class MemberDefinition implements Constants {
             // Query: this code was copied from elsewhere.  What
             // exactly is the role of the !isStatic() in the test?
             if (method.isFinal() ||
-                (!method.isConstructor() &&
-                 !method.isStatic() && !isStatic())) {
+                    (!method.isConstructor() &&
+                            !method.isStatic() && !isStatic())) {
                 ////////////////////////////////////////////////////////////
                 // NMG 2003-01-28 removed the following test because it is
                 // invalidated by bridge methods inserted by the "generic"
@@ -596,7 +603,7 @@ class MemberDefinition implements Constants {
         // Our caller should have verified that the method had the
         // same signature.
         if (getName() != method.getName() ||
-            !getType().equalArguments(method.getType())) {
+                !getType().equalArguments(method.getType())) {
 
             throw new CompilerError("checkOverride(), signature mismatch");
         }
@@ -628,7 +635,7 @@ class MemberDefinition implements Constants {
         // the `method' has not been already compiled or
         // `this' has been already compiled.
         if (method.reportDeprecated(env) && !isDeprecated()
-               && this instanceof org.glassfish.rmic.tools.javac.SourceMember) {
+                && this instanceof org.glassfish.rmic.tools.javac.SourceMember) {
             reportError(env, "warn.override.is.deprecated",
                         clazz, method);
         }
@@ -712,7 +719,7 @@ class MemberDefinition implements Constants {
         // Our caller should have verified that the method has the
         // same signature.
         if (getName() != method.getName() ||
-            !getType().equalArguments(method.getType())) {
+                !getType().equalArguments(method.getType())) {
 
             throw new CompilerError("checkMeet(), signature mismatch");
         }
@@ -739,7 +746,7 @@ class MemberDefinition implements Constants {
      * methods could override the other.  Unlike checkOverride(), failure
      * is not an error.  This method is only meant to be called after
      * checkMeet() has succeeded on the two methods.
-     *
+     * <p>
      * If you call couldOverride() without doing a checkMeet() first, then
      * you are on your own.
      */
@@ -793,21 +800,23 @@ class MemberDefinition implements Constants {
 
         // This code is taken nearly verbatim from the old implementation
         // of checkOverride() in SourceClass.
-    outer:
-        for (int i = 0 ; i < e1.length ; i++) {
+        outer:
+        for (int i = 0; i < e1.length; i++) {
             try {
                 ClassDefinition c1 = e1[i].getClassDefinition(env);
-                for (int j = 0 ; j < e2.length ; j++) {
+                for (int j = 0; j < e2.length; j++) {
                     if (c1.subClassOf(env, e2[j])) {
                         continue outer;
                     }
                 }
                 if (c1.subClassOf(env,
-                                  env.getClassDeclaration(idJavaLangError)))
+                                  env.getClassDeclaration(idJavaLangError))) {
                     continue outer;
+                }
                 if (c1.subClassOf(env,
-                                  env.getClassDeclaration(idJavaLangRuntimeException)))
+                                  env.getClassDeclaration(idJavaLangRuntimeException))) {
                     continue outer;
+                }
 
                 // the throws was neither something declared by a parent,
                 // nor one of the ignorables.
@@ -832,66 +841,86 @@ class MemberDefinition implements Constants {
     public final boolean isPublic() {
         return (modifiers & M_PUBLIC) != 0;
     }
+
     public final boolean isPrivate() {
         return (modifiers & M_PRIVATE) != 0;
     }
+
     public final boolean isProtected() {
         return (modifiers & M_PROTECTED) != 0;
     }
+
     public final boolean isPackagePrivate() {
         return (modifiers & (M_PUBLIC | M_PRIVATE | M_PROTECTED)) == 0;
     }
+
     public final boolean isFinal() {
         return (modifiers & M_FINAL) != 0;
     }
+
     public final boolean isStatic() {
         return (modifiers & M_STATIC) != 0;
     }
+
     public final boolean isSynchronized() {
         return (modifiers & M_SYNCHRONIZED) != 0;
     }
+
     public final boolean isAbstract() {
         return (modifiers & M_ABSTRACT) != 0;
     }
+
     public final boolean isNative() {
         return (modifiers & M_NATIVE) != 0;
     }
+
     public final boolean isVolatile() {
         return (modifiers & M_VOLATILE) != 0;
     }
+
     public final boolean isTransient() {
         return (modifiers & M_TRANSIENT) != 0;
     }
+
     public final boolean isMethod() {
         return type.isType(TC_METHOD);
     }
+
     public final boolean isVariable() {
         return !type.isType(TC_METHOD) && innerClass == null;
     }
+
     public final boolean isSynthetic() {
         return (modifiers & M_SYNTHETIC) != 0;
     }
+
     public final boolean isDeprecated() {
         return (modifiers & M_DEPRECATED) != 0;
     }
+
     public final boolean isStrict() {
         return (modifiers & M_STRICTFP) != 0;
     }
+
     public final boolean isInnerClass() {
         return innerClass != null;
     }
+
     public final boolean isInitializer() {
         return getName().equals(idClassInit);
     }
+
     public final boolean isConstructor() {
         return getName().equals(idInit);
     }
+
     public boolean isLocal() {
         return false;
     }
+
     public boolean isInlineable(Environment env, boolean fromFinal) throws ClassNotFound {
         return (isStatic() || isPrivate() || isFinal() || isConstructor() || fromFinal) &&
-            !(isSynchronized() || isNative());
+                !(isSynchronized() || isNative());
     }
 
     /**
@@ -903,7 +932,7 @@ class MemberDefinition implements Constants {
                 // If an infinite regress requeries this name,
                 // deny that it is a constant.
                 modifiers &= ~M_FINAL;
-                return ((Expression)value).isConstant();
+                return ((Expression) value).isConstant();
             } finally {
                 modifiers |= M_FINAL;
             }
@@ -923,7 +952,7 @@ class MemberDefinition implements Constants {
             sb.append(name);
             sb.append('(');
             Type argTypes[] = getType().getArgumentTypes();
-            for (int i = 0 ; i < argTypes.length ; i++) {
+            for (int i = 0; i < argTypes.length; i++) {
                 if (i > 0) {
                     sb.append(',');
                 }
@@ -981,9 +1010,9 @@ class MemberDefinition implements Constants {
             if (isPrivate() || isInitializer()) {
                 value = Statement.empty;
             } else if ((cost =
-                        ((Statement)value)
-                       .costInline(Statement.MAXINLINECOST, null, null))
-                                >= Statement.MAXINLINECOST) {
+                    ((Statement) value)
+                            .costInline(Statement.MAXINLINECOST, null, null))
+                    >= Statement.MAXINLINECOST) {
                 // will never be inlined
                 value = Statement.empty;
             } else {
@@ -991,12 +1020,12 @@ class MemberDefinition implements Constants {
                     if (!isInlineable(null, true)) {
                         value = Statement.empty;
                     }
+                } catch (ClassNotFound ee) {
                 }
-                catch (ClassNotFound ee) { }
             }
             if (value != Statement.empty && env.dump()) {
                 env.output("[after cleanup of " + getName() + ", " +
-                           cost + " expression cost units remain]");
+                                   cost + " expression cost units remain]");
             }
         } else if (isVariable()) {
             if (isPrivate() || !isFinal() || type.isType(TC_ARRAY)) {

@@ -19,12 +19,7 @@
 
 package com.sun.corba.ee.impl.transport;
 
-
-import com.sun.corba.ee.impl.encoding.CDRInputObject;
-import com.sun.corba.ee.impl.encoding.CDROutputObject;
-import com.sun.corba.ee.impl.encoding.CachedCodeBase;
-import com.sun.corba.ee.impl.encoding.CodeSetComponentInfo;
-import com.sun.corba.ee.impl.encoding.OSFCodeSetRegistry;
+import com.sun.corba.ee.impl.encoding.*;
 import com.sun.corba.ee.impl.protocol.MessageMediatorImpl;
 import com.sun.corba.ee.impl.protocol.MessageParserImpl;
 import com.sun.corba.ee.impl.protocol.giopmsgheaders.Message;
@@ -55,20 +50,16 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Harold Carr
- *         
- *         Note: this is the version WITHOUT the purgeCalls changes.
- *         The changes are in the 1.106 version, which is saved as
- *         SocketOrChannelConnectionImpl.1.106.sjava.
+ * <p>
+ * Note: this is the version WITHOUT the purgeCalls changes.
+ * The changes are in the 1.106 version, which is saved as
+ * SocketOrChannelConnectionImpl.1.106.sjava.
  */
 @Transport
 public class ConnectionImpl extends EventHandlerBase implements Connection, Work {
@@ -134,7 +125,6 @@ public class ConnectionImpl extends EventHandlerBase implements Connection, Work
     // necessary.
     protected CachedCodeBase cachedCodeBase = new CachedCodeBase(this);
 
-
     // transport read / write timeout values
     protected TcpTimeouts tcpTimeouts;
 
@@ -173,7 +163,6 @@ public class ConnectionImpl extends EventHandlerBase implements Connection, Work
             return messageMediator.dispatch();
         }
     };
-
 
     // Mapping of a fragmented messages by request id and its corresponding
     // fragmented messages stored in a queue. This mapping is used in the
@@ -226,10 +215,10 @@ public class ConnectionImpl extends EventHandlerBase implements Connection, Work
 
         try {
             defineSocket(useSelectThreadToWait,
-                    orb.getORBData().getSocketFactory().createSocket(socketType, new InetSocketAddress(hostname, port)));
+                         orb.getORBData().getSocketFactory().createSocket(socketType, new InetSocketAddress(hostname, port)));
         } catch (Throwable t) {
             throw wrapper.connectFailure(t, socketType, hostname,
-                    Integer.toString(port));
+                                         Integer.toString(port));
         }
         state = OPENING;
     }
@@ -252,9 +241,9 @@ public class ConnectionImpl extends EventHandlerBase implements Connection, Work
                           String hostname,
                           int port) {
         this(orb, contactInfo,
-                orb.getORBData().connectionSocketUseSelectThreadToWait(),
-                orb.getORBData().connectionSocketUseWorkerThreadForEvent(),
-                socketType, hostname, port);
+             orb.getORBData().connectionSocketUseSelectThreadToWait(),
+             orb.getORBData().connectionSocketUseWorkerThreadForEvent(),
+             socketType, hostname, port);
     }
 
     // Server-side constructor.
@@ -282,8 +271,8 @@ public class ConnectionImpl extends EventHandlerBase implements Connection, Work
                           Acceptor acceptor,
                           Socket socket) {
         this(orb, acceptor, socket,
-                (socket.getChannel() != null && orb.getORBData().connectionSocketUseSelectThreadToWait()),
-                (socket.getChannel() != null && orb.getORBData().connectionSocketUseWorkerThreadForEvent()));
+             (socket.getChannel() != null && orb.getORBData().connectionSocketUseSelectThreadToWait()),
+             (socket.getChannel() != null && orb.getORBData().connectionSocketUseWorkerThreadForEvent()));
     }
 
     ////////////////////////////////////////////////////
@@ -373,7 +362,6 @@ public class ConnectionImpl extends EventHandlerBase implements Connection, Work
         }
     }
 
-
     private void traceMessageBodyReceived(ORB orb, ByteBuffer buf) {
         TransportManager ctm = orb.getTransportManager();
         MessageTraceManagerImpl mtm = (MessageTraceManagerImpl) ctm.getMessageTraceManager();
@@ -412,8 +400,6 @@ public class ConnectionImpl extends EventHandlerBase implements Connection, Work
     //       "useNIOSelectToWait=false", aka use blocking java.net.Socket
     // To support non-channel connections.
 
-
-
     // case 1: asked for full header and received it:
     //     -> ask for full body
     // case 2: asked for full header and did not receive it:
@@ -422,9 +408,11 @@ public class ConnectionImpl extends EventHandlerBase implements Connection, Work
     //     -> enqueue
     // case 4: asked for full body and did not receive it:
     //     -> read more later
+
     /**
      * Reads data from the input stream, adding it the end of the existing buffer.
      * At least one byte will always be read.
+     *
      * @param is the input stream from which to read
      * @param buf the buffer into which to read
      * @param offset the first position in the buffer into which to read
@@ -481,8 +469,9 @@ public class ConnectionImpl extends EventHandlerBase implements Connection, Work
     }
 
     private void writeUsingNio(ByteBuffer byteBuffer) throws IOException {
-        if (bufferWriter == null)
+        if (bufferWriter == null) {
             bufferWriter = new NioBufferWriter(getSocketChannel(), tcpTimeouts);
+        }
         bufferWriter.write(byteBuffer);
     }
 
@@ -654,62 +643,62 @@ public class ConnectionImpl extends EventHandlerBase implements Connection, Work
 
             switch (localState) {
 
-                case OPENING:
-                    synchronized (stateEvent) {
-                        if (getState() != OPENING) {
-                            // somebody has changed 'state' so be careful
-                            break;
-                        }
-                        try {
-                            stateEvent.wait();
-                        } catch (InterruptedException ie) {
-                            wrapper.openingWaitInterrupted(ie);
-                        }
+            case OPENING:
+                synchronized (stateEvent) {
+                    if (getState() != OPENING) {
+                        // somebody has changed 'state' so be careful
+                        break;
                     }
-                    // Loop back
-                    break;
-
-                case ESTABLISHED:
-                    synchronized (writeEvent) {
-                        if (!writeLocked) {
-                            writeLocked = true;
-                            return;
-                        }
-
-                        try {
-                            // do not stay here too long if state != ESTABLISHED
-                            // Bug 4752117
-                            while (getState() == ESTABLISHED && writeLocked) {
-                                writeEvent.wait(100);
-                            }
-                        } catch (InterruptedException ie) {
-                            wrapper.establishedWaitInterrupted(ie);
-                        }
+                    try {
+                        stateEvent.wait();
+                    } catch (InterruptedException ie) {
+                        wrapper.openingWaitInterrupted(ie);
                     }
-                    // Loop back
-                    break;
+                }
+                // Loop back
+                break;
 
-                case ABORT:
-                    synchronized (stateEvent) {
-                        if (getState() != ABORT) {
-                            break;
-                        }
-                        throw wrapper.writeErrorSend();
+            case ESTABLISHED:
+                synchronized (writeEvent) {
+                    if (!writeLocked) {
+                        writeLocked = true;
+                        return;
                     }
 
-                case CLOSE_RECVD:
-                    // the connection has been closed or closing
-                    // ==> throw rebind exception
-                    synchronized (stateEvent) {
-                        if (getState() != CLOSE_RECVD) {
-                            break;
+                    try {
+                        // do not stay here too long if state != ESTABLISHED
+                        // Bug 4752117
+                        while (getState() == ESTABLISHED && writeLocked) {
+                            writeEvent.wait(100);
                         }
-                        throw wrapper.connectionRebind();
+                    } catch (InterruptedException ie) {
+                        wrapper.establishedWaitInterrupted(ie);
                     }
+                }
+                // Loop back
+                break;
 
-                default:
-                    // REVISIT
-                    throw new RuntimeException(".writeLock: bad state");
+            case ABORT:
+                synchronized (stateEvent) {
+                    if (getState() != ABORT) {
+                        break;
+                    }
+                    throw wrapper.writeErrorSend();
+                }
+
+            case CLOSE_RECVD:
+                // the connection has been closed or closing
+                // ==> throw rebind exception
+                synchronized (stateEvent) {
+                    if (getState() != CLOSE_RECVD) {
+                        break;
+                    }
+                    throw wrapper.connectionRebind();
+                }
+
+            default:
+                // REVISIT
+                throw new RuntimeException(".writeLock: bad state");
             }
         }
     }
@@ -974,18 +963,18 @@ public class ConnectionImpl extends EventHandlerBase implements Connection, Work
     protected String getStateString(int state) {
         synchronized (stateEvent) {
             switch (state) {
-                case OPENING:
-                    return "OPENING";
-                case ESTABLISHED:
-                    return "ESTABLISHED";
-                case CLOSE_SENT:
-                    return "CLOSE_SENT";
-                case CLOSE_RECVD:
-                    return "CLOSE_RECVD";
-                case ABORT:
-                    return "ABORT";
-                default:
-                    return "???";
+            case OPENING:
+                return "OPENING";
+            case ESTABLISHED:
+                return "ESTABLISHED";
+            case CLOSE_SENT:
+                return "CLOSE_SENT";
+            case CLOSE_RECVD:
+                return "CLOSE_RECVD";
+            case ABORT:
+                return "ABORT";
+            default:
+                return "???";
             }
         }
     }
@@ -1009,7 +998,7 @@ public class ConnectionImpl extends EventHandlerBase implements Connection, Work
      * Note that this should only ever be called by the Reader thread for
      * this connection.
      *
-     * @param die      Kill the reader thread (this thread) before exiting.
+     * @param die Kill the reader thread (this thread) before exiting.
      * @param lockHeld true if the calling thread holds the lock on the connection
      */
     @Transport
@@ -1125,7 +1114,7 @@ public class ConnectionImpl extends EventHandlerBase implements Connection, Work
         // REVISIT: See comments in CDROutputObject constructor.
         CDROutputObject outputObject =
                 new CDROutputObject(orb, null, giopVersion, this, msg,
-                        ORBConstants.STREAM_FORMAT_VERSION_1);
+                                    ORBConstants.STREAM_FORMAT_VERSION_1);
         msg.write(outputObject);
 
         outputObject.writeTo(this);
@@ -1455,7 +1444,7 @@ public class ConnectionImpl extends EventHandlerBase implements Connection, Work
         int poolToUse = -1;
         try {
             poolToUse = messageMediator.getThreadPoolToUse();
-            orb.getThreadPoolManager().getThreadPool(poolToUse).getWorkQueue(0).addWork((Work)messageMediator);
+            orb.getThreadPoolManager().getThreadPool(poolToUse).getWorkQueue(0).addWork((Work) messageMediator);
         } catch (NoSuchThreadPoolException e) {
             throwable = e;
         } catch (NoSuchWorkQueueException e) {
@@ -1512,8 +1501,9 @@ public class ConnectionImpl extends EventHandlerBase implements Connection, Work
             }
         }
 
-        if (bufferWriter != null)
+        if (bufferWriter != null) {
             bufferWriter.closeTemporaryWriteSelector();
+        }
     }
 
     @Override

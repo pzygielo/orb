@@ -25,12 +25,13 @@ import sun.tools.java.CompilerError;
 
 /**
  * ContextStack provides a mechanism to record parsing state.
- * @author      Bryan Atsatt
+ *
+ * @author Bryan Atsatt
  */
 public class ContextStack {
 
     // Context codes.
-    
+
     public static final int TOP = 1;
 
     public static final int METHOD = 2;
@@ -47,23 +48,23 @@ public class ContextStack {
     public static final int EXTENDS = 11;
 
     // String versions of context codes.
-    
+
     private static final String[] CODE_NAMES = {
-        "UNKNOWN ",
-        "Top level type ",
-        "Method ",
-        "Return parameter ",
-        "Parameter ",
-        "Exception ",
-        "Member ",
-        "Constant member ",
-        "Static member ",
-        "Transient member ",
-        "Implements ",
-        "Extends ",
+            "UNKNOWN ",
+            "Top level type ",
+            "Method ",
+            "Return parameter ",
+            "Parameter ",
+            "Exception ",
+            "Member ",
+            "Constant member ",
+            "Static member ",
+            "Transient member ",
+            "Implements ",
+            "Extends ",
     };
     // Member data.
-    
+
     private int currentIndex = -1;
     private int maxIndex = 100;
     private TypeContext[] stack = new TypeContext[maxIndex];
@@ -73,29 +74,29 @@ public class ContextStack {
     private TypeContext tempContext = new TypeContext();
 
     private static final String TRACE_INDENT = "   ";
-    
+
     /**
      * Constructor.
      */
-    public ContextStack (BatchEnvironment env) {
+    public ContextStack(BatchEnvironment env) {
         this.env = env;
         env.contextStack = this;
     }
- 
+
     /**
      * Return true if env.nerrors > 0.
      */
-    public boolean anyErrors () {
+    public boolean anyErrors() {
         return env.nerrors > 0;
     }
-        
+
     /**
      * Enable/disable tracing.
      */
     public void setTrace(boolean trace) {
         this.trace = trace;
     }
-        
+
     /**
      * Check trace flag.
      */
@@ -109,42 +110,43 @@ public class ContextStack {
     public BatchEnvironment getEnv() {
         return env;
     }
-   
+
     /**
      * Set the new context.
      */
     public void setNewContextCode(int code) {
         newCode = code;
     }
-        
+
     /**
      * Get the current context code.
      */
     public int getCurrentContextCode() {
         return newCode;
     }
- 
 
     /**
      * If tracing on, write the current call stack (not the context stack) to
      * System.out.
      */
-    final void traceCallStack () {
-        if (trace) dumpCallStack();
+    final void traceCallStack() {
+        if (trace) {
+            dumpCallStack();
+        }
     }
-    
+
     public final static void dumpCallStack() {
         new Error().printStackTrace(System.out);
     }
-    
+
     /**
      * Print a line indented by stack depth.
      */
-    final private void tracePrint (String text, boolean line) {
+    final private void tracePrint(String text, boolean line) {
         int length = text.length() + (currentIndex * TRACE_INDENT.length());
         StringBuilder buffer = new StringBuilder(length);
         for (int i = 0; i < currentIndex; i++) {
-            buffer.append(TRACE_INDENT);   
+            buffer.append(TRACE_INDENT);
         }
         buffer.append(text);
         if (line) {
@@ -152,40 +154,41 @@ public class ContextStack {
         }
         System.out.print(buffer.toString());
     }
-    
+
     /**
      * If tracing on, print a line.
      */
-    final void trace (String text) {
+    final void trace(String text) {
         if (trace) {
-            tracePrint(text,false);
+            tracePrint(text, false);
         }
     }
-    
+
     /**
      * If tracing on, print a line followed by a '\n'.
      */
-    final void traceln (String text) {
+    final void traceln(String text) {
         if (trace) {
-            tracePrint(text,true);
+            tracePrint(text, true);
         }
     }
-    
+
     /**
      * If tracing on, print a pre-mapped ContextElement.
      */
-    final void traceExistingType (Type type) {
+    final void traceExistingType(Type type) {
         if (trace) {
-            tempContext.set(newCode,type);
-            traceln(toResultString(tempContext,true,true));
+            tempContext.set(newCode, type);
+            traceln(toResultString(tempContext, true, true));
         }
     }
-    
+
     /**
      * Push a new element on the stack.
+     *
      * @return the new element.
      */
-    public TypeContext push (ContextElement element) {
+    public TypeContext push(ContextElement element) {
 
         currentIndex++;
 
@@ -194,62 +197,63 @@ public class ContextStack {
         if (currentIndex == maxIndex) {
             int newMax = maxIndex * 2;
             TypeContext[] newStack = new TypeContext[newMax];
-            System.arraycopy(stack,0,newStack,0,maxIndex);
+            System.arraycopy(stack, 0, newStack, 0, maxIndex);
             maxIndex = newMax;
             stack = newStack;
         }
 
         // Make sure we have a context object to use at this position...
-        
+
         TypeContext it = stack[currentIndex];
 
         if (it == null) {
             it = new TypeContext();
             stack[currentIndex] = it;
         }
-        
+
         // Set the context object...
 
-        it.set(newCode,element);
-        
+        it.set(newCode, element);
+
         // Trace...
-        
+
         traceln(toTrialString(it));
-        
+
         // Return...
-        
+
         return it;
     }
 
     /**
      * Pop an element from the stack.
+     *
      * @return the new current element or null if top.
      */
-    public TypeContext pop (boolean wasValid) {
+    public TypeContext pop(boolean wasValid) {
 
         if (currentIndex < 0) {
             throw new CompilerError("Nothing on stack!");
         }
-        
+
         newCode = stack[currentIndex].getCode();
-        traceln(toResultString(stack[currentIndex],wasValid,false));
-        
+        traceln(toResultString(stack[currentIndex], wasValid, false));
+
         Type last = stack[currentIndex].getCandidateType();
         if (last != null) {
-        
+
             // Set status...
-           
+
             if (wasValid) {
                 last.setStatus(Constants.STATUS_VALID);
             } else {
                 last.setStatus(Constants.STATUS_INVALID);
-            }          
+            }
         }
-        
-        currentIndex--;       
-        
+
+        currentIndex--;
+
         if (currentIndex < 0) {
-            
+
             // Done parsing, so update the invalid types
             // if this type was valid...
 
@@ -265,14 +269,14 @@ public class ContextStack {
     /**
      * Get the current size.
      */
-    public int size () {
+    public int size() {
         return currentIndex + 1;
     }
 
     /**
      * Get a specific context.
      */
-    public TypeContext getContext (int index) {
+    public TypeContext getContext(int index) {
 
         if (currentIndex < index) {
             throw new Error("Index out of range");
@@ -283,7 +287,7 @@ public class ContextStack {
     /**
      * Get the current top context.
      */
-    public TypeContext getContext () {
+    public TypeContext getContext() {
 
         if (currentIndex < 0) {
             throw new Error("Nothing on stack!");
@@ -294,8 +298,8 @@ public class ContextStack {
     /**
      * Is parent context a value type?
      */
-    public boolean isParentAValue () {
-        
+    public boolean isParentAValue() {
+
         if (currentIndex > 0) {
             return stack[currentIndex - 1].isValue();
         } else {
@@ -306,31 +310,31 @@ public class ContextStack {
     /**
      * Get parent context. Null if none.
      */
-    public TypeContext getParentContext () {
-        
+    public TypeContext getParentContext() {
+
         if (currentIndex > 0) {
             return stack[currentIndex - 1];
         } else {
             return null;
         }
     }
-    
+
     /**
      * Get a string for the context name...
      */
-    public String getContextCodeString () {
-        
+    public String getContextCodeString() {
+
         if (currentIndex >= 0) {
             return CODE_NAMES[newCode];
         } else {
             return CODE_NAMES[0];
         }
     }
-    
+
     /**
      * Get a string for the given context code...
      */
-    public static String getContextCodeString (int contextCode) {
+    public static String getContextCodeString(int contextCode) {
         return CODE_NAMES[contextCode];
     }
 
@@ -342,9 +346,9 @@ public class ContextStack {
             return it.toString();
         }
     }
-    
-    private String toResultString (TypeContext it, boolean result, boolean preExisting) {
-        int code = it.getCode();        
+
+    private String toResultString(TypeContext it, boolean result, boolean preExisting) {
+        int code = it.getCode();
         if (code != METHOD && code != MEMBER) {
             if (result) {
                 String str = it.toString() + " --> " + it.getTypeDescription();
@@ -360,15 +364,16 @@ public class ContextStack {
             }
         }
         return it.toString() + " [Did not map]";
-    }  
-    
-    public void clear () {
+    }
+
+    public void clear() {
         for (int i = 0; i < stack.length; i++) {
-            if (stack[i] != null) stack[i].destroy();   
+            if (stack[i] != null) {
+                stack[i].destroy();
+            }
         }
     }
 }
-
 
 class TypeContext {
 
@@ -396,39 +401,39 @@ class TypeContext {
         } else {
             return null;
         }
-}
-
-public String getTypeDescription() {
-    if (element instanceof Type) {
-        return ((Type) element).getTypeDescription();
-    } else {
-        return "[unknown type]";
     }
-}
 
-public String toString () {
-    if (element != null) {
-        return ContextStack.getContextCodeString(code) + element.getElementName();
-    } else {
-        return ContextStack.getContextCodeString(code) + "null";
+    public String getTypeDescription() {
+        if (element instanceof Type) {
+            return ((Type) element).getTypeDescription();
+        } else {
+            return "[unknown type]";
+        }
     }
-}
 
-public boolean isValue () {
-    return isValue;
-}
+    public String toString() {
+        if (element != null) {
+            return ContextStack.getContextCodeString(code) + element.getElementName();
+        } else {
+            return ContextStack.getContextCodeString(code) + "null";
+        }
+    }
 
-    public boolean isConstant () {
+    public boolean isValue() {
+        return isValue;
+    }
+
+    public boolean isConstant() {
         return code == ContextStack.MEMBER_CONSTANT;
     }
-    
+
     public void destroy() {
         if (element instanceof Type) {
-            ((Type)element).destroy();
+            ((Type) element).destroy();
         }
         element = null;
     }
-    
+
     private int code = 0;
     private ContextElement element = null;
     private boolean isValue = false;

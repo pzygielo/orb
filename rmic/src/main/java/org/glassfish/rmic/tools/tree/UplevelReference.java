@@ -19,17 +19,15 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
-import org.glassfish.rmic.tools.tree.*;
 import org.glassfish.rmic.tools.asm.Assembler;
+import org.glassfish.rmic.tools.java.*;
 
 /**
  * A reference from one scope to another.
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
- *
  */
 
 public
@@ -57,6 +55,7 @@ class UplevelReference implements Constants {
      * This local variable is always a constructor argument,
      * and is therefore usable only in the constructor and in initializers.
      * All other methods use the local field.
+     *
      * @see #localField
      */
     LocalMember localArgument;
@@ -66,6 +65,7 @@ class UplevelReference implements Constants {
      * bears a copy of the target's value.
      * The compiler tries to avoid creating it if possible.
      * The field has the same name and type as the localArgument.
+     *
      * @see #localArgument
      */
     MemberDefinition localField;
@@ -137,7 +137,7 @@ class UplevelReference implements Constants {
         while (true) {
             boolean failed = (client.getFirstMatch(valName) != null);
             for (UplevelReference r = client.getReferences();
-                    r != null; r = r.next) {
+                 r != null; r = r.next) {
                 if (r.target.getName().equals(valName)) {
                     failed = true;
                 }
@@ -152,10 +152,10 @@ class UplevelReference implements Constants {
         // Build the constructor argument.
         // Like "this", it wil be shared equally by all constructors of client.
         localArgument = new LocalMember(target.getWhere(),
-                                       client,
-                                       M_FINAL | M_SYNTHETIC,
-                                       target.getType(),
-                                       valName);
+                                        client,
+                                        M_FINAL | M_SYNTHETIC,
+                                        target.getType(),
+                                        valName);
     }
 
     /**
@@ -274,9 +274,9 @@ class UplevelReference implements Constants {
         if (reff.getClassDefinition() != client) {
             throw new CompilerError("localArgumentAvailable");
         }
-        return (   reff.isConstructor()
+        return (reff.isConstructor()
                 || reff.isVariable()
-                || reff.isInitializer() );
+                || reff.isInitializer());
     }
 
     /**
@@ -297,12 +297,12 @@ class UplevelReference implements Constants {
         client.referencesMustNotBeFrozen();
         int mod = M_PRIVATE | M_FINAL | M_SYNTHETIC;
         localField = env.makeMemberDefinition(env,
-                                             localArgument.getWhere(),
-                                             client, null,
-                                             mod,
-                                             localArgument.getType(),
-                                             localArgument.getName(),
-                                             null, null, null);
+                                              localArgument.getWhere(),
+                                              client, null,
+                                              mod,
+                                              localArgument.getType(),
+                                              localArgument.getName(),
+                                              null, null, null);
     }
 
     /**

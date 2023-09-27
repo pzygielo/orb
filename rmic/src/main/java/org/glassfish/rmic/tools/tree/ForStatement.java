@@ -19,9 +19,11 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
 import org.glassfish.rmic.tools.asm.Label;
+import org.glassfish.rmic.tools.java.Environment;
+import org.glassfish.rmic.tools.java.Type;
+
 import java.io.PrintStream;
 import java.util.Hashtable;
 
@@ -91,7 +93,7 @@ class ForStatement extends Statement {
     public Statement inline(Environment env, Context ctx) {
         ctx = new Context(ctx, this);
         if (init != null) {
-            Statement body[] = {init, this};
+            Statement body[] = { init, this };
             init = null;
             return new CompoundStatement(where, body).inline(env, ctx);
         }
@@ -111,7 +113,7 @@ class ForStatement extends Statement {
      * Create a copy of the statement for method inlining
      */
     public Statement copyInline(Context ctx, boolean valNeeded) {
-        ForStatement s = (ForStatement)clone();
+        ForStatement s = (ForStatement) clone();
         if (init != null) {
             s.init = init.copyInline(ctx, valNeeded);
         }

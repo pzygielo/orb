@@ -34,37 +34,33 @@ import com.sun.corba.ee.spi.orb.ORB;
 import com.sun.corba.ee.impl.misc.ORBUtility;
 
 public class EchoTestServant
-    extends PortableRemoteObject
-    implements EchoTest
-{
+        extends PortableRemoteObject
+        implements EchoTest {
     public static final String baseMsg = EchoTestServant.class.getName();
 
     private ORB orb;
 
     public EchoTestServant(ORB orb)
-        throws RemoteException
-    {
+            throws RemoteException {
         this.orb = orb;
     }
 
     public String echo(String x)
-        throws RemoteException
-    {
+            throws RemoteException {
         String result = "TestServant echoes: " + x;
         dprint(".echo: " + result);
         return result;
     }
 
     public void neverReturns()
-        throws RemoteException
-    {
+            throws RemoteException {
         try {
             dprint(".neverReturns");
             Object o = new Object();
-            try { 
+            try {
                 synchronized (o) {
-                    o.wait(); 
-                } 
+                    o.wait();
+                }
             } catch (InterruptedException e) {
                 ;
             }
@@ -74,8 +70,7 @@ public class EchoTestServant
         }
     }
 
-    private void dprint(String msg)
-    {
+    private void dprint(String msg) {
         ORBUtility.dprint("Server", msg);
     }
 }

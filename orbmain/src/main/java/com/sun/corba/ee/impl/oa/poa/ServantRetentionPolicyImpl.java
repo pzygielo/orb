@@ -25,7 +25,7 @@ import org.omg.PortableServer.ServantRetentionPolicy;
 import org.omg.PortableServer.ServantRetentionPolicyValue;
 
 final class ServantRetentionPolicyImpl
-    extends org.omg.CORBA.LocalObject implements ServantRetentionPolicy {
+        extends org.omg.CORBA.LocalObject implements ServantRetentionPolicy {
 
     private static final long serialVersionUID = 469062222833983100L;
 
@@ -37,9 +37,8 @@ final class ServantRetentionPolicyImpl
         return value;
     }
 
-    public int policy_type()
-    {
-        return SERVANT_RETENTION_POLICY_ID.value ;
+    public int policy_type() {
+        return SERVANT_RETENTION_POLICY_ID.value;
     }
 
     public Policy copy() {
@@ -53,10 +52,9 @@ final class ServantRetentionPolicyImpl
     private ServantRetentionPolicyValue value;
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "ServantRetentionPolicy[" +
-            ((value.value() == ServantRetentionPolicyValue._RETAIN) ?
-                "RETAIN" : "NON_RETAIN" + "]") ;
+                ((value.value() == ServantRetentionPolicyValue._RETAIN) ?
+                        "RETAIN" : "NON_RETAIN" + "]");
     }
 }

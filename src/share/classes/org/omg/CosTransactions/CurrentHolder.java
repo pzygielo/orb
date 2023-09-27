@@ -19,18 +19,20 @@
 
 package org.omg.CosTransactions;
 
-/** CurrentHolder is the holder for Current objects.
- *  Current is a pseudo object, hence it will never be transmitted
- *  over the wire. 
+/**
+ * CurrentHolder is the holder for Current objects.
+ * Current is a pseudo object, hence it will never be transmitted
+ * over the wire.
  */
-public final class CurrentHolder implements org.omg.CORBA.portable.Streamable
-{
+public final class CurrentHolder implements org.omg.CORBA.portable.Streamable {
     //  instance variable 
     public org.omg.CosTransactions.Current value;
-    //  constructors 
+
+    //  constructors
     public CurrentHolder() {
         this(null);
     }
+
     public CurrentHolder(org.omg.CosTransactions.Current __arg) {
         value = __arg;
     }

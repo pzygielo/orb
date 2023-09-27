@@ -19,13 +19,14 @@
 
 package org.glassfish.rmic.tools.asm;
 
-import org.glassfish.rmic.tools.java.*;
-import java.io.IOException;
+import org.glassfish.rmic.tools.java.Environment;
+
 import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
  * A numeric constant pool item. Can either be integer, float, long or double.
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
@@ -59,6 +60,7 @@ class NumberConstantData extends ConstantPoolData {
             out.writeDouble(num.doubleValue());
         }
     }
+
     /**
      * Return the order of the constant
      */

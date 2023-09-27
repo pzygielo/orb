@@ -23,6 +23,7 @@ package tools.ior;
 import java.io.*;
 import java.lang.reflect.*;
 import java.util.*;
+
 import org.omg.CORBA.*;
 import org.omg.CORBA.portable.*;
 import org.omg.IOP.*;
@@ -35,8 +36,7 @@ import org.omg.IIOP.Version;
  * map numbers (tags) to EncapsHandlers or Helpers for
  * profiles and components.
  */
-public class IORDecoder implements Utility
-{
+public class IORDecoder implements Utility {
     public static final String DEFAULT_TAG_PROFILE_FILE = "tagprofs.txt";
     public static final String DEFAULT_TAG_COMP_FILE = "tagcomps.txt";
 
@@ -52,21 +52,21 @@ public class IORDecoder implements Utility
      * map files, and a default TextOutputHandler.
      */
     public IORDecoder(ORB orb) throws InitializationException {
-        this(orb, 
-             DEFAULT_TAG_PROFILE_FILE, 
-             DEFAULT_TAG_COMP_FILE, 
+        this(orb,
+             DEFAULT_TAG_PROFILE_FILE,
+             DEFAULT_TAG_COMP_FILE,
              new TextOutputHandler());
     }
 
     /**
-     * Resolves a CodecFactory and processes the tagged component and 
+     * Resolves a CodecFactory and processes the tagged component and
      * tagged profile handler files.
      */
     public IORDecoder(ORB orb,
                       String taggedProfileMapFile,
                       String taggedComponentMapFile,
                       TextOutputHandler textOutputHandler)
-        throws InitializationException {
+            throws InitializationException {
 
         try {
 
@@ -74,11 +74,12 @@ public class IORDecoder implements Utility
             out = textOutputHandler;
             util = this;
 
-            org.omg.CORBA.Object objRef 
-                = orb.resolve_initial_references("CodecFactory");
+            org.omg.CORBA.Object objRef
+                    = orb.resolve_initial_references("CodecFactory");
 
-            if (objRef == null)
+            if (objRef == null) {
                 throw new InitializationException("Can't find CodecFactory");
+            }
 
             codecFactory = CodecFactoryHelper.narrow(objRef);
 
@@ -89,10 +90,10 @@ public class IORDecoder implements Utility
 
         } catch (org.omg.CORBA.ORBPackage.InvalidName in) {
             throw new InitializationException("Can't find CodecFactory: "
-                                              + in.getMessage());
+                                                      + in.getMessage());
         } catch (IOException ioe) {
             throw new InitializationException("Error reading handler file: "
-                                              + ioe);
+                                                      + ioe);
         } catch (Exception ex) {
             ex.printStackTrace();
             throw new InitializationException(ex.getMessage());
@@ -105,10 +106,10 @@ public class IORDecoder implements Utility
     public void display(String iorString) throws DecodingException {
 
         out.output("Number of known TaggedProfiles: "
-                   + tagProfileMap.size());
+                           + tagProfileMap.size());
 
         out.output("Number of known TaggedComponents: "
-                   + tagCompMap.size());
+                           + tagCompMap.size());
 
         byte[] iorBytes = stringifiedIORToBytes(iorString);
 
@@ -127,15 +128,14 @@ public class IORDecoder implements Utility
         }
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         try {
-            
+
             if (args.length != 1) {
                 System.out.println("IORDecoder <stringified IOR>");
                 return;
             }
-            
+
             ORB orb = ORB.init(args, System.getProperties());
 
             IORDecoder printIOR = new IORDecoder(orb);
@@ -153,7 +153,7 @@ public class IORDecoder implements Utility
      */
     private void initializeHandlers(String tagProfileMapFile,
                                     String tagCompMapFile)
-        throws IOException {
+            throws IOException {
 
         tagProfileMap = new HashMap();
         tagCompMap = new HashMap();
@@ -169,23 +169,24 @@ public class IORDecoder implements Utility
                             util);
     }
 
-
     /**
      * Copied from com.sun.corba.ee.impl.corba.IOR
      */
-    private static final String STRINGIFY_PREFIX = "IOR:" ;
-    private static final int PREFIX_LENGTH = STRINGIFY_PREFIX.length() ;
-    private static final int NIBBLES_PER_BYTE = 2 ;
-    private static final int UN_SHIFT = 4 ; // "UPPER NIBBLE" shift factor for <<
+    private static final String STRINGIFY_PREFIX = "IOR:";
+    private static final int PREFIX_LENGTH = STRINGIFY_PREFIX.length();
+    private static final int NIBBLES_PER_BYTE = 2;
+    private static final int UN_SHIFT = 4; // "UPPER NIBBLE" shift factor for <<
+
     private byte[] stringifiedIORToBytes(String ior) {
-        if ((ior.length() & 1) == 1)
+        if ((ior.length() & 1) == 1) {
             throw new IllegalArgumentException("Stringified IOR has odd length");
+        }
 
         byte[] buf = new byte[(ior.length() - PREFIX_LENGTH) / NIBBLES_PER_BYTE];
 
-        for (int i=PREFIX_LENGTH, j=0; i < ior.length(); i +=NIBBLES_PER_BYTE, j++) {
-            buf[j] = (byte)((hexOf(ior.charAt(i)) << UN_SHIFT) & 0xF0);
-            buf[j] |= (byte)(hexOf(ior.charAt(i+1)) & 0x0F);
+        for (int i = PREFIX_LENGTH, j = 0; i < ior.length(); i += NIBBLES_PER_BYTE, j++) {
+            buf[j] = (byte) ((hexOf(ior.charAt(i)) << UN_SHIFT) & 0xF0);
+            buf[j] |= (byte) (hexOf(ior.charAt(i + 1)) & 0x0F);
         }
 
         return buf;
@@ -195,36 +196,38 @@ public class IORDecoder implements Utility
      * Pretty prints the buffer as hex with ASCII
      * interpretation on the side.
      */
-    public void printBuffer(byte[] buffer, 
+    public void printBuffer(byte[] buffer,
                             TextOutputHandler out) {
 
         StringBuilder msg = new StringBuilder();
         char[] charBuf = new char[16];
 
         for (int i = 0; i < buffer.length; i += 16) {
-            
+
             int j = 0;
-            
+
             msg.setLength(0);
-            
+
             // For every 16 bytes, there is one line
             // of output.  First, the hex output of
             // the 16 bytes with each byte separated
             // by a space.
             while (j < 16 && j + i < buffer.length) {
                 int k = buffer[i + j];
-                if (k < 0)
+                if (k < 0) {
                     k = 256 + k;
+                }
                 String hex = Integer.toHexString(k);
-                if (hex.length() == 1)
+                if (hex.length() == 1) {
                     hex = "0" + hex;
-                
+                }
+
                 msg.append(hex);
                 msg.append(' ');
-                
+
                 j++;
             }
-            
+
             // Add any extra spaces to align the
             // text column in case we didn't end
             // at 16
@@ -232,19 +235,20 @@ public class IORDecoder implements Utility
                 msg.append("   ");
                 j++;
             }
-            
+
             // Now output the ASCII equivalents.  Non-ASCII
             // characters are shown as periods.
             int x = 0;
-            
+
             while (x < 16 && x + i < buffer.length) {
-                if (Character.isLetterOrDigit((char)buffer[i + x]))
-                    charBuf[x] = (char)buffer[i + x];
-                else
+                if (Character.isLetterOrDigit((char) buffer[i + x])) {
+                    charBuf[x] = (char) buffer[i + x];
+                } else {
                     charBuf[x] = '.';
+                }
                 x++;
             }
-            
+
             msg.append(charBuf, 0, x);
 
             out.output(msg.toString());
@@ -254,21 +258,23 @@ public class IORDecoder implements Utility
     /**
      * Copied from com.sun.corba.ee.impl.util.Utility.
      */
-    public static int hexOf(char x)
-    {
+    public static int hexOf(char x) {
         int val;
 
         val = x - '0';
-        if (val >=0 && val <= 9)
+        if (val >= 0 && val <= 9) {
             return val;
+        }
 
         val = (x - 'a') + 10;
-        if (val >= 10 && val <= 15)
+        if (val >= 10 && val <= 15) {
             return val;
+        }
 
         val = (x - 'A') + 10;
-        if (val >= 10 && val <= 15)
+        if (val >= 10 && val <= 15) {
             return val;
+        }
 
         throw new IllegalArgumentException("Bad hex digit: " + x);
     }
@@ -276,11 +282,11 @@ public class IORDecoder implements Utility
     /**
      * Recursively display the fields of the given object.
      * Cases:
-     *      Core Java classes          Call toString
-     *      TaggedComponent            Look up handler in map
-     *      TaggedProfile              Look up handler in map
-     *      Arrays                     Recursively display elements
-     *      Other                      Recursively display fields
+     * Core Java classes          Call toString
+     * TaggedComponent            Look up handler in map
+     * TaggedProfile              Look up handler in map
+     * Arrays                     Recursively display elements
+     * Other                      Recursively display fields
      */
     public void recursiveDisplay(String name,
                                  java.lang.Object object,
@@ -292,24 +298,21 @@ public class IORDecoder implements Utility
             // Print any core JDK classes rather than
             // diving inside them.  This handles the
             // java.lang primitive wrappers well.
-            if (cl.getName().startsWith("java"))
+            if (cl.getName().startsWith("java")) {
                 out.output(name + ": " + object);
-            else
-            if (cl.isArray())
+            } else if (cl.isArray()) {
                 displayArray(name, object, cl.getComponentType(), out);
-            else
-            if (cl.equals(TaggedComponent.class)) {
+            } else if (cl.equals(TaggedComponent.class)) {
                 // TaggedComponents are special cases.  We have a Map
                 // from the tag to a EncapsHandler.
-                TaggedComponent tc = (TaggedComponent)object;
+                TaggedComponent tc = (TaggedComponent) object;
 
                 displayTaggedEntry(name, tc.tag, tc.component_data, tagCompMap, out);
-            } else
-            if (cl.equals(TaggedProfile.class)) {
+            } else if (cl.equals(TaggedProfile.class)) {
                 // We also have a Map from the tag to an EncapsHandler
                 // for TaggedProfiles
-                TaggedProfile tp = (TaggedProfile)object;
-                
+                TaggedProfile tp = (TaggedProfile) object;
+
                 displayTaggedEntry(name, tp.tag, tp.profile_data, tagProfileMap, out);
             } else {
                 out.output(name + ':');
@@ -339,7 +342,7 @@ public class IORDecoder implements Utility
                                     Map tagToHandlerMap,
                                     TextOutputHandler out) {
         EncapsHandler handler
-            = (EncapsHandler)tagToHandlerMap.get(new Integer(tag));
+                = (EncapsHandler) tagToHandlerMap.get(new Integer(tag));
 
         out.output(name);
         out.increaseIndentLevel();
@@ -359,7 +362,7 @@ public class IORDecoder implements Utility
                 dumpData(data, out);
             }
         }
-        
+
         out.decreaseIndentLevel();
     }
 
@@ -379,7 +382,7 @@ public class IORDecoder implements Utility
             // Show byte arrays as pretty hex dumps
             out.output(name + ':');
             out.increaseIndentLevel();
-            printBuffer((byte[])object, out);
+            printBuffer((byte[]) object, out);
             out.decreaseIndentLevel();
         } else {
             // Make an effort to look like we know
@@ -407,7 +410,7 @@ public class IORDecoder implements Utility
     }
 
     public Codec getCDREncapsCodec(Version giopVersion)
-        throws UnknownEncoding {
+            throws UnknownEncoding {
 
         return codecFactory.create_codec(new Encoding(ENCODING_CDR_ENCAPS.value,
                                                       giopVersion.major,

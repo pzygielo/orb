@@ -29,7 +29,7 @@ import java.util.zip.ZipFile;
 
 /**
  * Abstract class to represent a class file.
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
@@ -64,7 +64,7 @@ abstract class ClassFile {
      * @return a new ClassFile
      */
     public static ClassFile newClassFile(Path path) {
-        return Files.exists(path)? new PathClassFile(path) : null;
+        return Files.exists(path) ? new PathClassFile(path) : null;
     }
 
     /**

@@ -19,23 +19,22 @@
 
 package corba.fragment;
 
-import java.rmi.RemoteException ;
+import java.rmi.RemoteException;
 import javax.rmi.PortableRemoteObject;
 
-public class FragmentTesterImpl extends PortableRemoteObject implements FragmentTester
-{
-    public FragmentTesterImpl() throws RemoteException
-    {
+public class FragmentTesterImpl extends PortableRemoteObject implements FragmentTester {
+    public FragmentTesterImpl() throws RemoteException {
         super();
     }
 
-    public byte[] verifyTransmission(byte array[]) throws BadArrayException
-    {
-        if (array == null)
+    public byte[] verifyTransmission(byte array[]) throws BadArrayException {
+        if (array == null) {
             throw new BadArrayException("Array is null");
+        }
 
-        if (array.length % 4 != 0)
+        if (array.length % 4 != 0) {
             throw new BadArrayException("Invalid array length: " + array.length);
+        }
 
         System.out.println("Array length = " + array.length);
 
@@ -51,12 +50,11 @@ public class FragmentTesterImpl extends PortableRemoteObject implements Fragment
 
                 if (array[i++] != check) {
                     throw new BadArrayException("Bad array at index " + i
-                                                + " value: " + array[i]);
+                                                        + " value: " + array[i]);
                 }
             }
 
             System.out.println();
-
 
         } while (i < array.length);
 

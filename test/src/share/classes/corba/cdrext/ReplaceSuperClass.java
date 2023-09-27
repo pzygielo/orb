@@ -22,8 +22,7 @@ package corba.cdrext;
 
 import java.io.*;
 
-public class ReplaceSuperClass implements Serializable
-{
+public class ReplaceSuperClass implements Serializable {
     private String strValue;
     private int intValue;
 
@@ -45,14 +44,14 @@ public class ReplaceSuperClass implements Serializable
     }
 
     public boolean equals(Object obj) {
-        if (!(obj instanceof ReplaceSuperClass))
+        if (!(obj instanceof ReplaceSuperClass)) {
             return false;
-        else {
-            return intValue == ((ReplaceSuperClass)obj).intValue
-                && strValue.equals(((ReplaceSuperClass)obj).strValue);
+        } else {
+            return intValue == ((ReplaceSuperClass) obj).intValue
+                    && strValue.equals(((ReplaceSuperClass) obj).strValue);
         }
     }
-    
+
     protected Object writeReplace() {
         System.out.println("---- writeReplace ----");
 

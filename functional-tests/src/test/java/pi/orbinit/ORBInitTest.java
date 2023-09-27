@@ -20,6 +20,7 @@
 package pi.orbinit;
 
 import corba.framework.*;
+
 import java.util.*;
 
 /**
@@ -34,13 +35,13 @@ public class ORBInitTest extends CORBATest {
     protected void doTest() throws Throwable {
         System.out.println();
 
-        printBeginTest( "[Properties Object] " );
+        printBeginTest("[Properties Object] ");
         Controller orbd = createORBD();
         orbd.start();
-        Controller client = createClient( "pi.orbinit.PropsClient" );
+        Controller client = createClient("pi.orbinit.PropsClient");
         client.start();
         client.waitFor();
-        printEndTest( client, null );
+        printEndTest(client, null);
         client.stop();
         orbd.stop();
         pause();
@@ -61,39 +62,35 @@ public class ORBInitTest extends CORBATest {
         orbd.stop();
         */
 
-        System.out.print( "      Final Result: " );
-        if( failed ) {
-            throw new RuntimeException( "Errors detected" );
+        System.out.print("      Final Result: ");
+        if (failed) {
+            throw new RuntimeException("Errors detected");
         }
     }
 
-    private void printBeginTest( String name ) {
-        System.out.print( "      " + name );
+    private void printBeginTest(String name) {
+        System.out.print("      " + name);
     }
 
-    private void printEndTest( Controller client, Controller server )
-        throws Throwable
-    {
-        if( (server != null) && server.finished() ) {
-            System.out.println( "FAILED, Server crashed" );
+    private void printEndTest(Controller client, Controller server)
+            throws Throwable {
+        if ((server != null) && server.finished()) {
+            System.out.println("FAILED, Server crashed");
             failed = true;
-        }
-        else if( client.exitValue() != Controller.SUCCESS ) {
-            System.out.println( "FAILED, Client exit value = " +
-                client.exitValue() );
+        } else if (client.exitValue() != Controller.SUCCESS) {
+            System.out.println("FAILED, Client exit value = " +
+                                       client.exitValue());
             failed = true;
-        }
-        else {
-            System.out.println( "PASSED" );
+        } else {
+            System.out.println("PASSED");
         }
     }
 
     // Pause a little to allow all processes to fully terminate.
     private void pause() {
         try {
-            Thread.sleep( 2000 );
-        }
-        catch( InterruptedException e ) {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
             // ignore.
         }
     }

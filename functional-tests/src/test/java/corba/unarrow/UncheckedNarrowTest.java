@@ -21,6 +21,7 @@ package corba.unarrow;
 
 import test.Test;
 import corba.framework.*;
+
 import java.util.*;
 
 /**
@@ -28,10 +29,8 @@ import java.util.*;
  * client creates multiple threads that invoke a simple sayHello
  * method on the remote servant.
  */
-public class UncheckedNarrowTest extends CORBATest
-{
-    protected void doTest() throws Throwable
-    {
+public class UncheckedNarrowTest extends CORBATest {
+    protected void doTest() throws Throwable {
         Controller orbd = createORBD();
         Controller server = createServer("corba.unarrow.Server");
         Controller client = createClient("corba.unarrow.Client");

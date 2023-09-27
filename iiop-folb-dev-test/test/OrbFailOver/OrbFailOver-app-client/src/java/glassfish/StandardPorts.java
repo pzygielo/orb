@@ -19,7 +19,8 @@
 
 package glassfish;
 
-/** The standard ports GlassFish uses.  The create-instance command returns
+/**
+ * The standard ports GlassFish uses.  The create-instance command returns
  * these in the form (NAME)=nnnn.
  *
  * @author ken_admin
@@ -35,6 +36,6 @@ public enum StandardPorts {
     JMS_PROVIDER_PORT,
     ASADMIN_LISTENER_PORT,
     GMS_LISTENER_PORT,
-    OSGI_SHELL_TELNET_PORT ;
-} ;
+    OSGI_SHELL_TELNET_PORT;
+};
 

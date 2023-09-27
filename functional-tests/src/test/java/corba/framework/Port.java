@@ -26,8 +26,7 @@ import java.net.*;
  * Simple port abstraction with the capability of
  * late binding to an unused port.
  */
-public class Port
-{
+public class Port {
     public static class PortException extends RuntimeException {
         public PortException(String reason) {
             super(reason);
@@ -41,11 +40,11 @@ public class Port
      * Port will late bind to an unused port when
      * getValue or toString is called.
      */
-    public Port() {}
+    public Port() {
+    }
 
-
-    /** 
-     * Will use the provided port value when 
+    /**
+     * Will use the provided port value when
      * getValue or toString is called.
      */
     public Port(int value) {
@@ -88,16 +87,16 @@ public class Port
                 throw new PortException(ex.getMessage());
             }
         }
-        
+
         return port;
     }
-    
+
     /**
      * Determine if the provided port is unused.  Tries to
      * create a ServerSocket at the given port.
      *
-     *@param port Port to test
-     *@return true if port is unused
+     * @param port Port to test
+     * @return true if port is unused
      */
     public static boolean isFree(int port) {
         boolean result = false;

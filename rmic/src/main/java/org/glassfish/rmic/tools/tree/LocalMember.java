@@ -20,12 +20,12 @@
 package org.glassfish.rmic.tools.tree;
 
 import org.glassfish.rmic.tools.java.*;
-import org.glassfish.rmic.tools.tree.*;
+
 import java.util.Vector;
 
 /**
  * A local Field
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
@@ -73,7 +73,7 @@ class LocalMember extends MemberDefinition {
      * Constructor
      */
     public LocalMember(long where, ClassDefinition clazz, int modifiers, Type type,
-                      Identifier name) {
+                       Identifier name) {
         super(where, clazz, modifiers, type, name, null, null);
     }
 
@@ -130,7 +130,7 @@ class LocalMember extends MemberDefinition {
         // To stay honest, we mark these inline copies:
         copy.addModifiers(M_LOCAL);
         if (this.accessPeer != null
-            && (this.accessPeer.getModifiers() & M_LOCAL) == 0) {
+                && (this.accessPeer.getModifiers() & M_LOCAL) == 0) {
             throw new CompilerError("local copyInline");
         }
         this.accessPeer = copy;
@@ -147,7 +147,7 @@ class LocalMember extends MemberDefinition {
     public LocalMember getCurrentInlineCopy(Context ctx) {
         MemberDefinition accessPeer = this.accessPeer;
         if (accessPeer != null && (accessPeer.getModifiers() & M_LOCAL) != 0) {
-            LocalMember copy = (LocalMember)accessPeer;
+            LocalMember copy = (LocalMember) accessPeer;
             return copy;
         }
         return this;
@@ -195,25 +195,27 @@ class LocalMember extends MemberDefinition {
 
     // Used by class Context, only on members of MemberDefinition.available:
     LocalMember getAccessVar() {
-        return (LocalMember)accessPeer;
+        return (LocalMember) accessPeer;
     }
+
     void setAccessVar(LocalMember f) {
         accessPeer = f;
     }
+
     // Used by class Context, only on "AccessVar" constructor args
     MemberDefinition getAccessVarMember() {
         return accessPeer;
     }
+
     void setAccessVarMember(MemberDefinition f) {
         accessPeer = f;
     }
-
 
     /**
      * Return value
      */
     public Node getValue(Environment env) {
-        return (Expression)getValue();
+        return (Expression) getValue();
     }
 
     /**

@@ -31,23 +31,21 @@ import org.omg.CORBA.ORB;
 import com.sun.corba.ee.spi.legacy.connection.ORBSocketFactory;
 import com.sun.corba.ee.spi.misc.ORBConstants;
 
-public class Client
-{
+public class Client {
     public static final String baseMsg = Client.class.getName();
-    
-    public static final String defaultFactoryClassName =
-        //REVISIT Common.DEFAULT_FACTORY_CLASS
-        "com.sun.corba.ee.impl.legacy.connection.DefaultSocketFactory";
 
-    public static void main(String args[])
-    {
+    public static final String defaultFactoryClassName =
+            //REVISIT Common.DEFAULT_FACTORY_CLASS
+            "com.sun.corba.ee.impl.legacy.connection.DefaultSocketFactory";
+
+    public static void main(String args[]) {
         try {
             Properties props = new Properties();
 
             props.setProperty(Common.ORBClassKey, MyPIORB.class.getName());
 
             props.setProperty(ORBConstants.PI_ORB_INITIALIZER_CLASS_PREFIX +
-                              ClientORBInitializer.class.getName(),
+                                      ClientORBInitializer.class.getName(),
                               "dummy");
 
             //
@@ -58,11 +56,10 @@ public class Client
             System.out.println("Case 1:  Default factory");
             System.out.println();
 
-            testFactory(args, 
+            testFactory(args,
                         props,
                         defaultFactoryClassName
-                        );
-
+            );
 
             //
             // Case 2.
@@ -75,7 +72,7 @@ public class Client
             props.put(ORBConstants.LEGACY_SOCKET_FACTORY_CLASS_PROPERTY,
                       Common.CUSTOM_FACTORY_CLASS);
 
-            testFactory(args, 
+            testFactory(args,
                         props,
                         Common.CUSTOM_FACTORY_CLASS);
 
@@ -87,17 +84,16 @@ public class Client
             System.out.println(baseMsg + ".main: Test PASSED.");
 
         } catch (Exception e) {
-            System.out.println(baseMsg + ".main: Test FAILED: " + e) ;
+            System.out.println(baseMsg + ".main: Test FAILED: " + e);
             e.printStackTrace(System.out);
-            System.exit (1);
+            System.exit(1);
         }
     }
 
-    public static void testFactory(String args[], 
+    public static void testFactory(String args[],
                                    Properties props,
                                    String factoryName)
-        throws Exception
-    {
+            throws Exception {
         ORB orb = ORB.init(args, props);
 
         Common.upDownReset();
@@ -108,10 +104,9 @@ public class Client
         // already connected behavior.
         resolveAndInvoke(orb, Common.serverName2);
 
-
         // Make sure that the factory that was used matches the name given.
-        ORBSocketFactory socketFactory = 
-           ((com.sun.corba.ee.spi.orb.ORB)orb).getORBData().getLegacySocketFactory();
+        ORBSocketFactory socketFactory =
+                ((com.sun.corba.ee.spi.orb.ORB) orb).getORBData().getLegacySocketFactory();
         if (socketFactory == null) {
             if (factoryName.equals(defaultFactoryClassName)) {
                 // OK - default does not use socket factory any longer.
@@ -122,22 +117,21 @@ public class Client
             }
         } else {
             String orbSocketFactoryName = socketFactory.getClass().getName();
-            if (! factoryName.equals(orbSocketFactoryName)) {
+            if (!factoryName.equals(orbSocketFactoryName)) {
                 throw new Exception(baseMsg + ".testFactory: "
-                                    + "Wrong socket factory class: "
-                                    + orbSocketFactoryName
-                                    + " should be "
-                                    + factoryName);
+                                            + "Wrong socket factory class: "
+                                            + orbSocketFactoryName
+                                            + " should be "
+                                            + factoryName);
             }
         }
         orb.shutdown(false);
         orb.destroy();
     }
 
-    public static void resolveAndInvoke (ORB orb, String name)
-        throws
-            Exception
-    {
+    public static void resolveAndInvoke(ORB orb, String name)
+            throws
+            Exception {
         ExI exIRef;
 
         System.out.println();
@@ -162,10 +156,9 @@ public class Client
     }
 
     public static org.omg.CORBA.Object resolve(String msg,
-                                               String name, 
+                                               String name,
                                                ORB orb)
-        throws Exception
-    {
+            throws Exception {
         // List initial references.
 
         System.out.println();
@@ -179,22 +172,20 @@ public class Client
 
         System.out.println("END: " + msg + " list_initial_references.");
 
-
         // Resolve.
 
         System.out.println();
         System.out.println("BEGIN: " + msg + " resolve.");
 
         org.omg.CORBA.Object ref
-            = ExIHelper.narrow(Common.getNameService(orb)
-                               .resolve(Common.makeNameComponent(name)));
+                = ExIHelper.narrow(Common.getNameService(orb)
+                                           .resolve(Common.makeNameComponent(name)));
 
         System.out.println("END: " + msg + " resolve.");
         return ref;
     }
 
-    public static void invoke(String msg, ExI exIRef)
-    {
+    public static void invoke(String msg, ExI exIRef) {
         System.out.println();
         System.out.println("BEGIN: " + msg + " invocation.");
 

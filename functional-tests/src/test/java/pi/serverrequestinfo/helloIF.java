@@ -21,6 +21,7 @@ package pi.serverrequestinfo;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+
 import org.omg.PortableInterceptor.*;
 import ServerRequestInfo.*;
 
@@ -28,13 +29,17 @@ import ServerRequestInfo.*;
  * Hello interface for RMI-IIOP version of test
  */
 public interface helloIF
-    extends Remote
-{
-  String sayHello () throws RemoteException;
-  void sayOneway () throws RemoteException;
-  void saySystemException () throws RemoteException;
-  void sayUserException () throws ExampleException, RemoteException;
-  String syncWithServer ( boolean exceptionRaised ) throws RemoteException;
-  void sayInvokeAgain ( int n ) throws RemoteException;
+        extends Remote {
+    String sayHello() throws RemoteException;
+
+    void sayOneway() throws RemoteException;
+
+    void saySystemException() throws RemoteException;
+
+    void sayUserException() throws ExampleException, RemoteException;
+
+    String syncWithServer(boolean exceptionRaised) throws RemoteException;
+
+    void sayInvokeAgain(int n) throws RemoteException;
 }
 

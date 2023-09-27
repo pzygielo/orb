@@ -23,8 +23,7 @@ package tools.ior;
  * Thrown by EncapsHandlers to indicate a failure during
  * their display call.
  */
-public class DecodingException extends Exception
-{
+public class DecodingException extends Exception {
     public DecodingException(String msg) {
         super(msg);
     }

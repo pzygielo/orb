@@ -18,22 +18,21 @@
  */
 package org.glassfish.jndi.cosnaming;
 
-import javax.naming.*;
-import java.util.Properties;
-import java.util.Vector;
-import java.util.Enumeration;
-
 import org.omg.CosNaming.NameComponent;
 
+import javax.naming.*;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.Vector;
+
 /**
-  * Parsing routines for NameParser as well as COS Naming stringified names.
-  * This is used by CNCtx to create a NameComponent[] object and vice versa.
-  * It follows Section 4.5 of Interoperable Naming Service (INS) 98-10-11.
-  * In summary, the stringified form is a left-to-right, forward-slash
-  * separated name. id and kinds are separated by '.'. backslash is the
-  * escape character.
-  *
-  */
+ * Parsing routines for NameParser as well as COS Naming stringified names.
+ * This is used by CNCtx to create a NameComponent[] object and vice versa.
+ * It follows Section 4.5 of Interoperable Naming Service (INS) 98-10-11.
+ * In summary, the stringified form is a left-to-right, forward-slash
+ * separated name. id and kinds are separated by '.'. backslash is the
+ * escape character.
+ */
 
 final public class CNNameParser implements NameParser {
 
@@ -41,23 +40,27 @@ final public class CNNameParser implements NameParser {
     private static final char kindSeparator = '.';
     private static final char compSeparator = '/';
     private static final char escapeChar = '\\';
+
     static {
         mySyntax.put("jndi.syntax.direction", "left_to_right");
-        mySyntax.put("jndi.syntax.separator", ""+compSeparator);
-        mySyntax.put("jndi.syntax.escape", ""+escapeChar);
-    };
+        mySyntax.put("jndi.syntax.separator", "" + compSeparator);
+        mySyntax.put("jndi.syntax.escape", "" + escapeChar);
+    }
 
-  /**
-    * Constructs a new name parser for parsing names in INS syntax.
-    */
+    ;
+
+    /**
+     * Constructs a new name parser for parsing names in INS syntax.
+     */
     public CNNameParser() {
     }
 
-  /**
-    * Returns a CompoundName given a string in INS syntax.
-    * @param name The non-null string representation of the name.
-    * @return a non-null CompoundName
-    */
+    /**
+     * Returns a CompoundName given a string in INS syntax.
+     *
+     * @param name The non-null string representation of the name.
+     * @return a non-null CompoundName
+     */
     public Name parse(String name) throws NamingException {
         Vector<String> comps = insStringToStringifiedComps(name);
         return new CNCompoundName(comps.elements());
@@ -66,21 +69,22 @@ final public class CNNameParser implements NameParser {
     /**
      * Creates a NameComponent[] from a Name structure.
      * Used by CNCtx to convert the input Name arg into a NameComponent[].
+     *
      * @param a CompoundName or a CompositeName;
      * each component must be the stringified form of a NameComponent.
      */
     static NameComponent[] nameToCosName(Name name)
-        throws InvalidNameException {
-            int len = name.size();
-            if (len == 0) {
-                return new NameComponent[0];
-            }
+            throws InvalidNameException {
+        int len = name.size();
+        if (len == 0) {
+            return new NameComponent[0];
+        }
 
-            NameComponent[] answer = new NameComponent[len];
-            for (int i = 0; i < len; i++) {
-                answer[i] = parseComponent(name.get(i));
-            }
-            return answer;
+        NameComponent[] answer = new NameComponent[len];
+        for (int i = 0; i < len; i++) {
+            answer[i] = parseComponent(name.get(i));
+        }
+        return answer;
     }
 
     /**
@@ -88,14 +92,14 @@ final public class CNNameParser implements NameParser {
      * Used by CNCtx.getNameInNamespace(), CNCompoundName.toString().
      */
     static String cosNameToInsString(NameComponent[] cname) {
-      StringBuilder str = new StringBuilder();
-      for ( int i = 0; i < cname.length; i++) {
-          if ( i > 0) {
-              str.append(compSeparator);
-          }
-          str.append(stringifyComponent(cname[i]));
-      }
-      return str.toString();
+        StringBuilder str = new StringBuilder();
+        for (int i = 0; i < cname.length; i++) {
+            if (i > 0) {
+                str.append(compSeparator);
+            }
+            str.append(stringifyComponent(cname[i]));
+        }
+        return str.toString();
     }
 
     /**
@@ -105,7 +109,7 @@ final public class CNNameParser implements NameParser {
      */
     static Name cosNameToName(NameComponent[] cname) {
         Name nm = new CompositeName();
-        for ( int i = 0; cname != null && i < cname.length; i++) {
+        for (int i = 0; cname != null && i < cname.length; i++) {
             try {
                 nm.add(stringifyComponent(cname[i]));
             } catch (InvalidNameException e) {
@@ -121,7 +125,7 @@ final public class CNNameParser implements NameParser {
      * a NameComponent.
      */
     private static Vector<String> insStringToStringifiedComps(String str)
-        throws InvalidNameException {
+            throws InvalidNameException {
 
         int len = str.length();
         Vector<String> components = new Vector<>(10);
@@ -139,8 +143,8 @@ final public class CNNameParser implements NameParser {
                 } else if (str.charAt(i) == escapeChar) {
                     if (i + 1 >= len) {
                         throw new InvalidNameException(str +
-                            ": unescaped \\ at end of component");
-                    } else if (isMeta(str.charAt(i+1))) {
+                                                               ": unescaped \\ at end of component");
+                    } else if (isMeta(str.charAt(i + 1))) {
                         ++i; // skip escape and let meta through
                         if (idMode) {
                             id[idCount++] = str.charAt(i++);
@@ -149,7 +153,7 @@ final public class CNNameParser implements NameParser {
                         }
                     } else {
                         throw new InvalidNameException(str +
-                            ": invalid character being escaped");
+                                                               ": invalid character being escaped");
                     }
 
                 } else if (idMode && str.charAt(i) == kindSeparator) {
@@ -166,8 +170,8 @@ final public class CNNameParser implements NameParser {
                 }
             }
             components.addElement(stringifyComponent(
-                new NameComponent(new String(id, 0, idCount),
-                    new String(kind, 0, kindCount))));
+                    new NameComponent(new String(id, 0, idCount),
+                                      new String(kind, 0, kindCount))));
 
             if (i < len) {
                 ++i; // skip separator
@@ -181,7 +185,7 @@ final public class CNNameParser implements NameParser {
      * Return a NameComponent given its stringified form.
      */
     private static NameComponent parseComponent(String compStr)
-    throws InvalidNameException {
+            throws InvalidNameException {
         NameComponent comp = new NameComponent();
         int kindSep = -1;
         int len = compStr.length();
@@ -198,12 +202,12 @@ final public class CNNameParser implements NameParser {
             } else if (compStr.charAt(i) == escapeChar) {
                 if (i + 1 >= len) {
                     throw new InvalidNameException(compStr +
-                            ": unescaped \\ at end of component");
-                } else if (isMeta(compStr.charAt(i+1))) {
+                                                           ": unescaped \\ at end of component");
+                } else if (isMeta(compStr.charAt(i + 1))) {
                     escaped = true;
                 } else {
                     throw new InvalidNameException(compStr +
-                        ": invalid character being escaped");
+                                                           ": invalid character being escaped");
                 }
             } else if (compStr.charAt(i) == kindSeparator) {
                 kindSep = i;
@@ -222,19 +226,19 @@ final public class CNNameParser implements NameParser {
             // unescape kind
             j = 0;
             escaped = false;
-            for (int i = kindSep+1; i < len; i++) {
+            for (int i = kindSep + 1; i < len; i++) {
                 if (escaped) {
                     newStr[j++] = compStr.charAt(i);
                     escaped = false;
                 } else if (compStr.charAt(i) == escapeChar) {
                     if (i + 1 >= len) {
                         throw new InvalidNameException(compStr +
-                            ": unescaped \\ at end of component");
-                    } else if (isMeta(compStr.charAt(i+1))) {
+                                                               ": unescaped \\ at end of component");
+                    } else if (isMeta(compStr.charAt(i + 1))) {
                         escaped = true;
                     } else {
                         throw new InvalidNameException(compStr +
-                            ": invalid character being escaped");
+                                                               ": invalid character being escaped");
                     }
                 } else {
                     newStr[j++] = compStr.charAt(i);
@@ -251,7 +255,7 @@ final public class CNNameParser implements NameParser {
             one.append(kindSeparator).append(escape(comp.kind));
         }
         if (one.length() == 0) {
-            return ""+kindSeparator;  // if neither id nor kind specified
+            return "" + kindSeparator;  // if neither id nor kind specified
         } else {
             return one.toString();
         }
@@ -263,13 +267,13 @@ final public class CNNameParser implements NameParser {
      */
     private static String escape(String str) {
         if (str.indexOf(kindSeparator) < 0 &&
-            str.indexOf(compSeparator) < 0 &&
-            str.indexOf(escapeChar) < 0) {
+                str.indexOf(compSeparator) < 0 &&
+                str.indexOf(escapeChar) < 0) {
             return str;                         // no meta characters to escape
         } else {
             int len = str.length();
             int j = 0;
-            char[] newStr = new char[len+len];
+            char[] newStr = new char[len + len];
             for (int i = 0; i < len; i++) {
                 if (isMeta(str.charAt(i))) {
                     newStr[j++] = escapeChar;   // escape meta character
@@ -328,7 +332,7 @@ final public class CNNameParser implements NameParser {
         private static final long serialVersionUID = -6599252802678482317L;
     }
 
-// for testing only
+    // for testing only
 /*
     private static void print(String input) {
         try {

@@ -20,31 +20,29 @@
 package org.glassfish.rmic.tools.java;
 
 import java.util.Hashtable;
-import java.io.PrintStream;
-import java.util.Enumeration;
 
 /**
  * A class to represent identifiers.<p>
- *
+ * <p>
  * An identifier instance is very similar to a String. The difference
  * is that identifier can't be instanciated directly, instead they are
  * looked up in a hash table. This means that identifiers with the same
  * name map to the same identifier object. This makes comparisons of
  * identifiers much faster.<p>
- *
+ * <p>
  * A lot of identifiers are qualified, that is they have '.'s in them.
  * Each qualified identifier is chopped up into the qualifier and the
  * name. The qualifier is cached in the value field.<p>
- *
+ * <p>
  * Unqualified identifiers can have a type. This type is an integer that
  * can be used by a scanner as a token value. This value has to be set
  * using the setType method.<p>
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
  *
- * @author      Arthur van Hoff
+ * @author Arthur van Hoff
  */
 
 public final
@@ -81,6 +79,7 @@ class Identifier implements Constants {
     /**
      * Construct an identifier. Don't call this directly,
      * use lookup instead.
+     *
      * @see Identifier.lookup
      */
     private Identifier(String name) {
@@ -93,7 +92,7 @@ class Identifier implements Constants {
      */
     int getType() {
         return ((value != null) && (value instanceof Integer)) ?
-                ((Integer)value).intValue() : IDENT;
+                ((Integer) value).intValue() : IDENT;
     }
 
     /**
@@ -121,13 +120,17 @@ class Identifier implements Constants {
      */
     public static Identifier lookup(Identifier q, Identifier n) {
         // lookup("", x) => x
-        if (q == idNull)  return n;
+        if (q == idNull) {
+            return n;
+        }
         // lookup(lookupInner(c, ""), n) => lookupInner(c, lookup("", n))
-        if (q.name.charAt(q.name.length()-1) == INNERCLASS_PREFIX)
-            return lookup(q.name+n.name);
+        if (q.name.charAt(q.name.length() - 1) == INNERCLASS_PREFIX) {
+            return lookup(q.name + n.name);
+        }
         Identifier id = lookup(q + "." + n);
-        if (!n.isQualified() && !q.isInner())
+        if (!n.isQualified() && !q.isInner()) {
             id.value = q;
+        }
         return id;
     }
 
@@ -138,10 +141,11 @@ class Identifier implements Constants {
     public static Identifier lookupInner(Identifier c, Identifier n) {
         Identifier id;
         if (c.isInner()) {
-            if (c.name.charAt(c.name.length()-1) == INNERCLASS_PREFIX)
-                id = lookup(c.name+n);
-            else
+            if (c.name.charAt(c.name.length() - 1) == INNERCLASS_PREFIX) {
+                id = lookup(c.name + n);
+            } else {
                 id = lookup(c, n);
+            }
         } else {
             id = lookup(c + "." + INNERCLASS_PREFIX + n);
         }
@@ -162,11 +166,12 @@ class Identifier implements Constants {
     public boolean isQualified() {
         if (value == null) {
             int idot = ipos;
-            if (idot <= 0)
+            if (idot <= 0) {
                 idot = name.length();
-            else
+            } else {
                 idot -= 1;      // back up over previous dot
-            int index = name.lastIndexOf('.', idot-1);
+            }
+            int index = name.lastIndexOf('.', idot - 1);
             value = (index < 0) ? idNull : Identifier.lookup(name.substring(0, index));
         }
         return (value instanceof Identifier) && (value != idNull);
@@ -178,7 +183,7 @@ class Identifier implements Constants {
      * any inner part of the name.
      */
     public Identifier getQualifier() {
-        return isQualified() ? (Identifier)value : idNull;
+        return isQualified() ? (Identifier) value : idNull;
     }
 
     /**
@@ -188,13 +193,14 @@ class Identifier implements Constants {
      */
     public Identifier getName() {
         return isQualified() ?
-            Identifier.lookup(name.substring(((Identifier)value).name.length() + 1)) : this;
+                Identifier.lookup(name.substring(((Identifier) value).name.length() + 1)) : this;
     }
 
-    /** A space character, which precedes the first inner class
-     *  name in a qualified name, and thus marks the qualification
-     *  as involving inner classes, instead of merely packages.<p>
-     *  Ex:  {@code java.util.Vector. Enumerator}.
+    /**
+     * A space character, which precedes the first inner class
+     * name in a qualified name, and thus marks the qualification
+     * as involving inner classes, instead of merely packages.<p>
+     * Ex:  {@code java.util.Vector. Enumerator}.
      */
     public static final char INNERCLASS_PREFIX = ' ';
 
@@ -236,21 +242,23 @@ class Identifier implements Constants {
         if (isQualified()) {
             return getName().getFlatName();
         }
-        if (ipos > 0 && name.charAt(ipos-1) == '.') {
-            if (ipos+1 == name.length()) {
+        if (ipos > 0 && name.charAt(ipos - 1) == '.') {
+            if (ipos + 1 == name.length()) {
                 // last component is idNull
-                return Identifier.lookup(name.substring(0,ipos-1));
+                return Identifier.lookup(name.substring(0, ipos - 1));
             }
-            String n = name.substring(ipos+1);
-            String t = name.substring(0,ipos);
-            return Identifier.lookup(t+n);
+            String n = name.substring(ipos + 1);
+            String t = name.substring(0, ipos);
+            return Identifier.lookup(t + n);
         }
         // Not inner.  Just return the same as getName()
         return this;
     }
 
     public Identifier getTopName() {
-        if (!isInner())  return this;
+        if (!isInner()) {
+            return this;
+        }
         return Identifier.lookup(getQualifier(), getFlatName().getHead());
     }
 
@@ -261,8 +269,9 @@ class Identifier implements Constants {
      */
     public Identifier getHead() {
         Identifier id = this;
-        while (id.isQualified())
+        while (id.isQualified()) {
             id = id.getQualifier();
+        }
         return id;
     }
 
@@ -271,10 +280,11 @@ class Identifier implements Constants {
      */
     public Identifier getTail() {
         Identifier id = getHead();
-        if (id == this)
+        if (id == this) {
             return idNull;
-        else
+        } else {
             return Identifier.lookup(name.substring(id.name.length() + 1));
+        }
     }
 
     // Unfortunately, the current structure of the compiler requires

@@ -28,21 +28,21 @@ import java.util.Vector;
 /**
  * This class is used to parse Java statements and expressions.
  * The result is a parse tree.<p>
- *
+ * <p>
  * This class implements an operator precedence parser. Errors are
  * reported to the Environment object, if the error can't be
  * resolved immediately, a SyntaxError exception is thrown.<p>
- *
+ * <p>
  * Error recovery is implemented by catching SyntaxError exceptions
  * and discarding input tokens until an input token is reached that
  * is possibly a legal continuation.<p>
- *
+ * <p>
  * The parse tree that is constructed represents the input
  * exactly (no rewrites to simpler forms). This is important
  * if the resulting tree is to be used for code formatting in
  * a programming environment. Currently only documentation comments
  * are retained.<p>
- *
+ * <p>
  * The parsing algorithm does NOT use any type information. Changes
  * in the type system do not affect the structure of the parse tree.
  * This restriction does introduce an ambiguity an expression of the
@@ -50,12 +50,12 @@ import java.util.Vector;
  * an operator. That means that (a) - b is interpreted as subtract
  * b from a and not cast negative b to type a. However, if a is a
  * simple type (byte, int, ...) then it is assumed to be a cast.<p>
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
  *
- * @author      Arthur van Hoff
+ * @author Arthur van Hoff
  */
 
 public
@@ -75,9 +75,9 @@ class Parser extends Scanner implements ParserActions, Constants {
     protected Parser(Scanner scanner) throws IOException {
         super(scanner.env);
         this.scanner = scanner;
-        ((Scanner)this).env = scanner.env;
-        ((Scanner)this).token = scanner.token;
-        ((Scanner)this).pos = scanner.pos;
+        ((Scanner) this).env = scanner.env;
+        ((Scanner) this).token = scanner.token;
+        ((Scanner) this).pos = scanner.pos;
         this.actions = this;
     }
 
@@ -112,6 +112,7 @@ class Parser extends Scanner implements ParserActions, Constants {
 
     /**
      * package declaration
+     *
      * @deprecated
      */
     @Deprecated
@@ -120,6 +121,7 @@ class Parser extends Scanner implements ParserActions, Constants {
         // Any application must override one of the packageDeclaration methods.
         packageDeclaration(off, nm.id);
     }
+
     /**
      * @deprecated
      */
@@ -130,6 +132,7 @@ class Parser extends Scanner implements ParserActions, Constants {
 
     /**
      * import class
+     *
      * @deprecated
      */
     @Deprecated
@@ -138,6 +141,7 @@ class Parser extends Scanner implements ParserActions, Constants {
         // Any application must override one of the packageDeclaration methods.
         importClass(off, nm.id);
     }
+
     /**
      * @deprecated Use the version with the IdentifierToken arguments.
      */
@@ -148,6 +152,7 @@ class Parser extends Scanner implements ParserActions, Constants {
 
     /**
      * import package
+     *
      * @deprecated
      */
     @Deprecated
@@ -156,6 +161,7 @@ class Parser extends Scanner implements ParserActions, Constants {
         // Any application must override one of the importPackage methods.
         importPackage(off, nm.id);
     }
+
     /**
      * @deprecated Use the version with the IdentifierToken arguments.
      */
@@ -166,6 +172,7 @@ class Parser extends Scanner implements ParserActions, Constants {
 
     /**
      * Define class
+     *
      * @deprecated
      */
     @Deprecated
@@ -186,6 +193,7 @@ class Parser extends Scanner implements ParserActions, Constants {
         beginClass(off, doc, mod, nm.id, supId, implIds);
         return getCurrentClass();
     }
+
     /**
      * @deprecated Use the version with the IdentifierToken arguments.
      */
@@ -206,6 +214,7 @@ class Parser extends Scanner implements ParserActions, Constants {
 
     /**
      * End class
+     *
      * @deprecated
      */
     @Deprecated
@@ -214,6 +223,7 @@ class Parser extends Scanner implements ParserActions, Constants {
         // Any application must override one of the beginClass methods.
         endClass(off, c.getName().getFlatName().getName());
     }
+
     /**
      * @deprecated Use the version with the IdentifierToken arguments.
      */
@@ -224,6 +234,7 @@ class Parser extends Scanner implements ParserActions, Constants {
 
     /**
      * Define a field
+     *
      * @deprecated
      */
     @Deprecated
@@ -276,12 +287,14 @@ class Parser extends Scanner implements ParserActions, Constants {
         }
         args[argIndex++] = n;
     }
+
     protected final Expression exprArgs(int index)[] {
         Expression e[] = new Expression[argIndex - index];
         System.arraycopy(args, index, e, 0, argIndex - index);
         argIndex = index;
         return e;
     }
+
     protected final Statement statArgs(int index)[] {
         Statement s[] = new Statement[argIndex - index];
         System.arraycopy(args, index, s, 0, argIndex - index);
@@ -296,14 +309,14 @@ class Parser extends Scanner implements ParserActions, Constants {
     protected void expect(int t) throws SyntaxError, IOException {
         if (token != t) {
             switch (t) {
-              case IDENT:
+            case IDENT:
                 env.error(scanner.prevPos, "identifier.expected");
                 break;
-              default:
+            default:
                 env.error(scanner.prevPos, "token.expected", opNames[t]);
                 break;
             }
-                throw new SyntaxError();
+            throw new SyntaxError();
         }
         scan();
     }
@@ -313,25 +326,25 @@ class Parser extends Scanner implements ParserActions, Constants {
      */
     protected Expression parseTypeExpression() throws SyntaxError, IOException {
         switch (token) {
-          case VOID:
+        case VOID:
             return new TypeExpression(scan(), Type.tVoid);
-          case BOOLEAN:
+        case BOOLEAN:
             return new TypeExpression(scan(), Type.tBoolean);
-          case BYTE:
+        case BYTE:
             return new TypeExpression(scan(), Type.tByte);
-          case CHAR:
+        case CHAR:
             return new TypeExpression(scan(), Type.tChar);
-          case SHORT:
+        case SHORT:
             return new TypeExpression(scan(), Type.tShort);
-          case INT:
+        case INT:
             return new TypeExpression(scan(), Type.tInt);
-          case LONG:
+        case LONG:
             return new TypeExpression(scan(), Type.tLong);
-          case FLOAT:
+        case FLOAT:
             return new TypeExpression(scan(), Type.tFloat);
-          case DOUBLE:
+        case DOUBLE:
             return new TypeExpression(scan(), Type.tDouble);
-          case IDENT:
+        case IDENT:
             Expression e = new IdentifierExpression(pos, scanner.idValue);
             scan();
             while (token == FIELD) {
@@ -350,17 +363,17 @@ class Parser extends Scanner implements ParserActions, Constants {
      * then is the '(' of the argument list.
      */
     protected Expression parseMethodExpression(Expression e, Identifier id) throws SyntaxError, IOException {
-       long p = scan();
-       int i = argIndex;
-       if (token != RPAREN) {
-           addArgument(parseExpression());
-           while (token == COMMA) {
-               scan();
-               addArgument(parseExpression());
-           }
-       }
-       expect(RPAREN);
-       return new MethodExpression(p, e, id, exprArgs(i));
+        long p = scan();
+        int i = argIndex;
+        if (token != RPAREN) {
+            addArgument(parseExpression());
+            while (token == COMMA) {
+                scan();
+                addArgument(parseExpression());
+            }
+        }
+        expect(RPAREN);
+        return new MethodExpression(p, e, id, exprArgs(i));
     }
 
     /**
@@ -408,126 +421,134 @@ class Parser extends Scanner implements ParserActions, Constants {
      */
     protected Expression parseTerm() throws SyntaxError, IOException {
         switch (token) {
-          case CHARVAL: {
+        case CHARVAL: {
             char v = scanner.charValue;
             return new CharExpression(scan(), v);
-          }
-          case INTVAL: {
+        }
+        case INTVAL: {
             int v = scanner.intValue;
             long q = scan();
-            if (v < 0 && radix == 10) env.error(q, "overflow.int.dec");
+            if (v < 0 && radix == 10) {
+                env.error(q, "overflow.int.dec");
+            }
             return new IntExpression(q, v);
-          }
-          case LONGVAL: {
+        }
+        case LONGVAL: {
             long v = scanner.longValue;
             long q = scan();
-            if (v < 0 && radix == 10) env.error(q, "overflow.long.dec");
+            if (v < 0 && radix == 10) {
+                env.error(q, "overflow.long.dec");
+            }
             return new LongExpression(q, v);
-          }
-          case FLOATVAL: {
+        }
+        case FLOATVAL: {
             float v = scanner.floatValue;
             return new FloatExpression(scan(), v);
-          }
-          case DOUBLEVAL: {
+        }
+        case DOUBLEVAL: {
             double v = scanner.doubleValue;
             return new DoubleExpression(scan(), v);
-          }
-          case STRINGVAL: {
+        }
+        case STRINGVAL: {
             String v = scanner.stringValue;
             return new StringExpression(scan(), v);
-          }
-          case IDENT: {
+        }
+        case IDENT: {
             Identifier v = scanner.idValue;
             long p = scan();
             return (token == LPAREN) ?
-                        parseMethodExpression(null, v) : new IdentifierExpression(p, v);
-          }
+                    parseMethodExpression(null, v) : new IdentifierExpression(p, v);
+        }
 
-          case TRUE:
+        case TRUE:
             return new BooleanExpression(scan(), true);
-          case FALSE:
+        case FALSE:
             return new BooleanExpression(scan(), false);
-          case NULL:
+        case NULL:
             return new NullExpression(scan());
 
-          case THIS: {
+        case THIS: {
             Expression e = new ThisExpression(scan());
             return (token == LPAREN) ? parseMethodExpression(e, idInit) : e;
-          }
-          case SUPER: {
+        }
+        case SUPER: {
             Expression e = new SuperExpression(scan());
             return (token == LPAREN) ? parseMethodExpression(e, idInit) : e;
-          }
+        }
 
-          case VOID:
-          case BOOLEAN:
-          case BYTE:
-          case CHAR:
-          case SHORT:
-          case INT:
-          case LONG:
-          case FLOAT:
-          case DOUBLE:
+        case VOID:
+        case BOOLEAN:
+        case BYTE:
+        case CHAR:
+        case SHORT:
+        case INT:
+        case LONG:
+        case FLOAT:
+        case DOUBLE:
             return parseTypeExpression();
 
-          case ADD: {
+        case ADD: {
             long p = scan();
             switch (token) {
-              case INTVAL: {
+            case INTVAL: {
                 int v = scanner.intValue;
                 long q = scan();
-                if (v < 0 && radix == 10) env.error(q, "overflow.int.dec");
+                if (v < 0 && radix == 10) {
+                    env.error(q, "overflow.int.dec");
+                }
                 return new IntExpression(q, v);
-              }
-              case LONGVAL: {
+            }
+            case LONGVAL: {
                 long v = scanner.longValue;
                 long q = scan();
-                if (v < 0 && radix == 10) env.error(q, "overflow.long.dec");
+                if (v < 0 && radix == 10) {
+                    env.error(q, "overflow.long.dec");
+                }
                 return new LongExpression(q, v);
-              }
-              case FLOATVAL: {
+            }
+            case FLOATVAL: {
                 float v = scanner.floatValue;
                 return new FloatExpression(scan(), v);
-              }
-              case DOUBLEVAL: {
+            }
+            case DOUBLEVAL: {
                 double v = scanner.doubleValue;
                 return new DoubleExpression(scan(), v);
-              }
+            }
             }
             return new PositiveExpression(p, parseTerm());
-          }
-          case SUB: {
+        }
+        case SUB: {
             long p = scan();
             switch (token) {
-              case INTVAL: {
+            case INTVAL: {
                 int v = -scanner.intValue;
                 return new IntExpression(scan(), v);
-              }
-              case LONGVAL: {
+            }
+            case LONGVAL: {
                 long v = -scanner.longValue;
                 return new LongExpression(scan(), v);
-              }
-              case FLOATVAL: {
+            }
+            case FLOATVAL: {
                 float v = -scanner.floatValue;
                 return new FloatExpression(scan(), v);
-              }
-              case DOUBLEVAL: {
+            }
+            case DOUBLEVAL: {
                 double v = -scanner.doubleValue;
                 return new DoubleExpression(scan(), v);
-              }
+            }
             }
             return new NegativeExpression(p, parseTerm());
-          }
-          case NOT:
+        }
+        case NOT:
             return new NotExpression(scan(), parseTerm());
-          case BITNOT:
+        case BITNOT:
             return new BitNotExpression(scan(), parseTerm());
-          case INC:
+        case INC:
             return new PreIncExpression(scan(), parseTerm());
-          case DEC:
+        case DEC:
             return new PreDecExpression(scan(), parseTerm());
 
-          case LPAREN: {
+        case LPAREN: {
             // bracketed-expr: (expr)
             long p = scan();
             Expression e = parseExpression();
@@ -540,41 +561,41 @@ class Parser extends Scanner implements ParserActions, Constants {
 
             switch (token) {
 
-                // We handle INC and DEC specially.
-                // See the discussion in JLS section 15.14.1.
-                // (Part of fix for 4044502.)
+            // We handle INC and DEC specially.
+            // See the discussion in JLS section 15.14.1.
+            // (Part of fix for 4044502.)
 
-              case INC:
-                  // We know this must be a postfix increment.
-                  return new PostIncExpression(scan(), e);
+            case INC:
+                // We know this must be a postfix increment.
+                return new PostIncExpression(scan(), e);
 
-              case DEC:
-                  // We know this must be a postfix decrement.
-                  return new PostDecExpression(scan(), e);
+            case DEC:
+                // We know this must be a postfix decrement.
+                return new PostDecExpression(scan(), e);
 
-              case LPAREN:
-              case CHARVAL:
-              case INTVAL:
-              case LONGVAL:
-              case FLOATVAL:
-              case DOUBLEVAL:
-              case STRINGVAL:
-              case IDENT:
-              case TRUE:
-              case FALSE:
-              case NOT:
-              case BITNOT:
-              case THIS:
-              case SUPER:
-              case NULL:
-              case NEW:
+            case LPAREN:
+            case CHARVAL:
+            case INTVAL:
+            case LONGVAL:
+            case FLOATVAL:
+            case DOUBLEVAL:
+            case STRINGVAL:
+            case IDENT:
+            case TRUE:
+            case FALSE:
+            case NOT:
+            case BITNOT:
+            case THIS:
+            case SUPER:
+            case NULL:
+            case NEW:
                 // cast-expr: (expr) expr
                 return new CastExpression(p, e, parseTerm());
             }
             return new ExprExpression(p, e);
-          }
+        }
 
-          case LBRACE: {
+        case LBRACE: {
             // array initializer: {expr1, expr2, ... exprn}
             long p = scan();
             int i = argIndex;
@@ -590,9 +611,9 @@ class Parser extends Scanner implements ParserActions, Constants {
             }
             expect(RBRACE);
             return new ArrayExpression(p, exprArgs(i));
-          }
+        }
 
-          case NEW: {
+        case NEW: {
             long p = scan();
             int i = argIndex;
 
@@ -620,7 +641,7 @@ class Parser extends Scanner implements ParserActions, Constants {
             } else {
                 return parseNewInstanceExpression(p, null, e);
             }
-          }
+        }
         }
 
         // System.err.println("NEAR: " + opNames[token]);
@@ -632,10 +653,11 @@ class Parser extends Scanner implements ParserActions, Constants {
      * Parse an expression.
      */
     protected Expression parseExpression() throws SyntaxError, IOException {
-        for (Expression e = parseTerm() ; e != null ; e = e.order()) {
+        for (Expression e = parseTerm(); e != null; e = e.order()) {
             Expression more = parseBinaryExpression(e);
-            if (more == null)
+            if (more == null) {
                 return e;
+            }
             e = more;
         }
         // this return is bogus
@@ -648,22 +670,22 @@ class Parser extends Scanner implements ParserActions, Constants {
     protected Expression parseBinaryExpression(Expression e) throws SyntaxError, IOException {
         if (e != null) {
             switch (token) {
-              case LSQBRACKET: {
+            case LSQBRACKET: {
                 // index: expr1[expr2]
                 long p = scan();
                 Expression index = (token != RSQBRACKET) ? parseExpression() : null;
                 expect(RSQBRACKET);
                 e = new ArrayAccessExpression(p, e, index);
                 break;
-              }
+            }
 
-              case INC:
+            case INC:
                 e = new PostIncExpression(scan(), e);
                 break;
-              case DEC:
+            case DEC:
                 e = new PostDecExpression(scan(), e);
                 break;
-              case FIELD: {
+            case FIELD: {
                 long p = scan();
                 if (token == THIS) {
                     // class C { class N { ... C.this ... } }
@@ -696,8 +718,9 @@ class Parser extends Scanner implements ParserActions, Constants {
                 if (token == NEW) {
                     // new C().new N()
                     scan();
-                    if (token != IDENT)
+                    if (token != IDENT) {
                         expect(IDENT);
+                    }
                     e = parseNewInstanceExpression(p, e, parseTypeExpression());
                     break;
                 }
@@ -716,104 +739,104 @@ class Parser extends Scanner implements ParserActions, Constants {
                     e = new FieldExpression(p, e, id);
                 }
                 break;
-              }
-              case INSTANCEOF:
+            }
+            case INSTANCEOF:
                 e = new InstanceOfExpression(scan(), e, parseTerm());
                 break;
-              case ADD:
+            case ADD:
                 e = new AddExpression(scan(), e, parseTerm());
                 break;
-              case SUB:
+            case SUB:
                 e = new SubtractExpression(scan(), e, parseTerm());
                 break;
-              case MUL:
+            case MUL:
                 e = new MultiplyExpression(scan(), e, parseTerm());
                 break;
-              case DIV:
+            case DIV:
                 e = new DivideExpression(scan(), e, parseTerm());
                 break;
-              case REM:
+            case REM:
                 e = new RemainderExpression(scan(), e, parseTerm());
                 break;
-              case LSHIFT:
+            case LSHIFT:
                 e = new ShiftLeftExpression(scan(), e, parseTerm());
                 break;
-              case RSHIFT:
+            case RSHIFT:
                 e = new ShiftRightExpression(scan(), e, parseTerm());
                 break;
-              case URSHIFT:
+            case URSHIFT:
                 e = new UnsignedShiftRightExpression(scan(), e, parseTerm());
                 break;
-              case LT:
+            case LT:
                 e = new LessExpression(scan(), e, parseTerm());
                 break;
-              case LE:
+            case LE:
                 e = new LessOrEqualExpression(scan(), e, parseTerm());
                 break;
-              case GT:
+            case GT:
                 e = new GreaterExpression(scan(), e, parseTerm());
                 break;
-              case GE:
+            case GE:
                 e = new GreaterOrEqualExpression(scan(), e, parseTerm());
                 break;
-              case EQ:
+            case EQ:
                 e = new EqualExpression(scan(), e, parseTerm());
                 break;
-              case NE:
+            case NE:
                 e = new NotEqualExpression(scan(), e, parseTerm());
                 break;
-              case BITAND:
+            case BITAND:
                 e = new BitAndExpression(scan(), e, parseTerm());
                 break;
-              case BITXOR:
+            case BITXOR:
                 e = new BitXorExpression(scan(), e, parseTerm());
                 break;
-              case BITOR:
+            case BITOR:
                 e = new BitOrExpression(scan(), e, parseTerm());
                 break;
-              case AND:
+            case AND:
                 e = new AndExpression(scan(), e, parseTerm());
                 break;
-              case OR:
+            case OR:
                 e = new OrExpression(scan(), e, parseTerm());
                 break;
-              case ASSIGN:
+            case ASSIGN:
                 e = new AssignExpression(scan(), e, parseTerm());
                 break;
-              case ASGMUL:
+            case ASGMUL:
                 e = new AssignMultiplyExpression(scan(), e, parseTerm());
                 break;
-              case ASGDIV:
+            case ASGDIV:
                 e = new AssignDivideExpression(scan(), e, parseTerm());
                 break;
-              case ASGREM:
+            case ASGREM:
                 e = new AssignRemainderExpression(scan(), e, parseTerm());
                 break;
-              case ASGADD:
+            case ASGADD:
                 e = new AssignAddExpression(scan(), e, parseTerm());
                 break;
-              case ASGSUB:
+            case ASGSUB:
                 e = new AssignSubtractExpression(scan(), e, parseTerm());
                 break;
-              case ASGLSHIFT:
+            case ASGLSHIFT:
                 e = new AssignShiftLeftExpression(scan(), e, parseTerm());
                 break;
-              case ASGRSHIFT:
+            case ASGRSHIFT:
                 e = new AssignShiftRightExpression(scan(), e, parseTerm());
                 break;
-              case ASGURSHIFT:
+            case ASGURSHIFT:
                 e = new AssignUnsignedShiftRightExpression(scan(), e, parseTerm());
                 break;
-              case ASGBITAND:
+            case ASGBITAND:
                 e = new AssignBitAndExpression(scan(), e, parseTerm());
                 break;
-              case ASGBITOR:
+            case ASGBITOR:
                 e = new AssignBitOrExpression(scan(), e, parseTerm());
                 break;
-              case ASGBITXOR:
+            case ASGBITXOR:
                 e = new AssignBitXorExpression(scan(), e, parseTerm());
                 break;
-              case QUESTIONMARK: {
+            case QUESTIONMARK: {
                 long p = scan();
                 Expression second = parseExpression();
                 expect(COLON);
@@ -825,15 +848,15 @@ class Parser extends Scanner implements ParserActions, Constants {
                 // check for this case and signal an error.
                 // (fix for bug 4092958)
                 if (third instanceof AssignExpression
-                    || third instanceof AssignOpExpression) {
+                        || third instanceof AssignOpExpression) {
                     env.error(third.getWhere(), "assign.in.conditionalexpr");
                 }
 
                 e = new ConditionalExpression(p, e, second, third);
                 break;
-              }
+            }
 
-              default:
+            default:
                 return null; // mark end of binary expressions
             }
         }
@@ -848,45 +871,45 @@ class Parser extends Scanner implements ParserActions, Constants {
     protected boolean recoverStatement() throws SyntaxError, IOException {
         while (true) {
             switch (token) {
-              case EOF:
-              case RBRACE:
-              case LBRACE:
-              case IF:
-              case FOR:
-              case WHILE:
-              case DO:
-              case TRY:
-              case CATCH:
-              case FINALLY:
-              case BREAK:
-              case CONTINUE:
-              case RETURN:
+            case EOF:
+            case RBRACE:
+            case LBRACE:
+            case IF:
+            case FOR:
+            case WHILE:
+            case DO:
+            case TRY:
+            case CATCH:
+            case FINALLY:
+            case BREAK:
+            case CONTINUE:
+            case RETURN:
                 // begin of a statement, return
                 return true;
 
-              case VOID:
-              case STATIC:
-              case PUBLIC:
-              case PRIVATE:
-              case SYNCHRONIZED:
-              case INTERFACE:
-              case CLASS:
-              case TRANSIENT:
+            case VOID:
+            case STATIC:
+            case PUBLIC:
+            case PRIVATE:
+            case SYNCHRONIZED:
+            case INTERFACE:
+            case CLASS:
+            case TRANSIENT:
                 // begin of something outside a statement, panic some more
                 expect(RBRACE);
                 return false;
 
-              case LPAREN:
+            case LPAREN:
                 match(LPAREN, RPAREN);
                 scan();
                 break;
 
-              case LSQBRACKET:
+            case LSQBRACKET:
                 match(LSQBRACKET, RSQBRACKET);
                 scan();
                 break;
 
-              default:
+            default:
                 // don't know what to do, skip
                 scan();
                 break;
@@ -916,24 +939,24 @@ class Parser extends Scanner implements ParserActions, Constants {
      */
     protected void topLevelExpression(Expression e) {
         switch (e.getOp()) {
-          case ASSIGN:
-          case ASGMUL:
-          case ASGDIV:
-          case ASGREM:
-          case ASGADD:
-          case ASGSUB:
-          case ASGLSHIFT:
-          case ASGRSHIFT:
-          case ASGURSHIFT:
-          case ASGBITAND:
-          case ASGBITOR:
-          case ASGBITXOR:
-          case PREINC:
-          case PREDEC:
-          case POSTINC:
-          case POSTDEC:
-          case METHOD:
-          case NEWINSTANCE:
+        case ASSIGN:
+        case ASGMUL:
+        case ASGDIV:
+        case ASGREM:
+        case ASGADD:
+        case ASGSUB:
+        case ASGLSHIFT:
+        case ASGRSHIFT:
+        case ASGURSHIFT:
+        case ASGBITAND:
+        case ASGBITOR:
+        case ASGBITXOR:
+        case PREINC:
+        case PREDEC:
+        case POSTINC:
+        case POSTDEC:
+        case METHOD:
+        case NEWINSTANCE:
             return;
         }
         env.error(e.getWhere(), "invalid.expr");
@@ -944,13 +967,13 @@ class Parser extends Scanner implements ParserActions, Constants {
      */
     protected Statement parseStatement() throws SyntaxError, IOException {
         switch (token) {
-          case SEMICOLON:
+        case SEMICOLON:
             return new CompoundStatement(scan(), new Statement[0]);
 
-          case LBRACE:
-              return parseBlockStatement();
+        case LBRACE:
+            return parseBlockStatement();
 
-          case IF: {
+        case IF: {
             // if-statement: if (expr) stat
             // if-statement: if (expr) stat else stat
             long p = scan();
@@ -965,15 +988,15 @@ class Parser extends Scanner implements ParserActions, Constants {
             } else {
                 return new IfStatement(p, c, t, null);
             }
-          }
+        }
 
-          case ELSE: {
+        case ELSE: {
             // else-statement: else stat
             env.error(scan(), "else.without.if");
             return parseStatement();
-          }
+        }
 
-          case FOR: {
+        case FOR: {
             // for-statement: for (decl-expr? ; expr? ; expr?) stat
             long p = scan();
             Statement init = null;
@@ -1018,9 +1041,9 @@ class Parser extends Scanner implements ParserActions, Constants {
             }
             expect(RPAREN);
             return new ForStatement(p, init, cond, inc, parseStatement());
-          }
+        }
 
-          case WHILE: {
+        case WHILE: {
             // while-statement: while (expr) stat
             long p = scan();
 
@@ -1028,9 +1051,9 @@ class Parser extends Scanner implements ParserActions, Constants {
             Expression cond = parseExpression();
             expect(RPAREN);
             return new WhileStatement(p, cond, parseStatement());
-          }
+        }
 
-          case DO: {
+        case DO: {
             // do-statement: do stat while (expr)
             long p = scan();
 
@@ -1041,9 +1064,9 @@ class Parser extends Scanner implements ParserActions, Constants {
             expect(RPAREN);
             expect(SEMICOLON);
             return new DoStatement(p, body, cond);
-          }
+        }
 
-          case BREAK: {
+        case BREAK: {
             // break-statement: break ;
             long p = scan();
             Identifier label = null;
@@ -1054,9 +1077,9 @@ class Parser extends Scanner implements ParserActions, Constants {
             }
             expect(SEMICOLON);
             return new BreakStatement(p, label);
-          }
+        }
 
-          case CONTINUE: {
+        case CONTINUE: {
             // continue-statement: continue ;
             long p = scan();
             Identifier label = null;
@@ -1067,9 +1090,9 @@ class Parser extends Scanner implements ParserActions, Constants {
             }
             expect(SEMICOLON);
             return new ContinueStatement(p, label);
-          }
+        }
 
-          case RETURN: {
+        case RETURN: {
             // return-statement: return ;
             // return-statement: return expr ;
             long p = scan();
@@ -1080,9 +1103,9 @@ class Parser extends Scanner implements ParserActions, Constants {
             }
             expect(SEMICOLON);
             return new ReturnStatement(p, e);
-          }
+        }
 
-          case SWITCH: {
+        case SWITCH: {
             // switch statement: switch ( expr ) stat
             long p = scan();
             int i = argIndex;
@@ -1096,19 +1119,19 @@ class Parser extends Scanner implements ParserActions, Constants {
                 int j = argIndex;
                 try {
                     switch (token) {
-                      case CASE:
+                    case CASE:
                         // case-statement: case expr:
                         addArgument(new CaseStatement(scan(), parseExpression()));
                         expect(COLON);
                         break;
 
-                      case DEFAULT:
+                    case DEFAULT:
                         // default-statement: default:
                         addArgument(new CaseStatement(scan(), null));
                         expect(COLON);
                         break;
 
-                      default:
+                    default:
                         addArgument(parseStatement());
                         break;
                     }
@@ -1121,9 +1144,9 @@ class Parser extends Scanner implements ParserActions, Constants {
             }
             expect(RBRACE);
             return new SwitchStatement(p, e, statArgs(i));
-          }
+        }
 
-          case CASE: {
+        case CASE: {
             // case-statement: case expr : stat
             env.error(pos, "case.without.switch");
             while (token == CASE) {
@@ -1132,17 +1155,17 @@ class Parser extends Scanner implements ParserActions, Constants {
                 expect(COLON);
             }
             return parseStatement();
-          }
+        }
 
-          case DEFAULT: {
+        case DEFAULT: {
             // default-statement: default : stat
             env.error(pos, "default.without.switch");
             scan();
             expect(COLON);
             return parseStatement();
-          }
+        }
 
-          case TRY: {
+        case TRY: {
             // try-statement: try stat catch (type-expr ident) stat finally stat
             long p = scan();
             Statement init = null;              // try-object specification
@@ -1192,8 +1215,9 @@ class Parser extends Scanner implements ParserActions, Constants {
                 catches = true;
             }
 
-            if (catches)
+            if (catches) {
                 s = new TryStatement(p, s, statArgs(i));
+            }
 
             if (token == FINALLY) {
                 scan();
@@ -1204,9 +1228,9 @@ class Parser extends Scanner implements ParserActions, Constants {
                 env.error(pos, "try.without.catch.finally");
                 return new TryStatement(p, s, null);
             }
-          }
+        }
 
-          case CATCH: {
+        case CATCH: {
             // catch-statement: catch (expr ident) stat finally stat
             env.error(pos, "catch.without.try");
 
@@ -1226,49 +1250,49 @@ class Parser extends Scanner implements ParserActions, Constants {
                 s = parseBlockStatement();
             }
             return s;
-          }
+        }
 
-          case FINALLY: {
+        case FINALLY: {
             // finally-statement: finally stat
             env.error(pos, "finally.without.try");
             scan();
             return parseBlockStatement();
-          }
+        }
 
-          case THROW: {
+        case THROW: {
             // throw-statement: throw expr;
             long p = scan();
             Expression e = parseExpression();
             expect(SEMICOLON);
             return new ThrowStatement(p, e);
-          }
+        }
 
-          case GOTO: {
+        case GOTO: {
             long p = scan();
             expect(IDENT);
             expect(SEMICOLON);
             env.error(p, "not.supported", "goto");
             return new CompoundStatement(p, new Statement[0]);
-          }
+        }
 
-          case SYNCHRONIZED: {
+        case SYNCHRONIZED: {
             // synchronized-statement: synchronized (expr) stat
             long p = scan();
             expect(LPAREN);
             Expression e = parseExpression();
             expect(RPAREN);
             return new SynchronizedStatement(p, e, parseBlockStatement());
-          }
+        }
 
-          case INTERFACE:
-          case CLASS:
+        case INTERFACE:
+        case CLASS:
             // Inner class.
             return parseLocalClass(0);
 
-          case CONST:
-          case ABSTRACT:
-          case FINAL:
-          case STRICTFP: {
+        case CONST:
+        case ABSTRACT:
+        case FINAL:
+        case STRICTFP: {
             // a declaration of some sort
             long p = pos;
 
@@ -1280,24 +1304,24 @@ class Parser extends Scanner implements ParserActions, Constants {
             // However, any class (if it has a name) can be declared final,
             // abstract, or strictfp.
             int mod = parseModifiers(M_FINAL | M_ABSTRACT
-                                             | M_STRICTFP );
+                                             | M_STRICTFP);
 
             switch (token) {
-              case INTERFACE:
-              case CLASS:
+            case INTERFACE:
+            case CLASS:
                 return parseLocalClass(mod);
 
-              case BOOLEAN:
-              case BYTE:
-              case CHAR:
-              case SHORT:
-              case INT:
-              case LONG:
-              case FLOAT:
-              case DOUBLE:
-              case IDENT: {
-                if ((mod & (M_ABSTRACT | M_STRICTFP )) != 0) {
-                    mod &= ~ (M_ABSTRACT | M_STRICTFP );
+            case BOOLEAN:
+            case BYTE:
+            case CHAR:
+            case SHORT:
+            case INT:
+            case LONG:
+            case FLOAT:
+            case DOUBLE:
+            case IDENT: {
+                if ((mod & (M_ABSTRACT | M_STRICTFP)) != 0) {
+                    mod &= ~(M_ABSTRACT | M_STRICTFP);
                     expect(CLASS);
                 }
                 Expression e = parseExpression();
@@ -1308,19 +1332,19 @@ class Parser extends Scanner implements ParserActions, Constants {
                 Statement s = parseDeclaration(p, mod, e);
                 expect(SEMICOLON);
                 return s;
-              }
+            }
 
-              default:
+            default:
                 env.error(pos, "type.expected");
                 throw new SyntaxError();
             }
-          }
+        }
 
-          case VOID:
-          case STATIC:
-          case PUBLIC:
-          case PRIVATE:
-          case TRANSIENT:
+        case VOID:
+        case STATIC:
+        case PUBLIC:
+        case PRIVATE:
+        case TRANSIENT:
             // This is the start of something outside a statement
             env.error(pos, "statement.expected");
             throw new SyntaxError();
@@ -1375,7 +1399,6 @@ class Parser extends Scanner implements ParserActions, Constants {
         return new CompoundStatement(p, statArgs(i));
     }
 
-
     /**
      * Parse an identifier. ie: a.b.c returns "a.b.c"
      * If star is true then "a.b.*" is allowed.
@@ -1409,9 +1432,10 @@ class Parser extends Scanner implements ParserActions, Constants {
         res.id = Identifier.lookup(sb.toString());
         return res;
     }
+
     /**
-     * @deprecated
      * @see #parseName
+     * @deprecated
      */
     @Deprecated
     protected Identifier parseIdentifier(boolean star) throws SyntaxError, IOException {
@@ -1426,46 +1450,46 @@ class Parser extends Scanner implements ParserActions, Constants {
         Type t;
 
         switch (token) {
-          case IDENT:
+        case IDENT:
             t = Type.tClass(parseName(false).id);
             break;
-          case VOID:
+        case VOID:
             scan();
             t = Type.tVoid;
             break;
-          case BOOLEAN:
+        case BOOLEAN:
             scan();
             t = Type.tBoolean;
             break;
-          case BYTE:
+        case BYTE:
             scan();
             t = Type.tByte;
             break;
-          case CHAR:
+        case CHAR:
             scan();
             t = Type.tChar;
             break;
-          case SHORT:
+        case SHORT:
             scan();
             t = Type.tShort;
             break;
-          case INT:
+        case INT:
             scan();
             t = Type.tInt;
             break;
-          case FLOAT:
+        case FLOAT:
             scan();
             t = Type.tFloat;
             break;
-          case LONG:
+        case LONG:
             scan();
             t = Type.tLong;
             break;
-          case DOUBLE:
+        case DOUBLE:
             scan();
             t = Type.tDouble;
             break;
-          default:
+        default:
             env.error(pos, "type.expected");
             throw new SyntaxError();
         }
@@ -1524,24 +1548,46 @@ class Parser extends Scanner implements ParserActions, Constants {
     protected int parseModifiers(int mask) throws IOException {
         int mod = 0;
         while (true) {
-            if (token==CONST) {
+            if (token == CONST) {
                 // const isn't in java, but handle a common C++ usage gently
                 env.error(pos, "not.supported", "const");
                 scan();
             }
             int nextmod = 0;
             switch (token) {
-               case PRIVATE:            nextmod = M_PRIVATE;      break;
-               case PUBLIC:             nextmod = M_PUBLIC;       break;
-               case PROTECTED:          nextmod = M_PROTECTED;    break;
-               case STATIC:             nextmod = M_STATIC;       break;
-               case TRANSIENT:          nextmod = M_TRANSIENT;    break;
-               case FINAL:              nextmod = M_FINAL;        break;
-               case ABSTRACT:           nextmod = M_ABSTRACT;     break;
-               case NATIVE:             nextmod = M_NATIVE;       break;
-               case VOLATILE:           nextmod = M_VOLATILE;     break;
-               case SYNCHRONIZED:       nextmod = M_SYNCHRONIZED; break;
-               case STRICTFP:           nextmod = M_STRICTFP;     break;
+            case PRIVATE:
+                nextmod = M_PRIVATE;
+                break;
+            case PUBLIC:
+                nextmod = M_PUBLIC;
+                break;
+            case PROTECTED:
+                nextmod = M_PROTECTED;
+                break;
+            case STATIC:
+                nextmod = M_STATIC;
+                break;
+            case TRANSIENT:
+                nextmod = M_TRANSIENT;
+                break;
+            case FINAL:
+                nextmod = M_FINAL;
+                break;
+            case ABSTRACT:
+                nextmod = M_ABSTRACT;
+                break;
+            case NATIVE:
+                nextmod = M_NATIVE;
+                break;
+            case VOLATILE:
+                nextmod = M_VOLATILE;
+                break;
+            case SYNCHRONIZED:
+                nextmod = M_SYNCHRONIZED;
+                break;
+            case STRICTFP:
+                nextmod = M_STRICTFP;
+                break;
             }
             if ((nextmod & mask) == 0) {
                 break;
@@ -1607,19 +1653,20 @@ class Parser extends Scanner implements ParserActions, Constants {
         // (the name of the method or the first variable),
         // otherwise it is a constructor.
         switch (token) {
-          case IDENT:
+        case IDENT:
             id = scanner.getIdToken();
             p = scan();
             break;
 
-          case LPAREN:
+        case LPAREN:
             // It is a constructor
             id = new IdentifierToken(idInit);
-            if ((mod & M_STRICTFP) != 0)
+            if ((mod & M_STRICTFP) != 0) {
                 env.error(pos, "bad.constructor.modifier");
+            }
             break;
 
-          default:
+        default:
             expect(IDENT);
         }
 
@@ -1691,11 +1738,11 @@ class Parser extends Scanner implements ParserActions, Constants {
             // Check if it is a method definition or a method declaration
             // ie: foo() {...} or foo();
             switch (token) {
-              case LBRACE:      // It's a method definition
+            case LBRACE:      // It's a method definition
 
                 // Set the state of FP strictness for the body of the method
                 int oldFPstate = FPstate;
-                if ((mod & M_STRICTFP)!=0) {
+                if ((mod & M_STRICTFP) != 0) {
                     FPstate = M_STRICTFP;
                 } else {
                     mod |= FPstate & M_STRICTFP;
@@ -1708,13 +1755,13 @@ class Parser extends Scanner implements ParserActions, Constants {
 
                 break;
 
-              case SEMICOLON:
+            case SEMICOLON:
                 scan();
                 actions.defineField(p, curClass, doc, mod, t, id,
                                     anames, exp, null);
                 break;
 
-              default:
+            default:
                 // really expected a statement body here
                 if ((mod & (M_NATIVE | M_ABSTRACT)) == 0) {
                     expect(LBRACE);
@@ -1764,51 +1811,51 @@ class Parser extends Scanner implements ParserActions, Constants {
     protected void recoverField(ClassDefinition newClass) throws SyntaxError, IOException {
         while (true) {
             switch (token) {
-              case EOF:
-              case STATIC:
-              case FINAL:
-              case PUBLIC:
-              case PRIVATE:
-              case SYNCHRONIZED:
-              case TRANSIENT:
+            case EOF:
+            case STATIC:
+            case FINAL:
+            case PUBLIC:
+            case PRIVATE:
+            case SYNCHRONIZED:
+            case TRANSIENT:
 
-              case VOID:
-              case BOOLEAN:
-              case BYTE:
-              case CHAR:
-              case SHORT:
-              case INT:
-              case FLOAT:
-              case LONG:
-              case DOUBLE:
+            case VOID:
+            case BOOLEAN:
+            case BYTE:
+            case CHAR:
+            case SHORT:
+            case INT:
+            case FLOAT:
+            case LONG:
+            case DOUBLE:
                 // possible begin of a field, continue
                 return;
 
-              case LBRACE:
+            case LBRACE:
                 match(LBRACE, RBRACE);
                 scan();
                 break;
 
-              case LPAREN:
+            case LPAREN:
                 match(LPAREN, RPAREN);
                 scan();
                 break;
 
-              case LSQBRACKET:
+            case LSQBRACKET:
                 match(LSQBRACKET, RSQBRACKET);
                 scan();
                 break;
 
-              case RBRACE:
-              case INTERFACE:
-              case CLASS:
-              case IMPORT:
-              case PACKAGE:
+            case RBRACE:
+            case INTERFACE:
+            case CLASS:
+            case IMPORT:
+            case PACKAGE:
                 // begin of something outside a class, panic more
                 actions.endClass(pos, newClass);
                 throw new SyntaxError();
 
-              default:
+            default:
                 // don't know what to do, skip
                 scan();
                 break;
@@ -1842,7 +1889,7 @@ class Parser extends Scanner implements ParserActions, Constants {
         long p = pos;
         ClassDefinition body = parseNamedClass(M_LOCAL | mod, STAT, null);
         Statement ds[] = {
-            new VarDeclarationStatement(p, new LocalMember(body), null)
+                new VarDeclarationStatement(p, new LocalMember(body), null)
         };
         Expression type = new TypeExpression(p, body.getType());
         return new DeclarationStatement(p, 0, type, ds);
@@ -1851,27 +1898,28 @@ class Parser extends Scanner implements ParserActions, Constants {
     /**
      * Parse a named class or interface declaration,
      * starting at "class" or "interface".
+     *
      * @arg ctx Syntactic context of the class, one of {PACKAGE CLASS STAT EXPR}.
      */
     protected ClassDefinition parseNamedClass(int mod, int ctx, String doc) throws SyntaxError, IOException {
         // Parse class/interface
         switch (token) {
-          case INTERFACE:
+        case INTERFACE:
             scan();
             mod |= M_INTERFACE;
             break;
 
-          case CLASS:
+        case CLASS:
             scan();
             break;
 
-          default:
+        default:
             env.error(pos, "class.expected");
             break;
         }
 
         int oldFPstate = FPstate;
-        if ((mod & M_STRICTFP)!=0) {
+        if ((mod & M_STRICTFP) != 0) {
             FPstate = M_STRICTFP;
         } else {
             // The & (...) isn't really necessary here because we do maintain
@@ -1924,7 +1972,7 @@ class Parser extends Scanner implements ParserActions, Constants {
     protected ClassDefinition parseClassBody(IdentifierToken nm, int mod,
                                              int ctx, String doc,
                                              Vector<IdentifierToken> ext, Vector<IdentifierToken> impl, long p
-                                             ) throws SyntaxError, IOException {
+    ) throws SyntaxError, IOException {
         // Decide which is the super class
         IdentifierToken sup = null;
         if ((mod & M_INTERFACE) != 0) {
@@ -1949,7 +1997,7 @@ class Parser extends Scanner implements ParserActions, Constants {
         IdentifierToken implids[] = new IdentifierToken[impl.size()];
         impl.copyInto(implids);
         ClassDefinition newClass =
-            actions.beginClass(p, doc, mod, nm, sup, implids);
+                actions.beginClass(p, doc, mod, nm, sup, implids);
 
         // Parse fields
         expect(LBRACE);
@@ -1978,30 +2026,30 @@ class Parser extends Scanner implements ParserActions, Constants {
     protected void recoverFile() throws IOException {
         while (true) {
             switch (token) {
-              case CLASS:
-              case INTERFACE:
+            case CLASS:
+            case INTERFACE:
                 // Start of a new source file statement, continue
                 return;
 
-              case LBRACE:
+            case LBRACE:
                 match(LBRACE, RBRACE);
                 scan();
                 break;
 
-              case LPAREN:
+            case LPAREN:
                 match(LPAREN, RPAREN);
                 scan();
                 break;
 
-              case LSQBRACKET:
+            case LSQBRACKET:
                 match(LSQBRACKET, RSQBRACKET);
                 scan();
                 break;
 
-              case EOF:
+            case EOF:
                 return;
 
-              default:
+            default:
                 // Don't know what to do, skip
                 scan();
                 break;
@@ -2026,7 +2074,7 @@ class Parser extends Scanner implements ParserActions, Constants {
                 recoverFile();
             }
             while (token == IMPORT) {
-                try{
+                try {
                     // Import statement
                     long p = scan();
                     IdentifierToken id = parseName(true);
@@ -2045,18 +2093,18 @@ class Parser extends Scanner implements ParserActions, Constants {
             while (token != EOF) {
                 try {
                     switch (token) {
-                      case FINAL:
-                      case PUBLIC:
-                      case PRIVATE:
-                      case ABSTRACT:
-                      case CLASS:
-                      case INTERFACE:
-                      case STRICTFP:
+                    case FINAL:
+                    case PUBLIC:
+                    case PRIVATE:
+                    case ABSTRACT:
+                    case CLASS:
+                    case INTERFACE:
+                    case STRICTFP:
                         // Start of a class
                         parseClass();
                         break;
 
-                      case SEMICOLON:
+                    case SEMICOLON:
                         // Bogus semicolon.
                         // According to the JLS (7.6,19.6), a TypeDeclaration
                         // may consist of a single semicolon, however, this
@@ -2066,11 +2114,11 @@ class Parser extends Scanner implements ParserActions, Constants {
                         scan();
                         break;
 
-                      case EOF:
+                    case EOF:
                         // The end
                         return;
 
-                      default:
+                    default:
                         // Oops
                         env.error(pos, "toplevel.expected");
                         throw new SyntaxError();
@@ -2105,8 +2153,8 @@ class Parser extends Scanner implements ParserActions, Constants {
     public long scan() throws IOException {
         if (scanner != this && scanner != null) {
             long result = scanner.scan();
-            ((Scanner)this).token = scanner.token;
-            ((Scanner)this).pos = scanner.pos;
+            ((Scanner) this).token = scanner.token;
+            ((Scanner) this).pos = scanner.pos;
             return result;
         }
         return super.scan();
@@ -2115,8 +2163,8 @@ class Parser extends Scanner implements ParserActions, Constants {
     public void match(int open, int close) throws IOException {
         if (scanner != this) {
             scanner.match(open, close);
-            ((Scanner)this).token = scanner.token;
-            ((Scanner)this).pos = scanner.pos;
+            ((Scanner) this).token = scanner.token;
+            ((Scanner) this).pos = scanner.pos;
             return;
         }
         super.match(open, close);

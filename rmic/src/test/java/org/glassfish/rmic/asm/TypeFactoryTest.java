@@ -25,9 +25,7 @@ import org.glassfish.rmic.tools.java.Type;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.arrayContaining;
-import static org.hamcrest.Matchers.emptyArray;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 
 public class TypeFactoryTest {
     private TypeFactory factory = new TypeFactory();

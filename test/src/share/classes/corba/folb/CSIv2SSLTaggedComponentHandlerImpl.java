@@ -45,10 +45,9 @@ import com.sun.corba.ee.impl.misc.ORBUtility;
  * @author Harold Carr
  */
 public class CSIv2SSLTaggedComponentHandlerImpl
-    extends org.omg.CORBA.LocalObject
-    implements CSIv2SSLTaggedComponentHandler,
-               ORBConfigurator
-{
+        extends org.omg.CORBA.LocalObject
+        implements CSIv2SSLTaggedComponentHandler,
+        ORBConfigurator {
     private boolean debug = true;
     private ORB orb;
 
@@ -57,16 +56,18 @@ public class CSIv2SSLTaggedComponentHandlerImpl
     // CSIv2SSLTaggedComponentHandler
     //
 
-    public TaggedComponent insert(IORInfo iorInfo, 
-                                  List<ClusterInstanceInfo> clusterInstanceInfo)
-    {
-        if (debug) { dprint(".insert: " + iorInfo); }
+    public TaggedComponent insert(IORInfo iorInfo,
+                                  List<ClusterInstanceInfo> clusterInstanceInfo) {
+        if (debug) {
+            dprint(".insert: " + iorInfo);
+        }
         return null;
     }
 
-    public List<SocketInfo> extract(IOR ior)
-    {
-        if (debug) { dprint(".extract"); }
+    public List<SocketInfo> extract(IOR ior) {
+        if (debug) {
+            dprint(".extract");
+        }
         return null;
     }
 
@@ -75,22 +76,25 @@ public class CSIv2SSLTaggedComponentHandlerImpl
     // ORBConfigurator
     //
 
-    public void configure(DataCollector collector, ORB orb) 
-    {
-        if (debug) { dprint(".configure->:"); }
+    public void configure(DataCollector collector, ORB orb) {
+        if (debug) {
+            dprint(".configure->:");
+        }
 
         this.orb = orb;
         try {
             orb.register_initial_reference(
-                ORBConstants.CSI_V2_SSL_TAGGED_COMPONENT_HANDLER,
-                this);
+                    ORBConstants.CSI_V2_SSL_TAGGED_COMPONENT_HANDLER,
+                    this);
         } catch (InvalidName e) {
             dprint(".configure: !!!!! FAILURE");
             e.printStackTrace(System.out);
             System.exit(1);
         }
 
-        if (debug) { dprint(".configure<-:"); }
+        if (debug) {
+            dprint(".configure<-:");
+        }
     }
 
     ////////////////////////////////////////////////////
@@ -98,8 +102,7 @@ public class CSIv2SSLTaggedComponentHandlerImpl
     // Implementation
     //
 
-    private static void dprint(String msg)
-    {
+    private static void dprint(String msg) {
         ORBUtility.dprint("CSIv2SSLTaggedComponentHandlerImpl", msg);
     }
 

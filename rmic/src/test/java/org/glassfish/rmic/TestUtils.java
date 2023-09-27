@@ -19,23 +19,25 @@
 
 package org.glassfish.rmic;
 
+import javax.rmi.PortableRemoteObject;
 import java.io.File;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.rmi.PortableRemoteObject;
 
 public class TestUtils {
     public static String getClassPathString() {
         return Stream.of(TestUtils.class, PortableRemoteObject.class)
-              .map(TestUtils::toClassPathElement)
-              .filter(Objects::nonNull)
-              .collect(Collectors.joining(File.pathSeparator));
+                .map(TestUtils::toClassPathElement)
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining(File.pathSeparator));
     }
 
     private static String toClassPathElement(Class<?> aClass) {
         ClassLoader classLoader = aClass.getClassLoader();
-        if (classLoader == null) return null;
+        if (classLoader == null) {
+            return null;
+        }
 
         String classFileName = toPath(aClass.getName());
         String filePath = withoutPrefix(classLoader.getResource(classFileName).getPath());
@@ -43,17 +45,19 @@ public class TestUtils {
     }
 
     private static String withoutPrefix(String path) {
-        if (path.startsWith("file:"))
+        if (path.startsWith("file:")) {
             return path.substring("file:".length());
-        else
+        } else {
             return path;
+        }
     }
 
     private static String toClassPathElement(String filePath, String classFileName) {
-        if (filePath.contains("!"))
+        if (filePath.contains("!")) {
             return filePath.substring(0, filePath.indexOf("!"));
-        else
+        } else {
             return filePath.substring(0, filePath.indexOf(classFileName));
+        }
     }
 
     private static String toPath(String className) {

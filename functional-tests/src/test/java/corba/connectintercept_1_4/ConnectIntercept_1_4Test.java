@@ -28,17 +28,15 @@ import corba.framework.Controller;
 import corba.framework.CORBATest;
 
 public class ConnectIntercept_1_4Test
-    extends
-        CORBATest
-{
+        extends
+        CORBATest {
     public static final String thisPackage =
-        ConnectIntercept_1_4Test.class.getPackage().getName();
+            ConnectIntercept_1_4Test.class.getPackage().getName();
 
     protected void doTest()
-        throws
-            Throwable
-    {
-        Controller orbd   = createORBD();
+            throws
+            Throwable {
+        Controller orbd = createORBD();
         orbd.start();
 
         Controller server = createServer(thisPackage + "." + "ServerTransient",

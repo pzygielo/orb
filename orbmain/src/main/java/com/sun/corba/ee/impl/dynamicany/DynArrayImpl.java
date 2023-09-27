@@ -19,18 +19,17 @@
 
 package com.sun.corba.ee.impl.dynamicany;
 
-import org.omg.CORBA.TypeCode;
+import com.sun.corba.ee.spi.orb.ORB;
 import org.omg.CORBA.Any;
 import org.omg.CORBA.BAD_OPERATION;
+import org.omg.CORBA.TypeCode;
 import org.omg.CORBA.portable.InputStream;
-import org.omg.DynamicAny.*;
-import org.omg.DynamicAny.DynAnyPackage.InvalidValue;
+import org.omg.DynamicAny.DynAny;
 import org.omg.DynamicAny.DynAnyFactoryPackage.InconsistentTypeCode;
+import org.omg.DynamicAny.DynAnyPackage.InvalidValue;
+import org.omg.DynamicAny.DynArray;
 
-import com.sun.corba.ee.spi.orb.ORB ;
-
-public class DynArrayImpl extends DynAnyCollectionImpl implements DynArray
-{
+public class DynArrayImpl extends DynAnyCollectionImpl implements DynArray {
     private static final long serialVersionUID = -5898255222474271560L;
     //
     // Constructors
@@ -60,7 +59,7 @@ public class DynArrayImpl extends DynAnyCollectionImpl implements DynArray
         components = new DynAny[length];
         anys = new Any[length];
 
-        for (int i=0; i<length; i++) {
+        for (int i = 0; i < length; i++) {
             // _REVISIT_ Could use read_xxx_array() methods on InputStream for efficiency
             // but only for primitive types
             anys[i] = DynAnyUtil.extractAnyFromStream(contentType, input, orb);
@@ -84,7 +83,7 @@ public class DynArrayImpl extends DynAnyCollectionImpl implements DynArray
         components = new DynAny[length];
         anys = new Any[length];
 
-        for (int i=0; i<length; i++) {
+        for (int i = 0; i < length; i++) {
             createDefaultComponentAt(i, contentType);
         }
         return true;
@@ -111,8 +110,7 @@ public class DynArrayImpl extends DynAnyCollectionImpl implements DynArray
     //
 
     protected void checkValue(Object[] value)
-        throws org.omg.DynamicAny.DynAnyPackage.InvalidValue
-    {
+            throws org.omg.DynamicAny.DynAnyPackage.InvalidValue {
         if (value == null || value.length != getBound()) {
             throw new InvalidValue();
         }

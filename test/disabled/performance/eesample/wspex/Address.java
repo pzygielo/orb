@@ -17,7 +17,7 @@
  * Classpath-exception-2.0
  */
 
-package performance.eesample.wspex ;
+package performance.eesample.wspex;
 
 import java.io.Serializable;
 
@@ -33,11 +33,9 @@ public class Address implements Serializable {
 
     /**
      * Gets the value of the firstName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getFirstName() {
         return firstName;
@@ -45,11 +43,9 @@ public class Address implements Serializable {
 
     /**
      * Sets the value of the firstName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     * {@link String }
      */
     public void setFirstName(String value) {
         this.firstName = value;
@@ -57,11 +53,9 @@ public class Address implements Serializable {
 
     /**
      * Gets the value of the lastName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getLastName() {
         return lastName;
@@ -69,11 +63,9 @@ public class Address implements Serializable {
 
     /**
      * Sets the value of the lastName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     * {@link String }
      */
     public void setLastName(String value) {
         this.lastName = value;
@@ -81,11 +73,9 @@ public class Address implements Serializable {
 
     /**
      * Gets the value of the address1 property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getAddress1() {
         return address1;
@@ -93,11 +83,9 @@ public class Address implements Serializable {
 
     /**
      * Sets the value of the address1 property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     * {@link String }
      */
     public void setAddress1(String value) {
         this.address1 = value;
@@ -105,11 +93,9 @@ public class Address implements Serializable {
 
     /**
      * Gets the value of the address2 property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getAddress2() {
         return address2;
@@ -117,11 +103,9 @@ public class Address implements Serializable {
 
     /**
      * Sets the value of the address2 property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     * {@link String }
      */
     public void setAddress2(String value) {
         this.address2 = value;
@@ -129,11 +113,9 @@ public class Address implements Serializable {
 
     /**
      * Gets the value of the city property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getCity() {
         return city;
@@ -141,11 +123,9 @@ public class Address implements Serializable {
 
     /**
      * Sets the value of the city property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     * {@link String }
      */
     public void setCity(String value) {
         this.city = value;
@@ -153,11 +133,9 @@ public class Address implements Serializable {
 
     /**
      * Gets the value of the state property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getState() {
         return state;
@@ -165,11 +143,9 @@ public class Address implements Serializable {
 
     /**
      * Sets the value of the state property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     * {@link String }
      */
     public void setState(String value) {
         this.state = value;
@@ -177,11 +153,9 @@ public class Address implements Serializable {
 
     /**
      * Gets the value of the zip property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getZip() {
         return zip;
@@ -189,11 +163,9 @@ public class Address implements Serializable {
 
     /**
      * Sets the value of the zip property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     * {@link String }
      */
     public void setZip(String value) {
         this.zip = value;

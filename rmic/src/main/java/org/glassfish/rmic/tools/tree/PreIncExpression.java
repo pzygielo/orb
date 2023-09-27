@@ -19,8 +19,8 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
+import org.glassfish.rmic.tools.java.Environment;
 
 /**
  * WARNING: The contents of this source file are not part of any
@@ -42,6 +42,7 @@ class PreIncExpression extends IncDecExpression {
     public void codeValue(Environment env, Context ctx, Assembler asm) {
         codeIncDec(env, ctx, asm, true, true, true);
     }
+
     public void code(Environment env, Context ctx, Assembler asm) {
         codeIncDec(env, ctx, asm, true, true, false);
     }

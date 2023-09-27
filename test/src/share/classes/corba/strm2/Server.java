@@ -24,9 +24,8 @@ import javax.rmi.PortableRemoteObject;
 import javax.naming.*;
 import java.util.*;
 
-public class Server
-{
-    private static InitialContext rootContext ;
+public class Server {
+    private static InitialContext rootContext;
 
     public static void main(String[] args) {
         try {
@@ -42,7 +41,7 @@ public class Server
             // Stay alive so nothing strange happens to
             // the System streams
             Object synchObj = new Object();
-            synchronized(synchObj) {
+            synchronized (synchObj) {
                 synchObj.wait();
             }
 

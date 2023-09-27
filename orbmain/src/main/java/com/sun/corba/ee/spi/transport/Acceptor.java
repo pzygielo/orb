@@ -19,54 +19,51 @@
 
 package com.sun.corba.ee.spi.transport;
 
-import com.sun.corba.ee.impl.encoding.CDRInputObject;
 import com.sun.corba.ee.impl.encoding.CDROutputObject;
-import com.sun.corba.ee.spi.protocol.MessageMediator;
-import com.sun.corba.ee.spi.ior.IORTemplate;
-
-// REVISIT - impl/poa specific:
 import com.sun.corba.ee.impl.oa.poa.Policies;
+import com.sun.corba.ee.spi.ior.IORTemplate;
 import com.sun.corba.ee.spi.orb.ORB;
+import com.sun.corba.ee.spi.protocol.MessageMediator;
+import org.glassfish.gmbal.Description;
+import org.glassfish.gmbal.ManagedAttribute;
+import org.glassfish.gmbal.ManagedObject;
+
 import java.net.ServerSocket;
 import java.net.Socket;
-
-import org.glassfish.gmbal.ManagedObject ;
-import org.glassfish.gmbal.ManagedAttribute ;
-import org.glassfish.gmbal.Description ;
 
 /**
  * @author Harold Carr
  */
-@ManagedObject 
-@Description( "An Acceptor represents an endpoint on which the ORB handles incoming connections" ) 
-public abstract interface Acceptor
-{
+@ManagedObject
+@Description("An Acceptor represents an endpoint on which the ORB handles incoming connections")
+public abstract interface Acceptor {
     @ManagedAttribute
-    @Description( "The TCP port of this Acceptor" )  
-    int getPort() ;
+    @Description("The TCP port of this Acceptor")
+    int getPort();
 
     @ManagedAttribute
-    @Description( "The name of the IP interface for this Acceptor" ) 
-    String getInterfaceName() ;
+    @Description("The name of the IP interface for this Acceptor")
+    String getInterfaceName();
 
     @ManagedAttribute
-    @Description( "The type of requests that this Acceptor handles" ) 
-    String getType() ;
+    @Description("The type of requests that this Acceptor handles")
+    String getType();
 
     @ManagedAttribute
-    @Description( "True if this acceptor is used to lazily start the ORB" ) 
-    boolean isLazy() ;
+    @Description("True if this acceptor is used to lazily start the ORB")
+    boolean isLazy();
 
     void addToIORTemplate(IORTemplate iorTemplate, Policies policies,
-                                 String codebase);
+                          String codebase);
+
     String getMonitoringName();
 
     /**
      * Used to initialize an <code>Acceptor</code>.
-     *
+     * <p>
      * For example, initialization may mean to create a
      * {@link java.nio.channels.ServerSocketChannel ServerSocketChannel}.
-     *
+     * <p>
      * Note: this must be prepared to be be called multiple times.
      *
      * @return <code>true</code> when it performs initializatin
@@ -91,7 +88,7 @@ public abstract interface Acceptor
     /**
      * Used to determine if the <code>Acceptor</code> should register
      * with a Selector to handle accept events.
-     *
+     * <p>
      * For example, this may be <em>false</em> in the case of Solaris Doors
      * which do not actively listen.
      *
@@ -100,15 +97,19 @@ public abstract interface Acceptor
      */
     boolean shouldRegisterAcceptEvent();
 
-    /** Blocks until a new Socket is available on the acceptor's port.
+    /**
+     * Blocks until a new Socket is available on the acceptor's port.
+     *
      * @return the new socket
      */
-    Socket getAcceptedSocket(); 
+    Socket getAcceptedSocket();
 
-    /** Handle a newly accepted Socket.
+    /**
+     * Handle a newly accepted Socket.
+     *
      * @param channel socket to handle
      */
-    void processSocket( Socket channel );
+    void processSocket(Socket channel);
 
     /**
      * Close the <code>Acceptor</code>.
@@ -118,7 +119,7 @@ public abstract interface Acceptor
     EventHandler getEventHandler();
 
     CDROutputObject createOutputObject(ORB broker, MessageMediator messageMediator);
-    
+
     ServerSocket getServerSocket();
 }
 

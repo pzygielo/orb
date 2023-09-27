@@ -17,7 +17,7 @@
  * Classpath-exception-2.0
  */
 
-package performance.eesample.wspex ;
+package performance.eesample.wspex;
 
 import java.io.Serializable;
 
@@ -29,7 +29,6 @@ public class Struct implements Serializable {
 
     /**
      * Gets the value of the varInt property.
-     * 
      */
     public int getVarInt() {
         return varInt;
@@ -37,7 +36,6 @@ public class Struct implements Serializable {
 
     /**
      * Sets the value of the varInt property.
-     * 
      */
     public void setVarInt(int value) {
         this.varInt = value;
@@ -45,7 +43,6 @@ public class Struct implements Serializable {
 
     /**
      * Gets the value of the varFloat property.
-     * 
      */
     public float getVarFloat() {
         return varFloat;
@@ -53,7 +50,6 @@ public class Struct implements Serializable {
 
     /**
      * Sets the value of the varFloat property.
-     * 
      */
     public void setVarFloat(float value) {
         this.varFloat = value;
@@ -61,11 +57,9 @@ public class Struct implements Serializable {
 
     /**
      * Gets the value of the varString property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getVarString() {
         return varString;
@@ -73,11 +67,9 @@ public class Struct implements Serializable {
 
     /**
      * Sets the value of the varString property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     * {@link String }
      */
     public void setVarString(String value) {
         this.varString = value;

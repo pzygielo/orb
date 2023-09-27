@@ -29,19 +29,19 @@
     <property name="build.compiler" value="extJavac"/>
 
     <target name="init" depends="corba-src.init">
-        <property name="test.src.dir"                   value="${root.dir}/test/src/share/classes"/>
+        <property name="test.src.dir" value="${root.dir}/test/src/share/classes"/>
 
         <!-- ORB Test directories -->
 
-        <property name="test"                           value="*JUnitTest"/>
-        <property name="test.run.base"                  value="${root.dir}/test/run"/>
-        <property name="test.output"                    value="${test.run.base}/gen"/>
-        <property name="junit.reports"                  value="${test.run.base}/junitreports"/>
-        <property name="test-build.dir"                 location="${root.dir}/test/build"/>
-        <property name="test-classes.dir"               location="${test-build.dir}/classes"/>
-        <property name="test-values1.dir"               location="${test-build.dir}/values1/classes"/>
-        <property name="test-values2.dir"               location="${test-build.dir}/values2/classes"/>
-        <property name="test-gensrc.dir"                location="${test-build.dir}/gensrc"/>
+        <property name="test" value="*JUnitTest"/>
+        <property name="test.run.base" value="${root.dir}/test/run"/>
+        <property name="test.output" value="${test.run.base}/gen"/>
+        <property name="junit.reports" value="${test.run.base}/junitreports"/>
+        <property name="test-build.dir" location="${root.dir}/test/build"/>
+        <property name="test-classes.dir" location="${test-build.dir}/classes"/>
+        <property name="test-values1.dir" location="${test-build.dir}/values1/classes"/>
+        <property name="test-values2.dir" location="${test-build.dir}/values2/classes"/>
+        <property name="test-gensrc.dir" location="${test-build.dir}/gensrc"/>
 
         <mkdir dir="${test-classes.dir}"/>
         <mkdir dir="${test-values1.dir}"/>
@@ -78,13 +78,13 @@
     <target name="compile-tests-main-gen" depends="init">
         <echo message="Compiling all tests"/>
         <mkdir dir="${test-classes.dir}"/>
-        <javac destdir="${test-classes.dir}" 
-                classpathref="test-classpath.master"
-                deprecation="${deprecation}"
-                debug="${javac.debug}" 
-                optimize="${javac.optimize}"
-                fork="true"
-                memoryMaximumSize="512m"> 
+        <javac destdir="${test-classes.dir}"
+               classpathref="test-classpath.master"
+               deprecation="${deprecation}"
+               debug="${javac.debug}"
+               optimize="${javac.optimize}"
+               fork="true"
+               memoryMaximumSize="512m">
             <src path="${test-gensrc.dir}"/>
             <include name="**"/>
 
@@ -134,13 +134,13 @@
 
     <target name="compile-tests-main-nongen" depends="init">
         <echo message="Compiling all tests"/>
-        <javac destdir="${test-classes.dir}" 
-                classpathref="test-classpath.master"
-                deprecation="${deprecation}"
-                debug="${javac.debug}" 
-                optimize="${javac.optimize}"
-                fork="true"
-                memoryMaximumSize="512m"> 
+        <javac destdir="${test-classes.dir}"
+               classpathref="test-classpath.master"
+               deprecation="${deprecation}"
+               debug="${javac.debug}"
+               optimize="${javac.optimize}"
+               fork="true"
+               memoryMaximumSize="512m">
             <src path="${test-gensrc.dir}"/>
             <src path="${test.src.dir}"/>
             <include name="**"/>
@@ -187,22 +187,22 @@
              same classes for testing class evolution.
         -->
         <mkdir dir="${test-values1.dir}"/>
-        <javac destdir="${test-values1.dir}" 
-                classpathref="test-classpath.master"
-                deprecation="${deprecation}"
-                debug="${javac.debug}" 
-                optimize="${javac.optimize}"
-                failonerror="true">
+        <javac destdir="${test-values1.dir}"
+               classpathref="test-classpath.master"
+               deprecation="${deprecation}"
+               debug="${javac.debug}"
+               optimize="${javac.optimize}"
+               failonerror="true">
             <src path="${test.src.dir}/values1"/>
             <include name="**"/>
         </javac>
         <mkdir dir="${test-values2.dir}"/>
-        <javac destdir="${test-values2.dir}" 
-                classpathref="test-classpath.master"
-                deprecation="${deprecation}"
-                debug="${javac.debug}" 
-                optimize="${javac.optimize}"
-                failonerror="true">
+        <javac destdir="${test-values2.dir}"
+               classpathref="test-classpath.master"
+               deprecation="${deprecation}"
+               debug="${javac.debug}"
+               optimize="${javac.optimize}"
+               failonerror="true">
             <src path="${test.src.dir}/values2"/>
             <include name="**"/>
         </javac>
@@ -295,7 +295,7 @@
                 <sysproperty key="junit.report.dir" value="junitreports"/>
                 <classpath>
                     <path refid="test-classpath.master"/>
-                </classpath> 
+                </classpath>
                 <jvmarg line="${debug.args}"/>
                 <formatter type="xml"/>
                 <test-cases/>
@@ -314,15 +314,16 @@
 
         <condition property="debug.args" value="-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,suspend=y" else="">
             <equals arg1="${env.DEBUGGER}" arg2="1"/>
-        </condition> 
+        </condition>
 
-        <condition property="debug.args" value="-Xrunoii intuitive.audit.Audit -port 31900 -pause -noexit -startCPUprofiler:type=instrumentation,precision=micro">
+        <condition property="debug.args"
+                   value="-Xrunoii intuitive.audit.Audit -port 31900 -pause -noexit -startCPUprofiler:type=instrumentation,precision=micro">
             <equals arg1="${env.DEBUGGER}" arg2="2"/>
-        </condition> 
+        </condition>
 
         <condition property="use.dynamic.stub" value="false" else="true">
             <equals arg1="${env.STATIC_STUB}" arg2="1"/>
-        </condition> 
+        </condition>
 
         <condition property="use.codegen.copyobject" value="true" else="false">
             <equals arg1="${env.CODEGEN_COPYOBJECT}" arg2="1"/>
@@ -330,7 +331,7 @@
 
         <mkdir dir="${test.output}"/>
         <mkdir dir="${junit.reports}"/>
-        
+
         <!-- RMI_IIOP_WEB_SERVER is set in Hudson job to guarantee a free port. -->
         <property name="set.http.server.port" value="${env.RMI_IIOP_WEB_SERVER}"/>
 
@@ -400,7 +401,7 @@
         <run-junit-test>
             <test-cases>
                 <batchtest todir="${junit.reports}">
-                  <fileset dir="${test-classes.dir}" includes="**/${test}.class" />
+                    <fileset dir="${test-classes.dir}" includes="**/${test}.class"/>
                 </batchtest>
             </test-cases>
         </run-junit-test>
@@ -485,7 +486,7 @@
         <exclude name="com/sun/corba/ee/spi/orbutil/argparser/*.java"/>
     </patternset>
 
-    
+
     <!-- Superset of subset1-patternset .. subset4-patternset for code coverage report
     -->
     <patternset id="gf.orb.all.classes">
@@ -493,8 +494,8 @@
         <include name="com/sun/org/omg/**/*.class"/>
         <include name="javax/rmi/CORBA/**/*.class"/>
         <include name="org/omg/**/*.class"/>
-    </patternset>    
-        
+    </patternset>
+
     <!-- Superset of subset1-patternset .. subset4-patternset for code coverage report
     -->
     <patternset id="gf.orb.all.sources">

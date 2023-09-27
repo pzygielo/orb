@@ -25,25 +25,24 @@ import java.io.*;
 import java.rmi.*;
 import javax.rmi.*;
 import javax.naming.*;
+
 import org.omg.CORBA.*;
 
 import ClientRequestInfo.*; // hello interface
 
 /**
- * RMI/IIOP implementation.  
+ * RMI/IIOP implementation.
  */
-public class helloRMIIIOP 
-    extends PortableRemoteObject 
-    implements helloIF
-{
+public class helloRMIIIOP
+        extends PortableRemoteObject
+        implements helloIF {
     // Contains the actual implementation of the hello interface.
     private helloDelegate delegate = null;
-    
-    public helloRMIIIOP( PrintStream out ) 
-        throws RemoteException 
-    {
+
+    public helloRMIIIOP(PrintStream out)
+            throws RemoteException {
         super();
-        this.delegate = new helloDelegate( out );
+        this.delegate = new helloDelegate(out);
     }
 
     public helloDelegate getDelegate() {
@@ -53,29 +52,28 @@ public class helloRMIIIOP
     public String sayHello() {
         return delegate.sayHello();
     }
-    
+
     public String saySystemException() {
         return delegate.saySystemException();
     }
 
-    public void sayUserException() 
-        throws ExampleException 
-    {
+    public void sayUserException()
+            throws ExampleException {
         delegate.sayUserException();
     }
-    
+
     public void sayOneway() {
         delegate.sayOneway();
     }
 
-    public String sayArguments( String arg1, int arg2, boolean arg3 ) {
-        return delegate.sayArguments( arg1, arg2, arg3 );
+    public String sayArguments(String arg1, int arg2, boolean arg3) {
+        return delegate.sayArguments(arg1, arg2, arg3);
     }
-    
+
     public void clearInvoked() {
         delegate.clearInvoked();
     }
-    
+
     public boolean wasInvoked() {
         return delegate.wasInvoked();
     }

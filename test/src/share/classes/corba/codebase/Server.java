@@ -25,25 +25,21 @@ import javax.naming.*;
 
 import java.io.*;
 
-public class Server extends PortableRemoteObject implements Tester
-{
+public class Server extends PortableRemoteObject implements Tester {
     public Server() throws java.rmi.RemoteException {
     }
 
-    public void printMessage(String message)
-    {
+    public void printMessage(String message) {
         System.out.println(message);
     }
 
-    public Object requestValue() 
-        throws ClassNotFoundException, InstantiationException, IllegalAccessException
-    {
+    public Object requestValue()
+            throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         Class valueClass = Class.forName("TestValue");
         return valueClass.newInstance();
     }
 
-    public String processValue(Object value)
-    {
+    public String processValue(Object value) {
         Class valueClass = value.getClass();
 
         System.out.println("Received instance of: " + valueClass.getName());
@@ -53,10 +49,9 @@ public class Server extends PortableRemoteObject implements Tester
 
     // This is just helpful for debugging to see whether or not the
     // server has access to these files.
-    public static void tryLoadingClasses()
-    {
+    public static void tryLoadingClasses() {
         System.out.println("java.rmi.server.codebase = "
-                           + System.getProperty("java.rmi.server.codebase"));
+                                   + System.getProperty("java.rmi.server.codebase"));
 
         try {
             System.out.println("Trying to load the stub class");
@@ -83,7 +78,7 @@ public class Server extends PortableRemoteObject implements Tester
         }
     }
 
-    private static InitialContext rootContext ;
+    private static InitialContext rootContext;
 
     public static void main(String[] args) {
         try {

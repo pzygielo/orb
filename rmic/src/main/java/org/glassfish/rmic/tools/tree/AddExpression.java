@@ -19,8 +19,8 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
+import org.glassfish.rmic.tools.java.*;
 
 /**
  * WARNING: The contents of this source file are not part of any
@@ -61,15 +61,19 @@ class AddExpression extends BinaryArithmeticExpression {
     Expression eval(int a, int b) {
         return new IntExpression(where, a + b);
     }
+
     Expression eval(long a, long b) {
         return new LongExpression(where, a + b);
     }
+
     Expression eval(float a, float b) {
         return new FloatExpression(where, a + b);
     }
+
     Expression eval(double a, double b) {
         return new DoubleExpression(where, a + b);
     }
+
     Expression eval(String a, String b) {
         return new StringExpression(where, a + b);
     }
@@ -100,26 +104,26 @@ class AddExpression extends BinaryArithmeticExpression {
      * example if it contains a division by zero, a non-constant
      * subexpression, or a subexpression which "refuses" to evaluate)
      * then return `null' to indicate failure.
-     *
+     * <p>
      * It is anticipated that this method will be called to evaluate
      * concatenations of compile-time constant strings.  The call
      * originates from AddExpression#inlineValue().
-     *
+     * <p>
      * This method does not use associativity to good effect in
      * folding string concatenations.  This is room for improvement.
-     *
+     * <p>
      * -------------
-     *
+     * <p>
      * A bit of history: this method was added because an
      * expression like...
-     *
-     *     "a" + "b" + "c" + "d"
-     *
+     * <p>
+     * "a" + "b" + "c" + "d"
+     * <p>
      * ...was evaluated at compile-time as...
-     *
-     *     (new StringBuffer((new StringBuffer("a")).append("b").toString())).
-     *      append((new StringBuffer("c")).append("d").toString()).toString()
-     *
+     * <p>
+     * (new StringBuffer((new StringBuffer("a")).append("b").toString())).
+     * append((new StringBuffer("c")).append("d").toString()).toString()
+     * <p>
      * Alex Garthwaite, in profiling the memory allocation of the
      * compiler, noticed this and suggested that the method inlineValueSB()
      * be added to evaluate constant string concatenations in a more
@@ -127,15 +131,15 @@ class AddExpression extends BinaryArithmeticExpression {
      * top-down fashion, by accumulating the result in a StringBuffer
      * which is allocated once and passed in as a parameter.  The new
      * evaluation scheme is equivalent to...
-     *
-     *     (new StringBuffer("a")).append("b").append("c").append("d")
-     *                 .toString()
-     *
+     * <p>
+     * (new StringBuffer("a")).append("b").append("c").append("d")
+     * .toString()
+     * <p>
      * ...which is more efficient.  Since then, the code has been modified
      * to fix certain problems.  Now, for example, it can return `null'
      * when it encounters a concatenation which it is not able to
      * evaluate.
-     *
+     * <p>
      * See also Expression#inlineValueSB() and ExprExpression#inlineValueSB().
      */
     protected StringBuffer inlineValueSB(Environment env,
@@ -181,8 +185,8 @@ class AddExpression extends BinaryArithmeticExpression {
      */
     public int costInline(int thresh, Environment env, Context ctx) {
         return (type.isType(TC_CLASS) ? 12 : 1)
-            + left.costInline(thresh, env, ctx)
-            + right.costInline(thresh, env, ctx);
+                + left.costInline(thresh, env, ctx)
+                + right.costInline(thresh, env, ctx);
     }
 
     /**
@@ -200,7 +204,7 @@ class AddExpression extends BinaryArithmeticExpression {
      */
     void codeAppend(Environment env, Context ctx, Assembler asm,
                     ClassDeclaration sbClass, boolean needBuffer)
-        throws ClassNotFound, AmbiguousMember {
+            throws ClassNotFound, AmbiguousMember {
         if (type.isType(TC_CLASS)) {
             left.codeAppend(env, ctx, asm, sbClass, needBuffer);
             right.codeAppend(env, ctx, asm, sbClass, false);
@@ -225,15 +229,15 @@ class AddExpression extends BinaryArithmeticExpression {
                 }
 
                 ClassDeclaration sbClass =
-                    env.getClassDeclaration(idJavaLangStringBuffer);
+                        env.getClassDeclaration(idJavaLangStringBuffer);
                 ClassDefinition sourceClass = ctx.field.getClassDefinition();
                 // Create the string buffer and append to it.
                 codeAppend(env, ctx, asm, sbClass, true);
                 // Convert the string buffer to a string
                 MemberDefinition f =
-                    sbClass.getClassDefinition(env).matchMethod(env,
-                                                                sourceClass,
-                                                                idToString);
+                        sbClass.getClassDefinition(env).matchMethod(env,
+                                                                    sourceClass,
+                                                                    idToString);
                 asm.add(where, opc_invokevirtual, f);
             } catch (ClassNotFound e) {
                 throw new CompilerError(e);

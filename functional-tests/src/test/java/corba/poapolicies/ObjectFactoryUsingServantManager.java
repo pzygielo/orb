@@ -19,7 +19,7 @@
 
 package corba.poapolicies;
 
-import Util.CreationMethods ;
+import Util.CreationMethods;
 
 public class ObjectFactoryUsingServantManager extends BasicObjectFactoryImpl {
     private static int idNum = 0;
@@ -28,7 +28,7 @@ public class ObjectFactoryUsingServantManager extends BasicObjectFactoryImpl {
     public org.omg.CORBA.Object create(String intfName,
                                        String implName,
                                        CreationMethods how) {
-        
+
         String objectId = "ObjectID" + idNum++;
 
         try {

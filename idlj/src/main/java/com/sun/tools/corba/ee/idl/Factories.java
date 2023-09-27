@@ -49,58 +49,62 @@ import com.sun.tools.corba.ee.idl.constExpr.ExprFactory;
  * public static final int _catch = 22;
  * </dl>
  **/
-public class Factories
-{
-  /** Return the implementation of the GenFactory interface.  If this
-      returns null, then the compiler cannot generate anything.
-    * @return {@code} null
-    */
-  public GenFactory genFactory ()
-  {
-    return null;
-  } // genFactory
+public class Factories {
+    /**
+     * Return the implementation of the GenFactory interface.  If this
+     * returns null, then the compiler cannot generate anything.
+     *
+     * @return {@code} null
+     */
+    public GenFactory genFactory() {
+        return null;
+    } // genFactory
 
-  /** Return the implementation of the SymtabFactory interface.  If this
-      returns null, the default symbol table entries will be used.
-    * @return {@link DefaultSymtabFactory}
-    */
-  public com.sun.tools.corba.ee.idl.SymtabFactory symtabFactory ()
-  {
-    return new com.sun.tools.corba.ee.idl.DefaultSymtabFactory();
-  } // symtabFactory
+    /**
+     * Return the implementation of the SymtabFactory interface.  If this
+     * returns null, the default symbol table entries will be used.
+     *
+     * @return {@link DefaultSymtabFactory}
+     */
+    public com.sun.tools.corba.ee.idl.SymtabFactory symtabFactory() {
+        return new com.sun.tools.corba.ee.idl.DefaultSymtabFactory();
+    } // symtabFactory
 
-  /** Return the implementation of the ExprFactory interface.  If this
-      returns null, the default expressions will be used.
-    * @return {@link DefaultSymtabFactory}
-    */
-  public ExprFactory exprFactory ()
-  {
-    return new DefaultExprFactory();
-  } // exprFactory
+    /**
+     * Return the implementation of the ExprFactory interface.  If this
+     * returns null, the default expressions will be used.
+     *
+     * @return {@link DefaultSymtabFactory}
+     */
+    public ExprFactory exprFactory() {
+        return new DefaultExprFactory();
+    } // exprFactory
 
-  /** Return a subclass of the Arguments class.  If this returns null,
-    * the default will be used.
-    * @return a new instance of {@link Arguments}
-    */
-  public com.sun.tools.corba.ee.idl.Arguments arguments ()
-  {
-    return new com.sun.tools.corba.ee.idl.Arguments();
-  } // arguments
+    /**
+     * Return a subclass of the Arguments class.  If this returns null,
+     * the default will be used.
+     *
+     * @return a new instance of {@link Arguments}
+     */
+    public com.sun.tools.corba.ee.idl.Arguments arguments() {
+        return new com.sun.tools.corba.ee.idl.Arguments();
+    } // arguments
 
-  /** Return the list of keywords in the generated language.
-      Note that these keywords may contain the following wildcards:
-      <dl>
-      <dt>`*'
-      <dd>matches zero or more characters
-      <dt>`+'
-      <dd>matches one or more characters
-      <dt>`.'
-      <dd>matches any single character
-      </dl>
-    * @return an array of keywords
-    */
-  public String[] languageKeywords ()
-  {
-    return null;
-  } // languageKeywords
+    /**
+     * Return the list of keywords in the generated language.
+     * Note that these keywords may contain the following wildcards:
+     * <dl>
+     * <dt>`*'
+     * <dd>matches zero or more characters
+     * <dt>`+'
+     * <dd>matches one or more characters
+     * <dt>`.'
+     * <dd>matches any single character
+     * </dl>
+     *
+     * @return an array of keywords
+     */
+    public String[] languageKeywords() {
+        return null;
+    } // languageKeywords
 } // interface Factories

@@ -25,60 +25,55 @@
 package corba.hcks;
 
 import java.rmi.RemoteException;
+
 import org.omg.CORBA.INTERNAL;
 
 //import java.rmi.server.UnicastRemoteObject; // JRMP
 import javax.rmi.PortableRemoteObject;        // IIOP
 
 public class rmiiIServant
-    extends 
+        extends
         //UnicastRemoteObject // JRMP
         PortableRemoteObject  // IIOP
-    implements 
-        rmiiI
-{
+        implements
+        rmiiI {
     public static final String baseMsg = rmiiIServant.class.getName();
 
-    public rmiiIServant ()
-        throws
-            RemoteException 
-    {
+    public rmiiIServant()
+            throws
+            RemoteException {
         super();
     }
 
-    public String sayHello ()
-    {
-        return  C.helloWorld;
+    public String sayHello() {
+        return C.helloWorld;
     }
 
-    public int sendBytes (byte[] x)
-    {
-        if (x == null)
+    public int sendBytes(byte[] x) {
+        if (x == null) {
             return -1;
+        }
         return x.length;
     }
 
-    public Object sendOneObject (Object x)
-        throws
-            rmiiMyException
-    {
+    public Object sendOneObject(Object x)
+            throws
+            rmiiMyException {
         return x;
     }
 
-    public Object sendTwoObjects (Object x, Object y)
-    {
+    public Object sendTwoObjects(Object x, Object y) {
         return x;
     }
 
     // REVISIT
-    public String makeColocatedCallFromServant ()
-        throws
-            RemoteException
-    {
+    public String makeColocatedCallFromServant()
+            throws
+            RemoteException {
         String result;
         try {
-            result = ((rmiiI)this.narrow(this, rmiiIServant.class))
-                .colocatedCallFromServant("A");
+            result = ((rmiiI) this.narrow(this, rmiiIServant.class))
+                    .colocatedCallFromServant("A");
         } catch (Exception e) {
             U.sopUnexpectedException(baseMsg + C.makeColocatedCallFromServant,
                                      e);
@@ -88,27 +83,24 @@ public class rmiiIServant
     }
 
     // REVISIT
-    public String colocatedCallFromServant (String a)
-        throws
+    public String colocatedCallFromServant(String a)
+            throws
             RemoteException,
-            Exception
-    {
+            Exception {
         return "B" + a;
     }
 
-    public String throwThreadDeathInServant (String a)
-        throws
+    public String throwThreadDeathInServant(String a)
+            throws
             RemoteException,
-            ThreadDeath
-    {
+            ThreadDeath {
         U.sop(U.servant(a));
         throw new ThreadDeath();
     }
 
-    public Object returnObjectFromServer (boolean isSerializable)
-        throws
-            RemoteException
-    {
+    public Object returnObjectFromServer(boolean isSerializable)
+            throws
+            RemoteException {
         if (isSerializable) {
             return new SerializableObject();
         } else {

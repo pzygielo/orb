@@ -19,9 +19,9 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
-import org.glassfish.rmic.tools.asm.Label;
+import org.glassfish.rmic.tools.java.Environment;
+
 import java.io.PrintStream;
 import java.util.Hashtable;
 
@@ -98,21 +98,20 @@ class ReturnStatement extends Statement {
                     outerFinallyNode = c.node;
                     break;
                 } else if (c.node.op == FINALLY
-                           && ((CheckContext)c).vsContinue != null) {
+                        && ((CheckContext) c).vsContinue != null) {
                     outerFinallyNode = c.node;
                 }
             }
             if (outerFinallyNode != null) {
                 if (outerFinallyNode.op == FINALLY) {
-                    ((FinallyStatement)outerFinallyNode).needReturnSlot = true;
+                    ((FinallyStatement) outerFinallyNode).needReturnSlot = true;
                 } else {
-                    ((SynchronizedStatement)outerFinallyNode).needReturnSlot = true;
+                    ((SynchronizedStatement) outerFinallyNode).needReturnSlot = true;
                 }
             }
         }
         return DEAD_END;
     }
-
 
     /**
      * Inline
@@ -138,8 +137,8 @@ class ReturnStatement extends Statement {
         Expression e = (expr != null) ? expr.copyInline(ctx) : null;
         if ((!valNeeded) && (e != null)) {
             Statement body[] = {
-                new ExpressionStatement(where, e),
-                new InlineReturnStatement(where, null)
+                    new ExpressionStatement(where, e),
+                    new InlineReturnStatement(where, null)
             };
             return new CompoundStatement(where, body);
         }

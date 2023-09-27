@@ -21,13 +21,12 @@ package corba.dynamicrmiiiop;
 
 import test.Test;
 import corba.framework.*;
+
 import java.util.*;
 
-public class DynamicRmiIIOPTest extends CORBATest
-{
-    protected void doTest() throws Throwable
-    {
-        Controller client = createClient( "corba.dynamicrmiiiop.Client" ) ;
+public class DynamicRmiIIOPTest extends CORBATest {
+    protected void doTest() throws Throwable {
+        Controller client = createClient("corba.dynamicrmiiiop.Client");
 
         client.start();
 

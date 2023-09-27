@@ -19,9 +19,9 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
-import java.io.PrintStream;
+import org.glassfish.rmic.tools.java.Environment;
+
 import java.util.Hashtable;
 
 /**
@@ -68,8 +68,9 @@ class AssignExpression extends BinaryAssignExpression {
      * Inline
      */
     public Expression inlineValue(Environment env, Context ctx) {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation.inlineValue(env, ctx);
+        }
         // Must be 'inlineLHS' here.  But compare with similar case in
         // 'AssignOpExpression' and 'IncDecExpression', which needs 'inlineValue'.
         left = left.inlineLHS(env, ctx);
@@ -84,9 +85,10 @@ class AssignExpression extends BinaryAssignExpression {
      * Create a copy of the expression for method inlining
      */
     public Expression copyInline(Context ctx) {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation.copyInline(ctx);
-        AssignExpression e = (AssignExpression)clone();
+        }
+        AssignExpression e = (AssignExpression) clone();
         e.left = left.copyInline(ctx);
         e.right = right.copyInline(ctx);
         if (updater != null) {
@@ -103,14 +105,14 @@ class AssignExpression extends BinaryAssignExpression {
         return 2 + super.costInline(thresh, env, ctx);
         *----------*/
         return (updater != null)
-            // Cost of rhs expression + cost of access method call.
-            // Access method call cost includes lhs cost.
-            ? right.costInline(thresh, env, ctx) +
-                  updater.costInline(thresh, env, ctx, false)
-            // Cost of rhs expression + cost of lhs expression +
-            // cost of store instruction.
-            : right.costInline(thresh, env, ctx) +
-                  left.costInline(thresh, env, ctx) + 2;
+                // Cost of rhs expression + cost of access method call.
+                // Access method call cost includes lhs cost.
+                ? right.costInline(thresh, env, ctx) +
+                updater.costInline(thresh, env, ctx, false)
+                // Cost of rhs expression + cost of lhs expression +
+                // cost of store instruction.
+                : right.costInline(thresh, env, ctx) +
+                left.costInline(thresh, env, ctx) + 2;
     }
 
     /**

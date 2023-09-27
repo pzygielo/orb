@@ -23,7 +23,7 @@ import java.io.File;
 
 /**
  * This class is used to represent the classes in a package.
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
@@ -50,8 +50,9 @@ class Package {
      * name.
      */
     public Package(ClassPath binaryPath, Identifier pkg) {
-        if (pkg.isInner())
+        if (pkg.isInner()) {
             pkg = Identifier.lookup(pkg.getQualifier(), pkg.getFlatName());
+        }
         this.binaryPath = binaryPath;
         this.pkg = pkg.toString().replace('.', File.separatorChar);
     }
@@ -64,7 +65,7 @@ class Package {
     public boolean classExists(Identifier className) {
         return getBinaryFile(className) != null ||
                 !className.isInner() &&
-               getSourceFile(className) != null;
+                        getSourceFile(className) != null;
     }
 
     /**

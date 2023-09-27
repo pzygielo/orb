@@ -19,8 +19,9 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
+import org.glassfish.rmic.tools.java.*;
+
 import java.io.PrintStream;
 import java.util.Hashtable;
 
@@ -56,7 +57,7 @@ class ThrowStatement extends Statement {
                 }
                 ClassDefinition def = c.getClassDefinition(env);
                 ClassDeclaration throwable =
-                    env.getClassDeclaration(idJavaLangThrowable);
+                        env.getClassDeclaration(idJavaLangThrowable);
                 if (!def.subClassOf(env, throwable)) {
                     env.error(where, "throw.not.throwable", def);
                 }
@@ -86,7 +87,7 @@ class ThrowStatement extends Statement {
      * Create a copy of the statement for method inlining
      */
     public Statement copyInline(Context ctx, boolean valNeeded) {
-        ThrowStatement s = (ThrowStatement)clone();
+        ThrowStatement s = (ThrowStatement) clone();
         s.expr = expr.copyInline(ctx);
         return s;
     }

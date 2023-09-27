@@ -21,10 +21,10 @@
 package rmic;
 
 public interface RemoteOuterRemoteInner extends java.rmi.Remote {
-    
-    public String remoteHello () throws java.rmi.RemoteException;
-    
+
+    public String remoteHello() throws java.rmi.RemoteException;
+
     public interface Inner extends java.rmi.Remote {
-        public String innerRemoteHello () throws java.rmi.RemoteException;
+        public String innerRemoteHello() throws java.rmi.RemoteException;
     }
 }

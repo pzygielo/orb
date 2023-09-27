@@ -27,7 +27,7 @@ import java.util.*;
  * with the same signature.  MethodSets are able to lookup
  * all methods with a given name and the unique method with a given
  * signature (name, args).
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
@@ -40,7 +40,7 @@ class MethodSet {
      * A Map containing Lists of MemberDefinitions.  The Lists
      * contain methods which share the same name.
      */
-    private final Map<Identifier,List<MemberDefinition>> lookupMap;
+    private final Map<Identifier, List<MemberDefinition>> lookupMap;
 
     /**
      * The number of methods stored in the MethodSet.
@@ -73,38 +73,38 @@ class MethodSet {
      * should be already defined.
      */
     public void add(MemberDefinition method) {
-            // Check for late additions.
-            if (frozen) {
-                throw new CompilerError("add()");
-            }
+        // Check for late additions.
+        if (frozen) {
+            throw new CompilerError("add()");
+        }
 
-            // todo: Check for method??
+        // todo: Check for method??
 
-            Identifier name = method.getName();
+        Identifier name = method.getName();
 
-            // Get a List containing all methods of this name.
-            List<MemberDefinition> methodList = lookupMap.get(name);
+        // Get a List containing all methods of this name.
+        List<MemberDefinition> methodList = lookupMap.get(name);
 
-            if (methodList == null) {
-                // There is no method with this name already.
-                // Create a List, and insert it into the hash.
-                methodList = new ArrayList<>();
-                lookupMap.put(name, methodList);
-            }
+        if (methodList == null) {
+            // There is no method with this name already.
+            // Create a List, and insert it into the hash.
+            methodList = new ArrayList<>();
+            lookupMap.put(name, methodList);
+        }
 
-            // Make sure that no method with the same signature has already
-            // been added to the MethodSet.
-            int size = methodList.size();
-            for (int i = 0; i < size; i++) {
-                if ((methodList.get(i))
+        // Make sure that no method with the same signature has already
+        // been added to the MethodSet.
+        int size = methodList.size();
+        for (int i = 0; i < size; i++) {
+            if ((methodList.get(i))
                     .getType().equalArguments(method.getType())) {
-                    throw new CompilerError("duplicate addition");
-                }
+                throw new CompilerError("duplicate addition");
             }
+        }
 
-            // We add the method to the appropriate list.
-            methodList.add(method);
-            count++;
+        // We add the method to the appropriate list.
+        methodList.add(method);
+        count++;
     }
 
     /**
@@ -112,39 +112,39 @@ class MethodSet {
      * with the same signature.
      */
     public void replace(MemberDefinition method) {
-            // Check for late additions.
-            if (frozen) {
-                throw new CompilerError("replace()");
-            }
+        // Check for late additions.
+        if (frozen) {
+            throw new CompilerError("replace()");
+        }
 
-            // todo: Check for method??
+        // todo: Check for method??
 
-            Identifier name = method.getName();
+        Identifier name = method.getName();
 
-            // Get a List containing all methods of this name.
-            List<MemberDefinition> methodList = lookupMap.get(name);
+        // Get a List containing all methods of this name.
+        List<MemberDefinition> methodList = lookupMap.get(name);
 
-            if (methodList == null) {
-                // There is no method with this name already.
-                // Create a List, and insert it into the hash.
-                methodList = new ArrayList<>();
-                lookupMap.put(name, methodList);
-            }
+        if (methodList == null) {
+            // There is no method with this name already.
+            // Create a List, and insert it into the hash.
+            methodList = new ArrayList<>();
+            lookupMap.put(name, methodList);
+        }
 
-            // Replace the element which has the same signature as
-            // `method'.
-            int size = methodList.size();
-            for (int i = 0; i < size; i++) {
-                if ((methodList.get(i))
+        // Replace the element which has the same signature as
+        // `method'.
+        int size = methodList.size();
+        for (int i = 0; i < size; i++) {
+            if ((methodList.get(i))
                     .getType().equalArguments(method.getType())) {
-                    methodList.set(i, method);
-                    return;
-                }
+                methodList.set(i, method);
+                return;
             }
+        }
 
-            // We add the method to the appropriate list.
-            methodList.add(method);
-            count++;
+        // We add the method to the appropriate list.
+        methodList.add(method);
+        count++;
     }
 
     /**
@@ -208,7 +208,7 @@ class MethodSet {
                             return true;
                         } else {
                             throw new
-                                CompilerError("iterator() in MethodSet");
+                                    CompilerError("iterator() in MethodSet");
                         }
                     }
                 }

@@ -22,7 +22,9 @@ package corba.fragment;
 
 import test.Test;
 import corba.framework.*;
+
 import java.util.*;
+
 import com.sun.corba.ee.spi.misc.ORBConstants;
 
 public class FragmentTest extends CORBATest {
@@ -35,8 +37,7 @@ public class FragmentTest extends CORBATest {
     private void printBeginTest(int clientVersion,
                                 int clientStrategy,
                                 int serverVersion,
-                                int serverStrategy)
-    {
+                                int serverStrategy) {
         StringBuilder output = new StringBuilder(80);
 
         // Pleasing aesthetics
@@ -54,8 +55,8 @@ public class FragmentTest extends CORBATest {
         System.out.print(output.toString());
     }
 
-    private String testName(int clientVersion, int clientStrategy, int 
-        serverVersion, int serverStrategy) {
+    private String testName(int clientVersion, int clientStrategy, int
+            serverVersion, int serverStrategy) {
 
         StringBuilder output = new StringBuilder(80);
 
@@ -68,16 +69,14 @@ public class FragmentTest extends CORBATest {
         output.append(GIOP_strategy[serverStrategy]);
         output.append("_server");
 
-        return output.toString() ;
+        return output.toString();
     }
 
-    private void printEndTest(String result)
-    {
+    private void printEndTest(String result) {
         System.out.println(result);
     }
 
-    protected void doTest() throws Throwable  
-    {
+    protected void doTest() throws Throwable {
         int errors = 0;
         int fragmentSize = 1024;
 
@@ -99,30 +98,38 @@ public class FragmentTest extends CORBATest {
                 errors = runTest(errors, client_strategy, i, server_strategy, j);
 
                 if (GIOP_version[j].equals("1.1") && server_strategy == GROW) {
-                    server_strategy = STREAM; j--;
+                    server_strategy = STREAM;
+                    j--;
                 } else if (GIOP_version[j].equals("1.2") && server_strategy == STREAM) {
-                    server_strategy = GROW; j--;
+                    server_strategy = GROW;
+                    j--;
                 }
             }
 
             if (GIOP_version[i].equals("1.1") && client_strategy == GROW) {
-                client_strategy = COLLECT; i--;
+                client_strategy = COLLECT;
+                i--;
             } else if (GIOP_version[i].equals("1.2") && client_strategy == COLLECT) {
-                client_strategy = STREAM; i--;
+                client_strategy = STREAM;
+                i--;
             } else if (GIOP_version[i].equals("1.2") && client_strategy == STREAM) {
-                client_strategy = GROW; i--;
+                client_strategy = GROW;
+                i--;
             }
         }
 
-        System.out.print("      Test result : " );
-        
-        if (errors > 0)
+        System.out.print("      Test result : ");
+
+        if (errors > 0) {
             throw new Exception("Errors detected");
+        }
     }
 
     private int runTest(int errors, int client_strategy, int client_version, int server_strategy, int server_version) throws Exception {
         // skip non-longer support COLLECT strategy tests
-        if (client_strategy == COLLECT || server_strategy == COLLECT) return errors;
+        if (client_strategy == COLLECT || server_strategy == COLLECT) {
+            return errors;
+        }
 
         printBeginTest(client_version, client_strategy, server_version, server_strategy);
         String name = testName(client_version, client_strategy, server_version, server_strategy);
@@ -132,8 +139,8 @@ public class FragmentTest extends CORBATest {
         serverProps.put(ORBConstants.GIOP_11_BUFFMGR, "" + server_strategy);
         serverProps.put(ORBConstants.GIOP_12_BUFFMGR, "" + server_strategy);
 
-        Controller server = createServer("corba.fragment.Server", name );
-        Controller client = createClient("corba.fragment.Client", name );
+        Controller server = createServer("corba.fragment.Server", name);
+        Controller client = createClient("corba.fragment.Client", name);
 
         server.start();
         client.start();
@@ -143,8 +150,7 @@ public class FragmentTest extends CORBATest {
         if (client.exitValue() != Controller.SUCCESS) {
             errors++;
             printEndTest("FAILED, Client exit value = " + client.exitValue());
-        } else
-        if (server.finished()) {
+        } else if (server.finished()) {
             errors++;
             printEndTest("FAILED, Server crashed");
         } else {

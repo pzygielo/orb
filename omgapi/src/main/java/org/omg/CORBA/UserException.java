@@ -25,9 +25,9 @@ package org.omg.CORBA;
  * means that they need to
  * be declared in method signatures.
  *
+ * @version 1.28 09/09/97
  * @see <A href="../../../../guide/idl/jidlExceptions.html">documentation on
  * Java&nbsp;IDL exceptions</A>
- * @version     1.28 09/09/97
  */
 public abstract class UserException extends java.lang.Exception implements org.omg.CORBA.portable.IDLEntity {
 
@@ -44,7 +44,7 @@ public abstract class UserException extends java.lang.Exception implements org.o
      * detail message. This method is called only by subclasses.
      *
      * @param reason a <code>String</code> object giving the reason for this
-     *         exception
+     * exception
      */
     protected UserException(String reason) {
         super(reason);

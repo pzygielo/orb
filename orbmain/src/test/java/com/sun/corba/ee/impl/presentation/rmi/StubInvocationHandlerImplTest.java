@@ -72,7 +72,7 @@ public class StubInvocationHandlerImplTest {
     static class CalledObject extends ObjectImpl {
         private Delegate delegate = createStrictStub(ClientDelegateFake.class, this);
 
-        @SuppressWarnings({"WeakerAccess", "unused"})
+        @SuppressWarnings({ "WeakerAccess", "unused" })
         public void throwException() throws Exception {
             throw new TestException("thrown in test");
         }
@@ -197,7 +197,6 @@ public class StubInvocationHandlerImplTest {
             return useLocalInvocation;
         }
     }
-
 
 }
 

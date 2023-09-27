@@ -19,11 +19,11 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
-import org.glassfish.rmic.tools.asm.Label;
-import org.glassfish.rmic.tools.asm.TryData;
 import org.glassfish.rmic.tools.asm.CatchData;
+import org.glassfish.rmic.tools.asm.TryData;
+import org.glassfish.rmic.tools.java.*;
+
 import java.io.PrintStream;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -56,7 +56,7 @@ class TryStatement extends Statement {
         try {
             vset = reach(env, vset);
             Hashtable<Object, Object> newexp = new Hashtable<>();
-            CheckContext newctx =  new CheckContext(ctx, this);
+            CheckContext newctx = new CheckContext(ctx, this);
 
             // Check 'try' block.  A variable is DA (DU) before the try
             // block if it is DA (DU) before the try statement.
@@ -70,23 +70,23 @@ class TryStatement extends Statement {
             // anywhere within the try block.
             Vset cvs = Vset.firstDAandSecondDU(vset, vs.copy().join(newctx.vsTryExit));
 
-            for (int i = 0 ; i < args.length ; i++) {
+            for (int i = 0; i < args.length; i++) {
                 // A variable is DA (DU) after a try statement if
                 // it is DA (DU) after every catch block.
                 vs = vs.join(args[i].check(env, newctx, cvs.copy(), exp));
             }
 
             // Check that catch statements are actually reached
-            for (int i = 1 ; i < args.length ; i++) {
-                CatchStatement cs = (CatchStatement)args[i];
+            for (int i = 1; i < args.length; i++) {
+                CatchStatement cs = (CatchStatement) args[i];
                 if (cs.field == null) {
                     continue;
                 }
                 Type type = cs.field.getType();
                 ClassDefinition def = env.getClassDefinition(type);
 
-                for (int j = 0 ; j < i ; j++) {
-                    CatchStatement cs2 = (CatchStatement)args[j];
+                for (int j = 0; j < i; j++) {
+                    CatchStatement cs2 = (CatchStatement) args[j];
                     if (cs2.field == null) {
                         continue;
                     }
@@ -103,8 +103,8 @@ class TryStatement extends Statement {
             ClassDeclaration ignore2 = env.getClassDeclaration(idJavaLangRuntimeException);
 
             // Make sure the exception is actually throw in that part of the code
-            for (int i = 0 ; i < args.length ; i++) {
-                CatchStatement cs = (CatchStatement)args[i];
+            for (int i = 0; i < args.length; i++) {
+                CatchStatement cs = (CatchStatement) args[i];
                 if (cs.field == null) {
                     continue;
                 }
@@ -119,21 +119,21 @@ class TryStatement extends Statement {
 
                 // Anyone can throw these!
                 if (def.subClassOf(env, ignore1) || def.superClassOf(env, ignore1) ||
-                    def.subClassOf(env, ignore2) || def.superClassOf(env, ignore2)) {
+                        def.subClassOf(env, ignore2) || def.superClassOf(env, ignore2)) {
                     continue;
                 }
 
                 // Make sure the exception is actually throw in that part of the code
                 boolean ok = false;
-                for (Enumeration<?> e = newexp.keys() ; e.hasMoreElements() ; ) {
-                    ClassDeclaration c = (ClassDeclaration)e.nextElement();
+                for (Enumeration<?> e = newexp.keys(); e.hasMoreElements(); ) {
+                    ClassDeclaration c = (ClassDeclaration) e.nextElement();
                     if (def.superClassOf(env, c) || def.subClassOf(env, c)) {
                         ok = true;
                         break;
                     }
                 }
                 if (!ok && arrayCloneWhere != 0
-                    && def.getName().toString().equals("java.lang.CloneNotSupportedException")) {
+                        && def.getName().toString().equals("java.lang.CloneNotSupportedException")) {
                     env.error(arrayCloneWhere, "warn.array.clone.supported", def.getName());
                 }
 
@@ -143,18 +143,19 @@ class TryStatement extends Statement {
             }
 
             // Only carry over exceptions that are not caught
-            for (Enumeration<?> e = newexp.keys() ; e.hasMoreElements() ; ) {
-                ClassDeclaration c = (ClassDeclaration)e.nextElement();
+            for (Enumeration<?> e = newexp.keys(); e.hasMoreElements(); ) {
+                ClassDeclaration c = (ClassDeclaration) e.nextElement();
                 ClassDefinition def = c.getClassDefinition(env);
                 boolean add = true;
-                for (int i = 0 ; i < args.length ; i++) {
-                    CatchStatement cs = (CatchStatement)args[i];
+                for (int i = 0; i < args.length; i++) {
+                    CatchStatement cs = (CatchStatement) args[i];
                     if (cs.field == null) {
                         continue;
                     }
                     Type type = cs.field.getType();
-                    if (type.isType(TC_ERROR))
+                    if (type.isType(TC_ERROR)) {
                         continue;
+                    }
                     if (def.subClassOf(env, env.getClassDeclaration(type))) {
                         add = false;
                         break;
@@ -189,7 +190,7 @@ class TryStatement extends Statement {
         if (body == null) {
             return null;
         }
-        for (int i = 0 ; i < args.length ; i++) {
+        for (int i = 0; i < args.length; i++) {
             if (args[i] != null) {
                 args[i] = args[i].inline(env, new Context(ctx, this));
             }
@@ -201,12 +202,12 @@ class TryStatement extends Statement {
      * Create a copy of the statement for method inlining
      */
     public Statement copyInline(Context ctx, boolean valNeeded) {
-        TryStatement s = (TryStatement)clone();
+        TryStatement s = (TryStatement) clone();
         if (body != null) {
             s.body = body.copyInline(ctx, valNeeded);
         }
         s.args = new Statement[args.length];
-        for (int i = 0 ; i < args.length ; i++) {
+        for (int i = 0; i < args.length; i++) {
             if (args[i] != null) {
                 s.args[i] = args[i].copyInline(ctx, valNeeded);
             }
@@ -217,7 +218,7 @@ class TryStatement extends Statement {
     /**
      * Compute cost of inlining this statement
      */
-    public int costInline(int thresh, Environment env, Context ctx){
+    public int costInline(int thresh, Environment env, Context ctx) {
 
         // Don't inline methods containing try statements.
         // If the try statement is being inlined in order to
@@ -266,8 +267,8 @@ class TryStatement extends Statement {
         CodeContext newctx = new CodeContext(ctx, this);
 
         TryData td = new TryData();
-        for (int i = 0 ; i < args.length ; i++) {
-            Type t = ((CatchStatement)args[i]).field.getType();
+        for (int i = 0; i < args.length; i++) {
+            Type t = ((CatchStatement) args[i]).field.getType();
             if (t.isType(TC_CLASS)) {
                 td.add(env.getClassDeclaration(t));
             } else {
@@ -282,7 +283,7 @@ class TryStatement extends Statement {
         asm.add(td.getEndLabel());
         asm.add(where, opc_goto, newctx.breakLabel);
 
-        for (int i = 0 ; i < args.length ; i++) {
+        for (int i = 0; i < args.length; i++) {
             CatchData cd = td.getCatch(i);
             asm.add(cd.getLabel());
             args[i].code(env, newctx, asm);
@@ -303,7 +304,7 @@ class TryStatement extends Statement {
         } else {
             out.print("<empty>");
         }
-        for (int i = 0 ; i < args.length ; i++) {
+        for (int i = 0; i < args.length; i++) {
             out.print(" ");
             args[i].print(out, indent);
         }

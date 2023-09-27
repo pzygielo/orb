@@ -19,9 +19,8 @@
 
 package com.sun.corba.ee.impl.encoding;
 
-import com.sun.corba.ee.spi.orb.ORB;
-
 import com.sun.corba.ee.spi.logging.ORBUtilSystemException;
+import com.sun.corba.ee.spi.orb.ORB;
 
 import java.nio.ByteBuffer;
 
@@ -33,19 +32,18 @@ import java.nio.ByteBuffer;
  * BufferManager can then grow the output buffer or
  * use some kind of fragmentation technique.
  */
-public abstract class BufferManagerWrite
-{
-    protected ORB orb ;
+public abstract class BufferManagerWrite {
+    protected ORB orb;
     protected static final ORBUtilSystemException wrapper =
-        ORBUtilSystemException.self ;
+            ORBUtilSystemException.self;
 
-    BufferManagerWrite( ORB orb ) 
-    {
-        this.orb = orb ;
+    BufferManagerWrite(ORB orb) {
+        this.orb = orb;
     }
 
     /**
      * Has the stream sent out any fragments so far?
+     *
      * @return If any fragments have been sent
      */
     public abstract boolean sentFragment();
@@ -53,6 +51,7 @@ public abstract class BufferManagerWrite
     /**
      * Has the entire message been sent?  (Has
      * sendMessage been called?)
+     *
      * @return If {@link #sendMessage()} has been called
      */
     public boolean sentFullMessage() {
@@ -62,6 +61,7 @@ public abstract class BufferManagerWrite
     /**
      * Returns the correct buffer size for this type of
      * buffer manager as set in the ORB.
+     *
      * @return buffer size
      */
     public abstract int getBufferSize();
@@ -73,42 +73,43 @@ public abstract class BufferManagerWrite
 
     /**
      * Returns true if this buffer manager fragments when an overflow occurs.
+     *
      * @return If this buffer manager fragments
      */
     public abstract boolean isFragmentOnOverflow();
 
     /**
      * Called after Stub._invoke (i.e., before complete message has been sent).
-     *
+     * <p>
      * IIOPOutputStream.writeTo called from IIOPOutputStream.invoke
-     *
+     * <p>
      * Case: overflow was never called (bbwi.buf contains complete message).
-     *       Backpatch size field.
-     *       If growing or collecting:
-     *          this.bufQ.put(bbwi).
-     *          this.bufQ.iterate // However, see comment in getBufferQ
-     *             this.connection.send(fragment)
-     *       If streaming:
-     *          this.connection.send(bbwi).
-     *
+     * Backpatch size field.
+     * If growing or collecting:
+     * this.bufQ.put(bbwi).
+     * this.bufQ.iterate // However, see comment in getBufferQ
+     * this.connection.send(fragment)
+     * If streaming:
+     * this.connection.send(bbwi).
+     * <p>
      * Case: overflow was called N times (bbwi.buf contains last buffer).
-     *       If growing or collecting:
-     *          this.bufQ.put(bbwi).
-     *          backpatch size field in first buffer.
-     *          this.bufQ.iterate // However, see comment in getBufferQ
-     *             this.connection.send(fragment)
-     *       If streaming:
-     *          backpatch fragment size field in bbwi.buf.
-     *          Set no more fragments bit.
-     *          this.connection.send(bbwi).
+     * If growing or collecting:
+     * this.bufQ.put(bbwi).
+     * backpatch size field in first buffer.
+     * this.bufQ.iterate // However, see comment in getBufferQ
+     * this.connection.send(fragment)
+     * If streaming:
+     * backpatch fragment size field in bbwi.buf.
+     * Set no more fragments bit.
+     * this.connection.send(bbwi).
      */
 
-    public abstract void sendMessage ();
-
+    public abstract void sendMessage();
 
     /**
      * A reference to the connection level stream will be required when
      * sending fragments.
+     *
      * @param outputObject GIOPObject to use.
      */
     public void setOutputObject(Object outputObject) {
@@ -118,7 +119,7 @@ public abstract class BufferManagerWrite
     /**
      * Close the BufferManagerWrite and do any outstanding cleanup.
      */
-     abstract public void close();
+    abstract public void close();
 
     // XREVISIT - Currently a java.lang.Object during
     // the rip-int-generic transition.  Should eventually

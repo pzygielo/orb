@@ -25,11 +25,9 @@
 package corba.exceptiondetailsc;
 
 public class rmiiException
-    extends
-        Exception
-{
-    public rmiiException(String x)
-    {
+        extends
+        Exception {
+    public rmiiException(String x) {
         super(x);
     }
 }

@@ -22,7 +22,7 @@ package org.glassfish.rmic.tools.java;
 /**
  * This exception is thrown when an unqualified class name
  * is used that can be resolved in more than one way.
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.

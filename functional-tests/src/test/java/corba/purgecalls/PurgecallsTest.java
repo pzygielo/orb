@@ -28,23 +28,21 @@ import corba.framework.Controller;
 import corba.framework.CORBATest;
 
 public class PurgecallsTest
-    extends
-        CORBATest
-{
+        extends
+        CORBATest {
     public static final String thisPackage =
-        PurgecallsTest.class.getPackage().getName();
+            PurgecallsTest.class.getPackage().getName();
 
     protected void doTest()
-        throws
-            Throwable
-    {
-        Controller orbd   = createORBD();
+            throws
+            Throwable {
+        Controller orbd = createORBD();
         orbd.start();
 
         Controller server =
-            createServer(thisPackage + "." + "Server", "Server");
-        Controller client = 
-            createClient(thisPackage + "." + "Client", "Client");
+                createServer(thisPackage + "." + "Server", "Server");
+        Controller client =
+                createClient(thisPackage + "." + "Client", "Client");
 
         server.start();
         client.start();

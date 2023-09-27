@@ -19,26 +19,27 @@
  */
 
 package rmic;
+
 import java.rmi.server.RMIClassLoader;
 
 public class ValueObject implements java.io.Serializable, AbstractObject {
 
     int value;
 
-    public ValueObject (int value) {
+    public ValueObject(int value) {
         this.value = value;
     }
 
-    public boolean isValue () throws java.rmi.RemoteException {
+    public boolean isValue() throws java.rmi.RemoteException {
         return true;
     }
 
-    public int getValue () throws java.rmi.RemoteException {
+    public int getValue() throws java.rmi.RemoteException {
         return value;
     }
 
     public String getCodeBase() throws java.rmi.RemoteException {
-        return RMIClassLoader.getClassAnnotation(getClass());  
+        return RMIClassLoader.getClassAnnotation(getClass());
     }
 }
 

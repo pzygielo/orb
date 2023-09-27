@@ -27,25 +27,25 @@ package org.omg.CORBA;
  * indicate the direction in
  * which a parameter is being passed during a dynamic invocation
  * using the Dynamic Invocation Interface (DII).
- * <P>
+ * <p>
  * The code fragment below shows a typical usage:
  * <PRE>
- *  ORB orb = ORB.init(args, null);
- *  org.omg.CORBA.NamedValue nv = orb.create_named_value(
- *        "argumentIdentifier", myAny, org.omg.CORBA.ARG_INOUT.value);
+ * ORB orb = ORB.init(args, null);
+ * org.omg.CORBA.NamedValue nv = orb.create_named_value(
+ * "argumentIdentifier", myAny, org.omg.CORBA.ARG_INOUT.value);
  * </PRE>
  *
  * @version 1.5, 09/09/97
- * @see     org.omg.CORBA.NamedValue
- * @since   JDK1.2
+ * @see org.omg.CORBA.NamedValue
+ * @since JDK1.2
  */
 public interface ARG_INOUT {
 
-/**
- * The constant value indicating an argument used for both
- * input and output.
- */
-  int value = 3;
+    /**
+     * The constant value indicating an argument used for both
+     * input and output.
+     */
+    int value = 3;
 }
 
 

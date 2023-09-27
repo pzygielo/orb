@@ -36,24 +36,21 @@ import com.sun.corba.ee.spi.misc.ORBConstants;
 import com.sun.corba.ee.impl.misc.ORBUtility;
 
 public class SocketFactoryImpl
-    implements ORBSocketFactory
-{
+        implements ORBSocketFactory {
     private ORB orb;
 
-    public void setORB(ORB orb)
-    {
+    public void setORB(ORB orb) {
         this.orb = orb;
     }
 
-    public ServerSocket createServerSocket(String type, 
+    public ServerSocket createServerSocket(String type,
                                            InetSocketAddress inetSocketAddress)
-        throws IOException
-    {
+            throws IOException {
         ServerSocket serverSocket = null;
         try {
-            if (! Common.timing) {
-                System.out.println(".createServerSocket->: " + type + " " 
-                                   + inetSocketAddress);
+            if (!Common.timing) {
+                System.out.println(".createServerSocket->: " + type + " "
+                                           + inetSocketAddress);
             }
 
             ServerSocketChannel serverSocketChannel = null;
@@ -67,23 +64,22 @@ public class SocketFactoryImpl
             serverSocket.bind(inetSocketAddress);
             return serverSocket;
         } finally {
-            if (! Common.timing) {
-                System.out.println(".createServerSocket<-: " + type + " " 
-                                   + inetSocketAddress + " " + serverSocket);
+            if (!Common.timing) {
+                System.out.println(".createServerSocket<-: " + type + " "
+                                           + inetSocketAddress + " " + serverSocket);
             }
         }
     }
 
-    public Socket createSocket(String type, 
+    public Socket createSocket(String type,
                                InetSocketAddress inetSocketAddress)
-        throws IOException
-    {
+            throws IOException {
         Socket socket = null;
 
         try {
-            if (! Common.timing) {
-                System.out.println(".createSocket->: " + type + " " 
-                                   + inetSocketAddress);
+            if (!Common.timing) {
+                System.out.println(".createSocket->: " + type + " "
+                                           + inetSocketAddress);
             }
 
             SocketChannel socketChannel = null;
@@ -102,9 +98,9 @@ public class SocketFactoryImpl
             return socket;
 
         } finally {
-            if (! Common.timing) {
-                System.out.println(".createSocket<-: " + type + " " 
-                                   + inetSocketAddress + " " + socket);
+            if (!Common.timing) {
+                System.out.println(".createSocket<-: " + type + " "
+                                           + inetSocketAddress + " " + socket);
             }
         }
     }
@@ -112,8 +108,7 @@ public class SocketFactoryImpl
     public void setAcceptedSocketOptions(Acceptor acceptor,
                                          ServerSocket serverSocket,
                                          Socket socket)
-        throws SocketException
-    {
+            throws SocketException {
         // Disable Nagle's algorithm (i.e., always send immediately).
         socket.setTcpNoDelay(true);
     }

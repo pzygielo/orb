@@ -19,24 +19,18 @@
 
 package com.sun.corba.ee.impl.ior;
 
-import org.omg.CORBA.OctetSeqHolder ;
-
-import org.omg.CORBA_2_3.portable.InputStream ;
-import org.omg.CORBA_2_3.portable.OutputStream ;
-
-import com.sun.corba.ee.spi.ior.ObjectId ;
-
-import com.sun.corba.ee.spi.orb.ORB ;
-import com.sun.corba.ee.spi.orb.ORBVersionFactory ;
-
-
-import com.sun.corba.ee.impl.encoding.CDRInputObject ;
+import com.sun.corba.ee.impl.encoding.CDRInputObject;
+import com.sun.corba.ee.spi.ior.ObjectId;
+import com.sun.corba.ee.spi.orb.ORB;
+import com.sun.corba.ee.spi.orb.ORBVersionFactory;
+import org.omg.CORBA.OctetSeqHolder;
+import org.omg.CORBA_2_3.portable.InputStream;
+import org.omg.CORBA_2_3.portable.OutputStream;
 
 /**
- * Handles object keys created by JDK ORBs from before JDK 1.4.0. 
+ * Handles object keys created by JDK ORBs from before JDK 1.4.0.
  */
-public final class OldJIDLObjectKeyTemplate extends OldObjectKeyTemplateBase
-{
+public final class OldJIDLObjectKeyTemplate extends OldObjectKeyTemplateBase {
     /**
      * JDK 1.3.1 FCS did not include a version byte at the end of
      * its object keys.  JDK 1.3.1_01 included the byte with the
@@ -46,13 +40,12 @@ public final class OldJIDLObjectKeyTemplate extends OldObjectKeyTemplateBase
 
     byte patchVersion = OldJIDLObjectKeyTemplate.NULL_PATCH_VERSION;
 
-    public OldJIDLObjectKeyTemplate( ORB orb, int magic, int scid, 
-        InputStream is, OctetSeqHolder osh ) 
-    {
-        this( orb, magic, scid, is );
+    public OldJIDLObjectKeyTemplate(ORB orb, int magic, int scid,
+                                    InputStream is, OctetSeqHolder osh) {
+        this(orb, magic, scid, is);
 
-        osh.value = readObjectKey( is ) ;
-        
+        osh.value = readObjectKey(is);
+
         /**
          * Beginning with JDK 1.3.1_01, a byte was placed at the end of
          * the object key with a value indicating the patch version.
@@ -69,7 +62,7 @@ public final class OldJIDLObjectKeyTemplate extends OldObjectKeyTemplateBase
          * key array length.
          */
         if (magic == ObjectKeyFactoryImpl.JAVAMAGIC_NEW &&
-            osh.value.length > ((CDRInputObject)is).getPosition()) {
+                osh.value.length > ((CDRInputObject) is).getPosition()) {
 
             patchVersion = is.read_octet();
 
@@ -82,28 +75,23 @@ public final class OldJIDLObjectKeyTemplate extends OldObjectKeyTemplateBase
             }
         }
     }
-    
-    
-    public OldJIDLObjectKeyTemplate( ORB orb, int magic, int scid, int serverid) 
-    {
-        super( orb, magic, scid, serverid, JIDL_ORB_ID, JIDL_OAID ) ; 
+
+    public OldJIDLObjectKeyTemplate(ORB orb, int magic, int scid, int serverid) {
+        super(orb, magic, scid, serverid, JIDL_ORB_ID, JIDL_OAID);
     }
-   
-    public OldJIDLObjectKeyTemplate(ORB orb, int magic, int scid, InputStream is) 
-    {
-        this( orb, magic, scid, is.read_long() ) ; 
+
+    public OldJIDLObjectKeyTemplate(ORB orb, int magic, int scid, InputStream is) {
+        this(orb, magic, scid, is.read_long());
     }
-   
-    protected void writeTemplate( OutputStream os )
-    {
-        os.write_long( getMagic() ) ;
-        os.write_long( getSubcontractId() ) ;
-        os.write_long( getServerId() ) ;
+
+    protected void writeTemplate(OutputStream os) {
+        os.write_long(getMagic());
+        os.write_long(getSubcontractId());
+        os.write_long(getServerId());
     }
 
     @Override
-    public void write(ObjectId objectId, OutputStream os) 
-    {
+    public void write(ObjectId objectId, OutputStream os) {
         super.write(objectId, os);
 
         if (patchVersion != OldJIDLObjectKeyTemplate.NULL_PATCH_VERSION) {

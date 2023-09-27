@@ -22,16 +22,21 @@
 
 <html>
 <head>
-  <meta HTTP-EQUIV=CONTENT-TYPE CONTENT="text/html; charset=utf-8">
-  <title>Exceptions in the ValueHandler</title>
+    <meta HTTP-EQUIV=CONTENT-TYPE CONTENT="text/html; charset=utf-8">
+    <title>Exceptions in the ValueHandler</title>
 </head>
 <body text="#000000" bgcolor="#FFFFFF" link="#0000CC" vlink="#000080" alink="#0000CC">
 <center>
-<a href="text0.html">First page</a> <a href="text13.html">Back</a> <a href="text15.html">Continue</a> <a href="text23.html">Last page</a> <a href="serial6pres.html">Overview</a> <a href="img14.html">Graphics</a></center><br>
+    <a href="text0.html">First page</a> <a href="text13.html">Back</a> <a href="text15.html">Continue</a> <a href="text23.html">Last page</a> <a
+        href="serial6pres.html">Overview</a> <a href="img14.html">Graphics</a></center>
+<br>
 <h1>Exceptions in the ValueHandler</h1>
-<ul><li><h2>Very hard to debug</h2></li>
-<li><h2>Since ValueHandler methods don't throw ClassNotFoundException and IOException, we have native code to force these to be thrown even though they're not declared.  There are no initCauses going on down there.</h2></li>
-<li><h2>Logging may help</h2></li>
-<li><h2>If debugging by hand, make sure to look at all output from your test (both sides) to get clues, not just the side you think is affected</h2></li>
-</ul></body>
+<ul>
+    <li><h2>Very hard to debug</h2></li>
+    <li><h2>Since ValueHandler methods don't throw ClassNotFoundException and IOException, we have native code to force these to be thrown even though they're
+        not declared. There are no initCauses going on down there.</h2></li>
+    <li><h2>Logging may help</h2></li>
+    <li><h2>If debugging by hand, make sure to look at all output from your test (both sides) to get clues, not just the side you think is affected</h2></li>
+</ul>
+</body>
 </html>

@@ -27,7 +27,6 @@ package orb.folb;
 import javax.ejb.Remote;
 
 /**
- *
  * @author ken
  */
 @Remote

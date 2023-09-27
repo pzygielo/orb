@@ -19,7 +19,10 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
+import org.glassfish.rmic.tools.java.CompilerError;
+import org.glassfish.rmic.tools.java.Environment;
+import org.glassfish.rmic.tools.java.Type;
+
 import java.io.PrintStream;
 import java.util.Hashtable;
 
@@ -45,7 +48,7 @@ class UnaryExpression extends Expression {
      */
     public Expression order() {
         if (precedence() > right.precedence()) {
-            UnaryExpression e = (UnaryExpression)right;
+            UnaryExpression e = (UnaryExpression) right;
             right = e.right;
             e.right = order();
             return e;
@@ -96,38 +99,44 @@ class UnaryExpression extends Expression {
     Expression eval(int a) {
         return this;
     }
+
     Expression eval(long a) {
         return this;
     }
+
     Expression eval(float a) {
         return this;
     }
+
     Expression eval(double a) {
         return this;
     }
+
     Expression eval(boolean a) {
         return this;
     }
+
     Expression eval(String a) {
         return this;
     }
+
     Expression eval() {
         switch (right.op) {
-          case BYTEVAL:
-          case CHARVAL:
-          case SHORTVAL:
-          case INTVAL:
-            return eval(((IntegerExpression)right).value);
-          case LONGVAL:
-            return eval(((LongExpression)right).value);
-          case FLOATVAL:
-            return eval(((FloatExpression)right).value);
-          case DOUBLEVAL:
-            return eval(((DoubleExpression)right).value);
-          case BOOLEANVAL:
-            return eval(((BooleanExpression)right).value);
-          case STRINGVAL:
-            return eval(((StringExpression)right).value);
+        case BYTEVAL:
+        case CHARVAL:
+        case SHORTVAL:
+        case INTVAL:
+            return eval(((IntegerExpression) right).value);
+        case LONGVAL:
+            return eval(((LongExpression) right).value);
+        case FLOATVAL:
+            return eval(((FloatExpression) right).value);
+        case DOUBLEVAL:
+            return eval(((DoubleExpression) right).value);
+        case BOOLEANVAL:
+            return eval(((BooleanExpression) right).value);
+        case STRINGVAL:
+            return eval(((StringExpression) right).value);
         }
         return this;
     }
@@ -138,6 +147,7 @@ class UnaryExpression extends Expression {
     public Expression inline(Environment env, Context ctx) {
         return right.inline(env, ctx);
     }
+
     public Expression inlineValue(Environment env, Context ctx) {
         right = right.inlineValue(env, ctx);
         try {
@@ -160,7 +170,7 @@ class UnaryExpression extends Expression {
      * Create a copy of the expression for method inlining
      */
     public Expression copyInline(Context ctx) {
-        UnaryExpression e = (UnaryExpression)clone();
+        UnaryExpression e = (UnaryExpression) clone();
         if (right != null) {
             e.right = right.copyInline(ctx);
         }

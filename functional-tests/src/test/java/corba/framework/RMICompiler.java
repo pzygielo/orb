@@ -24,8 +24,7 @@ import java.util.Vector;
 /**
  * Wrapper around calling a real RMIC.
  */
-public class RMICompiler extends Compiler
-{
+public class RMICompiler extends Compiler {
     /**
      * Command line option for specifying the output directory
      */
@@ -34,39 +33,37 @@ public class RMICompiler extends Compiler
     /**
      * Default RMIC class name
      */
-    protected static final String DEFAULT_RMIC_CLASS 
-        = "sun.rmi.rmic.Main";
-    
+    protected static final String DEFAULT_RMIC_CLASS
+            = "sun.rmi.rmic.Main";
+
     /**
      * Returns the class name of the compiler.
      */
-    public String compilerClassName()
-    {
+    public String compilerClassName() {
         return DEFAULT_RMIC_CLASS;
     }
-    
+
     /**
      * Compile the given class files.  Files are given as absolute paths.
      * The text output messages from the compile are placed in files
      * named rmic.out.txt and rmic.err.txt in the
      * given report directory.
      *
-     *@param    files           Absolute paths to class files for compilation
-     *                          (can be null)
-     *@param    arguments       Command line arguments to the compiler
-     *@param    outputDirectory Where the resulting files should go
-     *@param    reportDirectory Where the output/error stream dumps should go
-     *
-     *@exception    Exception   Any error generated during compile or setup,
-     *                          such as abnormal termination
+     * @param files Absolute paths to class files for compilation
+     * (can be null)
+     * @param arguments Command line arguments to the compiler
+     * @param outputDirectory Where the resulting files should go
+     * @param reportDirectory Where the output/error stream dumps should go
+     * @throws Exception Any error generated during compile or setup,
+     * such as abnormal termination
      */
-    public void compile(String files [],
+    public void compile(String files[],
                         Vector arguments,
                         String outputDirectory,
-                        String reportDirectory) throws Exception
-    {
-        if (files == null || files.length == 0)
+                        String reportDirectory) throws Exception {
+        if (files == null || files.length == 0) {
             return;
+        }
 
         Vector args = new Vector(files.length + arguments.size() + 4);
         args.add(OUTPUT_DIR_OPTION);
@@ -74,11 +71,13 @@ public class RMICompiler extends Compiler
         args.add("-classpath");
         args.add(Options.getClasspath());
 
-        if (arguments != null)
+        if (arguments != null) {
             args.addAll(arguments);
+        }
 
-        for(int i = 0; i < files.length; i++)
+        for (int i = 0; i < files.length; i++) {
             args.add(files[i]);
+        }
 
         compileExternally(compilerClassName(),
                           CORBAUtil.toArray(args),

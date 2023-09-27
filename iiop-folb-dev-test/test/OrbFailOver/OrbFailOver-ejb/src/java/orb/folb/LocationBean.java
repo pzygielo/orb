@@ -29,7 +29,6 @@ import java.util.Properties;
 import java.util.Enumeration;
 
 /**
- *
  * @author hv51393
  */
 @Stateless
@@ -49,7 +48,7 @@ public class LocationBean implements LocationBeanRemote {
 
         try {
             String hostName = InetAddress.getLocalHost().getCanonicalHostName();
-            return hostName ;
+            return hostName;
         } catch (Exception e) {
             return null;
         }

@@ -19,7 +19,6 @@
 
 package org.omg.CORBA;
 
-
 /**
  * The Helper for <tt>OctetSeq</tt>.  For more information on
  * Helper files, see <a href="doc-files/generatedfiles.html#helper">

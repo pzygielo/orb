@@ -24,16 +24,15 @@
 
 package corba.acceptorandcontactinfo;
 
-import java.rmi.Remote; 
-import java.rmi.RemoteException; 
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 public interface rmiiI
-    extends 
-        Remote 
-{ 
+        extends
+        Remote {
     String m(String x)
-        throws
-            RemoteException; 
+            throws
+            RemoteException;
 }
 
 // End of file.

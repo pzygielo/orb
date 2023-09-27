@@ -20,8 +20,9 @@
 package org.glassfish.rmic.tools.tree;
 
 import org.glassfish.rmic.tools.java.*;
-import java.io.PrintStream;
+
 import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 
 /**
  * WARNING: The contents of this source file are not part of any

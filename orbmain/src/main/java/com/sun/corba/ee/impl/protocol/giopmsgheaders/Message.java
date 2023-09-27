@@ -19,11 +19,11 @@
 
 package com.sun.corba.ee.impl.protocol.giopmsgheaders;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-
 import com.sun.corba.ee.spi.ior.iiop.GIOPVersion;
 import com.sun.corba.ee.spi.protocol.RequestId;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
 
 /**
  * This is the base interface for different message type interfaces.
@@ -37,7 +37,7 @@ public interface Message {
     // Generic constants
 
     static final int defaultBufferSize = 1024;
-    static final int GIOPBigMagic =    0x47494F50;
+    static final int GIOPBigMagic = 0x47494F50;
     static final int GIOPMessageHeaderLength = 12;
 
     // Other useful constants
@@ -63,18 +63,23 @@ public interface Message {
      * Returns whether the Message supports message fragmenting.
      *
      * @return <code>true</code> if Message supports fragmenting or is
-     *         a message fragment. Otherwise <code>false</code> it does
-     *         not support message fragments.
+     * a message fragment. Otherwise <code>false</code> it does
+     * not support message fragments.
      */
     boolean supportsFragments();
 
     // Accessor methods
 
     GIOPVersion getGIOPVersion();
+
     byte getEncodingVersion();
+
     boolean isLittleEndian();
+
     boolean moreFragmentsToFollow();
+
     int getType();
+
     int getSize();
 
     int getThreadPoolToUse();
@@ -82,6 +87,7 @@ public interface Message {
     // Mutator methods
 
     void read(org.omg.CORBA.portable.InputStream istream);
+
     void write(org.omg.CORBA.portable.OutputStream ostream);
 
     void setSize(ByteBuffer byteBuffer, int size);
@@ -89,12 +95,14 @@ public interface Message {
     FragmentMessage createFragmentMessage();
 
     void callback(MessageHandler handler) throws IOException;
+
     void setEncodingVersion(byte version);
-    
+
     /**
      * Return a Message's CorbaRequestId. Messages which do not support
-     * a request id in the 4 bytes following the 12 byte GIOP message 
+     * a request id in the 4 bytes following the 12 byte GIOP message
      * header shall return an undefined CorbaRequestId.
+     *
      * @return a Message's CorbaRequestId.
      */
     RequestId getCorbaRequestId();

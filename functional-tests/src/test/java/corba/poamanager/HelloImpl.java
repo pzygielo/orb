@@ -21,12 +21,12 @@ package corba.poamanager;
 
 import HelloStuff.HelloPOA;
 
-public class HelloImpl extends HelloPOA
-{
+public class HelloImpl extends HelloPOA {
     public String hi() {
-        try { 
+        try {
             Thread.sleep(10); // to allow interesting threading behavior
-        } catch ( InterruptedException ex ) {}
+        } catch (InterruptedException ex) {
+        }
         return "Welcome, POA";
     }
 }

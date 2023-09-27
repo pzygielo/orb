@@ -21,6 +21,7 @@ package tools.ior;
 
 import java.util.Map;
 import java.io.Serializable;
+
 import org.omg.CORBA.Any;
 import org.omg.IOP.*;
 import org.omg.IOP.CodecFactoryPackage.*;
@@ -30,14 +31,13 @@ import org.omg.IIOP.Version;
  * Interface to provide helpful methods to
  * EncapsHandler implementations.
  */
-public interface Utility
-{
+public interface Utility {
     /**
      * Constants for Codec selection. See getCDREncapsCodec.
      */
-    public Version GIOP_1_0 = new Version((byte)1, (byte)0);
-    public Version GIOP_1_1 = new Version((byte)1, (byte)1);
-    public Version GIOP_1_2 = new Version((byte)1, (byte)2);
+    public Version GIOP_1_0 = new Version((byte) 1, (byte) 0);
+    public Version GIOP_1_1 = new Version((byte) 1, (byte) 1);
+    public Version GIOP_1_2 = new Version((byte) 1, (byte) 2);
 
     /**
      * If writing one's own EncapsHandler, use Codecs to
@@ -46,7 +46,7 @@ public interface Utility
     public CodecFactory getCodecFactory();
 
     public Codec getCDREncapsCodec(Version giopVersion)
-        throws UnknownEncoding;
+            throws UnknownEncoding;
 
     /**
      * Get the ORB instance.  Useful for generating TypeCodes.
@@ -61,7 +61,7 @@ public interface Utility
 
     /**
      * Recursively display the fields of the given Object.
-     *
+     * <p>
      * Breaks apart array types.  All core Java classes (classes
      * with names beginning with "java") are directly printed
      * with toString.

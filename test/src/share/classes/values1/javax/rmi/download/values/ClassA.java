@@ -25,16 +25,16 @@ public class ClassA extends javax.rmi.fvd.ParentClass {
     private static final long serialVersionUID = 123456789L;
 
     private int a;
-        
-    public ClassA(){
+
+    public ClassA() {
         a = 3;
     }
 
-    public long getTotal(){
+    public long getTotal() {
         return super.getTotal() + a;
     }
 
-    public long getOriginalTotal(){
-        return super.getOriginalTotal() +  3;
+    public long getOriginalTotal() {
+        return super.getOriginalTotal() + 3;
     }
 }

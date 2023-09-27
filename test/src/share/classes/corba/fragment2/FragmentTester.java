@@ -19,11 +19,10 @@
 
 package corba.fragment2;
 
-import java.rmi.Remote ;
-import java.rmi.RemoteException ;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 
-public interface FragmentTester extends java.rmi.Remote 
-{
+public interface FragmentTester extends java.rmi.Remote {
     public void verifyTransmission(byte array[])
-        throws RemoteException, BadArrayException;
+            throws RemoteException, BadArrayException;
 }

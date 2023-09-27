@@ -19,7 +19,8 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -52,10 +53,22 @@
                     <sources>
                         <source>
                             <packagePrefixes>
-                                <packagePrefix><type>CSI</type>    <prefix>com.sun.corba.ee.org.omg</prefix></packagePrefix>
-                                <packagePrefix><type>CSIIOP</type> <prefix>com.sun.corba.ee.org.omg</prefix></packagePrefix>
-                                <packagePrefix><type>GSSUP</type>  <prefix>com.sun.corba.ee.org.omg</prefix></packagePrefix>
-                                <packagePrefix><type>IOP</type>    <prefix>org.omg</prefix></packagePrefix>
+                                <packagePrefix>
+                                    <type>CSI</type>
+                                    <prefix>com.sun.corba.ee.org.omg</prefix>
+                                </packagePrefix>
+                                <packagePrefix>
+                                    <type>CSIIOP</type>
+                                    <prefix>com.sun.corba.ee.org.omg</prefix>
+                                </packagePrefix>
+                                <packagePrefix>
+                                    <type>GSSUP</type>
+                                    <prefix>com.sun.corba.ee.org.omg</prefix>
+                                </packagePrefix>
+                                <packagePrefix>
+                                    <type>IOP</type>
+                                    <prefix>org.omg</prefix>
+                                </packagePrefix>
                             </packagePrefixes>
                         </source>
                     </sources>

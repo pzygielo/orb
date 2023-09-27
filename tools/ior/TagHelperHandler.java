@@ -20,6 +20,7 @@
 package tools.ior;
 
 import java.lang.reflect.*;
+
 import org.omg.CORBA.TypeCode;
 import org.omg.CORBA.Any;
 import org.omg.IOP.Codec;
@@ -30,26 +31,25 @@ import org.omg.IOP.Codec;
  * write an EncapsHandler, just specify the helper
  * in the appropriate setup file.
  */
-public class TagHelperHandler implements EncapsHandler
-{
+public class TagHelperHandler implements EncapsHandler {
     private TypeCode typeCode;
     private Method extractMethod;
     private Codec codec;
 
     private static final Class[] EXTRACT_ARG_TYPES
-        = new Class[] { org.omg.CORBA.Any.class };
+            = new Class[] { org.omg.CORBA.Any.class };
 
     // Surely these are already defined somewhere
     private static final Class[] NO_ARG_TYPES = new Class[] {};
     private static final Object[] NO_ARGS = new Object[] {};
 
     public TagHelperHandler(String helperClassName, Codec codec)
-        throws ClassNotFoundException, 
-               IllegalAccessException,
-               IllegalArgumentException,
-               InvocationTargetException,
-               NoSuchMethodException,
-               SecurityException {
+            throws ClassNotFoundException,
+            IllegalAccessException,
+            IllegalArgumentException,
+            InvocationTargetException,
+            NoSuchMethodException,
+            SecurityException {
 
         // This codec was indicated in the setup file, or
         // defaulted to the GIOP 1.0 CDR Encapsulation Codec.
@@ -61,18 +61,18 @@ public class TagHelperHandler implements EncapsHandler
         Class helper = Class.forName(helperClassName);
 
         typeCode
-            = (TypeCode)helper.getDeclaredMethod("type", 
-                                                 NO_ARG_TYPES).invoke(null, 
-                                                                      NO_ARGS);
+                = (TypeCode) helper.getDeclaredMethod("type",
+                                                      NO_ARG_TYPES).invoke(null,
+                                                                           NO_ARGS);
 
         extractMethod
-            = helper.getDeclaredMethod("extract", EXTRACT_ARG_TYPES);
+                = helper.getDeclaredMethod("extract", EXTRACT_ARG_TYPES);
     }
 
     public void display(byte[] data,
                         TextOutputHandler out,
                         Utility util)
-        throws DecodingException {
+            throws DecodingException {
 
         try {
 
@@ -83,7 +83,7 @@ public class TagHelperHandler implements EncapsHandler
 
             // Have the helper extract the desired type from
             // the any.
-            java.lang.Object value = extractMethod.invoke(null, 
+            java.lang.Object value = extractMethod.invoke(null,
                                                           new Object[] { any });
 
             // Recursively display the type via reflection.

@@ -19,8 +19,9 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
+import org.glassfish.rmic.tools.java.Environment;
+import org.glassfish.rmic.tools.java.Type;
 
 /**
  * WARNING: The contents of this source file are not part of any
@@ -50,12 +51,12 @@ class IntegerExpression extends ConstantExpression {
             return super.fitsType(env, ctx, t);
         }
         switch (t.getTypeCode()) {
-          case TC_BYTE:
-            return value == (byte)value;
-          case TC_SHORT:
-            return value == (short)value;
-          case TC_CHAR:
-            return value == (char)value;
+        case TC_BYTE:
+            return value == (byte) value;
+        case TC_SHORT:
+            return value == (short) value;
+        case TC_CHAR:
+            return value == (char) value;
         }
         return super.fitsType(env, ctx, t);
     }

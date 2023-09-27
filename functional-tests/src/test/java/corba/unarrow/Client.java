@@ -26,24 +26,23 @@ import org.omg.CORBA.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-public class Client
-{
+public class Client {
     static Hello helloRef;
     static Bye byeRef;
 
     static void verifyBehavior(String args[]) {
-        try{
+        try {
             // create and initialize the ORB
             ORB orb = ORB.init(args, System.getProperties());
 
             // get the root naming context
-            org.omg.CORBA.Object objRef = 
+            org.omg.CORBA.Object objRef =
                     orb.resolve_initial_references("NameService");
             NamingContext ncRef = NamingContextHelper.narrow(objRef);
-     
+
             // resolve the Object Reference in Naming
             NameComponent nc = new NameComponent("Hello", "");
-            NameComponent path[] = {nc};
+            NameComponent path[] = { nc };
             helloRef = HelloHelper.unchecked_narrow(ncRef.resolve(path));
 
             System.out.println("Using unchecked_narrow obtained a handle on server object: " + helloRef);
@@ -89,7 +88,7 @@ public class Client
                 System.out.println("Success: Getting an org.omg.CORBA.BAD_OPERATION exception !!");
             }
         } catch (Exception e) {
-            System.out.println("ERROR : " + e) ;
+            System.out.println("ERROR : " + e);
             e.printStackTrace(System.out);
             System.exit(1);
         }
@@ -99,17 +98,19 @@ public class Client
         try {
             Method m = helperClass.getDeclaredMethod(methodName, params);
             System.out.println("Success: Verified the method name and parameter types !!");
-            if (m.getReturnType() != returnType)
+            if (m.getReturnType() != returnType) {
                 throw new Exception("Incorrect return type");
-            else
+            } else {
                 System.out.println("Success: Verified the return type " + m.getReturnType());
+            }
             int modifier = m.getModifiers();
-            if (Modifier.isPublic(modifier) && Modifier.isStatic(modifier))
+            if (Modifier.isPublic(modifier) && Modifier.isStatic(modifier)) {
                 System.out.println("Success: Verified the method modifiers !!");
-            else
+            } else {
                 throw new Exception("Method modifiers incorrect");
+            }
         } catch (Exception e) {
-            System.out.println("ERROR : " + e) ;
+            System.out.println("ERROR : " + e);
             e.printStackTrace(System.out);
             System.exit(1);
         }
@@ -129,7 +130,7 @@ public class Client
             }
             System.out.println("Success: Method count for " + methodName + " verified !!");
         } catch (Exception e) {
-            System.out.println("ERROR : " + e) ;
+            System.out.println("ERROR : " + e);
             e.printStackTrace(System.out);
             System.exit(1);
         }
@@ -137,19 +138,18 @@ public class Client
 
     static void verifyMethodSignatures() {
 
-
         // In this test we will verify the method signatures of the
         // Helper classes generated for the interfaces defined in hello.idl
-        
+
         //
         // Foo is an abtract interface so the following method should exist
         // in the Helper class:
         // 
         // public static <typename> unchecked_narrow( java.lang.Object obj) {...}
         // 
-        
+
         verifyMethodExists(corba.unarrow.FooHelper.class, "unchecked_narrow",
-                new Class[]{java.lang.Object.class}, corba.unarrow.Foo.class);
+                           new Class[] { java.lang.Object.class }, corba.unarrow.Foo.class);
 
         verifyMethodCount(corba.unarrow.FooHelper.class, "unchecked_narrow", 1);
 
@@ -161,13 +161,12 @@ public class Client
         //
         // public static <typename> unchecked_narrow( java.lang.Object obj) {...}
         //
-        
 
         verifyMethodExists(corba.unarrow.BarHelper.class, "unchecked_narrow",
-                new Class[]{java.lang.Object.class}, corba.unarrow.Bar.class);
+                           new Class[] { java.lang.Object.class }, corba.unarrow.Bar.class);
 
         verifyMethodExists(corba.unarrow.BarHelper.class, "unchecked_narrow",
-                new Class[]{org.omg.CORBA.Object.class}, corba.unarrow.Bar.class);
+                           new Class[] { org.omg.CORBA.Object.class }, corba.unarrow.Bar.class);
 
         verifyMethodCount(corba.unarrow.FooHelper.class, "unchecked_narrow", 2);
 
@@ -179,14 +178,13 @@ public class Client
         //
 
         verifyMethodExists(corba.unarrow.HelloHelper.class, "unchecked_narrow",
-                new Class[]{org.omg.CORBA.Object.class}, corba.unarrow.Hello.class);
+                           new Class[] { org.omg.CORBA.Object.class }, corba.unarrow.Hello.class);
 
         verifyMethodCount(corba.unarrow.FooHelper.class, "unchecked_narrow", 1);
 
     }
 
-    public static void main(String args[])
-    {
+    public static void main(String args[]) {
         verifyBehavior(args);
         verifyMethodSignatures();
     }

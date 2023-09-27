@@ -19,8 +19,9 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
+import org.glassfish.rmic.tools.java.Environment;
+
 import java.io.PrintStream;
 import java.util.Hashtable;
 
@@ -64,7 +65,7 @@ class ExpressionStatement extends Statement {
      * Create a copy of the statement for method inlining
      */
     public Statement copyInline(Context ctx, boolean valNeeded) {
-        ExpressionStatement s = (ExpressionStatement)clone();
+        ExpressionStatement s = (ExpressionStatement) clone();
         s.expr = expr.copyInline(ctx);
         return s;
     }

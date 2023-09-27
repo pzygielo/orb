@@ -21,12 +21,11 @@ package corba.poamanager;
 
 import test.Test;
 import corba.framework.*;
+
 import java.util.*;
 
-public class POAManagerTest extends CORBATest
-{
-    protected void doTest() throws Throwable
-    {
+public class POAManagerTest extends CORBATest {
+    protected void doTest() throws Throwable {
         Controller orbd = createORBD();
         Controller server = createServer("corba.poamanager.HelloServer");
         Controller client = createClient("corba.poamanager.HelloClient");

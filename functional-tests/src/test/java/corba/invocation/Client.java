@@ -22,6 +22,7 @@ package corba.invocation;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.Object;
 import org.omg.CORBA.SystemException;
+
 import java.util.*;
 
 import com.sun.corba.ee.spi.logging.ORBUtilSystemException;
@@ -31,7 +32,7 @@ public class Client implements Runnable {
 
     private String[] args;
     private static final ORBUtilSystemException wrapper =
-        ORBUtilSystemException.self ;
+            ORBUtilSystemException.self;
 
     public Client(String[] args) {
         this.args = args;
@@ -45,23 +46,23 @@ public class Client implements Runnable {
 
         try {
 
-            Properties props = new Properties() ;
+            Properties props = new Properties();
             //props.put("com.sun.corba.ee.ORBDebug", "transport,subcontract");
             props.setProperty(ORBConstants.TRANSPORT_TCP_CONNECT_TIMEOUTS_PROPERTY, "250:1000:100");
             ORB orb = ORB.init(args, props);
 
             String corbalocURL =
-                System.getProperty(InvocationTest.URL_PROPERTY);
+                    System.getProperty(InvocationTest.URL_PROPERTY);
 
             Object obj = orb.string_to_object(corbalocURL);
 
             if (obj == null) {
                 throw new RuntimeException("string_to_object(" +
-                                           corbalocURL + ")");
+                                                   corbalocURL + ")");
             }
 
             try {
-                Hello helloRef = HelloHelper.narrow( obj );
+                Hello helloRef = HelloHelper.narrow(obj);
 
                 String msg = "FAILURE: call incorrectly succeeded";
                 System.out.println("------------------------------------");
@@ -71,12 +72,11 @@ public class Client implements Runnable {
 
             } catch (org.omg.CORBA.COMM_FAILURE e) {
                 SystemException connectException =
-                    wrapper.connectFailure( new RuntimeException(),
-                        "foo", "bar", "baz");
+                        wrapper.connectFailure(new RuntimeException(),
+                                               "foo", "bar", "baz");
                 if (e.getClass().isInstance(connectException)
-                    && e.minor == connectException.minor
-                    && e.completed == connectException.completed)
-                {
+                        && e.minor == connectException.minor
+                        && e.completed == connectException.completed) {
                     System.out.println("------------------------------------");
                     System.out.println("SUCCESS");
                     System.out.println("------------------------------------");
@@ -85,16 +85,16 @@ public class Client implements Runnable {
                     System.out.println("FAILURE");
                     System.out.println("------------------------------------");
                     e.printStackTrace(System.out);
-                    RuntimeException rte = 
-                        new RuntimeException("Incorrect exception");
+                    RuntimeException rte =
+                            new RuntimeException("Incorrect exception");
                     rte.initCause(e);
                     throw rte;
                 }
             }
 
         } catch (Exception e) {
-             e.printStackTrace(System.err);
-             System.exit(1);
+            e.printStackTrace(System.err);
+            System.exit(1);
         }
     }
 }

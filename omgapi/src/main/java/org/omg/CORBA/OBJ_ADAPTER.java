@@ -20,21 +20,21 @@
 package org.omg.CORBA;
 
 /**
- * This exception typically indicates an administrative mismatch, for 
- * example, a server may have made an attempt to register itself with 
- * an implementation repository under a name that is already in use, 
+ * This exception typically indicates an administrative mismatch, for
+ * example, a server may have made an attempt to register itself with
+ * an implementation repository under a name that is already in use,
  * or is unknown to the repository. <P>
  * It contains a minor code, which gives more detailed information about
  * what caused the exception, and a completion status. It may also contain
  * a string describing the exception.
- * <P>
+ * <p>
  * See the section <A href="../../../../guide/idl/jidlExceptions.html#minorcodemeanings">Minor
  * Code Meanings</A> to see the minor codes for this exception.
  *
+ * @version 1.17, 09/09/97
  * @see <A href="../../../../guide/idl/jidlExceptions.html">documentation on
  * Java&nbsp;IDL exceptions</A>
- * @version     1.17, 09/09/97
- * @since       JDK1.2
+ * @since JDK1.2
  */
 
 public final class OBJ_ADAPTER extends SystemException {
@@ -50,6 +50,7 @@ public final class OBJ_ADAPTER extends SystemException {
     /**
      * Constructs an <code>OBJ_ADAPTER</code> exception with the specified description,
      * a minor code of 0, and a completion state of COMPLETED_NO.
+     *
      * @param s the String containing a description message
      */
     public OBJ_ADAPTER(String s) {
@@ -59,6 +60,7 @@ public final class OBJ_ADAPTER extends SystemException {
     /**
      * Constructs an <code>OBJ_ADAPTER</code> exception with the specified
      * minor code and completion status.
+     *
      * @param minor the minor code
      * @param completed the completion status
      */
@@ -69,6 +71,7 @@ public final class OBJ_ADAPTER extends SystemException {
     /**
      * Constructs an <code>OBJ_ADAPTER</code> exception with the specified description
      * message, minor code, and completion status.
+     *
      * @param s the String containing a description message
      * @param minor the minor code
      * @param completed the completion status

@@ -30,11 +30,7 @@ package com.sun.tools.corba.ee.idl.toJavaPortable;
 // -D62310   <klr> Fix declaration of interfaces extending abstract intf.
 // -D62023   <klr> Move const definitions back from operations to signature.
 
-import com.sun.tools.corba.ee.idl.ConstEntry;
-import com.sun.tools.corba.ee.idl.GenFileStream;
-import com.sun.tools.corba.ee.idl.InterfaceEntry;
-import com.sun.tools.corba.ee.idl.MethodEntry;
-import com.sun.tools.corba.ee.idl.SymtabEntry;
+import com.sun.tools.corba.ee.idl.*;
 
 import java.io.PrintWriter;
 import java.util.Enumeration;
@@ -43,356 +39,347 @@ import java.util.Hashtable;
 /**
  *
  **/
-public class InterfaceGen implements com.sun.tools.corba.ee.idl.InterfaceGen, JavaGenerator
-{
-  /**
-   * Public zero-argument constructor.
-   **/
-  public InterfaceGen ()
-  {
-    //emit = ((Arguments)Compile.compiler.arguments).emit;
-    //factories = (Factories)Compile.compiler.factories ();
-  } // ctor
+public class InterfaceGen implements com.sun.tools.corba.ee.idl.InterfaceGen, JavaGenerator {
+    /**
+     * Public zero-argument constructor.
+     **/
+    public InterfaceGen() {
+        //emit = ((Arguments)Compile.compiler.arguments).emit;
+        //factories = (Factories)Compile.compiler.factories ();
+    } // ctor
 
-  /**
-   * Generate the interface and all the files associated with it.
-   * Provides general algorithm for binding generation:
-   * 1.) Initialize symbol table and symbol table entry members, common to all generators.
-   * 2.) Generate the skeleton if required by calling generateSkeletn ()
-   * 3.) Generate the holder by calling generateHolder ()
-   * 4.) Generate the helper by calling generateHelper ()
-   * 5.) Generate the stub if required by calling generateStub ()
-   * 6.) Generate the interface by calling generateInterface ()
-   **/
-  public void generate (Hashtable symbolTable, InterfaceEntry i, PrintWriter stream)
-  {
-    if (!isPseudo(i))
-    {
-      this.symbolTable = symbolTable;
-      this.i           = i;
-      init ();
+    /**
+     * Generate the interface and all the files associated with it.
+     * Provides general algorithm for binding generation:
+     * 1.) Initialize symbol table and symbol table entry members, common to all generators.
+     * 2.) Generate the skeleton if required by calling generateSkeletn ()
+     * 3.) Generate the holder by calling generateHolder ()
+     * 4.) Generate the helper by calling generateHelper ()
+     * 5.) Generate the stub if required by calling generateStub ()
+     * 6.) Generate the interface by calling generateInterface ()
+     **/
+    public void generate(Hashtable symbolTable, InterfaceEntry i, PrintWriter stream) {
+        if (!isPseudo(i)) {
+            this.symbolTable = symbolTable;
+            this.i = i;
+            init();
 
-      // for sun_local pragma, just generate the signature and operations interfaces
-      // for sun_localservant pragma, generate the Local Stubs, and Skel, should not
-      // have _invoke defined.
-      // for local (is_local()) case, generate only Helpers and Holder, where they
-      // have been modified to throw appropriate exceptions for read and write, and
-      // narrow is modified to not invoke _is_a
+            // for sun_local pragma, just generate the signature and operations interfaces
+            // for sun_localservant pragma, generate the Local Stubs, and Skel, should not
+            // have _invoke defined.
+            // for local (is_local()) case, generate only Helpers and Holder, where they
+            // have been modified to throw appropriate exceptions for read and write, and
+            // narrow is modified to not invoke _is_a
 
-      if (! (i.isLocalSignature())) {
-          // generate the stubs and skeletons for non-local interfaces
-          if (! (i.isLocal())) {
-              // for local servant case just generate the skeleton, but
-              // for others generate the stubs also
-              generateSkeleton ();
+            if (!(i.isLocalSignature())) {
+                // generate the stubs and skeletons for non-local interfaces
+                if (!(i.isLocal())) {
+                    // for local servant case just generate the skeleton, but
+                    // for others generate the stubs also
+                    generateSkeleton();
 
-              // _REVISIT_, Whenever there is time restructure the code to
-              // encapsulate stub and skeleton generation.
+                    // _REVISIT_, Whenever there is time restructure the code to
+                    // encapsulate stub and skeleton generation.
 
-              // If the option is -fallTie then generate the Tie class first
-              // and then generate the ImplBase class to make the generation
-              // complete for the Hierarchy.
-              com.sun.tools.corba.ee.idl.toJavaPortable.Arguments theArguments = (com.sun.tools.corba.ee.idl.toJavaPortable.Arguments) com.sun.tools.corba.ee.idl.toJavaPortable.Compile.compiler.arguments;
-              if( (theArguments.TIEServer == true )
-                &&(theArguments.emit == theArguments.All ) ) 
-              {
-                  theArguments.TIEServer = false;
-                  // Generate the ImplBase class 
-                  generateSkeleton (); 
-                  // Revert in case file contains multiple interfaces
-                  theArguments.TIEServer = true;
-              }
-              generateStub ();
-          }
-          generateHolder ();
-          generateHelper ();
-      }
-      intfType = SIGNATURE;
-      generateInterface ();
-      intfType = OPERATIONS;
-      generateInterface ();
-      intfType = 0;
-    }
-  } // generate
+                    // If the option is -fallTie then generate the Tie class first
+                    // and then generate the ImplBase class to make the generation
+                    // complete for the Hierarchy.
+                    com.sun.tools.corba.ee.idl.toJavaPortable.Arguments theArguments = (com.sun.tools.corba.ee.idl.toJavaPortable.Arguments) com.sun.tools.corba.ee.idl.toJavaPortable.Compile.compiler.arguments;
+                    if ((theArguments.TIEServer == true)
+                            && (theArguments.emit == theArguments.All)) {
+                        theArguments.TIEServer = false;
+                        // Generate the ImplBase class
+                        generateSkeleton();
+                        // Revert in case file contains multiple interfaces
+                        theArguments.TIEServer = true;
+                    }
+                    generateStub();
+                }
+                generateHolder();
+                generateHelper();
+            }
+            intfType = SIGNATURE;
+            generateInterface();
+            intfType = OPERATIONS;
+            generateInterface();
+            intfType = 0;
+        }
+    } // generate
 
-  /**
-   * Initialize members unique to this generator.
-   **/
-  protected void init ()
-  {
-    emit = ((com.sun.tools.corba.ee.idl.toJavaPortable.Arguments) com.sun.tools.corba.ee.idl.toJavaPortable.Compile.compiler.arguments).emit;
-    factories = (com.sun.tools.corba.ee.idl.toJavaPortable.Factories) com.sun.tools.corba.ee.idl.toJavaPortable.Compile.compiler.factories ();
-  } // init
+    /**
+     * Initialize members unique to this generator.
+     **/
+    protected void init() {
+        emit = ((com.sun.tools.corba.ee.idl.toJavaPortable.Arguments) com.sun.tools.corba.ee.idl.toJavaPortable.Compile.compiler.arguments).emit;
+        factories = (com.sun.tools.corba.ee.idl.toJavaPortable.Factories) com.sun.tools.corba.ee.idl.toJavaPortable.Compile.compiler.factories();
+    } // init
 
-  /**
-   * Generate a Skeleton when the user does not want just the client-side code.
-   **/
-  protected void generateSkeleton ()
-  {
+    /**
+     * Generate a Skeleton when the user does not want just the client-side code.
+     **/
+    protected void generateSkeleton() {
+        // <f46082.51> Remove -stateful feature.
+        // The Skeleton is generated only when the user doesn't want
+        // JUST the client code OR when the interface is stateful
+        //if (emit != Arguments.Client || i.state () != null)
+        //  factories.skeleton ().generate (symbolTable, i);
+        if (emit != com.sun.tools.corba.ee.idl.toJavaPortable.Arguments.Client) {
+            factories.skeleton().generate(symbolTable, i);
+        }
+    } // generateSkeleton
+
+    /**
+     * Generate a Stub when the user does not want just the server-side code.
+     **/
+    protected void generateStub() {
+        // <klr> According to Simon on 10/28/98, we should generate stubs for
+        // abstract interfaces too.
+        if (emit != com.sun.tools.corba.ee.idl.toJavaPortable.Arguments.Server /* && !i.isAbstract () */) {
+            factories.stub().generate(symbolTable, i);
+        }
+    } // generateStub
+
+    /**
+     * Generate a Helper when the user does not want just the server-side code.
+     **/
+    protected void generateHelper() {
+        if (emit != com.sun.tools.corba.ee.idl.toJavaPortable.Arguments.Server) {
+            factories.helper().generate(symbolTable, i);
+        }
+    } // generateHelper
+
+    /**
+     * Generate a Holder when the user does not want just the server-side code.
+     **/
+    protected void generateHolder() {
+        if (emit != com.sun.tools.corba.ee.idl.toJavaPortable.Arguments.Server) {
+            factories.holder().generate(symbolTable, i);
+        }
+    } // generateHolder
+
+    /**
+     * Generate the interface. Provides general algorithm for binding generation:
+     * 1.) Initialize members unique to this generator. - init ()
+     * 2.) Open print stream - openStream ()
+     * 3.) Write class heading (package, prologue, class statement, open curly - writeHeading ()
+     * 4.) Write class body (member data and methods) - write*Body ()
+     * 5.) Write class closing (close curly) - writeClosing ()
+     * 6.) Close the print stream - closeStream ()
+     * <p>
+     * For CORBA 2.3, interfaces are mapped to Operations and Signature
+     * interfaces. The Operations interface contains the method definitions.
+     * The Signature interface extends the Operations interface and adds
+     * CORBA::Object.
+     **/
+    private void generateInterface() {
+        init();
+        openStream();
+        if (stream == null) {
+            return;
+        }
+        writeHeading();
+        if (intfType == OPERATIONS) {
+            writeOperationsBody();
+        }
+        if (intfType == SIGNATURE) {
+            writeSignatureBody();
+        }
+        writeClosing();
+        closeStream();
+    } // generateInterface
+
+    /**
+     *
+     **/
+    protected void openStream() {
+        if (i.isAbstract() || intfType == SIGNATURE) {
+            stream = com.sun.tools.corba.ee.idl.toJavaPortable.Util.stream(i, ".java");
+        } else if (intfType == OPERATIONS) {
+            stream = com.sun.tools.corba.ee.idl.toJavaPortable.Util.stream(i, "Operations.java");
+        }
+    } // openStream
+
+    /**
+     *
+     **/
+    protected void writeHeading() {
+        com.sun.tools.corba.ee.idl.toJavaPortable.Util.writePackage(stream, i, com.sun.tools.corba.ee.idl.toJavaPortable.Util.TypeFile);
+        com.sun.tools.corba.ee.idl.toJavaPortable.Util.writeProlog(stream, ((GenFileStream) stream).name());
+
+        // Transfer interface comment to target <31jul1997>.
+        if (i.comment() != null) {
+            i.comment().generate("", stream);
+        }
+
+        String className = i.name();
+        //  if (((Arguments)Compile.compiler.arguments).TIEServer)
+        //  {
+        //    // For the delegate model, don't make interface a subclass of CORBA.Object
+        //    stream.print ("public interface " + className);
+        //    boolean firstTime = true;
+        //    for (int ii = 0; ii < i.derivedFrom ().size (); ++ii)
+        //    {
+        //      SymtabEntry parent = (SymtabEntry)i.derivedFrom ().elementAt (ii);
+        //      if (!parent.fullName ().equals ("org/omg/CORBA/Object"))
+        //      {
+        //        if (firstTime)
+        //        {
+        //          firstTime = false;
+        //          stream.print (" extends ");
+        //        }
+        //        else
+        //          stream.print (", ");
+        //        stream.print (Util.javaName (parent));
+        //      }
+        //    }
+        //    if (i.derivedFrom ().size () > 0)
+        //      stream.print (", ");
+        //    stream.print ("org.omg.CORBA.portable.IDLEntity ");
+        //  }
+        //
+        //  else
+        //  {
+        if (intfType == SIGNATURE) {
+            writeSignatureHeading();
+        } else if (intfType == OPERATIONS) {
+            writeOperationsHeading();
+        }
+        //  }
+
+        stream.println();
+        stream.println('{');
+    } // writeHeading
+
+    /**
+     *
+     **/
+    protected void writeSignatureHeading() {
+        String className = i.name();
+        stream.print("public interface " + className + " extends " + className + "Operations, ");
+        boolean firstTime = true;
+        boolean hasNonAbstractParent = false; // <d62310-klr>
+        for (int k = 0; k < i.derivedFrom().size(); ++k) {
+            if (firstTime) {
+                firstTime = false;
+            } else {
+                stream.print(", ");
+            }
+            InterfaceEntry parent = (InterfaceEntry) i.derivedFrom().elementAt(k);
+            stream.print(com.sun.tools.corba.ee.idl.toJavaPortable.Util.javaName(parent));
+            if (!parent.isAbstract()) // <d62310-klr>
+            {
+                hasNonAbstractParent = true; // <d62310-klr>
+            }
+        }
+        // <d62310-klr> - begin
+        // If this interface extends only abstract interfaces,
+        // it should extend both org.omg.CORBA.Object and IDLEntity.
+        if (!hasNonAbstractParent) {
+            stream.print(", org.omg.CORBA.Object, org.omg.CORBA.portable.IDLEntity ");
+        } else {
+            // <d62310-klr> - end
+            // extends IDLEntity if there's only one default parent - CORBA.Object
+            if (i.derivedFrom().size() == 1) {
+                stream.print(", org.omg.CORBA.portable.IDLEntity ");
+            }
+        }
+    } // writeSignatureHeading
+
+    /**
+     *
+     **/
+    protected void writeOperationsHeading() {
+        stream.print("public interface " + i.name());
+        if (!i.isAbstract()) {
+            stream.print("Operations ");
+        } else {
+            // <d60929> - base abstract interfaces extend AbstractBase
+            // changed to IDLEntity by SCN per latest spec...
+            if (i.derivedFrom().isEmpty()) {
+                stream.print(" extends org.omg.CORBA.portable.IDLEntity");
+            }
+        }
+
+        boolean firstTime = true;
+        for (int k = 0; k < i.derivedFrom().size(); ++k) {
+            InterfaceEntry parent = (InterfaceEntry) i.derivedFrom().elementAt(k);
+            String parentName = com.sun.tools.corba.ee.idl.toJavaPortable.Util.javaName(parent);
+
+            // ignore the default parent - CORBA.Object
+            if (parentName.equals("org.omg.CORBA.Object")) {
+                continue;
+            }
+
+            if (firstTime) {
+                firstTime = false;
+                stream.print(" extends ");
+            } else {
+                stream.print(", ");
+            }
+
+            // Don't append suffix Operations to the parents of abstract interface
+            // or to the abstract parents of regular interface
+            if (parent.isAbstract() || i.isAbstract()) {
+                stream.print(parentName);
+            } else {
+                stream.print(parentName + "Operations");
+            }
+        }
+    } // writeOperationsHeading
+
+    /**
+     *
+     **/
+    protected void writeOperationsBody() {
+        // Generate everything but constants
+        Enumeration<SymtabEntry> e = i.contained().elements();
+        while (e.hasMoreElements()) {
+            SymtabEntry contained = e.nextElement();
+            if (contained instanceof MethodEntry) {
+                MethodEntry element = (MethodEntry) contained;
+                ((com.sun.tools.corba.ee.idl.toJavaPortable.MethodGen) element.generator()).interfaceMethod(symbolTable, element, stream);
+            } else if (!(contained instanceof ConstEntry)) {
+                contained.generate(symbolTable, stream);
+            }
+        }
+    } // writeOperationsBody
+
+    /**
+     *
+     **/
+    protected void writeSignatureBody() {
+        // Generate only constants
+        Enumeration<SymtabEntry> e = i.contained().elements();
+        while (e.hasMoreElements()) {
+            SymtabEntry contained = e.nextElement();
+            if (contained instanceof ConstEntry) {
+                contained.generate(symbolTable, stream);
+            }
+        }
+    } // writeSignatureBody
+
+    /**
+     *
+     **/
+    protected void writeClosing() {
+        String intfName = i.name();
+        if (!i.isAbstract() && intfType == OPERATIONS) {
+            intfName = intfName + "Operations";
+        }
+        stream.println("} // interface " + intfName);
+    } // writeClosing
+
+    /**
+     *
+     **/
+    protected void closeStream() {
+        stream.close();
+    } // closeStream
+
+    ///////////////
+    // From JavaGenerator
+
     // <f46082.51> Remove -stateful feature.
-    // The Skeleton is generated only when the user doesn't want
-    // JUST the client code OR when the interface is stateful
-    //if (emit != Arguments.Client || i.state () != null)
-    //  factories.skeleton ().generate (symbolTable, i);
-    if (emit != com.sun.tools.corba.ee.idl.toJavaPortable.Arguments.Client)
-      factories.skeleton ().generate (symbolTable, i);
-  } // generateSkeleton
-
-  /**
-   * Generate a Stub when the user does not want just the server-side code.
-   **/
-  protected void generateStub ()
-  {
-    // <klr> According to Simon on 10/28/98, we should generate stubs for
-    // abstract interfaces too.
-    if (emit != com.sun.tools.corba.ee.idl.toJavaPortable.Arguments.Server /* && !i.isAbstract () */)
-      factories.stub ().generate (symbolTable, i);
-  } // generateStub
-
-  /**
-   * Generate a Helper when the user does not want just the server-side code.
-   **/
-  protected void generateHelper ()
-  {
-    if (emit != com.sun.tools.corba.ee.idl.toJavaPortable.Arguments.Server)
-      factories.helper ().generate (symbolTable, i);
-  } // generateHelper
-
-  /**
-   * Generate a Holder when the user does not want just the server-side code.
-   **/
-  protected void generateHolder ()
-  {
-    if (emit != com.sun.tools.corba.ee.idl.toJavaPortable.Arguments.Server)
-      factories.holder ().generate (symbolTable, i);
-  } // generateHolder
-
-  /**
-   * Generate the interface. Provides general algorithm for binding generation:
-   * 1.) Initialize members unique to this generator. - init ()
-   * 2.) Open print stream - openStream ()
-   * 3.) Write class heading (package, prologue, class statement, open curly - writeHeading ()
-   * 4.) Write class body (member data and methods) - write*Body ()
-   * 5.) Write class closing (close curly) - writeClosing ()
-   * 6.) Close the print stream - closeStream ()
-   *
-   * For CORBA 2.3, interfaces are mapped to Operations and Signature
-   * interfaces. The Operations interface contains the method definitions.
-   * The Signature interface extends the Operations interface and adds
-   * CORBA::Object.
-   **/
-  private void generateInterface()
-  {
-    init ();
-    openStream ();
-    if (stream == null)
-      return;
-    writeHeading ();
-    if (intfType == OPERATIONS)
-      writeOperationsBody ();
-    if (intfType == SIGNATURE)
-      writeSignatureBody ();
-    writeClosing ();
-    closeStream ();
-  } // generateInterface
-
-  /**
-   *
-   **/
-  protected void openStream ()
-  {
-    if (i.isAbstract () || intfType == SIGNATURE)
-       stream = com.sun.tools.corba.ee.idl.toJavaPortable.Util.stream(i, ".java");
-    else if (intfType == OPERATIONS)
-       stream = com.sun.tools.corba.ee.idl.toJavaPortable.Util.stream(i, "Operations.java");
-  } // openStream
-
-  /**
-   *
-   **/
-  protected void writeHeading ()
-  {
-    com.sun.tools.corba.ee.idl.toJavaPortable.Util.writePackage (stream, i, com.sun.tools.corba.ee.idl.toJavaPortable.Util.TypeFile);
-    com.sun.tools.corba.ee.idl.toJavaPortable.Util.writeProlog(stream, ((GenFileStream) stream).name());
-
-    // Transfer interface comment to target <31jul1997>.
-    if (i.comment () != null)
-      i.comment ().generate ("", stream);
-
-    String className = i.name ();
-//  if (((Arguments)Compile.compiler.arguments).TIEServer)
-//  {
-//    // For the delegate model, don't make interface a subclass of CORBA.Object
-//    stream.print ("public interface " + className);
-//    boolean firstTime = true;
-//    for (int ii = 0; ii < i.derivedFrom ().size (); ++ii)
-//    {
-//      SymtabEntry parent = (SymtabEntry)i.derivedFrom ().elementAt (ii);
-//      if (!parent.fullName ().equals ("org/omg/CORBA/Object"))
-//      {
-//        if (firstTime)
-//        {
-//          firstTime = false;
-//          stream.print (" extends ");
-//        }
-//        else
-//          stream.print (", ");
-//        stream.print (Util.javaName (parent));
-//      }
-//    }
-//    if (i.derivedFrom ().size () > 0)
-//      stream.print (", ");
-//    stream.print ("org.omg.CORBA.portable.IDLEntity ");
-//  }
-//
-//  else
-//  {
-      if (intfType == SIGNATURE)
-         writeSignatureHeading ();
-      else if (intfType == OPERATIONS)
-         writeOperationsHeading ();
-//  }
-
-    stream.println ();
-    stream.println ('{');
-  } // writeHeading
-
-  /**
-   *
-   **/
-  protected void writeSignatureHeading ()
-  {
-    String className = i.name ();
-    stream.print ("public interface " + className + " extends " + className + "Operations, ");
-    boolean firstTime = true;
-    boolean hasNonAbstractParent = false; // <d62310-klr>
-    for (int k = 0; k < i.derivedFrom ().size (); ++k)
-    {
-      if (firstTime)
-        firstTime = false;
-      else
-        stream.print (", ");
-      InterfaceEntry parent = (InterfaceEntry)i.derivedFrom ().elementAt (k);
-      stream.print (com.sun.tools.corba.ee.idl.toJavaPortable.Util.javaName(parent));
-      if (! parent.isAbstract ()) // <d62310-klr>
-        hasNonAbstractParent = true; // <d62310-klr>
-    }
-    // <d62310-klr> - begin
-    // If this interface extends only abstract interfaces,
-    // it should extend both org.omg.CORBA.Object and IDLEntity.
-    if (!hasNonAbstractParent) {
-      stream.print (", org.omg.CORBA.Object, org.omg.CORBA.portable.IDLEntity ");
-    } 
-    else {
-    // <d62310-klr> - end
-        // extends IDLEntity if there's only one default parent - CORBA.Object
-        if (i.derivedFrom ().size () == 1)
-          stream.print (", org.omg.CORBA.portable.IDLEntity ");
-    }
-  } // writeSignatureHeading
-
-  /**
-   *
-   **/
-  protected void writeOperationsHeading ()
-  {
-    stream.print ("public interface " + i.name ());
-    if ( !i.isAbstract ())
-      stream.print ("Operations ");
-    else {
-        // <d60929> - base abstract interfaces extend AbstractBase
-        // changed to IDLEntity by SCN per latest spec...
-        if (i.derivedFrom ().isEmpty())
-          stream.print (" extends org.omg.CORBA.portable.IDLEntity");
-    }
-
-    boolean firstTime = true;
-    for (int k = 0; k < i.derivedFrom ().size (); ++k)
-    {
-      InterfaceEntry parent = (InterfaceEntry) i.derivedFrom ().elementAt (k);
-      String parentName = com.sun.tools.corba.ee.idl.toJavaPortable.Util.javaName(parent);
-
-      // ignore the default parent - CORBA.Object
-      if (parentName.equals ("org.omg.CORBA.Object"))
-          continue;
-
-      if (firstTime)
-      {
-        firstTime = false;
-        stream.print (" extends ");
-      }
-      else
-        stream.print (", ");
-
-      // Don't append suffix Operations to the parents of abstract interface
-      // or to the abstract parents of regular interface
-      if (parent.isAbstract () || i.isAbstract ())
-        stream.print (parentName);
-      else
-        stream.print (parentName + "Operations");
-    }
-  } // writeOperationsHeading
-
-
-  /**
-   *
-   **/
-  protected void writeOperationsBody ()
-  {
-    // Generate everything but constants
-    Enumeration<SymtabEntry> e = i.contained ().elements ();
-    while (e.hasMoreElements ())
-    {
-      SymtabEntry contained = e.nextElement ();
-      if (contained instanceof MethodEntry)
-      {
-        MethodEntry element = (MethodEntry)contained;
-        ((com.sun.tools.corba.ee.idl.toJavaPortable.MethodGen)element.generator ()).interfaceMethod (symbolTable, element, stream);
-      }
-      else
-        if ( !(contained instanceof ConstEntry))
-          contained.generate (symbolTable, stream);
-    }
-  } // writeOperationsBody
-
-  /**
-   *
-   **/
-  protected void writeSignatureBody ()
-  {
-    // Generate only constants
-    Enumeration<SymtabEntry> e = i.contained().elements();
-    while (e.hasMoreElements ())
-    {
-      SymtabEntry contained = e.nextElement ();
-      if (contained instanceof ConstEntry)
-        contained.generate (symbolTable, stream);
-    }
-  } // writeSignatureBody
-
-  /**
-   *
-   **/
-  protected void writeClosing ()
-  {
-    String intfName = i.name ();
-    if ( !i.isAbstract () && intfType == OPERATIONS)
-      intfName = intfName + "Operations";
-    stream.println ("} // interface " + intfName);
-  } // writeClosing
-
-  /**
-   *
-   **/
-  protected void closeStream ()
-  {
-    stream.close ();
-  } // closeStream
-
-  ///////////////
-  // From JavaGenerator
-
-  // <f46082.51> Remove -stateful feature.
   /*
   public int helperType (int index, String indent, TCOffsets tcoffsets, String name, SymtabEntry entry, PrintWriter stream)
   {
@@ -415,29 +402,32 @@ public class InterfaceGen implements com.sun.tools.corba.ee.idl.InterfaceGen, Ja
     return index;
   } // helperType
   */
-  @Override
-  public int helperType (int index, String indent, com.sun.tools.corba.ee.idl.toJavaPortable.TCOffsets tcoffsets, String name, SymtabEntry entry, PrintWriter stream)
-  {
-    InterfaceEntry i = (InterfaceEntry)entry;
-    tcoffsets.set (entry);
-    if (entry.fullName ().equals ("org/omg/CORBA/Object"))
-      stream.println (indent + name
-          + " = org.omg.CORBA.ORB.init ().get_primitive_tc (org.omg.CORBA.TCKind.tk_objref);");
-    else
-      stream.println (indent + name
-          // <54697>
-          //+ " = org.omg.CORBA.ORB.init ().create_interface_tc (_id, "
-          + " = org.omg.CORBA.ORB.init ().create_interface_tc (" + com.sun.tools.corba.ee.idl.toJavaPortable.Util.helperName(i, true) + ".id (), " // <d61056>
-          + '\"' + com.sun.tools.corba.ee.idl.toJavaPortable.Util.stripLeadingUnderscores(entry.name()) + "\");");
-    return index;
-  } // helperType
+    @Override
+    public int helperType(int index, String indent, com.sun.tools.corba.ee.idl.toJavaPortable.TCOffsets tcoffsets, String name, SymtabEntry entry,
+                          PrintWriter stream) {
+        InterfaceEntry i = (InterfaceEntry) entry;
+        tcoffsets.set(entry);
+        if (entry.fullName().equals("org/omg/CORBA/Object")) {
+            stream.println(indent + name
+                                   + " = org.omg.CORBA.ORB.init ().get_primitive_tc (org.omg.CORBA.TCKind.tk_objref);");
+        } else {
+            stream.println(indent + name
+                                   // <54697>
+                                   //+ " = org.omg.CORBA.ORB.init ().create_interface_tc (_id, "
+                                   + " = org.omg.CORBA.ORB.init ().create_interface_tc (" + com.sun.tools.corba.ee.idl.toJavaPortable.Util.helperName(i, true)
+                                   + ".id (), " // <d61056>
+                                   + '\"' + com.sun.tools.corba.ee.idl.toJavaPortable.Util.stripLeadingUnderscores(entry.name()) + "\");");
+        }
+        return index;
+    } // helperType
 
-  public int type (int index, String indent, com.sun.tools.corba.ee.idl.toJavaPortable.TCOffsets tcoffsets, String name, SymtabEntry entry, PrintWriter stream) {
-    stream.println (indent + name + " = " + com.sun.tools.corba.ee.idl.toJavaPortable.Util.helperName(entry, true) + ".type ();"); // <d61056>
-    return index;
-  } // type
+    public int type(int index, String indent, com.sun.tools.corba.ee.idl.toJavaPortable.TCOffsets tcoffsets, String name, SymtabEntry entry,
+                    PrintWriter stream) {
+        stream.println(indent + name + " = " + com.sun.tools.corba.ee.idl.toJavaPortable.Util.helperName(entry, true) + ".type ();"); // <d61056>
+        return index;
+    } // type
 
-  // <f46082.51> Remove -stateful feature.
+    // <f46082.51> Remove -stateful feature.
   /*
   public void helperRead (String entryName, SymtabEntry entry, PrintWriter stream)
   {
@@ -454,16 +444,17 @@ public class InterfaceGen implements com.sun.tools.corba.ee.idl.InterfaceGen, Ja
   } // helperRead
 
   */
-  public void helperRead (String entryName, SymtabEntry entry, PrintWriter stream)
-  {
-    InterfaceEntry i = (InterfaceEntry)entry;
-    if (i.isAbstract ())
-      stream.println ("    return narrow (((org.omg.CORBA_2_3.portable.InputStream)istream).read_abstract_interface (_" + i.name () + "Stub.class));"); // <d60929>
-    else
-      stream.println ("    return narrow (istream.read_Object (_" + i.name () + "Stub.class));");
-  } // helperRead
+    public void helperRead(String entryName, SymtabEntry entry, PrintWriter stream) {
+        InterfaceEntry i = (InterfaceEntry) entry;
+        if (i.isAbstract()) {
+            stream.println(
+                    "    return narrow (((org.omg.CORBA_2_3.portable.InputStream)istream).read_abstract_interface (_" + i.name() + "Stub.class));"); // <d60929>
+        } else {
+            stream.println("    return narrow (istream.read_Object (_" + i.name() + "Stub.class));");
+        }
+    } // helperRead
 
-  // <f46082.51> Remove -stateful feature.
+    // <f46082.51> Remove -stateful feature.
   /*
   public void helperWrite (SymtabEntry entry, PrintWriter stream)
   {
@@ -474,12 +465,11 @@ public class InterfaceGen implements com.sun.tools.corba.ee.idl.InterfaceGen, Ja
       write (0, "    ", "value", entry, stream);
   } // helperWrite
   */
-  public void helperWrite (SymtabEntry entry, PrintWriter stream)
-  {
-    write (0, "    ", "value", entry, stream);
-  } // helperWrite
+    public void helperWrite(SymtabEntry entry, PrintWriter stream) {
+        write(0, "    ", "value", entry, stream);
+    } // helperWrite
 
-  // <f46082.51> Remove -stateful feature.
+    // <f46082.51> Remove -stateful feature.
   /*
   public int read (int index, String indent, String name, SymtabEntry entry, PrintWriter stream)
   {
@@ -496,17 +486,18 @@ public class InterfaceGen implements com.sun.tools.corba.ee.idl.InterfaceGen, Ja
     return index;
   } // read
   */
-  public int read (int index, String indent, String name, SymtabEntry entry, PrintWriter stream)
-  {
-    InterfaceEntry i = (InterfaceEntry)entry;
-    if (entry.fullName ().equals ("org/omg/CORBA/Object"))
-      stream.println (indent + name + " = istream.read_Object (_" + i.name () + "Stub.class);");
-    else
-      stream.println (indent + name + " = " + com.sun.tools.corba.ee.idl.toJavaPortable.Util.helperName(entry, false) + ".narrow (istream.read_Object (_" + i.name () + "Stub.class));"); // <d61056>
-    return index;
-  } // read
+    public int read(int index, String indent, String name, SymtabEntry entry, PrintWriter stream) {
+        InterfaceEntry i = (InterfaceEntry) entry;
+        if (entry.fullName().equals("org/omg/CORBA/Object")) {
+            stream.println(indent + name + " = istream.read_Object (_" + i.name() + "Stub.class);");
+        } else {
+            stream.println(indent + name + " = " + com.sun.tools.corba.ee.idl.toJavaPortable.Util.helperName(entry, false) + ".narrow (istream.read_Object (_"
+                                   + i.name() + "Stub.class));"); // <d61056>
+        }
+        return index;
+    } // read
 
-  // <f46082.51> Remove -stateful feature.
+    // <f46082.51> Remove -stateful feature.
   /*
   public int write (int index, String indent, String name, SymtabEntry entry, PrintWriter stream)
   {
@@ -523,17 +514,18 @@ public class InterfaceGen implements com.sun.tools.corba.ee.idl.InterfaceGen, Ja
     return index;
   } // write
   */
-  public int write (int index, String indent, String name, SymtabEntry entry, PrintWriter stream)
-  {
-    InterfaceEntry i = (InterfaceEntry)entry;
-    if (i.isAbstract ())
-      stream.println (indent + "((org.omg.CORBA_2_3.portable.OutputStream)ostream).write_abstract_interface ((java.lang.Object) " + name + ");"); // <d60929>
-    else
-      stream.println (indent + "ostream.write_Object ((org.omg.CORBA.Object) " + name + ");");
-    return index;
-  } // write
+    public int write(int index, String indent, String name, SymtabEntry entry, PrintWriter stream) {
+        InterfaceEntry i = (InterfaceEntry) entry;
+        if (i.isAbstract()) {
+            stream.println(
+                    indent + "((org.omg.CORBA_2_3.portable.OutputStream)ostream).write_abstract_interface ((java.lang.Object) " + name + ");"); // <d60929>
+        } else {
+            stream.println(indent + "ostream.write_Object ((org.omg.CORBA.Object) " + name + ");");
+        }
+        return index;
+    } // write
 
-  // <f46082.51> Remove -stateful feature.
+    // <f46082.51> Remove -stateful feature.
   /*
   // These methods are cobbled from StructGen.  Stateful interfaces
   // are sent across the wire as if they were structs, with the first
@@ -789,54 +781,68 @@ public class InterfaceGen implements com.sun.tools.corba.ee.idl.InterfaceGen, Ja
   } // writeState
   */
 
-  /**
-   * @return true if the entry is for a CORBA pseudo-object.
-   **/
-  private boolean isPseudo(InterfaceEntry i) {
-    java.lang.String fullname = i.fullName();
-    if (fullname.equalsIgnoreCase("CORBA/TypeCode"))
-        return true;
-    if (fullname.equalsIgnoreCase("CORBA/Principal"))
-        return true;
-    if (fullname.equalsIgnoreCase("CORBA/ORB"))
-        return true;
-    if (fullname.equalsIgnoreCase("CORBA/Any"))
-        return true;
-    if (fullname.equalsIgnoreCase("CORBA/Context"))
-        return true;
-    if (fullname.equalsIgnoreCase("CORBA/ContextList"))
-        return true;
-    if (fullname.equalsIgnoreCase("CORBA/DynamicImplementation"))
-        return true;
-    if (fullname.equalsIgnoreCase("CORBA/Environment"))
-        return true;
-    if (fullname.equalsIgnoreCase("CORBA/ExceptionList"))
-        return true;
-    if (fullname.equalsIgnoreCase("CORBA/NVList"))
-        return true;
-    if (fullname.equalsIgnoreCase("CORBA/NamedValue"))
-        return true;
-    if (fullname.equalsIgnoreCase("CORBA/Request"))
-        return true;
-    if (fullname.equalsIgnoreCase("CORBA/ServerRequest"))
-        return true;
-    if (fullname.equalsIgnoreCase("CORBA/UserException"))
-        return true;
-    return false;
-  }
+    /**
+     * @return true if the entry is for a CORBA pseudo-object.
+     **/
+    private boolean isPseudo(InterfaceEntry i) {
+        java.lang.String fullname = i.fullName();
+        if (fullname.equalsIgnoreCase("CORBA/TypeCode")) {
+            return true;
+        }
+        if (fullname.equalsIgnoreCase("CORBA/Principal")) {
+            return true;
+        }
+        if (fullname.equalsIgnoreCase("CORBA/ORB")) {
+            return true;
+        }
+        if (fullname.equalsIgnoreCase("CORBA/Any")) {
+            return true;
+        }
+        if (fullname.equalsIgnoreCase("CORBA/Context")) {
+            return true;
+        }
+        if (fullname.equalsIgnoreCase("CORBA/ContextList")) {
+            return true;
+        }
+        if (fullname.equalsIgnoreCase("CORBA/DynamicImplementation")) {
+            return true;
+        }
+        if (fullname.equalsIgnoreCase("CORBA/Environment")) {
+            return true;
+        }
+        if (fullname.equalsIgnoreCase("CORBA/ExceptionList")) {
+            return true;
+        }
+        if (fullname.equalsIgnoreCase("CORBA/NVList")) {
+            return true;
+        }
+        if (fullname.equalsIgnoreCase("CORBA/NamedValue")) {
+            return true;
+        }
+        if (fullname.equalsIgnoreCase("CORBA/Request")) {
+            return true;
+        }
+        if (fullname.equalsIgnoreCase("CORBA/ServerRequest")) {
+            return true;
+        }
+        if (fullname.equalsIgnoreCase("CORBA/UserException")) {
+            return true;
+        }
+        return false;
+    }
 
-  // From JavaGenerator
-  ///////////////
+    // From JavaGenerator
+    ///////////////
 
-  protected int            emit        = 0;
-  protected com.sun.tools.corba.ee.idl.toJavaPortable.Factories factories   = null;
+    protected int emit = 0;
+    protected com.sun.tools.corba.ee.idl.toJavaPortable.Factories factories = null;
 
-  protected Hashtable      symbolTable = null;
-  protected InterfaceEntry i           = null;
-  protected PrintWriter    stream      = null;
+    protected Hashtable symbolTable = null;
+    protected InterfaceEntry i = null;
+    protected PrintWriter stream = null;
 
-  // <f46082.03, f46838.1/.2/.3> Modify access to protected.
-  protected static final   int SIGNATURE  = 1;
-  protected static final   int OPERATIONS = 2;
-  protected                int intfType   = 0;
+    // <f46082.03, f46838.1/.2/.3> Modify access to protected.
+    protected static final int SIGNATURE = 1;
+    protected static final int OPERATIONS = 2;
+    protected int intfType = 0;
 } // class InterfaceGen

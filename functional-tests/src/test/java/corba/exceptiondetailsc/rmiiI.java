@@ -24,25 +24,24 @@
 
 package corba.exceptiondetailsc;
 
-import java.rmi.Remote; 
-import java.rmi.RemoteException; 
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 public interface rmiiI
-    extends 
-        Remote 
-{ 
+        extends
+        Remote {
     public void raiseSystemException(String x)
-        throws
-            RemoteException; 
+            throws
+            RemoteException;
 
     public void raiseUserException(String x)
-        throws
+            throws
             RemoteException,
             rmiiException;
 
     public void raiseRuntimeException(String x)
-        throws
-            RemoteException; 
+            throws
+            RemoteException;
 }
 
 // End of file.

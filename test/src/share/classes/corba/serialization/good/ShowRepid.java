@@ -39,6 +39,7 @@
 package corba.serialization.good;
 
 import java.io.*;
+
 import com.sun.corba.ee.impl.util.RepositoryId;
 
 public class ShowRepid implements Serializable {
@@ -63,26 +64,25 @@ public class ShowRepid implements Serializable {
         String s5 = RepositoryId.createForAnyType(java.util.Hashtable.class);
 
         if (!s1.equals(r1)) {
-        System.out.println("mismatch " + s1);
-        ++rc;
+            System.out.println("mismatch " + s1);
+            ++rc;
         }
         if (!s2.equals(r2)) {
-        System.out.println("mismatch " + s2);
-        ++rc;
+            System.out.println("mismatch " + s2);
+            ++rc;
         }
         if (!s3.equals(r3)) {
-        System.out.println("mismatch " + s3);
-        ++rc;
+            System.out.println("mismatch " + s3);
+            ++rc;
         }
         if (!s4.equals(r4)) {
-        System.out.println("mismatch " + s4);
-        ++rc;
+            System.out.println("mismatch " + s4);
+            ++rc;
         }
         if (!s5.equals(r5)) {
-        System.out.println("mismatch " + s5);
-        ++rc;
+            System.out.println("mismatch " + s5);
+            ++rc;
         }
-
 
         return rc;
     }
@@ -90,11 +90,11 @@ public class ShowRepid implements Serializable {
     public static void main(String[] args) {
         System.out.println("Server is ready.");
         if (args.length == 0) {
-            if (runTest() == 0)
+            if (runTest() == 0) {
                 System.out.println("Test PASSED");
-            else {
+            } else {
                 System.out.println("Test FAILED");
-                System.exit(1) ;
+                System.exit(1);
             }
         } else {
             try {

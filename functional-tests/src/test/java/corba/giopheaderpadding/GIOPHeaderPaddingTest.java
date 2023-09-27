@@ -37,7 +37,7 @@ import corba.framework.*;
 public class GIOPHeaderPaddingTest extends CORBATest {
 
     public static final String thisPackage =
-        GIOPHeaderPaddingTest.class.getPackage().getName();
+            GIOPHeaderPaddingTest.class.getPackage().getName();
 
     protected void doTest() throws Throwable {
         if (test.Test.useJavaSerialization()) {
@@ -49,24 +49,24 @@ public class GIOPHeaderPaddingTest extends CORBATest {
 
         Properties clientProps = Options.getClientProperties();
         clientProps.put("org.omg.PortableInterceptor.ORBInitializerClass." +
-                        "corba.giopheaderpadding.Client", "true");
+                                "corba.giopheaderpadding.Client", "true");
         clientProps.put("org.omg.PortableInterceptor.ORBInitializerClass." +
-                        "corba.giopheaderpadding.Server", "true");
+                                "corba.giopheaderpadding.Server", "true");
         clientProps.put(ORBConstants.GIOP_VERSION, "1.2");
         clientProps.put(ORBConstants.GIOP_12_BUFFMGR, "0"); // GROW
 
         Properties serverProps = Options.getServerProperties();
         serverProps.put("org.omg.PortableInterceptor.ORBInitializerClass." +
-                        "corba.giopheaderpadding.Server", "true");
+                                "corba.giopheaderpadding.Server", "true");
         serverProps.put(ORBConstants.GIOP_VERSION, "1.2");
         serverProps.put(ORBConstants.GIOP_12_BUFFMGR, "0"); // GROW
 
         doTestType("Server", "Server",
                    "Client", "Client");
 
-        Controller colocatedClientServer = 
-            createClient(thisPackage + ".ColocatedClientServer",
-                         "colocatedClientServer");
+        Controller colocatedClientServer =
+                createClient(thisPackage + ".ColocatedClientServer",
+                             "colocatedClientServer");
         colocatedClientServer.start();
         colocatedClientServer.waitFor();
         colocatedClientServer.stop();
@@ -76,7 +76,7 @@ public class GIOPHeaderPaddingTest extends CORBATest {
 
     protected void doTestType(String serverMainClass, String serverTestName,
                               String clientMainClass, String clientTestName)
-        throws Throwable {
+            throws Throwable {
 
         Controller server = createServer(thisPackage + "." + serverMainClass,
                                          serverTestName);

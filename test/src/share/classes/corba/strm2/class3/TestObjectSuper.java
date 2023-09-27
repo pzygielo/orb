@@ -19,8 +19,7 @@
 
 import java.io.*;
 
-public class TestObjectSuper implements Serializable
-{
+public class TestObjectSuper implements Serializable {
     private static final long serialVersionUID = 6234419445336614908L;
 
     private int dataS1;
@@ -34,37 +33,38 @@ public class TestObjectSuper implements Serializable
         dataS1 = 23910;
         dataS2 = '\u6A5F';
         dataS3 = new Long(999211L);
-        optDataS1 = new Double((double)24124.23121);
+        optDataS1 = new Double((double) 24124.23121);
         optDataS2 = 2412;
     }
 
     public String toString() {
-        return 
-            (super.getClass().equals(Object.class) ? "" : super.toString())
-            + " [TestObjectSuper dataS1=" + dataS1
-            + ", dataS2=" + (int)dataS2
-            + ", dataS3=" + dataS3
-            + ", optDataS1=" + optDataS1
-            + ", optDataS2=" + optDataS2
-            + "]";
+        return
+                (super.getClass().equals(Object.class) ? "" : super.toString())
+                        + " [TestObjectSuper dataS1=" + dataS1
+                        + ", dataS2=" + (int) dataS2
+                        + ", dataS3=" + dataS3
+                        + ", optDataS1=" + optDataS1
+                        + ", optDataS2=" + optDataS2
+                        + "]";
     }
 
     private boolean defaultedValues() {
-        return dataS1 == 0 && (int)dataS2 == 0 && dataS3 == null;
+        return dataS1 == 0 && (int) dataS2 == 0 && dataS3 == null;
     }
 
     public boolean equals(Object obj) {
         try {
-            TestObjectSuper other = (TestObjectSuper)obj;
-            if (other == null)
+            TestObjectSuper other = (TestObjectSuper) obj;
+            if (other == null) {
                 return false;
+            }
 
             return (defaultedValues() || other.defaultedValues()) ||
-                (dataS1 == other.dataS1 &&
-                 dataS2 == other.dataS2 &&
-                 dataS3.equals(other.dataS3) &&
-                 optDataS1.equals(other.optDataS1) &&
-                 optDataS2 == other.optDataS2);
+                    (dataS1 == other.dataS1 &&
+                            dataS2 == other.dataS2 &&
+                            dataS3.equals(other.dataS3) &&
+                            optDataS1.equals(other.optDataS1) &&
+                            optDataS2 == other.optDataS2);
 
         } catch (ClassCastException cce) {
             return false;
@@ -72,8 +72,7 @@ public class TestObjectSuper implements Serializable
     }
 
     private void writeObject(java.io.ObjectOutputStream out)
-        throws IOException
-    {
+            throws IOException {
         out.defaultWriteObject();
 
         try {
@@ -90,13 +89,12 @@ public class TestObjectSuper implements Serializable
     }
 
     private void readObject(java.io.ObjectInputStream is)
-        throws IOException, ClassNotFoundException 
-    {
+            throws IOException, ClassNotFoundException {
         is.defaultReadObject();
 
         try {
             is.defaultReadObject();
-            
+
             // Should throw an error for calling this twice
 
             throw new IOException("Error -- should not allow defRdObj call twice");
@@ -117,10 +115,10 @@ public class TestObjectSuper implements Serializable
     */
 
         try {
-            optDataS1 = (Double)is.readObject();
+            optDataS1 = (Double) is.readObject();
         } catch (OptionalDataException ode) {
             // Optional object data not present
-            optDataS1 = new Double((double)24124.23121);
+            optDataS1 = new Double((double) 24124.23121);
         }
 
         try {

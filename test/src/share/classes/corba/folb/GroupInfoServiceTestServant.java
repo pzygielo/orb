@@ -42,27 +42,23 @@ import corba.hcks.U;
  * @author Harold Carr
  */
 public class GroupInfoServiceTestServant
-    extends PortableRemoteObject
-    implements GroupInfoServiceTest
-{
+        extends PortableRemoteObject
+        implements GroupInfoServiceTest {
     private ORB orb;
     private GroupInfoServiceImpl gis;
 
     public GroupInfoServiceTestServant(ORB orb, GroupInfoServiceImpl gis)
-        throws RemoteException
-    {
+            throws RemoteException {
         this.orb = orb;
         this.gis = gis;
     }
 
     public boolean addInstance(final String x)
-        throws RemoteException
-    {
+            throws RemoteException {
         dprint(".add->: " + x);
         // Must be done on a different thread so requests can drain.
         new Thread() {
-            public void run()
-            {
+            public void run() {
                 gis.add(x);
             }
         }.start();
@@ -71,13 +67,11 @@ public class GroupInfoServiceTestServant
     }
 
     public boolean removeInstance(final String x)
-        throws RemoteException
-    {
+            throws RemoteException {
         dprint(".remove->: " + x);
         // Must be done on a different thread so requests can drain.
         new Thread() {
-            public void run()
-            {
+            public void run() {
                 gis.remove(x);
             }
         }.start();
@@ -85,22 +79,20 @@ public class GroupInfoServiceTestServant
         return true;
     }
 
-    public boolean addAcceptor(String x) 
-        throws RemoteException
-    {
+    public boolean addAcceptor(String x)
+            throws RemoteException {
         dprint(".add->: " + x);
-        boolean result = 
-            U.registerAcceptor(
-                x, 
-                ((Integer)corba.folb_8_1.Common.socketTypeToPort.get(x)).intValue(), 
-                orb);
+        boolean result =
+                U.registerAcceptor(
+                        x,
+                        ((Integer) corba.folb_8_1.Common.socketTypeToPort.get(x)).intValue(),
+                        orb);
         dprint(".add<-: " + x + " " + result);
         return result;
     }
 
     public boolean removeAcceptorAndConnections(String x)
-        throws RemoteException
-    {
+            throws RemoteException {
         dprint(".remove->: " + x);
         boolean result = U.unregisterAcceptorAndCloseConnections(x, orb);
         dprint(".remove<-: " + x + " " + result);
@@ -108,14 +100,12 @@ public class GroupInfoServiceTestServant
     }
 
     public void doThreadDump()
-        throws RemoteException
-    {
+            throws RemoteException {
         try {
             dprint(".doThreadDump->:\n");
             StringBuilder buf = new StringBuilder();
             for (Map.Entry<Thread, StackTraceElement[]> entry :
-                     Thread.getAllStackTraces().entrySet())
-            {
+                    Thread.getAllStackTraces().entrySet()) {
                 buf.append("\n");
                 buf.append(entry.getKey().toString()).append("\n");
                 for (StackTraceElement element : entry.getValue()) {
@@ -133,8 +123,7 @@ public class GroupInfoServiceTestServant
     // Implementation
     //
 
-    private static void dprint(String msg)
-    {
+    private static void dprint(String msg) {
         ORBUtility.dprint("GroupInfoServiceTestServant", msg);
     }
 }

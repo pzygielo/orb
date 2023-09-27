@@ -19,11 +19,7 @@
 
 package org.glassfish.rmic.asm;
 
-import org.glassfish.rmic.tools.java.ClassDeclaration;
-import org.glassfish.rmic.tools.java.ClassDefinition;
-import org.glassfish.rmic.tools.java.ClassNotFound;
-import org.glassfish.rmic.tools.java.Environment;
-import org.glassfish.rmic.tools.java.Identifier;
+import org.glassfish.rmic.tools.java.*;
 
 /**
  * This represents a class for RMIC to process. It is built from a class file using ASM.
@@ -32,7 +28,8 @@ class AsmClass extends ClassDefinition {
 
     private final AsmClassFactory factory;
 
-    AsmClass(AsmClassFactory factory, String name, int modifiers, ClassDeclaration declaration, ClassDeclaration superClassDeclaration, ClassDeclaration[] interfaceDeclarations) {
+    AsmClass(AsmClassFactory factory, String name, int modifiers, ClassDeclaration declaration, ClassDeclaration superClassDeclaration,
+             ClassDeclaration[] interfaceDeclarations) {
         super(name, 0, declaration, modifiers, null, null);
         this.factory = factory;
         superClass = superClassDeclaration;
@@ -43,8 +40,9 @@ class AsmClass extends ClassDefinition {
     public void loadNested(Environment env) {
         try {
             Identifier outerClass = factory.getOuterClassName(getName());
-            if (outerClass != null)
+            if (outerClass != null) {
                 this.outerClass = env.getClassDefinition(outerClass);
+            }
         } catch (ClassNotFound ignore) {
         }
     }
@@ -55,14 +53,20 @@ class AsmClass extends ClassDefinition {
     // This code is copied from BinaryClass.java which ensures that inherited method 
     // information is gathered. Consider promoting this to the super class.
     protected void basicCheck(Environment env) throws ClassNotFound {
-        if (tracing) env.dtEnter("AsmClass.basicCheck: " + getName());
+        if (tracing) {
+            env.dtEnter("AsmClass.basicCheck: " + getName());
+        }
 
         if (basicChecking || basicCheckDone) {
-            if (tracing) env.dtExit("AsmClass.basicCheck: OK " + getName());
+            if (tracing) {
+                env.dtExit("AsmClass.basicCheck: OK " + getName());
+            }
             return;
         }
 
-        if (tracing) env.dtEvent("AsmClass.basicCheck: CHECKING " + getName());
+        if (tracing) {
+            env.dtEvent("AsmClass.basicCheck: CHECKING " + getName());
+        }
         basicChecking = true;
 
         super.basicCheck(env);
@@ -74,7 +78,9 @@ class AsmClass extends ClassDefinition {
 
         basicCheckDone = true;
         basicChecking = false;
-        if (tracing) env.dtExit("AsmClass.basicCheck: " + getName());
+        if (tracing) {
+            env.dtExit("AsmClass.basicCheck: " + getName());
+        }
     }
 
 }

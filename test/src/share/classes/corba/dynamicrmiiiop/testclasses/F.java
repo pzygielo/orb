@@ -17,9 +17,8 @@
  * Classpath-exception-2.0
  */
 
-package corba.dynamicrmiiiop.testclasses ;
+package corba.dynamicrmiiiop.testclasses;
 
-public interface F extends G
-{
+public interface F extends G {
 }
 

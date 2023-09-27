@@ -19,26 +19,25 @@
 
 package corba.msgtypes;
 
-import java.rmi.RemoteException ;
+import java.rmi.RemoteException;
 import javax.rmi.PortableRemoteObject;
 
-public class FragmentTesterImpl extends PortableRemoteObject implements FragmentTester
-{
+public class FragmentTesterImpl extends PortableRemoteObject implements FragmentTester {
     Server.InterceptorImpl interceptor = null;
 
-    public FragmentTesterImpl(Server.InterceptorImpl interceptor) throws RemoteException
-    {
+    public FragmentTesterImpl(Server.InterceptorImpl interceptor) throws RemoteException {
         super();
         this.interceptor = interceptor;
     }
 
-    public byte[] verifyTransmission(byte array[]) throws BadArrayException
-    {
-        if (array == null)
+    public byte[] verifyTransmission(byte array[]) throws BadArrayException {
+        if (array == null) {
             throw new BadArrayException("Array is null");
+        }
 
-        if (array.length % 4 != 0)
+        if (array.length % 4 != 0) {
             throw new BadArrayException("Invalid array length: " + array.length);
+        }
 
         System.out.println("Array length = " + array.length);
 
@@ -54,12 +53,11 @@ public class FragmentTesterImpl extends PortableRemoteObject implements Fragment
 
                 if (array[i++] != check) {
                     throw new BadArrayException("Bad array at index " + i
-                                                + " value: " + array[i]);
+                                                        + " value: " + array[i]);
                 }
             }
 
             System.out.println();
-
 
         } while (i < array.length);
 
@@ -70,20 +68,24 @@ public class FragmentTesterImpl extends PortableRemoteObject implements Fragment
         return this.interceptor.isBalanced();
     }
 
-    public java.lang.Object testFragmentedReply(boolean isSerializable) 
+    public java.lang.Object testFragmentedReply(boolean isSerializable)
             throws RemoteException {
 
         if (isSerializable) {
             return new java.lang.Object();
         }
-            
-        return new java.io.Serializable() {};             
+
+        return new java.io.Serializable() {
+        };
     }
-    
+
     // used for header padding test only. The following two method names differ
     // just by one character. This ensures that the request header for atleast
     // one of these methods would not be naturally aligned on an 8-octet
     // boundary.
-    public void fooA(char ch) {}
-    public void fooB(char ch) {}
+    public void fooA(char ch) {
+    }
+
+    public void fooB(char ch) {
+    }
 }

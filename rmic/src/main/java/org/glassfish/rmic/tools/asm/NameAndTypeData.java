@@ -19,11 +19,11 @@
 
 package org.glassfish.rmic.tools.asm;
 
-import org.glassfish.rmic.tools.java.*;
+import org.glassfish.rmic.tools.java.MemberDefinition;
 
 /**
  * An object to represent a name and type constant pool data item.
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
@@ -51,9 +51,9 @@ class NameAndTypeData {
      */
     public boolean equals(Object obj) {
         if ((obj != null) && (obj instanceof NameAndTypeData)) {
-            NameAndTypeData nt = (NameAndTypeData)obj;
+            NameAndTypeData nt = (NameAndTypeData) obj;
             return field.getName().equals(nt.field.getName()) &&
-                field.getType().equals(nt.field.getType());
+                    field.getType().equals(nt.field.getType());
         }
         return false;
     }

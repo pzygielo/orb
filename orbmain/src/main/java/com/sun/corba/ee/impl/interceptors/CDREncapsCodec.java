@@ -19,22 +19,18 @@
 
 package com.sun.corba.ee.impl.interceptors;
 
-import org.omg.CORBA.Any;
-import org.omg.CORBA.ORB;
-import org.omg.CORBA.TypeCode;
-
-import com.sun.corba.ee.spi.ior.iiop.GIOPVersion;
-
 import com.sun.corba.ee.impl.corba.AnyImpl;
 import com.sun.corba.ee.impl.encoding.EncapsInputStream;
 import com.sun.corba.ee.impl.encoding.EncapsInputStreamFactory;
 import com.sun.corba.ee.impl.encoding.EncapsOutputStream;
 import com.sun.corba.ee.impl.encoding.OutputStreamFactory;
 import com.sun.corba.ee.impl.misc.ORBUtility;
-import com.sun.corba.ee.spi.misc.ORBConstants;
-
+import com.sun.corba.ee.spi.ior.iiop.GIOPVersion;
 import com.sun.corba.ee.spi.logging.ORBUtilSystemException;
-
+import com.sun.corba.ee.spi.misc.ORBConstants;
+import org.omg.CORBA.Any;
+import org.omg.CORBA.ORB;
+import org.omg.CORBA.TypeCode;
 import org.omg.IOP.Codec;
 import org.omg.IOP.CodecPackage.FormatMismatch;
 import org.omg.IOP.CodecPackage.InvalidTypeForEncoding;
@@ -43,16 +39,15 @@ import org.omg.IOP.CodecPackage.TypeMismatch;
 /**
  * CDREncapsCodec is an implementation of Codec, as described
  * in orbos/99-12-02, that supports CDR encapsulation version 1.0, 1.1, and
- * 1.2.  
+ * 1.2.
  */
-public final class CDREncapsCodec 
-    extends org.omg.CORBA.LocalObject 
-    implements Codec 
-{
+public final class CDREncapsCodec
+        extends org.omg.CORBA.LocalObject
+        implements Codec {
     // The ORB that created the factory this codec was created from
     private transient ORB orb;
     static final ORBUtilSystemException wrapper =
-        ORBUtilSystemException.self ;
+            ORBUtilSystemException.self;
 
     // The GIOP version we are encoding for
     private transient GIOPVersion giopVersion;
@@ -72,73 +67,74 @@ public final class CDREncapsCodec
      * @param major The major version of GIOP we are encoding for
      * @param minor The minor version of GIOP we are encoding for
      */
-    public CDREncapsCodec( ORB orb, int major, int minor ) {
+    public CDREncapsCodec(ORB orb, int major, int minor) {
         this.orb = orb;
 
-        giopVersion = GIOPVersion.getInstance( (byte)major, (byte)minor );
+        giopVersion = GIOPVersion.getInstance((byte) major, (byte) minor);
     }
 
     /**
-     * Convert the given any into a CDR encapsulated octet sequence 
+     * Convert the given any into a CDR encapsulated octet sequence
      */
-    public byte[] encode( Any data ) 
-        throws InvalidTypeForEncoding 
-    {
-        if ( data == null ) 
-            throw wrapper.nullParamNoComplete() ;
-        return encodeImpl( data, true );
+    public byte[] encode(Any data)
+            throws InvalidTypeForEncoding {
+        if (data == null) {
+            throw wrapper.nullParamNoComplete();
+        }
+        return encodeImpl(data, true);
     }
 
     /**
-     * Decode the given octet sequence into an any based on a CDR 
+     * Decode the given octet sequence into an any based on a CDR
      * encapsulated octet sequence.
      */
-    public Any decode ( byte[] data ) 
-        throws FormatMismatch 
-    {
-        if( data == null ) 
-            throw wrapper.nullParamNoComplete() ;
-        return decodeImpl( data, null );
+    public Any decode(byte[] data)
+            throws FormatMismatch {
+        if (data == null) {
+            throw wrapper.nullParamNoComplete();
+        }
+        return decodeImpl(data, null);
     }
 
     /**
      * Convert the given any into a CDR encapsulated octet sequence.  Only
      * the data is stored.  The type code is not.
      */
-    public byte[] encode_value( Any data ) 
-        throws InvalidTypeForEncoding 
-    {
-        if( data == null ) 
-            throw wrapper.nullParamNoComplete() ;
-        return encodeImpl( data, false );
+    public byte[] encode_value(Any data)
+            throws InvalidTypeForEncoding {
+        if (data == null) {
+            throw wrapper.nullParamNoComplete();
+        }
+        return encodeImpl(data, false);
     }
 
     /**
-     * Decode the given octet sequence into an any based on a CDR 
+     * Decode the given octet sequence into an any based on a CDR
      * encapsulated octet sequence.  The type code is expected not to appear
      * in the octet sequence, and the given type code is used instead.
      */
-    public Any decode_value( byte[] data, TypeCode tc ) 
-        throws FormatMismatch, TypeMismatch
-    {
-        if( data == null ) 
-            throw wrapper.nullParamNoComplete() ;
-        if( tc == null ) 
-            throw  wrapper.nullParamNoComplete() ;
-        return decodeImpl( data, tc );
+    public Any decode_value(byte[] data, TypeCode tc)
+            throws FormatMismatch, TypeMismatch {
+        if (data == null) {
+            throw wrapper.nullParamNoComplete();
+        }
+        if (tc == null) {
+            throw wrapper.nullParamNoComplete();
+        }
+        return decodeImpl(data, tc);
     }
 
     /**
-     * Convert the given any into a CDR encapsulated octet sequence.  
+     * Convert the given any into a CDR encapsulated octet sequence.
      * If sendTypeCode is true, the type code is sent with the message, as in
      * a standard encapsulation.  If it is false, only the data is sent.
      * Either way, the endian type is sent as the first part of the message.
      */
-    private byte[] encodeImpl( Any data, boolean sendTypeCode ) 
-        throws InvalidTypeForEncoding 
-    {
-        if( data == null ) 
-            throw wrapper.nullParamNoComplete() ;
+    private byte[] encodeImpl(Any data, boolean sendTypeCode)
+            throws InvalidTypeForEncoding {
+        if (data == null) {
+            throw wrapper.nullParamNoComplete();
+        }
 
         // _REVISIT_ Note that InvalidTypeForEncoding is never thrown in
         // the body of this method.  This is due to the fact that CDR*Stream
@@ -158,7 +154,7 @@ public final class CDREncapsCodec
 
         boolean pop = false;
         if (ORBUtility.getEncodingVersion() !=
-            ORBConstants.CDR_ENC_VERSION) {
+                ORBConstants.CDR_ENC_VERSION) {
             ORBUtility.pushEncVersionToThreadLocalState(ORBConstants.CDR_ENC_VERSION);
             pop = true;
         }
@@ -167,19 +163,19 @@ public final class CDREncapsCodec
 
             // Create output stream with default endianness.
             EncapsOutputStream cdrOut =
-                OutputStreamFactory.newEncapsOutputStream((com.sun.corba.ee.spi.orb.ORB)orb,
-                                       giopVersion);
+                    OutputStreamFactory.newEncapsOutputStream((com.sun.corba.ee.spi.orb.ORB) orb,
+                                                              giopVersion);
 
             // This is an encapsulation, so put out the endian:
             cdrOut.putEndian();
 
             // Sometimes encode type code:
-            if( sendTypeCode ) {
-                cdrOut.write_TypeCode( data.type() );
+            if (sendTypeCode) {
+                cdrOut.write_TypeCode(data.type());
             }
 
             // Encode value and return.
-            data.write_value( cdrOut );
+            data.write_value(cdrOut);
 
             retValue = cdrOut.toByteArray();
 
@@ -188,21 +184,21 @@ public final class CDREncapsCodec
                 ORBUtility.popEncVersionFromThreadLocalState();
             }
         }
-        
+
         return retValue;
     }
 
     /**
-     * Decode the given octet sequence into an any based on a CDR 
+     * Decode the given octet sequence into an any based on a CDR
      * encapsulated octet sequence.  If the type code is null, it is
      * expected to appear in the octet sequence.  Otherwise, the given
      * type code is used.
      */
-    private Any decodeImpl( byte[] data, TypeCode tc ) 
-        throws FormatMismatch 
-    {
-        if( data == null ) 
-            throw wrapper.nullParamNoComplete() ;
+    private Any decodeImpl(byte[] data, TypeCode tc)
+            throws FormatMismatch {
+        if (data == null) {
+            throw wrapper.nullParamNoComplete();
+        }
 
         AnyImpl any = null;  // return value
 
@@ -217,28 +213,28 @@ public final class CDREncapsCodec
 
         boolean pop = false;
         if (ORBUtility.getEncodingVersion() !=
-            ORBConstants.CDR_ENC_VERSION) {
+                ORBConstants.CDR_ENC_VERSION) {
             ORBUtility.pushEncVersionToThreadLocalState(ORBConstants.CDR_ENC_VERSION);
             pop = true;
         }
 
         try {
 
-            EncapsInputStream cdrIn = EncapsInputStreamFactory.newEncapsInputStream( orb, data, 
-                data.length, giopVersion );
+            EncapsInputStream cdrIn = EncapsInputStreamFactory.newEncapsInputStream(orb, data,
+                                                                                    data.length, giopVersion);
 
             cdrIn.consumeEndian();
 
             // If type code not specified, read it from octet stream:
-            if( tc == null ) {
+            if (tc == null) {
                 tc = cdrIn.read_TypeCode();
             }
 
             // Create a new Any object:
-            any = new AnyImpl( (com.sun.corba.ee.spi.orb.ORB)orb );
-            any.read_value( cdrIn, tc );
+            any = new AnyImpl((com.sun.corba.ee.spi.orb.ORB) orb);
+            any.read_value(cdrIn, tc);
 
-        } catch( RuntimeException e ) {
+        } catch (RuntimeException e) {
             // See above note.  
             throw new FormatMismatch();
         } finally {

@@ -17,38 +17,45 @@
  * Classpath-exception-2.0
  */
 
-package corba.misc ;
+package corba.misc;
 
-import java.io.ObjectInput ;
-import java.io.ObjectOutput ;
-import java.io.IOException ;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.io.IOException;
 
 public class Buck implements java.io.Externalizable {
     String name = "";
 
-    public Buck(){}
-     
-    public Buck(String name) { this.name = name; }
-
-    public String toString() { return "Buck[" + name + "]" ; } 
-
-    public boolean equals( Object obj ) {
-        if (!(obj instanceof Buck))
-            return false ;
-
-        if (obj == this)
-            return true ;
-
-        Buck other = (Buck)obj ;
-
-        return other.name.equals( name ) ;
+    public Buck() {
     }
 
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException { 
-        name = (String) in.readObject(); 
+    public Buck(String name) {
+        this.name = name;
+    }
+
+    public String toString() {
+        return "Buck[" + name + "]";
+    }
+
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Buck)) {
+            return false;
+        }
+
+        if (obj == this) {
+            return true;
+        }
+
+        Buck other = (Buck) obj;
+
+        return other.name.equals(name);
+    }
+
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        name = (String) in.readObject();
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-      out.writeObject(name);
+        out.writeObject(name);
     }
 }

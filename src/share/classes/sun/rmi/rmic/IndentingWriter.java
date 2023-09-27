@@ -27,22 +27,30 @@ import java.io.IOException;
 /**
  * IndentingWriter is a BufferedWriter subclass that supports automatic
  * indentation of lines of text written to the underlying Writer.
- *
+ * <p>
  * Methods are provided for compact, convenient indenting, writing text,
  * and writing lines in various combinations.
  */
 public class IndentingWriter extends BufferedWriter {
 
-    /** true if the next character written is the first on a line */
+    /**
+     * true if the next character written is the first on a line
+     */
     private boolean beginningOfLine = true;
 
-    /** current number of spaces to prepend to lines */
+    /**
+     * current number of spaces to prepend to lines
+     */
     private int currentIndent = 0;
 
-    /** number of spaces to change indent when indenting in or out */
+    /**
+     * number of spaces to change indent when indenting in or out
+     */
     private int indentStep = 4;
 
-    /** number of spaces to convert into tabs. Use MAX_VALUE to disable */
+    /**
+     * number of spaces to convert into tabs. Use MAX_VALUE to disable
+     */
     private int tabSize = 8;
 
     /**
@@ -60,8 +68,9 @@ public class IndentingWriter extends BufferedWriter {
     public IndentingWriter(Writer out, int step) {
         this(out);
 
-        if (indentStep < 0)
+        if (indentStep < 0) {
             throw new IllegalArgumentException("negative indent step");
+        }
 
         indentStep = step;
     }
@@ -73,8 +82,9 @@ public class IndentingWriter extends BufferedWriter {
     public IndentingWriter(Writer out, int step, int tabSize) {
         this(out);
 
-        if (indentStep < 0)
+        if (indentStep < 0) {
             throw new IllegalArgumentException("negative indent step");
+        }
 
         indentStep = step;
         this.tabSize = tabSize;
@@ -120,14 +130,14 @@ public class IndentingWriter extends BufferedWriter {
     /**
      * Check if an indent needs to be written before writing the next
      * character.
-     *
+     * <p>
      * The indent generation is optimized (and made consistent with
      * certain coding conventions) by condensing groups of eight spaces
      * into tab characters.
      */
     protected void checkWrite() throws IOException {
         if (beginningOfLine) {
-            beginningOfLine = false;    
+            beginningOfLine = false;
             int i = currentIndent;
             while (i >= tabSize) {
                 super.write('\t');
@@ -135,7 +145,7 @@ public class IndentingWriter extends BufferedWriter {
             }
             while (i > 0) {
                 super.write(' ');
-                -- i;
+                --i;
             }
         }
     }
@@ -152,8 +162,9 @@ public class IndentingWriter extends BufferedWriter {
      */
     protected void indentOut() {
         currentIndent -= indentStep;
-        if (currentIndent < 0)
+        if (currentIndent < 0) {
             currentIndent = 0;
+        }
     }
 
     /**
@@ -219,7 +230,7 @@ public class IndentingWriter extends BufferedWriter {
 
     /**
      * Indent out; write string; end current line; indent in.
-     *
+     * <p>
      * This method is useful for generating lines of code that both
      * end and begin nested blocks, like "} else {".
      */
@@ -235,6 +246,7 @@ public class IndentingWriter extends BufferedWriter {
     public void p(Object o) throws IOException {
         write(o.toString());
     }
+
     /**
      * Write Object; end current line.
      */
@@ -270,7 +282,7 @@ public class IndentingWriter extends BufferedWriter {
 
     /**
      * Indent out; write Object; end current line; indent in.
-     *
+     * <p>
      * This method is useful for generating lines of code that both
      * end and begin nested blocks, like "} else {".
      */

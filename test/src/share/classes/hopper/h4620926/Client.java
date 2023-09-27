@@ -21,21 +21,22 @@ package hopper.h4620926;
 
 import org.omg.CORBA.*;
 import org.omg.CosNaming.*;
+
 import java.util.*;
+
 import test.*;
-        
+
 public class Client extends Thread {
     private static int numErrors = 0;
 
-    private static synchronized void errorOccurred( int clientNo,
-        Exception exc)
-    {
-        numErrors++ ;
+    private static synchronized void errorOccurred(int clientNo,
+                                                   Exception exc) {
+        numErrors++;
         System.out.println(
-            "\nError in ClientNo " + clientNo + ": " + exc );
+                "\nError in ClientNo " + clientNo + ": " + exc);
 
         System.err.println(
-            "\nError in ClientNo " + clientNo + ": " + exc );
+                "\nError in ClientNo " + clientNo + ": " + exc);
 
         exc.printStackTrace();
     }
@@ -49,7 +50,7 @@ public class Client extends Thread {
         clientNo = counter;
         System.out.println("Creating client - " + clientNo);
         NamingContext namingContext = NamingContextHelper.narrow(
-            orb.resolve_initial_references("NameService"));
+                orb.resolve_initial_references("NameService"));
         NameComponent[] name = { new NameComponent("Hello", "") };
         ref = HelloHelper.narrow(namingContext.resolve(name));
     }
@@ -57,16 +58,16 @@ public class Client extends Thread {
     public void run() {
         for (int i = 0; i < 3; i++) {
             try {
-                System.out.println("Client - " + clientNo + " : " 
-                                   + ref.sayHello());
+                System.out.println("Client - " + clientNo + " : "
+                                           + ref.sayHello());
                 Thread.sleep(2000);
             } catch (Exception e) {
-                errorOccurred(clientNo, e) ;
-                System.exit( 1 );
+                errorOccurred(clientNo, e);
+                System.exit(1);
             }
         }
-        System.out.println( "TEST PASSED" );
-        System.out.flush( );
+        System.out.println("TEST PASSED");
+        System.out.flush();
     }
 
     public static void main(String[] args) {
@@ -74,7 +75,7 @@ public class Client extends Thread {
         int noOfThreads = 5;
 
         // try {
-            // noOfThreads = Integer.parseInt(args[0]);
+        // noOfThreads = Integer.parseInt(args[0]);
         // } catch (NumberFormatException e) { }
 
         try {
@@ -92,9 +93,9 @@ public class Client extends Thread {
                 c[i].join();
             }
         } catch (Exception e) {
-            errorOccurred( -1, e );
+            errorOccurred(-1, e);
         }
 
-        System.exit( numErrors>0 ? 1 : 0 ) ;
+        System.exit(numErrors > 0 ? 1 : 0);
     }
 }

@@ -20,5 +20,6 @@
 
 package alpha.bravo;
 
-public class Wallaby {}
+public class Wallaby {
+}
 

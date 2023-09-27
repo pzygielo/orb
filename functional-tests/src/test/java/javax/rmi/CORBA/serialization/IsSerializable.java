@@ -21,19 +21,21 @@
 package javax.rmi.CORBA.serialization;
 
 public class IsSerializable
-    extends NotSerializable implements java.io.Serializable {
-        
+        extends NotSerializable implements java.io.Serializable {
+
     String helloString;
 
-    public IsSerializable(){}
+    public IsSerializable() {
+    }
 
-    public IsSerializable(String mssg){
+    public IsSerializable(String mssg) {
         helloString = mssg;
     }
 
-    public boolean equals(Object o){
-        if (!(o instanceof IsSerializable))
+    public boolean equals(Object o) {
+        if (!(o instanceof IsSerializable)) {
             return false;
-        return helloString.equals(((IsSerializable)o).helloString);
+        }
+        return helloString.equals(((IsSerializable) o).helloString);
     }
 }

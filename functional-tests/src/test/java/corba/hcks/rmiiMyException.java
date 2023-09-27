@@ -25,9 +25,8 @@
 package corba.hcks;
 
 public class rmiiMyException
-    extends
-        Exception
-{
+        extends
+        Exception {
 }
 
 // End of file.

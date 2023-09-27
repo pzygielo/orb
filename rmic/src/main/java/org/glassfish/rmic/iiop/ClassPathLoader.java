@@ -31,10 +31,9 @@ import java.io.IOException;
  * find the desired file.  This works for any JAR files specified in the given
  * ClassPath as well -- reusing all of that wonderful org.glassfish.rmic.tools.java code.
  *
- *@author Everett Anderson
+ * @author Everett Anderson
  */
-public class ClassPathLoader extends ClassLoader
-{
+public class ClassPathLoader extends ClassLoader {
     private ClassPath classPath;
 
     public ClassPathLoader(ClassPath classPath) {
@@ -42,8 +41,7 @@ public class ClassPathLoader extends ClassLoader
     }
 
     // Called by the super class
-    protected Class findClass(String name) throws ClassNotFoundException
-    {
+    protected Class findClass(String name) throws ClassNotFoundException {
         byte[] b = loadClassData(name);
         return defineClass(name, b, 0, b.length);
     }
@@ -52,12 +50,11 @@ public class ClassPathLoader extends ClassLoader
      * Load the class with the given fully qualified name from the ClassPath.
      */
     private byte[] loadClassData(String className)
-        throws ClassNotFoundException
-    {
+            throws ClassNotFoundException {
         // Build the file name and subdirectory from the
         // class name
         String filename = className.replace('.', File.separatorChar)
-                          + ".class";
+                + ".class";
 
         // Have ClassPath find the file for us, and wrap it in a
         // ClassFile.  Note:  This is where it looks inside jar files that
@@ -76,14 +73,14 @@ public class ClassPathLoader extends ClassLoader
                 // knowing if it's a separate file or an entry in a
                 // jar file.
                 DataInputStream input
-                    = new DataInputStream(classFile.getInputStream());
+                        = new DataInputStream(classFile.getInputStream());
 
                 // Can't rely on input available() since it will be
                 // something unusual if it's a jar file!  May need
                 // to worry about a possible problem if someone
                 // makes a jar file entry with a size greater than
                 // max int.
-                data = new byte[(int)classFile.length()];
+                data = new byte[(int) classFile.length()];
 
                 try {
                     input.readFully(data);
@@ -95,7 +92,10 @@ public class ClassPathLoader extends ClassLoader
                 } finally {
                     // Just don't care if there's an exception on close!
                     // I hate that close can throw an IOException!
-                    try { input.close(); } catch (IOException ex) {}
+                    try {
+                        input.close();
+                    } catch (IOException ex) {
+                    }
                 }
             } catch (IOException ex) {
                 // Couldn't get the input stream for the file.  This is
@@ -103,8 +103,9 @@ public class ClassPathLoader extends ClassLoader
                 reportedError = ex;
             }
 
-            if (data == null)
+            if (data == null) {
                 throw new ClassNotFoundException(className, reportedError);
+            }
 
             return data;
         }

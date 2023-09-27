@@ -31,54 +31,51 @@ import corba.framework.*;
 import java.util.*;
 import java.io.*;
 
-public class Client 
-    implements InternalProcess 
-{
+public class Client
+        implements InternalProcess {
 
     // Set from run()
     private ORB orb;
-    
+
     // Set from run()
     private PrintStream out;
-    
+
     // Set from run()
     private PrintStream err;
-    
+
     private CodecFactory codecFactory;
 
     public static void main(String args[]) {
         try {
-            (new Client()).run( System.getProperties(),
-                                args, System.out, System.err, null );
-        }
-        catch( Exception e ) {
-            e.printStackTrace( System.err );
-            System.exit( 1 );
+            (new Client()).run(System.getProperties(),
+                               args, System.out, System.err, null);
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+            System.exit(1);
         }
     }
 
-    public void run( Properties environment, String args[], PrintStream out,
-                     PrintStream err, Hashtable extra) 
-        throws Exception
-    {
-        out.println( "Instantiating ORB" );
-        out.println( "=================" );
+    public void run(Properties environment, String args[], PrintStream out,
+                    PrintStream err, Hashtable extra)
+            throws Exception {
+        out.println("Instantiating ORB");
+        out.println("=================");
 
         // Initializer classes
         String testInitializer = "pi.orbinit.ClientTestInitializer";
 
         // create and initialize the ORB
-        Properties props = new Properties() ;
-        props.put( "org.omg.CORBA.ORBClass", 
-                   System.getProperty("org.omg.CORBA.ORBClass"));
+        Properties props = new Properties();
+        props.put("org.omg.CORBA.ORBClass",
+                  System.getProperty("org.omg.CORBA.ORBClass"));
         ORB orb = ORB.init(args, props);
 
         this.out = out;
         this.err = err;
         this.orb = orb;
 
-        if( ServerTestInitializer.postInitFailed ) {
-            throw new RuntimeException( "post_init failed" );
+        if (ServerTestInitializer.postInitFailed) {
+            throw new RuntimeException("post_init failed");
         }
 
         // Test IORInterceptor
@@ -93,9 +90,9 @@ public class Client
      */
     private void testIORInterceptor() {
         out.println();
-        out.println( "Testing IORInterceptor" );
-        out.println( "======================" );
-        out.println( "+ Nothing to test on client side, yet." );
+        out.println("Testing IORInterceptor");
+        out.println("======================");
+        out.println("+ Nothing to test on client side, yet.");
     }
 
     /**
@@ -103,8 +100,8 @@ public class Client
      */
     private void testIORInfo() {
         out.println();
-        out.println( "Testing IORInfo" );
-        out.println( "===============" );
-        out.println( "+ Nothing to test on client side, yet." );
+        out.println("Testing IORInfo");
+        out.println("===============");
+        out.println("+ Nothing to test on client side, yet.");
     }
 }

@@ -19,12 +19,12 @@
 
 package org.glassfish.rmic.tools.asm;
 
-import org.glassfish.rmic.tools.java.*;
+import org.glassfish.rmic.tools.java.MemberDefinition;
 
 /**
  * This class is used to assemble the local variables in the local
  * variable table.
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.

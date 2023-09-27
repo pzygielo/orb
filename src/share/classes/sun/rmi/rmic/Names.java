@@ -49,17 +49,18 @@ public class Names {
      * does not permit it, such as when synthetically defining an inner
      * class outside of its outer class, and for generating file names
      * corresponding to inner classes.
-     *
+     * <p>
      * Currently this mangling involves modifying the internal names of
      * inner classes by converting occurrences of ". " into "$".
-     *
+     * <p>
      * This code is taken from the "mangleInnerType" method of
      * the "sun.tools.java.Type" class; this method cannot be accessed
      * itself because it is package protected.
      */
     static final public Identifier mangleClass(Identifier className) {
-        if (!className.isInner())
+        if (!className.isInner()) {
             return className;
+        }
 
         /*
          * Get '.' qualified inner class name (with outer class
@@ -67,10 +68,11 @@ public class Names {
          * each '.' with '$'.
          */
         Identifier mangled = Identifier.lookup(
-                                               className.getFlatName().toString()
-                                               .replace('.', sun.tools.java.Constants.SIGC_INNERCLASS));
-        if (mangled.isInner())
+                className.getFlatName().toString()
+                        .replace('.', sun.tools.java.Constants.SIGC_INNERCLASS));
+        if (mangled.isInner()) {
             throw new Error("failed to mangle inner class name");
+        }
 
         // prepend package qualifier back for returned identifier
         return Identifier.lookup(className.getQualifier(), mangled);

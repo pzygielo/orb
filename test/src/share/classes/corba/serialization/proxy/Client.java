@@ -25,10 +25,8 @@ import javax.naming.*;
 
 import java.io.*;
 
-public class Client 
-{
-    public static void main(String args[])
-    {
+public class Client {
+    public static void main(String args[]) {
         FrobnicatorProvider test = null;
         try {
             System.setSecurityManager(new NoSecurityManager());
@@ -39,9 +37,9 @@ public class Client
             //System.out.println("LookObjType = " + myLook.getClass().getName() );
 
             //Obtain a stub for the remote object.
-            test = (FrobnicatorProvider)PortableRemoteObject.narrow(
-                             myLook ,
-                             FrobnicatorProvider.class);
+            test = (FrobnicatorProvider) PortableRemoteObject.narrow(
+                    myLook,
+                    FrobnicatorProvider.class);
             Frobnicator frobnicator = test.getFrobnicator();
             //toString operation will cause proxy invocation
             //System.out.println("My frob= " + frobnicator);

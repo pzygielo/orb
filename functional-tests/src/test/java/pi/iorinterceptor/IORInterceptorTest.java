@@ -21,6 +21,7 @@ package pi.iorinterceptor;
 
 import org.omg.CORBA.*;
 import corba.framework.*;
+
 import java.util.*;
 
 /**
@@ -29,21 +30,19 @@ import java.util.*;
  * covered in this test.
  */
 public class IORInterceptorTest
-    extends CORBATest 
-{
-    protected void doTest() 
-        throws Throwable 
-    {
+        extends CORBATest {
+    protected void doTest()
+            throws Throwable {
         Controller orbd = createORBD();
 
         orbd.start();
 
-        Controller server = createServer( "pi.iorinterceptor.Server" );
-    
+        Controller server = createServer("pi.iorinterceptor.Server");
+
         server.start();
 
-        Controller client = createClient( "pi.iorinterceptor.Client" );
-    
+        Controller client = createClient("pi.iorinterceptor.Client");
+
         client.start();
 
         client.waitFor();

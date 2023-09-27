@@ -19,8 +19,11 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
+import org.glassfish.rmic.tools.java.CompilerError;
+import org.glassfish.rmic.tools.java.Environment;
+import org.glassfish.rmic.tools.java.Type;
+
 import java.util.Hashtable;
 
 /**
@@ -70,6 +73,7 @@ class IncDecExpression extends UnaryExpression {
     public Expression inline(Environment env, Context ctx) {
         return inlineValue(env, ctx);
     }
+
     public Expression inlineValue(Environment env, Context ctx) {
         // Why not inlineLHS?  But that does not work.
         right = right.inlineValue(env, ctx);
@@ -82,7 +86,7 @@ class IncDecExpression extends UnaryExpression {
     public int costInline(int thresh, Environment env, Context ctx) {
         if (updater == null) {
             if ((right.op == IDENT) && type.isType(TC_INT) &&
-                (((IdentifierExpression)right).field.isLocal())) {
+                    (((IdentifierExpression) right).field.isLocal())) {
                 // Increment variable in place.  Count 3 bytes for 'iinc'.
                 return 3;
             }
@@ -98,45 +102,44 @@ class IncDecExpression extends UnaryExpression {
         }
     }
 
-
     /**
      * Code
      */
 
     private void codeIncDecOp(Assembler asm, boolean inc) {
         switch (type.getTypeCode()) {
-          case TC_BYTE:
+        case TC_BYTE:
             asm.add(where, opc_ldc, 1);
             asm.add(where, inc ? opc_iadd : opc_isub);
             asm.add(where, opc_i2b);
             break;
-          case TC_SHORT:
+        case TC_SHORT:
             asm.add(where, opc_ldc, 1);
             asm.add(where, inc ? opc_iadd : opc_isub);
             asm.add(where, opc_i2s);
             break;
-          case TC_CHAR:
+        case TC_CHAR:
             asm.add(where, opc_ldc, 1);
             asm.add(where, inc ? opc_iadd : opc_isub);
             asm.add(where, opc_i2c);
             break;
-          case TC_INT:
+        case TC_INT:
             asm.add(where, opc_ldc, 1);
             asm.add(where, inc ? opc_iadd : opc_isub);
             break;
-          case TC_LONG:
+        case TC_LONG:
             asm.add(where, opc_ldc2_w, 1L);
             asm.add(where, inc ? opc_ladd : opc_lsub);
             break;
-          case TC_FLOAT:
+        case TC_FLOAT:
             asm.add(where, opc_ldc, new Float(1));
             asm.add(where, inc ? opc_fadd : opc_fsub);
             break;
-          case TC_DOUBLE:
+        case TC_DOUBLE:
             asm.add(where, opc_ldc2_w, new Double(1));
             asm.add(where, inc ? opc_dadd : opc_dsub);
             break;
-          default:
+        default:
             throw new CompilerError("invalid type");
         }
     }
@@ -145,11 +148,11 @@ class IncDecExpression extends UnaryExpression {
 
         // The 'iinc' instruction cannot be used if an access method call is required.
         if ((right.op == IDENT) && type.isType(TC_INT) &&
-            (((IdentifierExpression)right).field.isLocal()) && updater == null) {
+                (((IdentifierExpression) right).field.isLocal()) && updater == null) {
             if (valNeeded && !prefix) {
                 right.codeLoad(env, ctx, asm);
             }
-            int v = ((LocalMember)((IdentifierExpression)right).field).number;
+            int v = ((LocalMember) ((IdentifierExpression) right).field).number;
             int[] operands = { v, inc ? 1 : -1 };
             asm.add(where, opc_iinc, operands);
             if (valNeeded && prefix) {

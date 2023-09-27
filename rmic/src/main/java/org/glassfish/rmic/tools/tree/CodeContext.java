@@ -19,7 +19,6 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Label;
 
 /**
@@ -37,22 +36,22 @@ class CodeContext extends Context {
     CodeContext(Context ctx, Node node) {
         super(ctx, node);
         switch (node.op) {
-          case DO:
-          case WHILE:
-          case FOR:
-          case FINALLY:
-          case SYNCHRONIZED:
+        case DO:
+        case WHILE:
+        case FOR:
+        case FINALLY:
+        case SYNCHRONIZED:
             this.breakLabel = new Label();
             this.contLabel = new Label();
             break;
-          case SWITCH:
-          case TRY:
-          case INLINEMETHOD:
-          case INLINENEWINSTANCE:
+        case SWITCH:
+        case TRY:
+        case INLINEMETHOD:
+        case INLINENEWINSTANCE:
             this.breakLabel = new Label();
             break;
-          default:
-            if ((node instanceof Statement) && (((Statement)node).labels != null)) {
+        default:
+            if ((node instanceof Statement) && (((Statement) node).labels != null)) {
                 this.breakLabel = new Label();
             }
         }

@@ -20,6 +20,7 @@
 package com.sun.corba.ee.impl.naming.pcosnaming;
 
 import org.omg.CosNaming.BindingType;
+
 import java.io.Serializable;
 
 /**
@@ -28,8 +29,7 @@ import java.io.Serializable;
  * components associated with the binding.
  */
 public class InternalBindingValue
-                implements Serializable
-{
+        implements Serializable {
     private static final long serialVersionUID = -2545360261776178726L;
 
     public BindingType theBindingType;
@@ -39,7 +39,7 @@ public class InternalBindingValue
     // will be set once and then the result will be used everytime.
     public String strObjectRef;
     transient private org.omg.CORBA.Object theObjectRef;
-  
+
     // Default constructor
     public InternalBindingValue() {
     }
@@ -51,14 +51,12 @@ public class InternalBindingValue
         strObjectRef = o;
     }
 
-    public org.omg.CORBA.Object getObjectRef( )
-    {
+    public org.omg.CORBA.Object getObjectRef() {
         return theObjectRef;
     }
 
-    public void setObjectRef( org.omg.CORBA.Object ObjectRef )
-    {
+    public void setObjectRef(org.omg.CORBA.Object ObjectRef) {
         theObjectRef = ObjectRef;
     }
-    
+
 }

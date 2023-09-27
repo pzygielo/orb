@@ -19,20 +19,22 @@
 
 package org.glassfish.rmic.tools.asm;
 
-import org.glassfish.rmic.tools.java.*;
-import java.io.IOException;
+import org.glassfish.rmic.tools.java.Environment;
+import org.glassfish.rmic.tools.java.RuntimeConstants;
+
 import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
  * Base constant data class. Every constant pool data item
  * is derived from this class.
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
  */
 
-abstract class  ConstantPoolData implements RuntimeConstants {
+abstract class ConstantPoolData implements RuntimeConstants {
     int index;
 
     /**

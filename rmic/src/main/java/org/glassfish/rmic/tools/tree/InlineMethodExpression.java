@@ -19,9 +19,12 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
-import org.glassfish.rmic.tools.asm.Label;
 import org.glassfish.rmic.tools.asm.Assembler;
+import org.glassfish.rmic.tools.java.CompilerError;
+import org.glassfish.rmic.tools.java.Environment;
+import org.glassfish.rmic.tools.java.MemberDefinition;
+import org.glassfish.rmic.tools.java.Type;
+
 import java.io.PrintStream;
 
 /**
@@ -42,6 +45,7 @@ class InlineMethodExpression extends Expression {
         this.field = field;
         this.body = body;
     }
+
     /**
      * Inline
      */
@@ -50,7 +54,7 @@ class InlineMethodExpression extends Expression {
         if (body == null) {
             return null;
         } else if (body.op == INLINERETURN) {
-            Expression expr = ((InlineReturnStatement)body).expr;
+            Expression expr = ((InlineReturnStatement) body).expr;
             if (expr != null && type.isType(TC_VOID)) {
                 throw new CompilerError("value on inline-void return");
             }
@@ -59,6 +63,7 @@ class InlineMethodExpression extends Expression {
             return this;
         }
     }
+
     public Expression inlineValue(Environment env, Context ctx) {
         // When this node was constructed, "copyInline" walked the body
         // with a "valNeeded" flag which made all returns either void
@@ -72,7 +77,7 @@ class InlineMethodExpression extends Expression {
      * Create a copy of the expression for method inlining
      */
     public Expression copyInline(Context ctx) {
-        InlineMethodExpression e = (InlineMethodExpression)clone();
+        InlineMethodExpression e = (InlineMethodExpression) clone();
         if (body != null) {
             e.body = body.copyInline(ctx, true);
         }
@@ -86,6 +91,7 @@ class InlineMethodExpression extends Expression {
         // pop the result if there is any (usually, type is already void)
         super.code(env, ctx, asm);
     }
+
     public void codeValue(Environment env, Context ctx, Assembler asm) {
         CodeContext newctx = new CodeContext(ctx, this);
         body.code(env, newctx, asm);

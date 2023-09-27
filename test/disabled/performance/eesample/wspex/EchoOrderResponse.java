@@ -17,7 +17,7 @@
  * Classpath-exception-2.0
  */
 
-package performance.eesample.wspex ;
+package performance.eesample.wspex;
 
 import java.io.Serializable;
 
@@ -27,11 +27,9 @@ public class EchoOrderResponse implements Serializable {
 
     /**
      * Gets the value of the echoOrderResponse property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Order }
-     *     
+     *
+     * @return possible object is
+     * {@link Order }
      */
     public Order getEchoOrderResponse() {
         return echoOrderResponse;
@@ -39,11 +37,9 @@ public class EchoOrderResponse implements Serializable {
 
     /**
      * Sets the value of the echoOrderResponse property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Order }
-     *     
+     *
+     * @param value allowed object is
+     * {@link Order }
      */
     public void setEchoOrderResponse(Order value) {
         this.echoOrderResponse = value;

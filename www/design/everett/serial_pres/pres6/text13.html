@@ -22,17 +22,27 @@
 
 <html>
 <head>
-  <meta HTTP-EQUIV=CONTENT-TYPE CONTENT="text/html; charset=utf-8">
-  <title>Switching to java.nio</title>
+    <meta HTTP-EQUIV=CONTENT-TYPE CONTENT="text/html; charset=utf-8">
+    <title>Switching to java.nio</title>
 </head>
 <body text="#000000" bgcolor="#FFFFFF" link="#0000CC" vlink="#000080" alink="#0000CC">
 <center>
-<a href="text0.html">First page</a> <a href="text12.html">Back</a> <a href="text14.html">Continue</a> <a href="text23.html">Last page</a> <a href="serial6pres.html">Overview</a> <a href="img13.html">Graphics</a></center><br>
+    <a href="text0.html">First page</a> <a href="text12.html">Back</a> <a href="text14.html">Continue</a> <a href="text23.html">Last page</a> <a
+        href="serial6pres.html">Overview</a> <a href="img13.html">Graphics</a></center>
+<br>
 <h1>Switching to java.nio</h1>
-<ul><li><h2>Try this:</h2></li>
-<li><ul><li>Make ByteBufferWithInfo closed, providing methods for get/setting bytes and index rather than direct array access.</li>
-<li>When that works, try switching to <a href="http://java.nio.ByteBuffers/">java.nio.ByteBuffers</a>.  Will need to do some work to see if you want direct/indirect buffers, develop a cache since they're expensive to create, etc.</li>
-<li>Experiment with replacing our marshaling code with that actually on the nio buffer.  Performance gain?</li>
-<li>Revamp CodeSetConversion to stop taking byte[]'s.</li>
-</ul></li></ul></body>
+<ul>
+    <li><h2>Try this:</h2></li>
+    <li>
+        <ul>
+            <li>Make ByteBufferWithInfo closed, providing methods for get/setting bytes and index rather than direct array access.</li>
+            <li>When that works, try switching to <a href="http://java.nio.ByteBuffers/">java.nio.ByteBuffers</a>. Will need to do some work to see if you want
+                direct/indirect buffers, develop a cache since they're expensive to create, etc.
+            </li>
+            <li>Experiment with replacing our marshaling code with that actually on the nio buffer. Performance gain?</li>
+            <li>Revamp CodeSetConversion to stop taking byte[]'s.</li>
+        </ul>
+    </li>
+</ul>
+</body>
 </html>

@@ -19,12 +19,11 @@
 
 package org.omg.CORBA;
 
-
 /**
  * The Java mapping of the IDL enum <code>TCKind</code>, which
  * specifies the kind of a <code>TypeCode</code> object.  There is
  * one kind for each primitive and essential IDL data type.
- * <P>
+ * <p>
  * The class <code>TCKind</code> consists of:
  * <UL>
  * <LI>a set of <code>int</code> constants, one for each
@@ -40,18 +39,18 @@ package org.omg.CORBA;
  * corresponding <code>TCKind</code> instance
  * <P>Example:
  * <PRE>
- *      org.omg.CORBA.TCKind k = org.omg.CORBA.TCKind.from_int(
- *                         org.omg.CORBA.TCKind._tk_string);
+ * org.omg.CORBA.TCKind k = org.omg.CORBA.TCKind.from_int(
+ * org.omg.CORBA.TCKind._tk_string);
  * </PRE>
  * The variable <code>k</code> represents the <code>TCKind</code>
  * instance for the IDL type <code>string</code>, which is
  * <code>tk_string</code>.
- * 
+ *
  * <LI>the method <code>value</code> for accessing the
  * <code>_value</code> field of a <code>TCKind</code> constant
  * <P>Example:
  * <PRE>
- *   int i = org.omg.CORBA.TCKind.tk_char.value();
+ * int i = org.omg.CORBA.TCKind.tk_char.value();
  * </PRE>
  * The variable <code>i</code> represents 9, the value for the
  * IDL data type <code>char</code>.
@@ -227,7 +226,6 @@ public class TCKind {
      * The <code>int</code> constant for the IDL data type <code>abstract interface</code>.
      */
     public static final int _tk_abstract_interface = 32;
-
 
     /**
      * The <code>TCKind</code> constant whose <code>value</code> field is
@@ -417,26 +415,23 @@ public class TCKind {
      */
     public static final TCKind tk_value_box = new TCKind(_tk_value_box);
     // orbos 98-01-18: Objects By Value -- end
-    
+
     /**
      * The <code>TCKind</code> constant whose <code>value</code> field is
      * initialized with <code>TCKind._tk_native</code>.
      */
     public static final TCKind tk_native = new TCKind(_tk_native);
-    
+
     /**
      * The <code>TCKind</code> constant whose <code>value</code> field is
      * initialized with <code>TCKind._tk_abstract_interface</code>.
      */
     public static final TCKind tk_abstract_interface = new TCKind(_tk_abstract_interface);
 
-
-
-
     /**
      * Retrieves the value of this <code>TCKind</code> instance.
      *
-     * @return  the <code>int</code> that represents the kind of
+     * @return the <code>int</code> that represents the kind of
      * IDL data type for this <code>TCKind</code> instance
      */
     public int value() {
@@ -448,11 +443,11 @@ public class TCKind {
      * <code>TCKind</code> instance.
      *
      * @param i the <code>int</code> to convert.  It must be one of
-     *         the <code>int</code> constants in the class
-     *         <code>TCKind</code>.
-     * @return  the <code>TCKind</code> instance whose <code>value</code>
+     * the <code>int</code> constants in the class
+     * <code>TCKind</code>.
+     * @return the <code>TCKind</code> instance whose <code>value</code>
      * field matches the given <code>int</code>
-     * @exception  BAD_PARAM  if the given <code>int</code> does not
+     * @throws BAD_PARAM if the given <code>int</code> does not
      * match the <code>_value</code> field of
      * any <code>TCKind</code> instance
      */
@@ -529,19 +524,18 @@ public class TCKind {
         }
     }
 
-
     /**
-    * Creates a new <code>TCKind</code> instance initialized with the given
-    * <code>int</code>.
-    * @deprecated Do not use this constructor as this method should be private
-    * according to the OMG specification. Use {@link #from_int(int)} instead.
-    *
-    * @param  _value the <code>int</code> to convert.  It must be one of
-    *         the <code>int</code> constants in the class
-    *         <code>TCKind</code>.
-    */
+     * Creates a new <code>TCKind</code> instance initialized with the given
+     * <code>int</code>.
+     *
+     * @param _value the <code>int</code> to convert.  It must be one of
+     * the <code>int</code> constants in the class
+     * <code>TCKind</code>.
+     * @deprecated Do not use this constructor as this method should be private
+     * according to the OMG specification. Use {@link #from_int(int)} instead.
+     */
     // @Deprecated
-    protected TCKind(int _value){
+    protected TCKind(int _value) {
         this._value = _value;
     }
 

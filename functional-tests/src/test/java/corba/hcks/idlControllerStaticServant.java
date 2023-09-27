@@ -27,21 +27,18 @@ package corba.hcks;
 import org.omg.CORBA.ORB;
 
 class idlControllerStaticServant
-    extends 
-        _idlControllerIImplBase 
-{
+        extends
+        _idlControllerIImplBase {
     public static final String baseMsg =
-        idlControllerStaticServant.class.getName();
+            idlControllerStaticServant.class.getName();
 
     public ORB ridlStaticORB;
 
-    public void setRidlStaticORB (ORB ridlStaticORB)
-    {
+    public void setRidlStaticORB(ORB ridlStaticORB) {
         this.ridlStaticORB = ridlStaticORB;
     }
 
-    public String action (String action)
-    {
+    public String action(String action) {
         if (action.equals(C.disconnectRidlStaticServant)) {
 
             ridlStaticORB.disconnect(Server.ridlStaticForDisconnect);

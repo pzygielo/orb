@@ -28,8 +28,8 @@ import java.rmi.RemoteException;
  * collection of sets, all of which coordinate with each other to maintain,
  * in each instance, a list of all the currently active sets.
  *
- * @version     1.0, 5/13/98
- * @author      Bryan Atsatt
+ * @author Bryan Atsatt
+ * @version 1.0, 5/13/98
  */
 public interface DistributedSet extends Remote {
 
@@ -38,55 +38,55 @@ public interface DistributedSet extends Remote {
     /*
      * See if this set is still active. Returns PING_RESPONSE.
      */
-    public String ping (String fromSetName) throws RemoteException;
+    public String ping(String fromSetName) throws RemoteException;
 
     /*
      * Get this set's name.
      */
-    public String getName () throws RemoteException;
-    
+    public String getName() throws RemoteException;
+
     /*
      * Notify this set that the specified set is joining. If the set
      * already is 'known' by this instance, this call performs no
      * action.
      */
-    public void join (String setName, DistributedSet set) throws RemoteException;
-    
+    public void join(String setName, DistributedSet set) throws RemoteException;
+
     /*
      * Notify this set that the specified set is leaving.
      */
-    public void leave (String setName) throws RemoteException;
-    
+    public void leave(String setName) throws RemoteException;
+
     /*
      * Broadcast a message to all sets.
      */
-    public void broadcastMessage (String message) throws RemoteException;
-    
+    public void broadcastMessage(String message) throws RemoteException;
+
     /*
      * Send a message to specified set.
      */
-    public void sendMessage (DistributedSet toSet, String message) throws RemoteException;
-    
+    public void sendMessage(DistributedSet toSet, String message) throws RemoteException;
+
     /*
      * Receive a message from another set.
      */
-    public void receiveMessage (String message, String fromSetName) throws RemoteException;
-    
+    public void receiveMessage(String message, String fromSetName) throws RemoteException;
+
     /*
-     * Return the number of currently active sets, _excluding_ 
+     * Return the number of currently active sets, _excluding_
      * this instance.
      */
-    public int countSets () throws RemoteException;
-    
+    public int countSets() throws RemoteException;
+
     /*
      * List the names of all the active sets, _excluding_ this
      * instance.
      */
-    public String[] listSetNames () throws RemoteException;
-    
+    public String[] listSetNames() throws RemoteException;
+
     /*
      * Get a set instance by name. Returns null if not found.
      */
-    public DistributedSet getSet (String setName) throws RemoteException;
+    public DistributedSet getSet(String setName) throws RemoteException;
 }
 

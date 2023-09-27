@@ -34,8 +34,7 @@ import org.omg.CORBA.UNKNOWN;
 /**
  * @author Harold Carr
  */
-public class ClientTwoRefs
-{
+public class ClientTwoRefs {
     public static final String baseMsg = ClientTwoRefs.class.getName();
 
     public static boolean foundErrors = false;
@@ -45,11 +44,10 @@ public class ClientTwoRefs
 
     public static ORB orb;
 
-    public static void main(String[] av)
-    {
+    public static void main(String[] av) {
         try {
 
-            if (! ColocatedCS.isColocated) {
+            if (!ColocatedCS.isColocated) {
                 Properties props = new Properties();
                 Client.withSticky = true;
                 Client.setProperties(props);
@@ -70,25 +68,24 @@ public class ClientTwoRefs
             System.out.println(baseMsg + ".main: FAILED");
             System.out.println(baseMsg + ".main: Test complete.");
             t.printStackTrace(System.out);
-            System.exit (1);
+            System.exit(1);
         }
     }
 
     private static void runTest()
-        throws Exception
-    {
+            throws Exception {
         System.out.println("================================================");
         System.out.println();
 
         iRef =
-            IHelper.narrow(
-                Common.getNameService(orb)
-                    .resolve(Common.makeNameComponent(Common.serverName1)));
+                IHelper.narrow(
+                        Common.getNameService(orb)
+                                .resolve(Common.makeNameComponent(Common.serverName1)));
 
         i2Ref =
-            I2Helper.narrow(
-                Common.getNameService(orb)
-                    .resolve(Common.makeNameComponent(Common.serverName2)));
+                I2Helper.narrow(
+                        Common.getNameService(orb)
+                                .resolve(Common.makeNameComponent(Common.serverName2)));
 
         //
         // Test to ensure we are only running sticky via host/port/type
@@ -107,7 +104,6 @@ public class ClientTwoRefs
         // The following calls will go to the wrong reference if
         // using the entire ContactInfo as a key.  Need to return
         // a specific SocketInfo instead.
-
 
         // This returns a String in the bad case but gets no
         // error.  But the return value is the length of a string
@@ -168,7 +164,8 @@ public class ClientTwoRefs
         try {
             iRef.throwRuntimeException(0);
         } catch (UNKNOWN e) {
-            ;;
+            ;
+            ;
         }
 
         orb.shutdown(false);

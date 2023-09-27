@@ -178,9 +178,13 @@ public class ThreadPoolImplTest {
      */
     @SuppressWarnings("JUnitTestCaseWithNoTests")
     private static class WorkImpl implements Work {
-        /** triggered by the work item once the work has started */
+        /**
+         * triggered by the work item once the work has started
+         */
         CountDownLatch started = new CountDownLatch(1);
-        /** triggered by the test to let the execution continue */
+        /**
+         * triggered by the test to let the execution continue
+         */
         CountDownLatch finish = new CountDownLatch(1);
 
         @Override

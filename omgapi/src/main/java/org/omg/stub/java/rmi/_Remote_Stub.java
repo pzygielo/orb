@@ -23,8 +23,8 @@
 
 package org.omg.stub.java.rmi;
 
-import java.rmi.Remote;
 import javax.rmi.CORBA.Stub;
+import java.rmi.Remote;
 
 /**
  * This class provides the Stub for the Remote Type.  The class is generated
@@ -34,17 +34,18 @@ import javax.rmi.CORBA.Stub;
 public final class _Remote_Stub extends Stub implements Remote {
 
     private static final String _type_ids[] = {
-        ""
+            ""
     };
-    
+
     /**
      * Returns an array of repository ids that an object implements.
      * The string at index zero represents the most derived interface.  The last id,
      * for the generic CORBA object is (i.e., IDL:omg.org/CORBA/Object:1.0") is
      * implied and not present.
+     *
      * @return an array of repository ids that an object implements.
      */
     public String[] _ids() {
         return (String[]) _type_ids.clone();
-    } 
+    }
 }

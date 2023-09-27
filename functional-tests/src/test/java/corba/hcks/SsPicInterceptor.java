@@ -46,12 +46,11 @@ import org.omg.PortableInterceptor.ServerRequestInfo;
  */
 
 public class SsPicInterceptor
-    extends
+        extends
         org.omg.CORBA.LocalObject
-    implements
+        implements
         ClientRequestInterceptor,
-        ServerRequestInterceptor
-{
+        ServerRequestInterceptor {
     public static final String baseMsg = MyInterceptor.class.getName();
 
     public ORB anyFactory = ORB.init();
@@ -81,7 +80,6 @@ public class SsPicInterceptor
     public static int sPic1BSlotId; // Used in other files.
     public int sPic1SlotId;  // Used here in this instance.
 
-
     //
     // From server interceptor to itself.
     //
@@ -98,7 +96,6 @@ public class SsPicInterceptor
     // on a out call call to avoid recursion.
     public int sPic2SlotId;
 
-
     //
     // Constructor.
     //
@@ -109,8 +106,7 @@ public class SsPicInterceptor
                             int sPic2SlotId,
                             Current piCurrent,
                             NamingContext nameService,
-                            String name)
-    {
+                            String name) {
         this.sPic1ServiceContextId = sPic1ServiceContextId;
         this.sPic2ServiceContextId = sPic2ServiceContextId;
         this.sPic1SlotId = sPic1SlotId;
@@ -124,30 +120,27 @@ public class SsPicInterceptor
     // Interceptor operations
     //
 
-    public String name()
-    {
+    public String name() {
         return name;
     }
 
-    public void destroy() 
-    {
+    public void destroy() {
     }
 
     //
     // ClientRequestInterceptor operations
     //
 
-    public void send_request(ClientRequestInfo ri)
-    {
+    public void send_request(ClientRequestInfo ri) {
         checkPicMemory(ri);
 
         // If the client gives us info then send it to the server.
         // Existence counts, not contents.
         Any any = null;
         any = U.getSlot(ri, sPic1SlotId);
-        if (! U.isTkNull(any)) {
-            ServiceContext serviceContext = 
-                new ServiceContext(sPic1ServiceContextId, serviceContextData);
+        if (!U.isTkNull(any)) {
+            ServiceContext serviceContext =
+                    new ServiceContext(sPic1ServiceContextId, serviceContextData);
             ri.add_request_service_context(serviceContext, false);
         }
 
@@ -158,32 +151,30 @@ public class SsPicInterceptor
         any = null;
         any = U.getSlot(ri, sPic2SlotId);
         if (U.isTkBoolean(any)) {
-            ServiceContext serviceContext = 
-                new ServiceContext(sPic2ServiceContextId, serviceContextData);
+            ServiceContext serviceContext =
+                    new ServiceContext(sPic2ServiceContextId, serviceContextData);
             ri.add_request_service_context(serviceContext, false);
         }
 
     }
 
-    public void send_poll(ClientRequestInfo ri)
-    {
+    public void send_poll(ClientRequestInfo ri) {
     }
 
-    public void receive_reply(ClientRequestInfo ri)
-    {
+    public void receive_reply(ClientRequestInfo ri) {
         checkPicMemory(ri);
 
         if (isSPic1(ri)) {
             // This should not result in an exception.
             // If it does the client test will report it.
             ri.get_reply_service_context(sPic1ServiceContextId);
-        
+
             // The server's sets to these same slot ids should not effect
             // the client interceptors ri slots nor
             // the client interceptors pic slots.
-            Any anyRi  = null;
+            Any anyRi = null;
             Any anyPic = null;
-            anyRi  = U.getSlot(ri, sPic1SlotId);
+            anyRi = U.getSlot(ri, sPic1SlotId);
             anyPic = U.getSlot(piCurrent, sPic1SlotId);
             if (U.isTkLong(anyRi)) {
                 int value = anyRi.extract_long();
@@ -191,26 +182,23 @@ public class SsPicInterceptor
                     throw new RuntimeException("RI CLOBBERED");
                 }
             }
-            if (! U.isTkNull(anyPic)) {
+            if (!U.isTkNull(anyPic)) {
                 throw new RuntimeException("PIC CLOBBERED");
             }
         }
     }
 
-    public void receive_exception(ClientRequestInfo ri)
-    {
+    public void receive_exception(ClientRequestInfo ri) {
     }
 
-    public void receive_other(ClientRequestInfo ri)
-    {
+    public void receive_other(ClientRequestInfo ri) {
     }
 
     //
     // ServerRequestInterceptor operations
     //
 
-    public void receive_request_service_contexts(ServerRequestInfo ri)
-    {
+    public void receive_request_service_contexts(ServerRequestInfo ri) {
         checkPicMemory(ri);
 
         try {
@@ -242,9 +230,9 @@ public class SsPicInterceptor
             } catch (BAD_PARAM e) {
                 // Recusion indicator not set so make the call.
                 try {
-                    idlSLI ridlSLI1 = 
-                        idlSLIHelper.narrow(
-                         nameService.resolve(U.makeNameComponent(C.idlSLI1)));
+                    idlSLI ridlSLI1 =
+                            idlSLIHelper.narrow(
+                                    nameService.resolve(U.makeNameComponent(C.idlSLI1)));
                     ridlSLI1.sPic2();
                 } catch (CannotProceed ex) {
                     U.sopUnexpectedException(baseMsg, ex);
@@ -257,8 +245,7 @@ public class SsPicInterceptor
         }
     }
 
-    public void receive_request(ServerRequestInfo ri)
-    {
+    public void receive_request(ServerRequestInfo ri) {
         checkPicMemory(ri);
 
         boolean ensure = isSPic1(ri);
@@ -266,29 +253,25 @@ public class SsPicInterceptor
                                   sPic1SlotId, 2, piCurrent);
     }
 
-    public void send_reply(ServerRequestInfo ri)
-    {
+    public void send_reply(ServerRequestInfo ri) {
         checkPicMemory(ri);
 
         boolean ensure = isSPic1(ri);
         if (C.testAndIncrementPICSlot(ensure, "send_reply",
-                                      sPic1SlotId, 5, piCurrent))
-        {
+                                      sPic1SlotId, 5, piCurrent)) {
             // Complete the end-to-end test by sending a reply
             // service context if all went well.  If this is absent
             // for this method then the test will complain.
-            ServiceContext serviceContext = 
-                new ServiceContext(sPic1ServiceContextId, serviceContextData);
+            ServiceContext serviceContext =
+                    new ServiceContext(sPic1ServiceContextId, serviceContextData);
             ri.add_reply_service_context(serviceContext, false);
         }
     }
 
-    public void send_exception(ServerRequestInfo ri)
-    {
+    public void send_exception(ServerRequestInfo ri) {
     }
 
-    public void send_other(ServerRequestInfo ri)
-    {
+    public void send_other(ServerRequestInfo ri) {
     }
 
     //
@@ -296,16 +279,15 @@ public class SsPicInterceptor
     //
 
     // To see memory locations while stepping.
-    public void checkPicMemory(RequestInfo ri)
-    {
+    public void checkPicMemory(RequestInfo ri) {
         try {
             ri.get_slot(sPic1SlotId);
             piCurrent.get_slot(sPic1SlotId);
-        } catch (Throwable t) {}
+        } catch (Throwable t) {
+        }
     }
 
-    public static boolean isSPic1(RequestInfo ri)
-    {
+    public static boolean isSPic1(RequestInfo ri) {
         return ri.operation().equals(C.sPic1);
     }
 

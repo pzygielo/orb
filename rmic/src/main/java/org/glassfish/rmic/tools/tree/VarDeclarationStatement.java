@@ -19,9 +19,10 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
 import org.glassfish.rmic.tools.asm.LocalVariable;
+import org.glassfish.rmic.tools.java.*;
+
 import java.io.PrintStream;
 import java.util.Hashtable;
 
@@ -42,6 +43,7 @@ class VarDeclarationStatement extends Statement {
         super(VARDECLARATION, where);
         this.expr = expr;
     }
+
     public VarDeclarationStatement(long where, LocalMember field, Expression expr) {
         super(VARDECLARATION, where);
         this.field = field;
@@ -57,7 +59,7 @@ class VarDeclarationStatement extends Statement {
         }
         if (field != null) {
             if (ctx.getLocalClass(field.getName()) != null
-                && field.isInnerClass()) {
+                    && field.isInnerClass()) {
                 env.error(where, "local.class.redefined", field.getName());
             }
 
@@ -85,15 +87,15 @@ class VarDeclarationStatement extends Statement {
         Expression e = expr;
 
         if (e.op == ASSIGN) {
-            expr = ((AssignExpression)e).right;
-            e = ((AssignExpression)e).left;
+            expr = ((AssignExpression) e).right;
+            e = ((AssignExpression) e).left;
         } else {
             expr = null;
         }
 
         boolean declError = t.isType(TC_ERROR);
         while (e.op == ARRAYACCESS) {
-            ArrayAccessExpression array = (ArrayAccessExpression)e;
+            ArrayAccessExpression array = (ArrayAccessExpression) e;
             if (array.index != null) {
                 env.error(array.index.where, "array.dim.in.type");
                 declError = true;
@@ -102,7 +104,7 @@ class VarDeclarationStatement extends Statement {
             t = Type.tArray(t);
         }
         if (e.op == IDENT) {
-            Identifier id = ((IdentifierExpression)e).id;
+            Identifier id = ((IdentifierExpression) e).id;
             if (ctx.getLocalField(id) != null) {
                 env.error(where, "local.redefined", id);
             }
@@ -163,9 +165,9 @@ class VarDeclarationStatement extends Statement {
                     // BUT: why isn't the local also checked to make sure
                     // it is itself final?  Unknown.
 
-                    IdentifierExpression e = (IdentifierExpression)expr;
+                    IdentifierExpression e = (IdentifierExpression) expr;
                     if (e.field.isLocal() && ((ctx = ctx.getInlineContext()) != null) &&
-                        (((LocalMember)e.field).number < ctx.varNumber)) {
+                            (((LocalMember) e.field).number < ctx.varNumber)) {
                         //System.out.println("FINAL IDENT = " + field + " in " + ctx.field);
                         field.setValue(expr);
                         field.addModifiers(M_INLINEABLE);
@@ -203,7 +205,7 @@ class VarDeclarationStatement extends Statement {
      * Create a copy of the statement for method inlining
      */
     public Statement copyInline(Context ctx, boolean valNeeded) {
-        VarDeclarationStatement s = (VarDeclarationStatement)clone();
+        VarDeclarationStatement s = (VarDeclarationStatement) clone();
         if (expr != null) {
             s.expr = expr.copyInline(ctx);
         }

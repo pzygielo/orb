@@ -34,7 +34,7 @@ import java.util.Vector;
  * The static forImplementation(...) method must be used to obtain an instance,
  * and will return null if the ClassDefinition is non-conforming.
  *
- * @author      Bryan Atsatt
+ * @author Bryan Atsatt
  */
 public class ImplementationType extends ClassType {
 
@@ -44,7 +44,7 @@ public class ImplementationType extends ClassType {
 
     /**
      * Create an ImplementationType for the given class.
-     *
+     * <p>
      * If the class is not a properly formed or if some other error occurs, the
      * return value will be null, and errors will have been reported to the
      * supplied BatchEnvironment.
@@ -52,7 +52,9 @@ public class ImplementationType extends ClassType {
     public static ImplementationType forImplementation(ClassDefinition classDef,
                                                        ContextStack stack,
                                                        boolean quiet) {
-        if (stack.anyErrors()) return null;
+        if (stack.anyErrors()) {
+            return null;
+        }
 
         boolean doPop = false;
         ImplementationType result = null;
@@ -61,13 +63,15 @@ public class ImplementationType extends ClassType {
             // Do we already have it?
 
             org.glassfish.rmic.tools.java.Type theType = classDef.getType();
-            Type existing = getType(theType,stack);
+            Type existing = getType(theType, stack);
 
             if (existing != null) {
 
-                if (!(existing instanceof ImplementationType)) return null; // False hit.
+                if (!(existing instanceof ImplementationType)) {
+                    return null; // False hit.
+                }
 
-                                // Yep, so return it...
+                // Yep, so return it...
 
                 return (ImplementationType) existing;
 
@@ -75,25 +79,27 @@ public class ImplementationType extends ClassType {
 
             // Could this be an implementation?
 
-            if (couldBeImplementation(quiet,stack,classDef)) {
+            if (couldBeImplementation(quiet, stack, classDef)) {
 
                 // Yes, so check it...
 
                 ImplementationType it = new ImplementationType(stack, classDef);
-                putType(theType,it,stack);
+                putType(theType, it, stack);
                 stack.push(it);
                 doPop = true;
 
-                if (it.initialize(stack,quiet)) {
+                if (it.initialize(stack, quiet)) {
                     stack.pop(true);
                     result = it;
                 } else {
-                    removeType(theType,stack);
+                    removeType(theType, stack);
                     stack.pop(false);
                 }
             }
         } catch (CompilerError e) {
-            if (doPop) stack.pop(false);
+            if (doPop) {
+                stack.pop(false);
+            }
         }
 
         return result;
@@ -102,10 +108,9 @@ public class ImplementationType extends ClassType {
     /**
      * Return a string describing this type.
      */
-    public String getTypeDescription () {
+    public String getTypeDescription() {
         return "Implementation";
     }
-
 
     //_____________________________________________________________________
     // Internal Interfaces
@@ -116,9 +121,8 @@ public class ImplementationType extends ClassType {
      * object is not yet completely initialized.
      */
     private ImplementationType(ContextStack stack, ClassDefinition classDef) {
-        super(TYPE_IMPLEMENTATION | TM_CLASS | TM_COMPOUND,classDef,stack); // Use special constructor.
+        super(TYPE_IMPLEMENTATION | TM_CLASS | TM_COMPOUND, classDef, stack); // Use special constructor.
     }
-
 
     private static boolean couldBeImplementation(boolean quiet, ContextStack stack,
                                                  ClassDefinition classDef) {
@@ -127,23 +131,24 @@ public class ImplementationType extends ClassType {
 
         try {
             if (!classDef.isClass()) {
-                failedConstraint(17,quiet,stack,classDef.getName());
+                failedConstraint(17, quiet, stack, classDef.getName());
             } else {
                 result = env.defRemote.implementedBy(env, classDef.getClassDeclaration());
-                if (!result) failedConstraint(8,quiet,stack,classDef.getName());
+                if (!result) {
+                    failedConstraint(8, quiet, stack, classDef.getName());
+                }
             }
         } catch (ClassNotFound e) {
-            classNotFound(stack,e);
+            classNotFound(stack, e);
         }
 
         return result;
     }
 
-
     /**
      * Initialize this instance.
      */
-    private boolean initialize (ContextStack stack, boolean quiet) {
+    private boolean initialize(ContextStack stack, boolean quiet) {
 
         boolean result = false;
         ClassDefinition theClass = getClassDefinition();
@@ -158,7 +163,7 @@ public class ImplementationType extends ClassType {
             // Check interfaces...
 
             try {
-                if (addRemoteInterfaces(directInterfaces,true,stack) != null) {
+                if (addRemoteInterfaces(directInterfaces, true, stack) != null) {
 
                     boolean haveRemote = false;
 
@@ -167,32 +172,32 @@ public class ImplementationType extends ClassType {
                     for (int i = 0; i < directInterfaces.size(); i++) {
                         InterfaceType theInt = (InterfaceType) directInterfaces.elementAt(i);
                         if (theInt.isType(TYPE_REMOTE) ||
-                            theInt.isType(TYPE_JAVA_RMI_REMOTE)) {
+                                theInt.isType(TYPE_JAVA_RMI_REMOTE)) {
                             haveRemote = true;
                         }
 
-                        copyRemoteMethods(theInt,directMethods);
+                        copyRemoteMethods(theInt, directMethods);
                     }
 
                     // Make sure we have at least one remote interface...
 
                     if (!haveRemote) {
-                        failedConstraint(8,quiet,stack,getQualifiedName());
+                        failedConstraint(8, quiet, stack, getQualifiedName());
                         return false;
                     }
 
                     // Now check the methods to ensure we have the
                     // correct throws clauses...
 
-                    if (checkMethods(theClass,directMethods,stack,quiet)) {
+                    if (checkMethods(theClass, directMethods, stack, quiet)) {
 
                         // We're ok, so pass 'em up...
 
-                        result = initialize(directInterfaces,directMethods,null,stack,quiet);
+                        result = initialize(directInterfaces, directMethods, null, stack, quiet);
                     }
                 }
             } catch (ClassNotFound e) {
-                classNotFound(stack,e);
+                classNotFound(stack, e);
             }
         }
 
@@ -220,7 +225,7 @@ public class ImplementationType extends ClassType {
             InterfaceType[] allInterfaces = type.getInterfaces();
 
             for (int i = 0; i < allInterfaces.length; i++) {
-                copyRemoteMethods(allInterfaces[i],list);
+                copyRemoteMethods(allInterfaces[i], list);
             }
         }
     }
@@ -241,11 +246,11 @@ public class ImplementationType extends ClassType {
              member = member.getNextMember()) {
 
             if (member.isMethod() && !member.isConstructor()
-                && !member.isInitializer()) {
+                    && !member.isInitializer()) {
 
                 // It's a method...
 
-                if (!updateExceptions(member,methods,stack,quiet)) {
+                if (!updateExceptions(member, methods, stack, quiet)) {
                     return false;
                 }
             }
@@ -253,8 +258,8 @@ public class ImplementationType extends ClassType {
         return true;
     }
 
-    private boolean updateExceptions (MemberDefinition implMethod, Method[] list,
-                                      ContextStack stack, boolean quiet) {
+    private boolean updateExceptions(MemberDefinition implMethod, Method[] list,
+                                     ContextStack stack, boolean quiet) {
         int length = list.length;
         String implMethodSig = implMethod.toString();
 
@@ -269,7 +274,7 @@ public class ImplementationType extends ClassType {
                 // Yes, so create exception list...
 
                 try {
-                    ValueType[] implExcept = getMethodExceptions(implMethod,quiet,stack);
+                    ValueType[] implExcept = getMethodExceptions(implMethod, quiet, stack);
                     existingMethod.setImplExceptions(implExcept);
                 } catch (Exception e) {
                     return false;

@@ -21,23 +21,23 @@ package pi.policyfactory;
 
 import java.util.*;
 import java.io.*;
+
 import org.omg.CORBA.*;
 
-/** This Policy object's type is 100.
+/**
+ * This Policy object's type is 100.
  */
 public class PolicyHundred extends LocalObject
-    implements Policy
-{
-    public int policy_type( ) {
+        implements Policy {
+    public int policy_type() {
         return 100;
     }
 
-
-    public org.omg.CORBA.Policy copy( ) {
+    public org.omg.CORBA.Policy copy() {
         return this;
     }
 
-    public void destroy ( ) {
+    public void destroy() {
         // Do Nothing
     }
 }

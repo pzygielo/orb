@@ -19,9 +19,11 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
 import org.glassfish.rmic.tools.asm.Label;
+import org.glassfish.rmic.tools.java.Environment;
+import org.glassfish.rmic.tools.java.Type;
+
 import java.io.PrintStream;
 import java.util.Hashtable;
 
@@ -55,7 +57,7 @@ class WhileStatement extends Statement {
         // check the condition.  Determine which variables have values if
         // it returns true or false.
         ConditionVars cvars =
-              cond.checkCondition(env, newctx, reach(env, vset), exp);
+                cond.checkCondition(env, newctx, reach(env, vset), exp);
         cond = convert(env, newctx, Type.tBoolean, cond);
         // check the body, given that the condition returned true.
         vset = body.check(env, newctx, cvars.vsTrue, exp);
@@ -84,14 +86,14 @@ class WhileStatement extends Statement {
      */
     public int costInline(int thresh, Environment env, Context ctx) {
         return 1 + cond.costInline(thresh, env, ctx)
-                 + ((body != null) ? body.costInline(thresh, env, ctx) : 0);
+                + ((body != null) ? body.costInline(thresh, env, ctx) : 0);
     }
 
     /**
      * Create a copy of the statement for method inlining
      */
     public Statement copyInline(Context ctx, boolean valNeeded) {
-        WhileStatement s = (WhileStatement)clone();
+        WhileStatement s = (WhileStatement) clone();
         s.cond = cond.copyInline(ctx);
         if (body != null) {
             s.body = body.copyInline(ctx, valNeeded);

@@ -25,16 +25,14 @@ import java.io.*;
  * Simple data structure with a java.lang.Object array of links
  * and a data value.  Custom marshaled.
  */
-public class ArrayListNode implements Serializable
-{
+public class ArrayListNode implements Serializable {
     public Object[] next;
     public String data;
 
     // writeObject is necessary to make this custom marshaled,
     // but readObject isn't.
     private void writeObject(java.io.ObjectOutputStream out)
-        throws IOException
-    {
+            throws IOException {
         // Don't do anything unusual.  Serialization will be
         // normal except chunking will be used.
         out.defaultWriteObject();

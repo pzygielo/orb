@@ -20,5 +20,6 @@
 
 package omega;
 
-public class MammalException extends java.lang.Exception{}
+public class MammalException extends java.lang.Exception {
+}
 

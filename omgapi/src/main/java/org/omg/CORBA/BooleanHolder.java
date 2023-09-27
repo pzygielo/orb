@@ -19,13 +19,12 @@
 
 package org.omg.CORBA;
 
-import org.omg.CORBA.portable.Streamable;
 import org.omg.CORBA.portable.InputStream;
 import org.omg.CORBA.portable.OutputStream;
-
+import org.omg.CORBA.portable.Streamable;
 
 /**
- * The Holder for <tt>Boolean</tt>.  For more information on 
+ * The Holder for <tt>Boolean</tt>.  For more information on
  * Holder files, see <a href="doc-files/generatedfiles.html#holder">
  * "Generated Files: Holder Files"</a>.<P>
  * A Holder class for a <code>boolean</code>
@@ -37,13 +36,13 @@ import org.omg.CORBA.portable.OutputStream;
  * must also fill the "in" value to be sent to the server.
  * Before the method invocation returns, the ORB will fill in the
  * value corresponding to the "out" value returned from the server.
- * <P>
+ * <p>
  * If <code>myBooleanHolder</code> is an instance of <code>BooleanHolder</code>,
  * the value stored in its <code>value</code> field can be accessed with
  * <code>myBooleanHolder.value</code>.
  *
- * @version     1.14, 09/09/97
- * @since       JDK1.2
+ * @version 1.14, 09/09/97
+ * @since JDK1.2
  */
 public final class BooleanHolder implements Streamable {
 
@@ -63,9 +62,10 @@ public final class BooleanHolder implements Streamable {
     /**
      * Constructs a new <code>BooleanHolder</code> object with its
      * <code>value</code> field initialized with the given <code>boolean</code>.
+     *
      * @param initial the <code>boolean</code> with which to initialize
-     *                the <code>value</code> field of the newly-created
-     *                <code>BooleanHolder</code> object
+     * the <code>value</code> field of the newly-created
+     * <code>BooleanHolder</code> object
      */
     public BooleanHolder(boolean initial) {
         value = initial;
@@ -76,7 +76,7 @@ public final class BooleanHolder implements Streamable {
      * <code>BooleanHolder</code> object's <code>value</code> field.
      *
      * @param input the <code>InputStream</code> object containing
-     *              CDR formatted data from the wire
+     * CDR formatted data from the wire
      */
     public void _read(InputStream input) {
         value = input.read_boolean();
@@ -93,11 +93,11 @@ public final class BooleanHolder implements Streamable {
     }
 
     /**
-     * Retrieves the <code>TypeCode</code> object that corresponds to the 
+     * Retrieves the <code>TypeCode</code> object that corresponds to the
      * value held in this <code>BooleanHolder</code> object.
      *
-     * @return    the <code>TypeCode</code> for the value held 
-     *            in this <code>BooleanHolder</code> object
+     * @return the <code>TypeCode</code> for the value held
+     * in this <code>BooleanHolder</code> object
      */
     public TypeCode _type() {
         return ORB.init().get_primitive_tc(TCKind.tk_boolean);

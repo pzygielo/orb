@@ -17,7 +17,7 @@
  * Classpath-exception-2.0
  */
 
-package performance.eesample.wspex ;
+package performance.eesample.wspex;
 
 import java.io.Serializable;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -36,7 +36,6 @@ public class Customer implements Serializable {
 
     /**
      * Gets the value of the customerId property.
-     * 
      */
     public int getCustomerId() {
         return customerId;
@@ -44,7 +43,6 @@ public class Customer implements Serializable {
 
     /**
      * Sets the value of the customerId property.
-     * 
      */
     public void setCustomerId(int value) {
         this.customerId = value;
@@ -52,11 +50,9 @@ public class Customer implements Serializable {
 
     /**
      * Gets the value of the contactFirstName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getContactFirstName() {
         return contactFirstName;
@@ -64,11 +60,9 @@ public class Customer implements Serializable {
 
     /**
      * Sets the value of the contactFirstName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     * {@link String }
      */
     public void setContactFirstName(String value) {
         this.contactFirstName = value;
@@ -76,11 +70,9 @@ public class Customer implements Serializable {
 
     /**
      * Gets the value of the contactLastName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getContactLastName() {
         return contactLastName;
@@ -88,11 +80,9 @@ public class Customer implements Serializable {
 
     /**
      * Sets the value of the contactLastName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     * {@link String }
      */
     public void setContactLastName(String value) {
         this.contactLastName = value;
@@ -100,11 +90,9 @@ public class Customer implements Serializable {
 
     /**
      * Gets the value of the contactPhone property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getContactPhone() {
         return contactPhone;
@@ -112,11 +100,9 @@ public class Customer implements Serializable {
 
     /**
      * Sets the value of the contactPhone property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     * {@link String }
      */
     public void setContactPhone(String value) {
         this.contactPhone = value;
@@ -124,11 +110,9 @@ public class Customer implements Serializable {
 
     /**
      * Gets the value of the lastActivityDate property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link XMLGregorianCalendar }
-     *     
+     *
+     * @return possible object is
+     * {@link XMLGregorianCalendar }
      */
     public XMLGregorianCalendar getLastActivityDate() {
         return lastActivityDate;
@@ -136,11 +120,9 @@ public class Customer implements Serializable {
 
     /**
      * Sets the value of the lastActivityDate property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link XMLGregorianCalendar }
-     *     
+     *
+     * @param value allowed object is
+     * {@link XMLGregorianCalendar }
      */
     public void setLastActivityDate(XMLGregorianCalendar value) {
         this.lastActivityDate = value;
@@ -148,11 +130,9 @@ public class Customer implements Serializable {
 
     /**
      * Gets the value of the creditCardNumber property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getCreditCardNumber() {
         return creditCardNumber;
@@ -160,11 +140,9 @@ public class Customer implements Serializable {
 
     /**
      * Sets the value of the creditCardNumber property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     * {@link String }
      */
     public void setCreditCardNumber(String value) {
         this.creditCardNumber = value;
@@ -172,11 +150,9 @@ public class Customer implements Serializable {
 
     /**
      * Gets the value of the creditCardExpirationDate property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getCreditCardExpirationDate() {
         return creditCardExpirationDate;
@@ -184,11 +160,9 @@ public class Customer implements Serializable {
 
     /**
      * Sets the value of the creditCardExpirationDate property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     * {@link String }
      */
     public void setCreditCardExpirationDate(String value) {
         this.creditCardExpirationDate = value;
@@ -196,11 +170,9 @@ public class Customer implements Serializable {
 
     /**
      * Gets the value of the billingAddress property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Address }
-     *     
+     *
+     * @return possible object is
+     * {@link Address }
      */
     public Address getBillingAddress() {
         return billingAddress;
@@ -208,11 +180,9 @@ public class Customer implements Serializable {
 
     /**
      * Sets the value of the billingAddress property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Address }
-     *     
+     *
+     * @param value allowed object is
+     * {@link Address }
      */
     public void setBillingAddress(Address value) {
         this.billingAddress = value;
@@ -220,11 +190,9 @@ public class Customer implements Serializable {
 
     /**
      * Gets the value of the shippingAddress property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Address }
-     *     
+     *
+     * @return possible object is
+     * {@link Address }
      */
     public Address getShippingAddress() {
         return shippingAddress;
@@ -232,11 +200,9 @@ public class Customer implements Serializable {
 
     /**
      * Sets the value of the shippingAddress property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Address }
-     *     
+     *
+     * @param value allowed object is
+     * {@link Address }
      */
     public void setShippingAddress(Address value) {
         this.shippingAddress = value;

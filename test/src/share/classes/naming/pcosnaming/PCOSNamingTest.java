@@ -21,17 +21,16 @@ package naming.pcosnaming;
 
 import test.Test;
 import corba.framework.*;
+
 import java.util.*;
 
-public class PCOSNamingTest extends CORBATest
-{
+public class PCOSNamingTest extends CORBATest {
     public static String[] idlFiles = { "hello.idl" };
 
     public static String[] javaFiles = { "helloClient.java",
-                                         "helloServer.java" };
+            "helloServer.java" };
 
-    protected Controller newServerController()
-    {
+    protected Controller newServerController() {
         return new InternalExec();
     }
 
@@ -42,8 +41,7 @@ public class PCOSNamingTest extends CORBATest
     // separate process.  It is passed the Controller objects for ORBD and
     // the client, so it can start them and stop them at the appropriate
     // times.
-    protected void doTest() throws Throwable
-    {
+    protected void doTest() throws Throwable {
         Options.addIDLCompilerArg("-fall");
         Options.addIDLCompilerArg("-oldImplBase");
         Options.setIDLFiles(idlFiles);
@@ -53,8 +51,8 @@ public class PCOSNamingTest extends CORBATest
         compileJavaFiles();
 
         Controller orbd = createORBD();
-        Controller client 
-            = createClient("naming.pcosnaming.helloClient");
+        Controller client
+                = createClient("naming.pcosnaming.helloClient");
 
         Object serverExtras[] = new Object[3];
 
@@ -63,7 +61,7 @@ public class PCOSNamingTest extends CORBATest
         serverExtra.put("client", client);
 
         Controller server
-            = createServer("naming.pcosnaming.helloServer");
+                = createServer("naming.pcosnaming.helloServer");
 
         orbd.start();
 

@@ -20,21 +20,22 @@
 
 package org.glassfish.rmic.iiop;
 
+import org.glassfish.rmic.IndentingWriter;
+import org.glassfish.rmic.Main;
+import org.glassfish.rmic.tools.java.ClassDefinition;
+import org.glassfish.rmic.tools.java.CompilerError;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import org.glassfish.rmic.tools.java.CompilerError;
-import org.glassfish.rmic.tools.java.ClassDefinition;
-import org.glassfish.rmic.IndentingWriter;
-import org.glassfish.rmic.Main;
 
 /**
  * An IDL generator for rmic.
  *
- * @author      Bryan Atsatt
+ * @author Bryan Atsatt
  */
 public class PrintGenerator implements org.glassfish.rmic.Generator,
-                                       org.glassfish.rmic.iiop.Constants {
+        org.glassfish.rmic.iiop.Constants {
 
     private static final int JAVA = 0;
     private static final int IDL = 1;
@@ -53,11 +54,12 @@ public class PrintGenerator implements org.glassfish.rmic.Generator,
      */
     public PrintGenerator() {
         OutputStreamWriter writer = new OutputStreamWriter(System.out);
-        out = new IndentingWriter (writer);
+        out = new IndentingWriter(writer);
     }
 
     /**
      * Examine and consume command line arguments.
+     *
      * @param argv The command line arguments. Ignore null
      * @param error Report any errors using the main.error() methods.
      * @return true if no errors, false otherwise.
@@ -69,11 +71,11 @@ public class PrintGenerator implements org.glassfish.rmic.Generator,
                 if (arg.equals("-xprint")) {
                     whatToPrint = JAVA;
                     argv[i] = null;
-                    if (i+1 < argv.length) {
-                        if (argv[i+1].equalsIgnoreCase("idl")) {
+                    if (i + 1 < argv.length) {
+                        if (argv[i + 1].equalsIgnoreCase("idl")) {
                             argv[++i] = null;
                             whatToPrint = IDL;
-                        } else if (argv[i+1].equalsIgnoreCase("both")) {
+                        } else if (argv[i + 1].equalsIgnoreCase("both")) {
                             argv[++i] = null;
                             whatToPrint = BOTH;
                         }
@@ -100,10 +102,11 @@ public class PrintGenerator implements org.glassfish.rmic.Generator,
      * Generate output. Any source files created which need compilation should
      * be added to the compiler environment using the addGeneratedFile(File)
      * method.
-     *  @param env       The compiler environment
-     * @param destDir   The directory for the root of the package hierarchy
-     * @param cdef      The definition for the implementation class or interface from
- *              which to generate output
+     *
+     * @param env The compiler environment
+     * @param destDir The directory for the root of the package hierarchy
+     * @param cdef The definition for the implementation class or interface from
+     * which to generate output
      */
     public void generate(org.glassfish.rmic.BatchEnvironment env, File destDir, ClassDefinition cdef) {
 
@@ -117,13 +120,13 @@ public class PrintGenerator implements org.glassfish.rmic.Generator,
 
         // Get our top level type...
 
-        CompoundType topType = CompoundType.forCompound(cdef,stack);
+        CompoundType topType = CompoundType.forCompound(cdef, stack);
 
         if (topType != null) {
 
             try {
 
-                                // Collect up all the compound types...
+                // Collect up all the compound types...
 
                 Type[] theTypes = topType.collectMatching(TM_COMPOUND);
 
@@ -134,17 +137,21 @@ public class PrintGenerator implements org.glassfish.rmic.Generator,
                     Type theType = theTypes[i];
 
                     switch (whatToPrint) {
-                    case JAVA:  theType.println(out,qualified,false,false);
+                    case JAVA:
+                        theType.println(out, qualified, false, false);
                         break;
 
-                    case IDL:   theType.println(out,qualified,true,global);
+                    case IDL:
+                        theType.println(out, qualified, true, global);
                         break;
 
-                    case BOTH:  theType.println(out,qualified,false,false);
-                        theType.println(out,qualified,true,global);
+                    case BOTH:
+                        theType.println(out, qualified, false, false);
+                        theType.println(out, qualified, true, global);
                         break;
 
-                    default:    throw new CompilerError("Unknown type!");
+                    default:
+                        throw new CompilerError("Unknown type!");
                     }
                 }
 

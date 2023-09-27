@@ -17,7 +17,7 @@
  * Classpath-exception-2.0
  */
 
-package corba.misc ;
+package corba.misc;
 
 import com.sun.corba.ee.impl.misc.ORBUtility;
 import com.sun.corba.ee.spi.misc.ORBConstants;
@@ -81,54 +81,48 @@ import javax.rmi.PortableRemoteObject;
 
 //import com.sun.corba.ee.impl.orbutil.newtimer.generated.TimingPoints ;
 
-public class Client extends TestCase
-{
+public class Client extends TestCase {
     static final String[][] idInfo = {
-        { "", "orb" },
-        { "A", "orb_A_1" },
-        { "", "orb__2" },
-        { "A", "orb_A_2" },
-        { "B", "orb_B_1" } } ;
+            { "", "orb" },
+            { "A", "orb_A_1" },
+            { "", "orb__2" },
+            { "A", "orb_A_2" },
+            { "B", "orb_B_1" } };
 
-    static ORB orb ;
-    static ORB[] orbs ;
+    static ORB orb;
+    static ORB[] orbs;
 
     // An extension of the TestSetup test decorator (that is,
     // interceptor) that is used to initialize ORBs before the
     // tests start, and clean the ORBs up after the test completes.
     // Also sets up the tester remote object.
-    private static class ORBManager extends TestSetup
-    {
-        public ORBManager( Test test ) 
-        {
-            super( test ) ;
+    private static class ORBManager extends TestSetup {
+        public ORBManager(Test test) {
+            super(test);
         }
 
         @Override
-        public void setUp()
-        {
-            orbs = new ORB[idInfo.length] ;
-            for (int ctr=0; ctr<idInfo.length; ctr++) {
-                orbs[ctr] = makeORB( idInfo[ctr][0] ) ;
-                if (ctr==0) {
+        public void setUp() {
+            orbs = new ORB[idInfo.length];
+            for (int ctr = 0; ctr < idInfo.length; ctr++) {
+                orbs[ctr] = makeORB(idInfo[ctr][0]);
+                if (ctr == 0) {
                     orb = orbs[ctr];
                 }
             }
         }
 
-        private ORB makeORB( String id ) 
-        {
-            Properties props = new Properties() ;
-            props.setProperty( "org.omg.CORBA.ORBClass",
-                "com.sun.corba.ee.impl.orb.ORBImpl" ) ;
-            props.setProperty( "org.omg.CORBA.ORBId", id ) ;
-            return (ORB)ORB.init( new String[0], props ) ;
+        private ORB makeORB(String id) {
+            Properties props = new Properties();
+            props.setProperty("org.omg.CORBA.ORBClass",
+                              "com.sun.corba.ee.impl.orb.ORBImpl");
+            props.setProperty("org.omg.CORBA.ORBId", id);
+            return (ORB) ORB.init(new String[0], props);
         }
 
         @Override
-        public void tearDown()
-        {
-            for (int ctr=0; ctr<orbs.length; ctr++) {
+        public void tearDown() {
+            for (int ctr = 0; ctr < orbs.length; ctr++) {
                 orbs[ctr].destroy();
             }
             // System.out.println( "TimerFactories after ORB destruction:" ) ;
@@ -136,62 +130,59 @@ public class Client extends TestCase
         }
     }
 
-    static boolean debug = false ;
+    static boolean debug = false;
 
-    public static void main( String[] args ) 
-    {
-        debug = (args.length>0) && args[0].equals( "-debug" ) ;
+    public static void main(String[] args) {
+        debug = (args.length > 0) && args[0].equals("-debug");
 
-        Client root = new Client() ;
-        TestResult result = junit.textui.TestRunner.run(Client.suite()) ;
+        Client root = new Client();
+        TestResult result = junit.textui.TestRunner.run(Client.suite());
 
         if (result.errorCount() + result.failureCount() > 0) {
-            System.out.println( "Error: failures or errrors in JUnit test" ) ;
-            System.exit( 1 ) ;
+            System.out.println("Error: failures or errrors in JUnit test");
+            System.exit(1);
         } else {
             System.exit(0);
         }
     }
 
-    public Client()
-    {
-        super() ;
+    public Client() {
+        super();
     }
 
-    public Client( String name )
-    {
-        super( name ) ;
+    public Client(String name) {
+        super(name);
     }
 
-    public static Test suite()
-    {
-        System.out.println( 
-            "==============================================================\n" +
-            "Miscellaneous CORBA Tests\n" +
-            "==============================================================\n" 
-        ) ;
+    public static Test suite() {
+        System.out.println(
+                "==============================================================\n" +
+                        "Miscellaneous CORBA Tests\n" +
+                        "==============================================================\n"
+        );
 
         // TestSuite created only to include the ORBManager setup wrapper,
         // which wraps the real TestSuite made from this class.
         // This causes the ORBs for this test to be created before all
         // tests run, and destroyed after all tests are completed.  
-        TestSuite main = new TestSuite( "main" ) ;
-        TestSuite ts = TestCaseTools.makeTestSuite( Client.class ) ;
-        main.addTest( new ORBManager( ts ) ) ;
-        return main ;
+        TestSuite main = new TestSuite("main");
+        TestSuite ts = TestCaseTools.makeTestSuite(Client.class);
+        main.addTest(new ORBManager(ts));
+        return main;
     }
 
-    /** Test for bug 4919770: multiple ORBs share the same root MonitoredObject.
-      *
-    public void testMonitoringRootName()
-    {
-        for (int ctr=0; ctr<idInfo.length; ctr++) {
-            String rootName = 
-                orbs[ctr].getMonitoringManager().getRootMonitoredObject().getName() ;
-            assertEquals( rootName, idInfo[ctr][1] ) ;
-        }
-    }
-    */
+    /**
+     * Test for bug 4919770: multiple ORBs share the same root MonitoredObject.
+     * <p>
+     * public void testMonitoringRootName()
+     * {
+     * for (int ctr=0; ctr<idInfo.length; ctr++) {
+     * String rootName =
+     * orbs[ctr].getMonitoringManager().getRootMonitoredObject().getName() ;
+     * assertEquals( rootName, idInfo[ctr][1] ) ;
+     * }
+     * }
+     */
 
 /*
     // Test for bug 6177606: incorrect error handling for string_to_object.
@@ -241,151 +232,145 @@ public class Client extends TestCase
     */
 
 
-    private static int counter = 1 ;
+    private static int counter = 1;
 
-    private static synchronized int getCounter()
-    {
-        int result = counter++ ;
+    private static synchronized int getCounter() {
+        int result = counter++;
         if (counter > Byte.MAX_VALUE) {
             counter = 1;
         }
-        return result ;
+        return result;
     }
 
-    private static final Random gen = new Random() ;
+    private static final Random gen = new Random();
 
-    private static final int BUF_SIZE = 160 ;
-    private static final int REP_COUNT = 10 ;
-    private static final int NUM_THREADS = 5 ;
+    private static final int BUF_SIZE = 160;
+    private static final int REP_COUNT = 10;
+    private static final int NUM_THREADS = 5;
 
-    private ByteBuffer getBuffer( int val, int len ) 
-    {
-        byte[] buff = new byte[len] ;
-        for (int ctr=0; ctr<len; ctr++) {
+    private ByteBuffer getBuffer(int val, int len) {
+        byte[] buff = new byte[len];
+        for (int ctr = 0; ctr < len; ctr++) {
             buff[ctr] = (byte) val;
         }
-        ByteBuffer result = ByteBuffer.wrap( buff ) ;
-        result.position( len ) ;
-        return result ;
+        ByteBuffer result = ByteBuffer.wrap(buff);
+        result.position(len);
+        return result;
     }
 
-    private class Printer extends Thread 
-    {
-        private int threadId ;
-        private PrintStream ps ;
+    private class Printer extends Thread {
+        private int threadId;
+        private PrintStream ps;
 
-        public Printer( int threadId, PrintStream ps )
-        {
-            this.threadId = threadId ;
-            this.ps = ps ;
+        public Printer(int threadId, PrintStream ps) {
+            this.threadId = threadId;
+            this.ps = ps;
         }
 
-        private int getSleepTime() 
-        {
-            return 10 + gen.nextInt( 100 ) ;
+        private int getSleepTime() {
+            return 10 + gen.nextInt(100);
         }
 
         @Override
-        public void run() 
-        {
-            for (int ctr=0; ctr<REP_COUNT; ctr++) {
-                ByteBuffer bb = getBuffer( getCounter(), BUF_SIZE ) ;
+        public void run() {
+            for (int ctr = 0; ctr < REP_COUNT; ctr++) {
+                ByteBuffer bb = getBuffer(getCounter(), BUF_SIZE);
 
                 try {
-                    sleep( getSleepTime() ) ;
+                    sleep(getSleepTime());
                 } catch (InterruptedException ie) {
                     // ignore this; just trying to catch a little sleep here
                 }
 
-                ORBUtility.printBuffer( "Printer Thread " + threadId, bb, ps ) ;
+                ORBUtility.printBuffer("Printer Thread " + threadId, bb, ps);
             }
         }
     }
 
-    /** Have 5 threads print 10 different buffers each with random delays.
+    /**
+     * Have 5 threads print 10 different buffers each with random delays.
      */
-    public void testPrintBuffer()
-    {
-        ByteArrayOutputStream os = new ByteArrayOutputStream() ;
-        PrintStream ps = new PrintStream( os ) ;
+    public void testPrintBuffer() {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        PrintStream ps = new PrintStream(os);
 
-        counter = 1 ;
-        Printer[] printers = new Printer[NUM_THREADS] ;
-        for (int ctr = 0; ctr<NUM_THREADS; ctr++) {
-            printers[ctr] = new Printer( ctr, ps ) ;
-            printers[ctr].start() ;
+        counter = 1;
+        Printer[] printers = new Printer[NUM_THREADS];
+        for (int ctr = 0; ctr < NUM_THREADS; ctr++) {
+            printers[ctr] = new Printer(ctr, ps);
+            printers[ctr].start();
         }
 
-        for (int ctr=0; ctr<NUM_THREADS; ctr++) {
+        for (int ctr = 0; ctr < NUM_THREADS; ctr++) {
             try {
-                printers[ctr].join() ;
+                printers[ctr].join();
             } catch (InterruptedException ie) {
                 // ignore this
             }
         }
 
-        ps.close() ;
-        byte[] data = os.toByteArray() ; 
+        ps.close();
+        byte[] data = os.toByteArray();
     }
 
     public void testBrooksPOAActivationProblem() {
         try {
-            POA rootPOA = (POA)orb.resolve_initial_references( "RootPOA" ) ;
+            POA rootPOA = (POA) orb.resolve_initial_references("RootPOA");
 
             // Create POA in RETAIN USE_AOM USER_ID mode
             Policy[] policies = new Policy[] {
-                rootPOA.create_servant_retention_policy( 
-                    ServantRetentionPolicyValue.RETAIN ),
-                rootPOA.create_request_processing_policy( 
-                    RequestProcessingPolicyValue.USE_ACTIVE_OBJECT_MAP_ONLY ),
-                rootPOA.create_id_assignment_policy( 
-                    IdAssignmentPolicyValue.USER_ID ),
-                rootPOA.create_implicit_activation_policy( 
-                    ImplicitActivationPolicyValue.NO_IMPLICIT_ACTIVATION ),
-                rootPOA.create_lifespan_policy( 
-                    LifespanPolicyValue.TRANSIENT ), 
-                rootPOA.create_id_uniqueness_policy( 
-                    IdUniquenessPolicyValue.UNIQUE_ID ) 
-            } ;
+                    rootPOA.create_servant_retention_policy(
+                            ServantRetentionPolicyValue.RETAIN),
+                    rootPOA.create_request_processing_policy(
+                            RequestProcessingPolicyValue.USE_ACTIVE_OBJECT_MAP_ONLY),
+                    rootPOA.create_id_assignment_policy(
+                            IdAssignmentPolicyValue.USER_ID),
+                    rootPOA.create_implicit_activation_policy(
+                            ImplicitActivationPolicyValue.NO_IMPLICIT_ACTIVATION),
+                    rootPOA.create_lifespan_policy(
+                            LifespanPolicyValue.TRANSIENT),
+                    rootPOA.create_id_uniqueness_policy(
+                            IdUniquenessPolicyValue.UNIQUE_ID)
+            };
 
-            POA myPOA = rootPOA.create_POA( "TestPOA", null, policies ) ;
-            myPOA.the_POAManager().activate() ;
+            POA myPOA = rootPOA.create_POA("TestPOA", null, policies);
+            myPOA.the_POAManager().activate();
 
             // Activate an object with id1 (don't need a real servant for this)
             Servant servant = new Servant() {
-                public String[] _all_interfaces( POA poa, byte[] objectId ) {
-                    return new String[0] ;
+                public String[] _all_interfaces(POA poa, byte[] objectId) {
+                    return new String[0];
                 }
-            } ;
-            byte[] oid = new byte[] { 1, 2, 3, 4 } ;
-            myPOA.activate_object_with_id( oid, servant ) ;
+            };
+            byte[] oid = new byte[] { 1, 2, 3, 4 };
+            myPOA.activate_object_with_id(oid, servant);
 
             // Deactivate the object
-            myPOA.deactivate_object( oid ) ;
+            myPOA.deactivate_object(oid);
 
             // Call idToServant on id1
-            boolean expectedException = true ;
+            boolean expectedException = true;
             try {
                 // This should fail with an ObjectNotActive exception 
-                Servant servant2 = myPOA.id_to_servant( oid ) ;
+                Servant servant2 = myPOA.id_to_servant(oid);
             } catch (ObjectNotActive exc) {
                 // this is expected
-                expectedException = true ;
+                expectedException = true;
             } catch (Exception exc) {
-                fail( "Unexpected exception on id_to_servant: " + exc ) ;
+                fail("Unexpected exception on id_to_servant: " + exc);
             }
             if (!expectedException) {
                 fail("id_to_servant did not throw excepted exception");
             }
 
             // Try to Activate again: Failure?
-            myPOA.activate_object_with_id( oid, servant ) ;
+            myPOA.activate_object_with_id(oid, servant);
 
             // Destroy POA
-            myPOA.destroy( false, true ) ;
+            myPOA.destroy(false, true);
         } catch (Exception exc) {
-            exc.printStackTrace() ;
-            fail( "Failed with exception: " + exc ) ;
+            exc.printStackTrace();
+            fail("Failed with exception: " + exc);
         }
     }
 
@@ -475,83 +460,86 @@ public class Client extends TestCase
                 return "bye";
             }
         };
+
         abstract String message();
     }
 
-    public enum Color { RED, BLUE, GREEN } ;
+    public enum Color {RED, BLUE, GREEN}
+
+    ;
 
     public enum Coin {
-        QUARTER( 25 ), 
-        DIME( 10 ), 
-        NICKEL( 5 ), 
-        PENNY( 1 ) ;
+        QUARTER(25),
+        DIME(10),
+        NICKEL(5),
+        PENNY(1);
 
         int value() {
-            return value ;
+            return value;
         }
 
-        private int value ;
+        private int value;
 
-        Coin( int value ) {
-            this.value = value ;
+        Coin(int value) {
+            this.value = value;
         }
     }
 
     private static final List<Class<? extends Annotation>> ioannos =
-        new ArrayList<Class<? extends Annotation>>() ;
+            new ArrayList<Class<? extends Annotation>>();
 
     static {
-        ioannos.add( CdrRead.class ) ;
-        ioannos.add( CdrWrite.class ) ;
-        ioannos.add( PrimitiveRead.class ) ;
-        ioannos.add( PrimitiveWrite.class ) ;
-        ioannos.add( ValueHandlerRead.class ) ;
-        ioannos.add( ValueHandlerWrite.class ) ;
+        ioannos.add(CdrRead.class);
+        ioannos.add(CdrWrite.class);
+        ioannos.add(PrimitiveRead.class);
+        ioannos.add(PrimitiveWrite.class);
+        ioannos.add(ValueHandlerRead.class);
+        ioannos.add(ValueHandlerWrite.class);
     }
 
     private void traceOn() {
-        MethodMonitorFactory mmf = MethodMonitorFactoryDefaults.dprint() ;
+        MethodMonitorFactory mmf = MethodMonitorFactoryDefaults.dprint();
         for (Class<? extends Annotation> cls : ioannos) {
-            MethodMonitorRegistry.register( cls, mmf ) ;
+            MethodMonitorRegistry.register(cls, mmf);
         }
     }
 
     private void traceOff() {
         for (Class<? extends Annotation> cls : ioannos) {
-            MethodMonitorRegistry.register( cls, null ) ;
+            MethodMonitorRegistry.register(cls, null);
         }
     }
 
     private static class RRTest implements Serializable {
-        private int value ;
+        private int value;
 
-        public static RRTest rr1 = new RRTest( 1 ) ;
-        public static RRTest rr2 = new RRTest( 2 ) ;
+        public static RRTest rr1 = new RRTest(1);
+        public static RRTest rr2 = new RRTest(2);
 
-        public RRTest( int val ) {
-            value = val ;
+        public RRTest(int val) {
+            value = val;
         }
 
         public int getValue() {
-            return value ;
+            return value;
         }
 
         @Override
-        public boolean equals( Object obj ) {
+        public boolean equals(Object obj) {
             if (obj == this) {
                 return true;
             }
 
             if (obj instanceof RRTest) {
-                RRTest other = (RRTest)obj ;
-                return value == other.getValue() ;
+                RRTest other = (RRTest) obj;
+                return value == other.getValue();
             } else {
-                return false ;
+                return false;
             }
         }
 
         public int hashCode() {
-            return value ;
+            return value;
         }
 
         private Object readResolve() {
@@ -566,47 +554,47 @@ public class Client extends TestCase
     }
 
     public void testReadResolve() {
-        RRTest rr1_1 = new RRTest( 1 ) ;
-        RRTest rr1_2 = new RRTest( 1 ) ;
-        RRTest rr2_1 = new RRTest( 2 ) ;
-        RRTest rr2_2 = new RRTest( 2 ) ;
-        RRTest rr3_1 = new RRTest( 3 ) ;
-        RRTest rr3_2 = new RRTest( 3 ) ;
+        RRTest rr1_1 = new RRTest(1);
+        RRTest rr1_2 = new RRTest(1);
+        RRTest rr2_1 = new RRTest(2);
+        RRTest rr2_2 = new RRTest(2);
+        RRTest rr3_1 = new RRTest(3);
+        RRTest rr3_2 = new RRTest(3);
 
         RRTest[] data = new RRTest[] {
-            rr1_1, rr2_1, rr1_1, rr1_2, rr2_2, rr2_2, 
-            rr3_1, rr3_2 } ;
+                rr1_1, rr2_1, rr1_1, rr1_2, rr2_2, rr2_2,
+                rr3_1, rr3_2 };
 
         // Each element of result is either == the corresponding element of
         // expected, unless expected is null, then the result must have value 3.
         RRTest[] expected = new RRTest[] {
-            RRTest.rr1, RRTest.rr2, RRTest.rr1, RRTest.rr1, RRTest.rr2, RRTest.rr2,
-            null, null } ;
+                RRTest.rr1, RRTest.rr2, RRTest.rr1, RRTest.rr1, RRTest.rr2, RRTest.rr2,
+                null, null };
 
-        ORB orb = null ;
+        ORB orb = null;
 
         try {
-            String[] args = new String[0] ;
-            Properties props = new Properties() ;
-            orb = ORB.class.cast( ORB.init( args, props ) ) ;
+            String[] args = new String[0];
+            Properties props = new Properties();
+            orb = ORB.class.cast(ORB.init(args, props));
 
-            OutputStream os = OutputStream.class.cast( orb.create_output_stream() ) ;
-            os.write_value( data ) ;
+            OutputStream os = OutputStream.class.cast(orb.create_output_stream());
+            os.write_value(data);
 
-            InputStream is = InputStream.class.cast( os.create_input_stream() ) ;
-            RRTest[] result = (RRTest[])is.read_value() ;
+            InputStream is = InputStream.class.cast(os.create_input_stream());
+            RRTest[] result = (RRTest[]) is.read_value();
 
-            for (int ctr=0; ctr<result.length; ctr++) {
-                RRTest exp = expected[ctr] ;
-                RRTest res = result[ctr] ;
+            for (int ctr = 0; ctr < result.length; ctr++) {
+                RRTest exp = expected[ctr];
+                RRTest res = result[ctr];
                 if (exp == null) {
-                    assertEquals( res.getValue(), 3 ) ;
+                    assertEquals(res.getValue(), 3);
                 } else {
-                    assertSame( exp, res ) ;
+                    assertSame(exp, res);
                 }
             }
         } finally {
-            orb.destroy() ;
+            orb.destroy();
         }
     }
 
@@ -764,20 +752,20 @@ public class Client extends TestCase
     */
 
     private static void displayTimerFactories() {
-        System.out.println( "Current TimerFactory instances:" ) ;
+        System.out.println("Current TimerFactory instances:");
         for (TimerFactory tf : TimerFactoryBuilder.contents()) {
-            System.out.println( "\t" + tf ) ;
+            System.out.println("\t" + tf);
         }
     }
 
-    private static TimerFactory findTimerFactoryForORB( String orbId ) {
+    private static TimerFactory findTimerFactoryForORB(String orbId) {
         for (TimerFactory tf : TimerFactoryBuilder.contents()) {
-            if (tf.name().contains( orbId )) {
+            if (tf.name().contains(orbId)) {
                 return tf;
             }
         }
 
-        return null ;
+        return null;
     }
 
 
@@ -807,279 +795,281 @@ public class Client extends TestCase
         }
     }   */
 
-    private void print2( String actual, String expected ) {
-        assertEquals( actual, expected ) ;
+    private void print2(String actual, String expected) {
+        assertEquals(actual, expected);
         // System.out.println( "actual=" + actual + ",expected=" + expected ) ;
     }
 
     public void testOperationTracer() {
-        System.out.println( "Testing OperationTracer" ) ;
-        long time = System.currentTimeMillis() ;
-        OperationTracer.enable() ;
-        OperationTracer.finish() ;
-        print2( OperationTracer.getAsString(), "" ) ;
-        OperationTracer.begin( "Initial" ) ;
-        print2( OperationTracer.getAsString(), "Initial:" ) ;
-        OperationTracer.startReadValue( "Foo" ) ;
-        print2( OperationTracer.getAsString(), "Initial:Foo" ) ;
-        OperationTracer.readingField( "a" ) ;
-        print2( OperationTracer.getAsString(), "Initial:Foo.a" ) ;
-        OperationTracer.readingField( "b" ) ;
-        print2( OperationTracer.getAsString(), "Initial:Foo.b" ) ;
-        OperationTracer.endReadValue() ;
-        print2( OperationTracer.getAsString(), "Initial:" ) ;
-        OperationTracer.startReadArray( "Bar", 27 ) ;
-        print2( OperationTracer.getAsString(), "Initial:Bar<27>" ) ;
-        OperationTracer.readingIndex( 0 ) ;
-        print2( OperationTracer.getAsString(), "Initial:Bar<27>[0]" ) ;
-        OperationTracer.readingIndex( 1 ) ;
-        print2( OperationTracer.getAsString(), "Initial:Bar<27>[1]" ) ;
-        OperationTracer.startReadValue( "Baz" ) ;
-        print2( OperationTracer.getAsString(), "Initial:Bar<27>[1],Baz" ) ;
-        OperationTracer.readingField( "x1" ) ;
-        print2( OperationTracer.getAsString(), "Initial:Bar<27>[1],Baz.x1" ) ;
-        OperationTracer.endReadValue() ;
-        print2( OperationTracer.getAsString(), "Initial:Bar<27>[1]" ) ;
-        OperationTracer.endReadArray() ;
-        print2( OperationTracer.getAsString(), "Initial:" ) ;
-        OperationTracer.finish() ;
-        print2( OperationTracer.getAsString(), "" ) ;
-        double elapsed = (time - System.currentTimeMillis())/1000 ;
-        System.out.println( 
-            "OperationTracer test complete in " + elapsed + " milliseconds" ) ;
+        System.out.println("Testing OperationTracer");
+        long time = System.currentTimeMillis();
+        OperationTracer.enable();
+        OperationTracer.finish();
+        print2(OperationTracer.getAsString(), "");
+        OperationTracer.begin("Initial");
+        print2(OperationTracer.getAsString(), "Initial:");
+        OperationTracer.startReadValue("Foo");
+        print2(OperationTracer.getAsString(), "Initial:Foo");
+        OperationTracer.readingField("a");
+        print2(OperationTracer.getAsString(), "Initial:Foo.a");
+        OperationTracer.readingField("b");
+        print2(OperationTracer.getAsString(), "Initial:Foo.b");
+        OperationTracer.endReadValue();
+        print2(OperationTracer.getAsString(), "Initial:");
+        OperationTracer.startReadArray("Bar", 27);
+        print2(OperationTracer.getAsString(), "Initial:Bar<27>");
+        OperationTracer.readingIndex(0);
+        print2(OperationTracer.getAsString(), "Initial:Bar<27>[0]");
+        OperationTracer.readingIndex(1);
+        print2(OperationTracer.getAsString(), "Initial:Bar<27>[1]");
+        OperationTracer.startReadValue("Baz");
+        print2(OperationTracer.getAsString(), "Initial:Bar<27>[1],Baz");
+        OperationTracer.readingField("x1");
+        print2(OperationTracer.getAsString(), "Initial:Bar<27>[1],Baz.x1");
+        OperationTracer.endReadValue();
+        print2(OperationTracer.getAsString(), "Initial:Bar<27>[1]");
+        OperationTracer.endReadArray();
+        print2(OperationTracer.getAsString(), "Initial:");
+        OperationTracer.finish();
+        print2(OperationTracer.getAsString(), "");
+        double elapsed = (time - System.currentTimeMillis()) / 1000;
+        System.out.println(
+                "OperationTracer test complete in " + elapsed + " milliseconds");
     }
 
     public void test5161() {
-        System.out.println( "Running test for issue 5161" ) ;
-        BuckPasserAL bpal = new BuckPasserAL() ;
-        bpal.add( new Buck( "The Buck" ) ) ;
-        BuckPasserV bpv = new BuckPasserV() ;
-        bpv.add( new Buck( "The Buck" ) ) ;
+        System.out.println("Running test for issue 5161");
+        BuckPasserAL bpal = new BuckPasserAL();
+        bpal.add(new Buck("The Buck"));
+        BuckPasserV bpv = new BuckPasserV();
+        bpv.add(new Buck("The Buck"));
 
-        OutputStream out = (OutputStream)orb.create_output_stream();
+        OutputStream out = (OutputStream) orb.create_output_stream();
 
-        out.write_value(bpal) ;
-        out.write_value(bpv) ;
+        out.write_value(bpal);
+        out.write_value(bpv);
 
-        InputStream in = (InputStream)out.create_input_stream();
+        InputStream in = (InputStream) out.create_input_stream();
 
-        BuckPasserAL bpal2 = (BuckPasserAL)in.read_value() ;
-        BuckPasserV bpv2 = (BuckPasserV)in.read_value() ;
+        BuckPasserAL bpal2 = (BuckPasserAL) in.read_value();
+        BuckPasserV bpv2 = (BuckPasserV) in.read_value();
 
-        assertTrue( bpal2.equals( bpal ) ) ;
-        assertTrue( bpv2.equals( bpv ) ) ;
+        assertTrue(bpal2.equals(bpal));
+        assertTrue(bpv2.equals(bpv));
     }
 
     public void testClassMarshaling() {
-        System.out.println( "Running test for serialization of primitive classes" ) ;
+        System.out.println("Running test for serialization of primitive classes");
 
         Object[] arr = {
-            boolean.class,
-            byte.class,
-            Byte.class,
-            short.class,
-            int.class,
-            float.class,
-            long.class,
-            double.class,
-            char.class,
-            this.getClass() 
-        } ;
+                boolean.class,
+                byte.class,
+                Byte.class,
+                short.class,
+                int.class,
+                float.class,
+                long.class,
+                double.class,
+                char.class,
+                this.getClass()
+        };
 
-        OutputStream out = (OutputStream)orb.create_output_stream();
-        out.write_value( arr ) ;
-        InputStream in = (InputStream)out.create_input_stream() ;
-        Object[] result = (Object[])in.read_value() ;
+        OutputStream out = (OutputStream) orb.create_output_stream();
+        out.write_value(arr);
+        InputStream in = (InputStream) out.create_input_stream();
+        Object[] result = (Object[]) in.read_value();
 
-        int errorCount = 0 ;
-        for (int ctr=0; ctr<arr.length; ctr++) {
-            if (!arr[ctr].equals( result[ctr] )) {
-                System.out.printf( "Error: expected class %s but read %s\n",
-                    arr[ctr].toString(), result[ctr].toString() ) ;
-                errorCount++ ;
+        int errorCount = 0;
+        for (int ctr = 0; ctr < arr.length; ctr++) {
+            if (!arr[ctr].equals(result[ctr])) {
+                System.out.printf("Error: expected class %s but read %s\n",
+                                  arr[ctr].toString(), result[ctr].toString());
+                errorCount++;
             }
         }
 
         if (errorCount > 0) {
-            fail( "Class marshaling test failed with " + errorCount + " errors" ) ;
+            fail("Class marshaling test failed with " + errorCount + " errors");
         }
     }
 
     public static abstract class WebContent implements Serializable {
-        long id = 42 ;
+        long id = 42;
 
-        java.util.Set extractFieldSet = null ;
-        java.util.Set linkSet = null ;
-        Object stats = null ;
-        java.lang.Long wcmsNodeId = Long.valueOf(716368 ) ;
-        java.lang.String wcmsPath = "/tag/destination/US/CA/075/san-francisco.xml" ;
+        java.util.Set extractFieldSet = null;
+        java.util.Set linkSet = null;
+        Object stats = null;
+        java.lang.Long wcmsNodeId = Long.valueOf(716368);
+        java.lang.String wcmsPath = "/tag/destination/US/CA/075/san-francisco.xml";
 
-        private final void writeObject(java.io.ObjectOutputStream os ) throws IOException {
-            os.defaultWriteObject() ;
+        private final void writeObject(java.io.ObjectOutputStream os) throws IOException {
+            os.defaultWriteObject();
         }
     }
 
     public static class Trip extends WebContent {
-        int clientId = 2 ;
-        long id = 23900 ;
-        boolean isActive = false ;
-        int lengthDays = 12 ;
-        int version = 232 ;
-        char visibilityCode = 'A' ;
+        int clientId = 2;
+        long id = 23900;
+        boolean isActive = false;
+        int lengthDays = 12;
+        int version = 232;
+        char visibilityCode = 'A';
 
-        Date createData = new Date() ;
-        String description = "a description of the trip" ;
-        Destination dest = new Destination() ;
-        String destinationText = "some airport and hotel" ;
-        String name = "John Doe" ;
-        Object member = null ;
-        Object stats = null ;
-        Date startDate = new Date() ;
-        Date updatedDate = new Date() ;
-        Object updatedBy = null ;
+        Date createData = new Date();
+        String description = "a description of the trip";
+        Destination dest = new Destination();
+        String destinationText = "some airport and hotel";
+        String name = "John Doe";
+        Object member = null;
+        Object stats = null;
+        Date startDate = new Date();
+        Date updatedDate = new Date();
+        Object updatedBy = null;
 
-        private final void writeObject( ObjectOutputStream os ) throws IOException {
-           os.defaultWriteObject() ;
+        private final void writeObject(ObjectOutputStream os) throws IOException {
+            os.defaultWriteObject();
         }
     }
-    
-    public static class Destination implements Serializable {
-        int typeCode = 4 ;
-        Object airport = null ;
-        String featuresCode = "a Feature" ;
-        String fullName = "Full name" ;
-        Point geoPoint = new Point() ;
-        String name = "name" ;
 
-        private final void writeObject( ObjectOutputStream os ) throws IOException {
-            os.defaultWriteObject() ;
+    public static class Destination implements Serializable {
+        int typeCode = 4;
+        Object airport = null;
+        String featuresCode = "a Feature";
+        String fullName = "Full name";
+        Point geoPoint = new Point();
+        String name = "name";
+
+        private final void writeObject(ObjectOutputStream os) throws IOException {
+            os.defaultWriteObject();
         }
     }
 
     public static class Geometry implements Serializable {
-        int dimension = 2 ;
-        boolean haveMeasure = true ;
-        int srid ;
-        int type = 1 ;
+        int dimension = 2;
+        boolean haveMeasure = true;
+        int srid;
+        int type = 1;
     }
 
     public static class Point extends Geometry {
-        double m = 1.0 ;
-        double x = -23.343 ;
-        double y = 102.2325446 ;
-        double z = 100.23 ;
+        double m = 1.0;
+        double x = -23.343;
+        double y = 102.2325446;
+        double z = 100.23;
     }
 
     public void testTrip() {
         try {
-            System.out.println( "test case testTrip" ) ;          
-            Trip trip = new Trip() ;
+            System.out.println("test case testTrip");
+            Trip trip = new Trip();
 
-            OutputStream os = (OutputStream)orb.create_output_stream() ;
-            os.write_value( trip ) ;
-            InputStream is = (InputStream)os.create_input_stream() ;
-            Trip newTrip = (Trip)is.read_value() ;
+            OutputStream os = (OutputStream) orb.create_output_stream();
+            os.write_value(trip);
+            InputStream is = (InputStream) os.create_input_stream();
+            Trip newTrip = (Trip) is.read_value();
             //Assert.assertEquals( lid, newLid ) ;
         } catch (Exception exc) {
-            exc.printStackTrace() ;
-            fail( exc.toString() ) ;
+            exc.printStackTrace();
+            fail(exc.toString());
         }
     }
 
     private interface ETest extends Remote {
-        int echo( int arg ) throws RemoteException ;
+        int echo(int arg) throws RemoteException;
     }
-    
+
     private static class ETestImpl extends PortableRemoteObject implements ETest {
         ETestImpl() throws RemoteException {
-            super() ;
+            super();
         }
 
-        public int echo( int arg ) { return arg ; }
+        public int echo(int arg) {
+            return arg;
+        }
     }
 
     private static class TestServantLocator extends LocalObject
-        implements ServantLocator {
+            implements ServantLocator {
 
-        private final ORB orb ;
-        private final Servant servant ;
+        private final ORB orb;
+        private final Servant servant;
 
-        public TestServantLocator( ORB orb ) {
-            this.orb = orb ;
-            ETestImpl impl = null ;
+        public TestServantLocator(ORB orb) {
+            this.orb = orb;
+            ETestImpl impl = null;
             try {
-                impl = new ETestImpl() ;
+                impl = new ETestImpl();
             } catch (Exception exc) {
                 // do nothing
             }
-            Tie tie = orb.getPresentationManager().getTie() ;
-            tie.setTarget( impl ) ;
-            servant = Servant.class.cast( tie ) ;
+            Tie tie = orb.getPresentationManager().getTie();
+            tie.setTarget(impl);
+            servant = Servant.class.cast(tie);
         }
 
-        public synchronized Servant preinvoke( byte[] oid, POA adapter,
-            String operation, CookieHolder the_cookie ) throws ForwardRequest {
-            return servant ;
+        public synchronized Servant preinvoke(byte[] oid, POA adapter,
+                                              String operation, CookieHolder the_cookie) throws ForwardRequest {
+            return servant;
         }
 
-        public void postinvoke( byte[] oid, POA adapter,
-            String operation, Object the_cookie, Servant the_servant ) {
+        public void postinvoke(byte[] oid, POA adapter,
+                               String operation, Object the_cookie, Servant the_servant) {
         }
     }
 
     public void testTypeCode() {
-        System.out.println( "Test case testTypeCode" ) ;
+        System.out.println("Test case testTypeCode");
         try {
-            final String[] args = new String[0] ;
-            final Properties props = new Properties() ;
-            props.setProperty( ORBConstants.RFM_PROPERTY, "1" ) ;
-            props.setProperty( ORBConstants.USE_DYNAMIC_STUB_PROPERTY, "true" ) ;
-            props.setProperty( ORBConstants.ORB_SERVER_ID_PROPERTY,
-                "300" ) ;
-            props.setProperty( ORBConstants.PERSISTENT_SERVER_PORT_PROPERTY,
-                "3755" ) ;
-            orb = ORB.class.cast( ORB.init( args, props ) ) ;
+            final String[] args = new String[0];
+            final Properties props = new Properties();
+            props.setProperty(ORBConstants.RFM_PROPERTY, "1");
+            props.setProperty(ORBConstants.USE_DYNAMIC_STUB_PROPERTY, "true");
+            props.setProperty(ORBConstants.ORB_SERVER_ID_PROPERTY,
+                              "300");
+            props.setProperty(ORBConstants.PERSISTENT_SERVER_PORT_PROPERTY,
+                              "3755");
+            orb = ORB.class.cast(ORB.init(args, props));
 
             // Just get some object referece for testing
-            final ServantLocator locator = new TestServantLocator( orb ) ;
+            final ServantLocator locator = new TestServantLocator(orb);
 
-            ReferenceFactoryManager rfm = null ;
+            ReferenceFactoryManager rfm = null;
 
             try {
                 rfm = ReferenceFactoryManager.class.cast(
-                    orb.resolve_initial_references( "ReferenceFactoryManager" )) ;
-                } catch (Exception exc) {
-                    // do nthing
-                }
-            rfm.activate() ;
+                        orb.resolve_initial_references("ReferenceFactoryManager"));
+            } catch (Exception exc) {
+                // do nthing
+            }
+            rfm.activate();
 
-            final PresentationManager pm = 
-                com.sun.corba.ee.spi.orb.ORB.getPresentationManager() ;
-            String repositoryId ;
+            final PresentationManager pm =
+                    com.sun.corba.ee.spi.orb.ORB.getPresentationManager();
+            String repositoryId;
 
             try {
-                repositoryId = pm.getRepositoryId( new ETestImpl() ) ;
+                repositoryId = pm.getRepositoryId(new ETestImpl());
             } catch (Exception exc) {
-                throw new RuntimeException( exc ) ;
+                throw new RuntimeException(exc);
             }
-        
-            final List<Policy> policies = new ArrayList<Policy>() ;
-            final ReferenceFactory rf = rfm.create( "factory", repositoryId, 
-                policies, locator ) ;
+
+            final List<Policy> policies = new ArrayList<Policy>();
+            final ReferenceFactory rf = rfm.create("factory", repositoryId,
+                                                   policies, locator);
 
             // arbitrary
-            final byte[] oid = new byte[] { 0, 3, 5, 7 } ;
+            final byte[] oid = new byte[] { 0, 3, 5, 7 };
 
-            final org.omg.CORBA.Object ref = rf.createReference( oid ) ;
+            final org.omg.CORBA.Object ref = rf.createReference(oid);
 
-            final Any any = orb.create_any() ;
-            final ForwardRequest fr = new ForwardRequest(ref) ;
+            final Any any = orb.create_any();
+            final ForwardRequest fr = new ForwardRequest(ref);
 
             // The whole point of this test
-            ForwardRequestHelper.insert(any, fr) ;
+            ForwardRequestHelper.insert(any, fr);
         } finally {
             if (orb != null) {
-                orb.destroy() ;
+                orb.destroy();
             }
         }
     }

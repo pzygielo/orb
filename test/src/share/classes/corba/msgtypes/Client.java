@@ -22,8 +22,8 @@ package corba.msgtypes;
 import java.rmi.RemoteException;
 import javax.rmi.PortableRemoteObject;
 
-import org.omg.CORBA.INTERNAL ;
-import org.omg.CORBA.LocalObject ;
+import org.omg.CORBA.INTERNAL;
+import org.omg.CORBA.LocalObject;
 
 import com.sun.corba.ee.spi.transport.ConnectionCache;
 
@@ -41,10 +41,10 @@ import com.sun.corba.ee.spi.orb.ORB;
 import com.sun.corba.ee.spi.protocol.MessageMediator;
 import com.sun.corba.ee.spi.protocol.ClientDelegate;
 import com.sun.corba.ee.spi.transport.Connection;
-import com.sun.corba.ee.spi.transport.ContactInfo ;
-import com.sun.corba.ee.spi.transport.ContactInfoList ;
-import com.sun.corba.ee.spi.presentation.rmi.StubAdapter ;
-import com.sun.corba.ee.spi.servicecontext.ServiceContextDefaults ;
+import com.sun.corba.ee.spi.transport.ContactInfo;
+import com.sun.corba.ee.spi.transport.ContactInfoList;
+import com.sun.corba.ee.spi.presentation.rmi.StubAdapter;
+import com.sun.corba.ee.spi.servicecontext.ServiceContextDefaults;
 
 import com.sun.corba.ee.impl.encoding.CDROutputObject;
 import com.sun.corba.ee.impl.ior.ObjectKeyFactoryImpl;
@@ -56,29 +56,28 @@ import com.sun.corba.ee.spi.misc.ORBConstants;
 import com.sun.corba.ee.impl.protocol.ClientDelegateImpl;
 import com.sun.corba.ee.impl.protocol.giopmsgheaders.*;
 import com.sun.corba.ee.impl.transport.ContactInfoListImpl;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Properties;
+
 import org.omg.PortableInterceptor.ClientRequestInfo;
 import org.omg.PortableInterceptor.ClientRequestInterceptor;
 import org.omg.PortableInterceptor.ForwardRequest;
 import org.omg.PortableInterceptor.ORBInitInfo;
 import org.omg.PortableInterceptor.ORBInitializer;
 
-
-public class Client extends LocalObject 
-    implements ORBInitializer, ClientRequestInterceptor 
-{
+public class Client extends LocalObject
+        implements ORBInitializer, ClientRequestInterceptor {
     // These constants are defined here only for this test.
     // The new ObjectKeyTemplate code no longer uses offsets.
-    static final int MAGIC_OFFSET = 0 ;
-    static final int SCID_OFFSET = 4 ;
+    static final int MAGIC_OFFSET = 0;
+    static final int SCID_OFFSET = 4;
     static final int REQUEST_ID = 5;
-    
-    public static void main(String args[])
-    {
-        try{
+
+    public static void main(String args[]) {
+        try {
             Properties props = new Properties(System.getProperties());
             /*
             props.setProperty("com.sun.corba.ee.ORBDebug",
@@ -87,14 +86,14 @@ public class Client extends LocalObject
             org.omg.CORBA.ORB orb = ORB.init(args, props);
 
             com.sun.corba.ee.spi.orb.ORB ourORB
-                = (com.sun.corba.ee.spi.orb.ORB) orb;
+                    = (com.sun.corba.ee.spi.orb.ORB) orb;
 
             System.out.println("==== Client GIOP version "
-                               + ourORB.getORBData().getGIOPVersion()
-                               + " with strategy "
-                               + ourORB.getORBData().getGIOPBuffMgrStrategy(
-                                            ourORB.getORBData().getGIOPVersion())
-                               + "====");
+                                       + ourORB.getORBData().getGIOPVersion()
+                                       + " with strategy "
+                                       + ourORB.getORBData().getGIOPBuffMgrStrategy(
+                    ourORB.getORBData().getGIOPVersion())
+                                       + "====");
 
             if (args[0].equals("LocateMsg")) {
                 runLocateMsgType(ourORB);
@@ -107,7 +106,7 @@ public class Client extends LocalObject
             } else if (args[0].equals("AbortiveCancelRequest2")) {
                 runAbortiveCancelRequest2(ourORB);
             } else if (args[0].equals("TargetAddrDisposition")) {
-                runTargetAddressDisposition(ourORB);                
+                runTargetAddressDisposition(ourORB);
             } else if (args[0].equals("CloseConnection")) {
                 runCloseConnection(ourORB);
             } else if (args[0].equals("MessageError")) {
@@ -117,42 +116,41 @@ public class Client extends LocalObject
             } else if (args[0].equals("FragmentedReply")) {
                 runFragmentedReply(ourORB);
             } else if (args[0].equals("HeaderPaddingTest")) {
-                runHeaderPaddingTest(ourORB);                
+                runHeaderPaddingTest(ourORB);
             } else {
                 System.out.println("Invalid option");
             }
 
         } catch (Exception e) {
-            System.out.println("ERROR : " + e) ;
+            System.out.println("ERROR : " + e);
             e.printStackTrace(System.out);
-            System.exit (1);
+            System.exit(1);
         }
     }
 
-    static void runLocateMsgType(ORB orb) 
-    {
+    static void runLocateMsgType(ORB orb) {
         org.omg.CORBA.Object fragTestStub = getStub(orb);
-        IOR ior = orb.getIOR( fragTestStub, false ) ;
+        IOR ior = orb.getIOR(fragTestStub, false);
         byte[] objectKey = getObjectKey(orb, ior);
         modifyObjectKey(objectKey);
         LocateRequestMessage msg = getLocateRequestMessage(orb, ior);
         MessageMediator messageMediator =
-            beginRequest(orb, fragTestStub, msg);
-        org.omg.CORBA.portable.OutputStream os = 
-            (org.omg.CORBA.portable.OutputStream)
-            messageMediator.getOutputObject();
+                beginRequest(orb, fragTestStub, msg);
+        org.omg.CORBA.portable.OutputStream os =
+                (org.omg.CORBA.portable.OutputStream)
+                        messageMediator.getOutputObject();
         msg.write(os);
         messageMediator.finishSendingRequest();
         messageMediator.waitForResponse();
-        switch(messageMediator.getLocateReplyHeader().getReplyStatus()) {
-        case LocateReplyMessage.UNKNOWN_OBJECT :
+        switch (messageMediator.getLocateReplyHeader().getReplyStatus()) {
+        case LocateReplyMessage.UNKNOWN_OBJECT:
             System.out.println("Target object is unknown");
             break;
-        case LocateReplyMessage.OBJECT_FORWARD :
-        case LocateReplyMessage.OBJECT_FORWARD_PERM :
+        case LocateReplyMessage.OBJECT_FORWARD:
+        case LocateReplyMessage.OBJECT_FORWARD_PERM:
             System.out.println("Location forward received");
             break;
-        case LocateReplyMessage.OBJECT_HERE :
+        case LocateReplyMessage.OBJECT_HERE:
             System.out.println("Target object is available");
             break;
         default:
@@ -160,43 +158,42 @@ public class Client extends LocalObject
             break;
         }
     }
-         
+
     static void runEarlyReply(ORB orb)
-        throws RemoteException, BadArrayException 
-    {
+            throws RemoteException, BadArrayException {
         org.omg.CORBA.Object fragTestStub = getStub(orb);
-        IOR ior = orb.getIOR( fragTestStub, false ) ;
+        IOR ior = orb.getIOR(fragTestStub, false);
         byte[] objKey = getObjectKey(orb, ior);
         modifyObjectKey(objKey);
 
         // construct a new IOR
         String typeId = ior.getTypeId();
 
-        IIOPProfileTemplate iptemp = 
-            (IIOPProfileTemplate)ior.getProfile().getTaggedProfileTemplate() ;
+        IIOPProfileTemplate iptemp =
+                (IIOPProfileTemplate) ior.getProfile().getTaggedProfileTemplate();
         IIOPAddress addr = iptemp.getPrimaryAddress();
 
         ObjectKey objectKey = orb.getObjectKeyFactory().create(objKey);
-        GIOPVersion gversion = iptemp.getGIOPVersion() ;
+        GIOPVersion gversion = iptemp.getGIOPVersion();
 
-        IIOPProfileTemplate iproftemp = 
-            IIOPFactories.makeIIOPProfileTemplate(orb, gversion, addr);
-        IORTemplate iortemp = IORFactories.makeIORTemplate(objectKey.getTemplate()) ;
-        iortemp.add( iproftemp ) ;
+        IIOPProfileTemplate iproftemp =
+                IIOPFactories.makeIIOPProfileTemplate(orb, gversion, addr);
+        IORTemplate iortemp = IORFactories.makeIORTemplate(objectKey.getTemplate());
+        iortemp.add(iproftemp);
 
-        IOR newIor = iortemp.makeIOR(orb, typeId, objectKey.getId() ) ;
-        
+        IOR newIor = iortemp.makeIOR(orb, typeId, objectKey.getId());
+
         // IOR -> CorbaContactInfoList ->ClientDelegateImpl, then set
         // new Delegate in the stub.
         ContactInfoList ccil =
-            new ContactInfoListImpl(orb, newIor);
-        ClientDelegate cdel = new ClientDelegateImpl( orb, ccil ) ;
-        StubAdapter.setDelegate( fragTestStub, cdel ) ;
+                new ContactInfoListImpl(orb, newIor);
+        ClientDelegate cdel = new ClientDelegateImpl(orb, ccil);
+        StubAdapter.setDelegate(fragTestStub, cdel);
 
         // invoke on target
         try {
             String fragSizeStr =
-                System.getProperty(ORBConstants.GIOP_FRAGMENT_SIZE);
+                    System.getProperty(ORBConstants.GIOP_FRAGMENT_SIZE);
             int fragmentSize = Integer.decode(fragSizeStr).intValue();
             testByteArray((FragmentTester) fragTestStub,
                           fragmentSize * 1000 * 3);
@@ -209,47 +206,46 @@ public class Client extends LocalObject
         }
     }
 
-    static void runSimpleCancelRequest(ORB orb) 
-    {
+    static void runSimpleCancelRequest(ORB orb) {
         org.omg.CORBA.Object fragTestStub = getStub(orb);
-        IOR ior = orb.getIOR( fragTestStub, false ) ;
+        IOR ior = orb.getIOR(fragTestStub, false);
         LocateRequestMessage msg = getLocateRequestMessage(orb, ior);
         MessageMediator messageMediator =
-            beginRequest(orb, fragTestStub, msg);
+                beginRequest(orb, fragTestStub, msg);
         GIOPVersion requestVersion =
-            GIOPVersion.chooseRequestVersion(orb, ior);
+                GIOPVersion.chooseRequestVersion(orb, ior);
         try {
             ((Connection) messageMediator.getConnection())
-                .sendCancelRequest(requestVersion, REQUEST_ID);
-        } catch (IOException e) {}
+                    .sendCancelRequest(requestVersion, REQUEST_ID);
+        } catch (IOException e) {
+        }
         System.out.println("SimpleCancelRequestMsg sent successfully");
     }
 
-    static void runAbortiveCancelRequest1(ORB orb) 
-    {
+    static void runAbortiveCancelRequest1(ORB orb) {
 
         org.omg.CORBA.Object fragTestStub = getStub(orb);
-        IOR ior = orb.getIOR( fragTestStub, false ) ;
+        IOR ior = orb.getIOR(fragTestStub, false);
         byte[] objectKey = getObjectKey(orb, ior);
         modifyObjectKey(objectKey);
 
         LocateRequestMessage msg = getLocateRequestMessage(orb, ior);
         MessageMediator messageMediator =
-            beginRequest(orb, fragTestStub, msg);
+                beginRequest(orb, fragTestStub, msg);
 
         CDROutputObject os = (CDROutputObject)
-            messageMediator.getOutputObject();
+                messageMediator.getOutputObject();
         // create GIOP header and write to output buffer
         os.write_long(Message.GIOPBigMagic);
         GIOPVersion requestVersion =
-            GIOPVersion.chooseRequestVersion(orb, ior);
-        requestVersion.write((org.omg.CORBA.portable.OutputStream)os);
+                GIOPVersion.chooseRequestVersion(orb, ior);
+        requestVersion.write((org.omg.CORBA.portable.OutputStream) os);
         os.write_octet(Message.FLAG_NO_FRAG_BIG_ENDIAN);
         os.write_octet(Message.GIOPLocateRequest);
         os.write_ulong(0);
 
         // write the requestId to the output buffer
-        os.write_ulong (REQUEST_ID);
+        os.write_ulong(REQUEST_ID);
 
         // send first fragment. This will cause the server to start the
         // worker thread and the worker thread will block to read stream.
@@ -258,30 +254,30 @@ public class Client extends LocalObject
         // send cancel request
         try {
             ((Connection) messageMediator.getConnection())
-                .sendCancelRequest(requestVersion, REQUEST_ID);
-        } catch (IOException e) {}
+                    .sendCancelRequest(requestVersion, REQUEST_ID);
+        } catch (IOException e) {
+        }
         System.out.println("AbortiveCancelRequestMsg sent successfully");
     }
 
-    static void runAbortiveCancelRequest2(ORB orb)
-    {
+    static void runAbortiveCancelRequest2(ORB orb) {
 
         org.omg.CORBA.Object fragTestStub = getStub(orb);
-        IOR ior = orb.getIOR( fragTestStub, false ) ;
+        IOR ior = orb.getIOR(fragTestStub, false);
         GIOPVersion requestVersion =
-            GIOPVersion.chooseRequestVersion(orb, ior);
+                GIOPVersion.chooseRequestVersion(orb, ior);
         byte encodingVersion =
-            ORBUtility.chooseEncodingVersion(orb, ior, requestVersion);
+                ORBUtility.chooseEncodingVersion(orb, ior, requestVersion);
         RequestMessage msg =
-            MessageBase.createRequest(
-                orb, requestVersion, encodingVersion,
-                REQUEST_ID, true, ior, 
-                KeyAddr.value, "verifyTransmission", 
-                ServiceContextDefaults.makeServiceContexts( orb ), null);
+                MessageBase.createRequest(
+                        orb, requestVersion, encodingVersion,
+                        REQUEST_ID, true, ior,
+                        KeyAddr.value, "verifyTransmission",
+                        ServiceContextDefaults.makeServiceContexts(orb), null);
         MessageMediator messageMediator =
-            beginRequest(orb, fragTestStub, msg);
+                beginRequest(orb, fragTestStub, msg);
         CDROutputObject os = (CDROutputObject)
-            messageMediator.getOutputObject();
+                messageMediator.getOutputObject();
 
         msg.write(os);
 
@@ -294,21 +290,23 @@ public class Client extends LocalObject
         // send cancel request
         try {
             ((Connection) messageMediator.getConnection())
-                .sendCancelRequest(requestVersion, REQUEST_ID);
-        } catch (IOException e) {}
+                    .sendCancelRequest(requestVersion, REQUEST_ID);
+        } catch (IOException e) {
+        }
 
         try {
             // This sleep is necessary since the above fragment tranmission does
             // not block. The sleep ensure that the outcome verification happens
             // after the request cancellation takes place.
             Thread.sleep(10000);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
         try {
             FragmentTester fragTester = (FragmentTester) fragTestStub;
             boolean outcome = fragTester.verifyOutcome();
             System.out.println("AbortiveCancelRequestMsg2 finished is : " +
-                outcome);
+                                       outcome);
             if (outcome == false) {
                 throw new RuntimeException("Test failed");
             }
@@ -317,8 +315,7 @@ public class Client extends LocalObject
         }
     }
 
-    static void runTargetAddressDisposition(ORB orb) 
-    {
+    static void runTargetAddressDisposition(ORB orb) {
 
         FragmentTester frag = (FragmentTester) getStub(orb);
 
@@ -334,24 +331,24 @@ public class Client extends LocalObject
         } catch (java.rmi.RemoteException e) {
             throw new RuntimeException(e.toString());
         } catch (BadArrayException e) {
-            throw new RuntimeException(e.toString());               
+            throw new RuntimeException(e.toString());
         }
     }
 
-    static void runCloseConnection(ORB orb) 
-    {
+    static void runCloseConnection(ORB orb) {
 
         org.omg.CORBA.Object fragTestStub = getStub(orb);
-        IOR ior = orb.getIOR( fragTestStub, false ) ;
+        IOR ior = orb.getIOR(fragTestStub, false);
         LocateRequestMessage msg = getLocateRequestMessage(orb, ior);
         MessageMediator messageMediator =
-            beginRequest(orb, fragTestStub, msg);
+                beginRequest(orb, fragTestStub, msg);
         GIOPVersion requestVersion =
-            GIOPVersion.chooseRequestVersion(orb, ior);
+                GIOPVersion.chooseRequestVersion(orb, ior);
         try {
             ((Connection) messageMediator.getConnection())
-                .sendCloseConnection(requestVersion);
-        } catch (IOException e) {}
+                    .sendCloseConnection(requestVersion);
+        } catch (IOException e) {
+        }
         System.out.println("CloseConnectionMsg sent successfully");
     }
 
@@ -361,18 +358,18 @@ public class Client extends LocalObject
      * if a body is absent in an request/reply then the header must not be
      * padded. Our ORB uses a lazy body padding technique, that inserts the
      * padding in order to align the body, only if the body is present.
-     * 
+     *
      * @param orb ORB
      */
     static void runHeaderPaddingTest(ORB orb) {
         int align = ORBConstants.GIOP_12_MSG_BODY_ALIGNMENT; // 8 bytes length
         int charLength = 1;
-        org.omg.CORBA.Object fragTestStub = getStub(orb);      
+        org.omg.CORBA.Object fragTestStub = getStub(orb);
         CDROutputObject os = (CDROutputObject) StubAdapter.request(fragTestStub, "fooA", false); // CASE 1
         int beforePaddingIndex = os.getBufferPosition();
         os.write_char('a'); // forces padding if not already naturally aligned
         int afterPaddingIndex = os.getBufferPosition();
-        int paddingLength = afterPaddingIndex-beforePaddingIndex-charLength;
+        int paddingLength = afterPaddingIndex - beforePaddingIndex - charLength;
         if ((paddingLength < 0) || (paddingLength > align)) {
             throw new RuntimeException("marshalling error"); // cannot happen
         }
@@ -380,7 +377,7 @@ public class Client extends LocalObject
             System.out.println("HeaderPaddingTest(1) completed successfully");
             return; // padding was inserted. No natural alignment.
         }
-        
+
         // The only possibility now if for padding to be zero, because the
         // body in the previous case was likely naturally aligned. 
         // So, now force non-alignment, in order to
@@ -388,11 +385,11 @@ public class Client extends LocalObject
         // the method 'fooAA', which has an additional character in its name,
         // that will force non-alignment.
         os = (CDROutputObject)
-            StubAdapter.request(fragTestStub, "fooAA", false); // CASE 2
+                StubAdapter.request(fragTestStub, "fooAA", false); // CASE 2
         beforePaddingIndex = os.getBufferPosition();
         os.write_char('a'); // forces padding if not already naturally aligned
         afterPaddingIndex = os.getBufferPosition();
-        paddingLength = afterPaddingIndex-beforePaddingIndex-charLength;
+        paddingLength = afterPaddingIndex - beforePaddingIndex - charLength;
         if ((paddingLength < 0) || (paddingLength > align)) {
             throw new RuntimeException("marshalling error"); // cannot happen
         }
@@ -400,36 +397,35 @@ public class Client extends LocalObject
             // padding was inserted. No natural alignment.
             // Previous case was a case of natural alignment.
             System.out.println("HeaderPaddingTest(2) completed successfully");
-            return; 
+            return;
         } else { // paddingLength == 0
             // Cannot happen. In order for this (padding == 0) to occur in both
             // cases, the header must have been forcibly padded always, 
             // which is incorrect. This indicates lazy body padding is not
             // working properly.
             throw new RuntimeException("Header padding error");
-        }        
+        }
     }
 
-    static void runMessageError(ORB orb)
-    {
+    static void runMessageError(ORB orb) {
         org.omg.CORBA.Object fragTestStub = getStub(orb);
-        IOR ior = orb.getIOR( fragTestStub, false ) ;
+        IOR ior = orb.getIOR(fragTestStub, false);
         LocateRequestMessage msg = getLocateRequestMessage(orb, ior);
         MessageMediator messageMediator =
-            beginRequest(orb, fragTestStub, msg);
+                beginRequest(orb, fragTestStub, msg);
         GIOPVersion requestVersion =
-            GIOPVersion.chooseRequestVersion(orb, ior);
+                GIOPVersion.chooseRequestVersion(orb, ior);
         try {
             ((Connection) messageMediator.getConnection())
-                .sendMessageError(requestVersion);
-        } catch (IOException e) {}
+                    .sendMessageError(requestVersion);
+        } catch (IOException e) {
+        }
         System.out.println("MessageError sent successfully");
     }
 
-    public static void runGIOPInterop(ORB orb) 
-    {
+    public static void runGIOPInterop(ORB orb) {
         org.omg.CORBA.Object fragTestStub = getStub(orb);
-        IOR ior = orb.getIOR( fragTestStub, false ) ;
+        IOR ior = orb.getIOR(fragTestStub, false);
         ObjectKey objectKey = getObjectKeyObject(orb, ior);
         objectKey = modifyObjectKeySCID(objectKey,
                                         ORBConstants.PERSISTENT_SCID, orb);
@@ -444,54 +440,53 @@ public class Client extends LocalObject
 
             // construct a new IOR
             String typeId = ior.getTypeId();
-            IIOPProfileTemplate iptemp = 
-                (IIOPProfileTemplate)ior.getProfile().getTaggedProfileTemplate() ;
-            IIOPAddress addr = iptemp.getPrimaryAddress() ;
+            IIOPProfileTemplate iptemp =
+                    (IIOPProfileTemplate) ior.getProfile().getTaggedProfileTemplate();
+            IIOPAddress addr = iptemp.getPrimaryAddress();
 
             ObjectKey objKey = orb.getObjectKeyFactory().
-                                      create(objectKey.getBytes(orb));
+                    create(objectKey.getBytes(orb));
 
             IIOPProfileTemplate iproftemp =
-                IIOPFactories.makeIIOPProfileTemplate(orb, GIOPVersion.V1_1, addr);
-            IORTemplate iortemp = IORFactories.makeIORTemplate(objKey.getTemplate()) ;
-            iortemp.add( iproftemp ) ;
+                    IIOPFactories.makeIIOPProfileTemplate(orb, GIOPVersion.V1_1, addr);
+            IORTemplate iortemp = IORFactories.makeIORTemplate(objKey.getTemplate());
+            iortemp.add(iproftemp);
 
-            IOR newIor = iortemp.makeIOR(orb, typeId, objKey.getId() ) ;
+            IOR newIor = iortemp.makeIOR(orb, typeId, objKey.getId());
 
             // create locate request message
             GIOPVersion requestVersion =
-                GIOPVersion.chooseRequestVersion(orb, newIor);
-            byte encodingVersion = 
-                ORBUtility.chooseEncodingVersion(orb, newIor,
-                                                 requestVersion);
+                    GIOPVersion.chooseRequestVersion(orb, newIor);
+            byte encodingVersion =
+                    ORBUtility.chooseEncodingVersion(orb, newIor,
+                                                     requestVersion);
             System.out.println("GIOP[major, minor]: " + requestVersion.getMajor() +
-                               ", " + requestVersion.getMinor());
+                                       ", " + requestVersion.getMinor());
             LocateRequestMessage msg =
-                MessageBase.createLocateRequest(
-                    orb, requestVersion, encodingVersion,
-                    REQUEST_ID, objectKey.getBytes(orb));
-
+                    MessageBase.createLocateRequest(
+                            orb, requestVersion, encodingVersion,
+                            REQUEST_ID, objectKey.getBytes(orb));
 
             int strategy = requestVersion.lessThan(GIOPVersion.V1_2) ? 0 : 1;
             MessageMediator messageMediator =
-                beginRequest(orb, fragTestStub, msg, strategy);
+                    beginRequest(orb, fragTestStub, msg, strategy);
 
-            org.omg.CORBA.portable.OutputStream os = 
-                (org.omg.CORBA.portable.OutputStream)
-                messageMediator.getOutputObject();
+            org.omg.CORBA.portable.OutputStream os =
+                    (org.omg.CORBA.portable.OutputStream)
+                            messageMediator.getOutputObject();
             msg.write(os);
             messageMediator.finishSendingRequest();
             messageMediator.waitForResponse();
 
-            switch(messageMediator.getLocateReplyHeader().getReplyStatus()) {
-            case LocateReplyMessage.UNKNOWN_OBJECT :
+            switch (messageMediator.getLocateReplyHeader().getReplyStatus()) {
+            case LocateReplyMessage.UNKNOWN_OBJECT:
                 System.out.println("Target object is unknown");
                 break;
-            case LocateReplyMessage.OBJECT_FORWARD :
-            case LocateReplyMessage.OBJECT_FORWARD_PERM :
+            case LocateReplyMessage.OBJECT_FORWARD:
+            case LocateReplyMessage.OBJECT_FORWARD_PERM:
                 System.out.println("Location forward received");
                 break;
-            case LocateReplyMessage.OBJECT_HERE :
+            case LocateReplyMessage.OBJECT_HERE:
                 System.out.println("Target object is available");
                 break;
             default:
@@ -500,40 +495,36 @@ public class Client extends LocalObject
             }
         }
     }
-    
-    public static void runFragmentedReply(ORB orb) 
-    {
+
+    public static void runFragmentedReply(ORB orb) {
         FragmentTester fragTestRef = (FragmentTester) getStub(orb);
 
         try {
             fragTestRef.testFragmentedReply(false);
         } catch (Throwable t) {
-            RuntimeException err = new RuntimeException( 
-                "Excepion in fragmented reply test" );   
-            err.initCause( t ) ;
-            throw err ;
+            RuntimeException err = new RuntimeException(
+                    "Excepion in fragmented reply test");
+            err.initCause(t);
+            throw err;
         }
-    }    
+    }
 
     ////////////////////////////////////////////////////
     //
     // Utilities
     //
 
-    static org.omg.CORBA.Object getStub(ORB orb)
-    {
+    static org.omg.CORBA.Object getStub(ORB orb) {
         org.omg.CORBA.Object obj = readObjref("IOR", orb);
-        return (org.omg.CORBA.Object)PortableRemoteObject.narrow(obj, 
-            FragmentTester.class);
+        return (org.omg.CORBA.Object) PortableRemoteObject.narrow(obj,
+                                                                  FragmentTester.class);
     }
 
-    static byte[] getObjectKey(ORB orb, IOR ior)
-    {
+    static byte[] getObjectKey(ORB orb, IOR ior) {
         return ior.getProfile().getObjectKey().getBytes(orb);
     }
 
-    static ObjectKey getObjectKeyObject(ORB orb, IOR ior)
-    {
+    static ObjectKey getObjectKeyObject(ORB orb, IOR ior) {
         return ior.getProfile().getObjectKey();
     }
 
@@ -543,9 +534,9 @@ public class Client extends LocalObject
         int serverId = okTemp.getServerId();
         String orbId = okTemp.getORBId();
         ObjectAdapterId objectAdapterId = okTemp.getObjectAdapterId();
-        ObjectKeyTemplate newOkTemp = 
-            new POAObjectKeyTemplate(orb, scid, serverId, orbId, 
-                                     objectAdapterId);
+        ObjectKeyTemplate newOkTemp =
+                new POAObjectKeyTemplate(orb, scid, serverId, orbId,
+                                         objectAdapterId);
         return new ObjectKeyImpl(newOkTemp, objectKey.getId());
     }
 
@@ -558,7 +549,7 @@ public class Client extends LocalObject
         ObjectAdapterId objectAdapterId = okTemp.getObjectAdapterId();
         ObjectKeyTemplate newOkTemp;
         if (magic >= ObjectKeyFactoryImpl.JAVAMAGIC_NEWER) {
-            newOkTemp = new POAObjectKeyTemplate(orb, scid, serverId, orbId, 
+            newOkTemp = new POAObjectKeyTemplate(orb, scid, serverId, orbId,
                                                  objectAdapterId);
         } else {
             newOkTemp = new OldPOAObjectKeyTemplate(orb, magic, scid,
@@ -569,8 +560,7 @@ public class Client extends LocalObject
         return new ObjectKeyImpl(newOkTemp, objectKey.getId());
     }
 
-    static void modifyObjectKey(byte[] objectKey)
-    {
+    static void modifyObjectKey(byte[] objectKey) {
         // modify the object key so as to force BadServerIdHandler
         // to be invoked, instead of the usual upcall dispatch
         System.out.println("-> objectkey.length : " + objectKey.length);
@@ -579,16 +569,14 @@ public class Client extends LocalObject
     }
 
     static MessageMediator beginRequest(ORB orb,
-        org.omg.CORBA.Object stub, Message msg)
-    {
+                                        org.omg.CORBA.Object stub, Message msg) {
         return beginRequest(orb, stub, msg, -1);
     }
 
     static MessageMediator beginRequest(ORB orb,
-        org.omg.CORBA.Object stub, Message msg, int strategy)
-    {
+                                        org.omg.CORBA.Object stub, Message msg, int strategy) {
         ClientDelegate delegate = (ClientDelegate)
-            StubAdapter.getDelegate(stub) ;
+                StubAdapter.getDelegate(stub);
         Iterator iterator = delegate.getContactInfoList().iterator();
         ContactInfo contactInfo;
         if (iterator.hasNext()) {
@@ -597,24 +585,24 @@ public class Client extends LocalObject
             throw new RuntimeException("no next");
         }
         Connection connection = (Connection)
-            contactInfo.createConnection();
+                contactInfo.createConnection();
         connection.setConnectionCache(new DummyConnectionCache());
         orb.getTransportManager().getSelector(0)
-            .registerForEvent(connection.getEventHandler());
+                .registerForEvent(connection.getEventHandler());
         connection.setState("ESTABLISHED");
         MessageMediator messageMediator = (MessageMediator)
-            contactInfo.createMessageMediator(
-                orb, contactInfo, connection, "locate message", false);
+                contactInfo.createMessageMediator(
+                        orb, contactInfo, connection, "locate message", false);
         CDROutputObject outputObject = null;
         if (strategy == -1) {
             outputObject =
-                new CDROutputObject(orb, messageMediator, msg,
-                                    messageMediator.getStreamFormatVersion());
+                    new CDROutputObject(orb, messageMediator, msg,
+                                        messageMediator.getStreamFormatVersion());
         } else {
             outputObject =
-                new CDROutputObject(orb, messageMediator, msg,
-                                    messageMediator.getStreamFormatVersion(),
-                                    strategy);
+                    new CDROutputObject(orb, messageMediator, msg,
+                                        messageMediator.getStreamFormatVersion(),
+                                        strategy);
         }
         messageMediator.setOutputObject(outputObject);
         connection.registerWaiter(messageMediator);
@@ -622,21 +610,19 @@ public class Client extends LocalObject
     }
 
     // All this, just to get a connection.
-    static LocateRequestMessage getLocateRequestMessage(ORB orb, IOR ior)
-    {
+    static LocateRequestMessage getLocateRequestMessage(ORB orb, IOR ior) {
         byte[] objectKey = getObjectKey(orb, ior);
         GIOPVersion gv = GIOPVersion.chooseRequestVersion(orb, ior);
         byte encodingVersion = ORBUtility.chooseEncodingVersion(orb, ior, gv);
-        LocateRequestMessage msg = 
-            MessageBase.createLocateRequest(
-                orb, gv, encodingVersion, REQUEST_ID, objectKey);
+        LocateRequestMessage msg =
+                MessageBase.createLocateRequest(
+                        orb, gv, encodingVersion, REQUEST_ID, objectKey);
         return msg;
     }
 
     // size must be divisible by four
     public static void testByteArray(FragmentTester tester, int size)
-        throws RemoteException, BadArrayException
-    {
+            throws RemoteException, BadArrayException {
         System.out.println("Sending array of length " + size);
 
         byte array[] = new byte[size];
@@ -655,30 +641,33 @@ public class Client extends LocalObject
 
         byte result[] = tester.verifyTransmission(array);
 
-        if (result == null)
+        if (result == null) {
             throw new BadArrayException("result was null!");
+        }
 
-        if (array.length != result.length)
+        if (array.length != result.length) {
             throw new BadArrayException("result length incorrect: " + result.length);
+        }
 
-        for (i = 0; i < array.length; i++)
-            if (array[i] != result[i])
+        for (i = 0; i < array.length; i++) {
+            if (array[i] != result[i]) {
                 throw new BadArrayException("result mismatch at index: " + i);
+            }
+        }
 
         System.out.println("testByteArray completed normally");
     }
 
-    public static org.omg.CORBA.Object readObjref(String file, org.omg.CORBA.ORB orb) 
-    {
-        String fil = System.getProperty("output.dir")+System.getProperty("file.separator")+file;
+    public static org.omg.CORBA.Object readObjref(String file, org.omg.CORBA.ORB orb) {
+        String fil = System.getProperty("output.dir") + System.getProperty("file.separator") + file;
         try {
             java.io.DataInputStream in =
-                new java.io.DataInputStream(new FileInputStream(fil));
+                    new java.io.DataInputStream(new FileInputStream(fil));
             String ior = in.readLine();
-            System.out.println("IOR: "+ior);
+            System.out.println("IOR: " + ior);
             return orb.string_to_object(ior);
         } catch (java.io.IOException e) {
-            System.err.println("Unable to open file "+fil);
+            System.err.println("Unable to open file " + fil);
             System.exit(1);
         }
         return null;
@@ -689,12 +678,10 @@ public class Client extends LocalObject
     // ORBInitializer interface implementation.
     //
 
-    public void pre_init(ORBInitInfo info) 
-    {
+    public void pre_init(ORBInitInfo info) {
     }
 
-    public void post_init(ORBInitInfo info) 
-    {
+    public void post_init(ORBInitInfo info) {
         // register the interceptors.
         try {
             info.add_client_request_interceptor(this);
@@ -709,13 +696,11 @@ public class Client extends LocalObject
     // implementation of the Interceptor interface.
     //
 
-    public String name() 
-    {
+    public String name() {
         return "ClientInterceptor";
     }
 
-    public void destroy() 
-    {
+    public void destroy() {
     }
 
     ////////////////////////////////////////////////////
@@ -725,52 +710,64 @@ public class Client extends LocalObject
 
     private static int interceptorInvocationCount = 0;
 
-    public void send_request(ClientRequestInfo ri) throws ForwardRequest 
-    {
+    public void send_request(ClientRequestInfo ri) throws ForwardRequest {
         if (interceptorInvocationCount == 0 ||
                 interceptorInvocationCount == 2) {
             interceptorInvocationCount++;
-        }   
-        System.out.println("send_request called : " + ri.operation());        
+        }
+        System.out.println("send_request called : " + ri.operation());
     }
 
-    public void send_poll(ClientRequestInfo ri) 
-    {
+    public void send_poll(ClientRequestInfo ri) {
         System.out.println("send_poll called : " + ri.operation());
     }
 
-    public void receive_reply(ClientRequestInfo ri) 
-    {
+    public void receive_reply(ClientRequestInfo ri) {
         if (interceptorInvocationCount == 3) {
-            interceptorInvocationCount++;        
-        }        
+            interceptorInvocationCount++;
+        }
         System.out.println("receive_reply called : " + ri.operation());
     }
 
-    public void receive_exception(ClientRequestInfo ri) throws ForwardRequest 
-    {
+    public void receive_exception(ClientRequestInfo ri) throws ForwardRequest {
         System.out.println("receive_exception called : " + ri.operation());
     }
 
-    public void receive_other(ClientRequestInfo ri) throws ForwardRequest 
-    {
+    public void receive_other(ClientRequestInfo ri) throws ForwardRequest {
         if (interceptorInvocationCount == 1) {
-            interceptorInvocationCount++;        
+            interceptorInvocationCount++;
         }
         System.out.println("receive_other called : " + ri.operation());
     }
 }
 
 class DummyConnectionCache
-    implements ConnectionCache
-{
-    public String getCacheType() { return null; }
-    public void stampTime(Connection connection) {}
-    public long numberOfConnections() { return 0; }
-    public long numberOfIdleConnections() { return 0; }
-    public long numberOfBusyConnections() { return 0; }
-    public boolean reclaim() { return true; }
-    public void close() {}
+        implements ConnectionCache {
+    public String getCacheType() {
+        return null;
+    }
+
+    public void stampTime(Connection connection) {
+    }
+
+    public long numberOfConnections() {
+        return 0;
+    }
+
+    public long numberOfIdleConnections() {
+        return 0;
+    }
+
+    public long numberOfBusyConnections() {
+        return 0;
+    }
+
+    public boolean reclaim() {
+        return true;
+    }
+
+    public void close() {
+    }
 
     public String getMonitoringName() {
         throw new UnsupportedOperationException("Not supported yet.");

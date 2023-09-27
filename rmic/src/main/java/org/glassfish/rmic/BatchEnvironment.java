@@ -25,12 +25,7 @@ import org.glassfish.rmic.tools.java.ClassPath;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.StringTokenizer;
-import java.util.Vector;
+import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -44,7 +39,7 @@ import java.util.jar.Manifest;
  * 3. It holds a reference to the Main instance so that generators
  * can refer to it.
  * 4. It provides access to the ClassPath passed to the constructor.
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
@@ -53,7 +48,9 @@ import java.util.jar.Manifest;
 @SuppressWarnings("deprecation")
 public class BatchEnvironment extends org.glassfish.rmic.tools.javac.BatchEnvironment {
 
-    /** The directory to which class files are being written. */
+    /**
+     * The directory to which class files are being written.
+     */
     private File destinationDir;
 
     /**
@@ -118,6 +115,7 @@ public class BatchEnvironment extends org.glassfish.rmic.tools.javac.BatchEnviro
 
     /**
      * Returns the directory to which generated classes will be written.
+     *
      * @return the destination directory specified by the "-d" flag
      */
     public File getDestinationDir() {
@@ -131,7 +129,9 @@ public class BatchEnvironment extends org.glassfish.rmic.tools.javac.BatchEnviro
         return binaryPath;
     }
 
-    /** list of generated source files created in this environment */
+    /**
+     * list of generated source files created in this environment
+     */
     private Vector<File> generatedFiles = new Vector<>();
 
     /**
@@ -148,7 +148,7 @@ public class BatchEnvironment extends org.glassfish.rmic.tools.javac.BatchEnviro
      * "addGeneratedFile" method).
      */
     void deleteGeneratedFiles() {
-        synchronized(generatedFiles) {
+        synchronized (generatedFiles) {
             Enumeration<File> enumeration = generatedFiles.elements();
             while (enumeration.hasMoreElements()) {
                 File file = enumeration.nextElement();
@@ -173,13 +173,12 @@ public class BatchEnvironment extends org.glassfish.rmic.tools.javac.BatchEnviro
      * bundle; otherwise, defer to java's superclass method.
      */
     public String errorString(String err,
-                              Object arg0, Object arg1, Object arg2)
-    {
+                              Object arg0, Object arg1, Object arg2) {
         if (err.startsWith("rmic.") || err.startsWith("warn.rmic.")) {
-            String result =  Main.getText(err,
-                                          (arg0 != null ? arg0.toString() : null),
-                                          (arg1 != null ? arg1.toString() : null),
-                                          (arg2 != null ? arg2.toString() : null));
+            String result = Main.getText(err,
+                                         (arg0 != null ? arg0.toString() : null),
+                                         (arg1 != null ? arg1.toString() : null),
+                                         (arg2 != null ? arg2.toString() : null));
 
             if (err.startsWith("warn.")) {
                 result = "warning: " + result;
@@ -189,6 +188,7 @@ public class BatchEnvironment extends org.glassfish.rmic.tools.javac.BatchEnviro
             return super.errorString(err, arg0, arg1, arg2);
         }
     }
+
     public void reset() {
     }
 
@@ -212,24 +212,32 @@ public class BatchEnvironment extends org.glassfish.rmic.tools.javac.BatchEnviro
                 this.path = path;
                 this.emptyPathDefault = emptyPathDefault;
             }
-            public PathIterator(String path) { this(path, null); }
+
+            public PathIterator(String path) {
+                this(path, null);
+            }
+
             public Iterator<String> iterator() {
                 return new Iterator<String>() {
                     public boolean hasNext() {
                         return pos <= path.length();
                     }
+
                     public String next() {
                         int beg = pos;
                         int end = path.indexOf(File.pathSeparator, beg);
-                        if (end == -1)
+                        if (end == -1) {
                             end = path.length();
+                        }
                         pos = end + 1;
 
-                        if (beg == end && emptyPathDefault != null)
+                        if (beg == end && emptyPathDefault != null) {
                             return emptyPathDefault;
-                        else
+                        } else {
                             return path.substring(beg, end);
+                        }
                     }
+
                     public void remove() {
                         throw new UnsupportedOperationException();
                     }
@@ -240,48 +248,63 @@ public class BatchEnvironment extends org.glassfish.rmic.tools.javac.BatchEnviro
             public int size() {
                 throw new UnsupportedOperationException();
             }
+
             public boolean isEmpty() {
                 throw new UnsupportedOperationException();
             }
+
             public boolean contains(Object o) {
                 throw new UnsupportedOperationException();
             }
+
             public Object[] toArray() {
                 throw new UnsupportedOperationException();
             }
+
             public <T> T[] toArray(T[] a) {
                 throw new UnsupportedOperationException();
             }
+
             public boolean add(String o) {
                 throw new UnsupportedOperationException();
             }
+
             public boolean remove(Object o) {
                 throw new UnsupportedOperationException();
             }
+
             public boolean containsAll(Collection<?> c) {
                 throw new UnsupportedOperationException();
             }
+
             public boolean addAll(Collection<? extends String> c) {
                 throw new UnsupportedOperationException();
             }
+
             public boolean removeAll(Collection<?> c) {
                 throw new UnsupportedOperationException();
             }
+
             public boolean retainAll(Collection<?> c) {
                 throw new UnsupportedOperationException();
             }
+
             public void clear() {
                 throw new UnsupportedOperationException();
             }
+
             public boolean equals(Object o) {
                 throw new UnsupportedOperationException();
             }
+
             public int hashCode() {
                 throw new UnsupportedOperationException();
             }
         }
 
-        /** Is this the name of a zip file? */
+        /**
+         * Is this the name of a zip file?
+         */
         private static boolean isZip(String name) {
             return new File(name).isFile();
         }
@@ -293,7 +316,9 @@ public class BatchEnvironment extends org.glassfish.rmic.tools.javac.BatchEnviro
             return this;
         }
 
-        /** What to use when path element is the empty string */
+        /**
+         * What to use when path element is the empty string
+         */
         private String emptyPathDefault = null;
 
         public Path emptyPathDefault(String x) {
@@ -301,12 +326,16 @@ public class BatchEnvironment extends org.glassfish.rmic.tools.javac.BatchEnviro
             return this;
         }
 
-        public Path() { super(); }
+        public Path() {
+            super();
+        }
 
         public Path addDirectories(String dirs, boolean warn) {
-            if (dirs != null)
-                for (String dir : new PathIterator(dirs))
+            if (dirs != null) {
+                for (String dir : new PathIterator(dirs)) {
                     addDirectory(dir, warn);
+                }
+            }
             return this;
         }
 
@@ -315,25 +344,28 @@ public class BatchEnvironment extends org.glassfish.rmic.tools.javac.BatchEnviro
         }
 
         private void addDirectory(String dir, boolean warn) {
-            if (! new File(dir).isDirectory()) {
-//              if (warn)
-//                  log.warning(Position.NOPOS,
-//                              "dir.path.element.not.found", dir);
+            if (!new File(dir).isDirectory()) {
+                //              if (warn)
+                //                  log.warning(Position.NOPOS,
+                //                              "dir.path.element.not.found", dir);
                 return;
             }
 
             for (String direntry : new File(dir).list()) {
                 String canonicalized = direntry.toLowerCase();
                 if (canonicalized.endsWith(".jar") ||
-                    canonicalized.endsWith(".zip"))
+                        canonicalized.endsWith(".zip")) {
                     addFile(dir + File.separator + direntry, warn);
+                }
             }
         }
 
         public Path addFiles(String files, boolean warn) {
-            if (files != null)
-                for (String file : new PathIterator(files, emptyPathDefault))
+            if (files != null) {
+                for (String file : new PathIterator(files, emptyPathDefault)) {
                     addFile(file, warn);
+                }
+            }
             return this;
         }
 
@@ -348,23 +380,25 @@ public class BatchEnvironment extends org.glassfish.rmic.tools.javac.BatchEnviro
             }
 
             File ele = new File(file);
-            if (! ele.exists()) {
+            if (!ele.exists()) {
                 /* No such file or directory exist */
                 if (warn)
-//                      log.warning(Position.NOPOS,
-//                          "path.element.not.found", file);
+                //                      log.warning(Position.NOPOS,
+                //                          "path.element.not.found", file);
+                {
                     return;
+                }
             }
 
             if (ele.isFile()) {
                 /* File is an ordinay file  */
                 String arcname = file.toLowerCase();
-                if (! (arcname.endsWith(".zip") ||
-                       arcname.endsWith(".jar"))) {
+                if (!(arcname.endsWith(".zip") ||
+                        arcname.endsWith(".jar"))) {
                     /* File name don't have right extension */
-//                      if (warn)
-//                          log.warning(Position.NOPOS,
-//                              "invalid.archive.file", file);
+                    //                      if (warn)
+                    //                          log.warning(Position.NOPOS,
+                    //                              "invalid.archive.file", file);
                     return;
                 }
             }
@@ -373,8 +407,9 @@ public class BatchEnvironment extends org.glassfish.rmic.tools.javac.BatchEnviro
                confirming to archive naming convention */
 
             super.add(file);
-            if (expandJarClassPaths && isZip(file))
+            if (expandJarClassPaths && isZip(file)) {
                 addJarClassPath(file, warn);
+            }
         }
 
         // Adds referenced classpath elements from a jar's Class-Path
@@ -388,28 +423,35 @@ public class BatchEnvironment extends org.glassfish.rmic.tools.javac.BatchEnviro
 
                 try {
                     Manifest man = jar.getManifest();
-                    if (man == null) return;
+                    if (man == null) {
+                        return;
+                    }
 
                     Attributes attr = man.getMainAttributes();
-                    if (attr == null) return;
+                    if (attr == null) {
+                        return;
+                    }
 
                     String path = attr.getValue(Attributes.Name.CLASS_PATH);
-                    if (path == null) return;
+                    if (path == null) {
+                        return;
+                    }
 
                     for (StringTokenizer st = new StringTokenizer(path);
-                        st.hasMoreTokens();) {
+                         st.hasMoreTokens(); ) {
                         String elt = st.nextToken();
-                        if (jarParent != null)
+                        if (jarParent != null) {
                             elt = new File(jarParent, elt).getCanonicalPath();
+                        }
                         addFile(elt, warn);
                     }
                 } finally {
                     jar.close();
                 }
             } catch (IOException e) {
-//              log.error(Position.NOPOS,
-//                        "error.reading.file", jarFileName,
-//                        e.getLocalizedMessage());
+                //              log.error(Position.NOPOS,
+                //                        "error.reading.file", jarFileName,
+                //                        e.getLocalizedMessage());
             }
         }
     }

@@ -23,7 +23,7 @@ package org.glassfish.rmic.tools.java;
  * Information about the occurrence of an identifier.
  * The parser produces these to represent name which cannot yet be
  * bound to field definitions.
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
@@ -42,7 +42,8 @@ class IdentifierToken {
         this.id = id;
     }
 
-    /** Use this constructor when the identifier is synthesized.
+    /**
+     * Use this constructor when the identifier is synthesized.
      * The location will be 0.
      */
     public IdentifierToken(Identifier id) {
@@ -56,17 +57,23 @@ class IdentifierToken {
         this.modifiers = modifiers;
     }
 
-    /** The source location of this identifier occurrence. */
+    /**
+     * The source location of this identifier occurrence.
+     */
     public long getWhere() {
         return where;
     }
 
-    /** The identifier itself (possibly qualified). */
+    /**
+     * The identifier itself (possibly qualified).
+     */
     public Identifier getName() {
         return id;
     }
 
-    /** The modifiers associated with the occurrence, if any. */
+    /**
+     * The modifiers associated with the occurrence, if any.
+     */
     public int getModifiers() {
         return modifiers;
     }

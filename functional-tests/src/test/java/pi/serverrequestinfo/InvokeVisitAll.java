@@ -26,35 +26,33 @@ import org.omg.CORBA.*;
 /**
  * Invocation strategy in which each interception point is visited.
  * The following order is used:
- *    rrsc, rr, sr
- *    rrsc, rr, se
- *    rrsc, rr, so
+ * rrsc, rr, sr
+ * rrsc, rr, se
+ * rrsc, rr, so
  */
-public class InvokeVisitAll 
-    extends InvokeStrategy
-{
+public class InvokeVisitAll
+        extends InvokeStrategy {
     // String to prepend to any outgoing call for this invocation strategy.
     private String methodPrefix = "";
 
-    public InvokeVisitAll( String methodPrefix ) {
+    public InvokeVisitAll(String methodPrefix) {
         this.methodPrefix = methodPrefix;
     }
 
     public InvokeVisitAll() {
-        this( "" );
+        this("");
     }
 
     public void invoke() throws Exception {
         super.invoke();
 
         // Invoke rrsc, rr, sr
-        invokeMethod( methodPrefix + "sayHello" );
+        invokeMethod(methodPrefix + "sayHello");
 
         // Invoke rrsc, rr, se
         try {
-            invokeMethod( methodPrefix + "saySystemException" );
-        }
-        catch( IMP_LIMIT e ) {
+            invokeMethod(methodPrefix + "saySystemException");
+        } catch (IMP_LIMIT e) {
             // We expect this, but no other exception.
         }
 
@@ -62,9 +60,8 @@ public class InvokeVisitAll
         try {
             SampleServerRequestInterceptor.exceptionRedirectToOther = true;
             SampleServerRequestInterceptor.invokeOnForwardedObject = false;
-            invokeMethod( methodPrefix + "saySystemException" );
-        }
-        catch( IMP_LIMIT e ) {
+            invokeMethod(methodPrefix + "saySystemException");
+        } catch (IMP_LIMIT e) {
             // We expect this, but no other exception.
         }
     }

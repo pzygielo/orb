@@ -22,7 +22,9 @@ package corba.cmvt;
 
 import test.Test;
 import corba.framework.*;
+
 import java.util.*;
+
 import com.sun.corba.ee.spi.misc.ORBConstants;
 
 public class CMVTTest extends CORBATest {
@@ -34,8 +36,7 @@ public class CMVTTest extends CORBATest {
     private void printBeginTest(int clientVersion,
                                 int clientStrategy,
                                 int serverVersion,
-                                int serverStrategy)
-    {
+                                int serverStrategy) {
         StringBuilder output = new StringBuilder(80);
 
         // Pleasing aesthetics
@@ -53,12 +54,11 @@ public class CMVTTest extends CORBATest {
         System.out.print(output.toString());
     }
 
-    private void printEndTest(String result)
-    {
+    private void printEndTest(String result) {
         System.out.println(result);
     }
 
-    private void setClient(int version, int strategy){
+    private void setClient(int version, int strategy) {
         Properties clientProps = Options.getClientProperties();
 
         int fragmentSize = 1024;
@@ -69,7 +69,7 @@ public class CMVTTest extends CORBATest {
         clientProps.put(ORBConstants.GIOP_12_BUFFMGR, "" + GIOP_strategy[strategy]);
     }
 
-    private void setServer(int version, int strategy){
+    private void setServer(int version, int strategy) {
         Properties serverProps = Options.getServerProperties();
 
         serverProps.put(ORBConstants.GIOP_VERSION, GIOP_version[version]);
@@ -77,7 +77,7 @@ public class CMVTTest extends CORBATest {
         serverProps.put(ORBConstants.GIOP_12_BUFFMGR, "" + GIOP_strategy[strategy]);
     }
 
-    private void runTest( String name ) throws Throwable{
+    private void runTest(String name) throws Throwable {
         Controller server = createServer("corba.cmvt.Server", name);
         Controller client = createClient("corba.cmvt.Client", name);
 
@@ -98,35 +98,35 @@ public class CMVTTest extends CORBATest {
         server.stop();
     }
 
-    protected void doTest() throws Throwable  
-    {
+    protected void doTest() throws Throwable {
         int errors = 0;
 
         // Pleasing aesthetics
         System.out.println();
 
         //1.0 + grow
-        setClient(0,0);
-        setServer(0,0);
-        printBeginTest(0,0,0,0);
-        runTest( "1_0_grow" );
+        setClient(0, 0);
+        setServer(0, 0);
+        printBeginTest(0, 0, 0, 0);
+        runTest("1_0_grow");
 
         //1.2 + grow
-        setClient(2,0);
-        setServer(2,0);
-        printBeginTest(2,0,2,0);
-        runTest( "1_2_grow" );
+        setClient(2, 0);
+        setServer(2, 0);
+        printBeginTest(2, 0, 2, 0);
+        runTest("1_2_grow");
 
         //1.2 + stream
-        setClient(2,1);
-        setServer(2,1);
-        printBeginTest(2,1,2,1);
-        runTest( "1_2_stream" );
+        setClient(2, 1);
+        setServer(2, 1);
+        printBeginTest(2, 1, 2, 1);
+        runTest("1_2_stream");
 
-        System.out.print("      Test result : " );
-        
-        if (errors > 0)
+        System.out.print("      Test result : ");
+
+        if (errors > 0) {
             throw new Exception("Errors detected");
+        }
 
     }
 }

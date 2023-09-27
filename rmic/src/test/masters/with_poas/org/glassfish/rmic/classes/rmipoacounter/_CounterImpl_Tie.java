@@ -8,6 +8,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import javax.rmi.CORBA.Tie;
 import javax.rmi.CORBA.Util;
+
 import org.omg.CORBA.BAD_OPERATION;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.SystemException;
@@ -17,65 +18,63 @@ import org.omg.CORBA.portable.ResponseHandler;
 import org.omg.CORBA.portable.UnknownException;
 import org.omg.PortableServer.Servant;
 
-
 public class _CounterImpl_Tie extends Servant implements Tie {
-    
+
     volatile private CounterImpl target = null;
-    
+
     private static final String[] _type_ids = {
-        "RMI:org.glassfish.rmic.classes.rmipoacounter.CounterIF:0000000000000000"
+            "RMI:org.glassfish.rmic.classes.rmipoacounter.CounterIF:0000000000000000"
     };
-    
+
     public void setTarget(Remote target) {
         this.target = (CounterImpl) target;
     }
-    
+
     public Remote getTarget() {
         return target;
     }
-    
+
     public org.omg.CORBA.Object thisObject() {
         return _this_object();
     }
-    
+
     public void deactivate() {
-        try{
-        _poa().deactivate_object(_poa().servant_to_id(this));
-        }catch (org.omg.PortableServer.POAPackage.WrongPolicy exception){
-        
-        }catch (org.omg.PortableServer.POAPackage.ObjectNotActive exception){
-        
-        }catch (org.omg.PortableServer.POAPackage.ServantNotActive exception){
-        
+        try {
+            _poa().deactivate_object(_poa().servant_to_id(this));
+        } catch (org.omg.PortableServer.POAPackage.WrongPolicy exception) {
+
+        } catch (org.omg.PortableServer.POAPackage.ObjectNotActive exception) {
+
+        } catch (org.omg.PortableServer.POAPackage.ServantNotActive exception) {
+
         }
     }
-    
+
     public ORB orb() {
         return _orb();
     }
-    
+
     public void orb(ORB orb) {
         try {
-            ((org.omg.CORBA_2_3.ORB)orb).set_delegate(this);
-        }
-        catch(ClassCastException e) {
+            ((org.omg.CORBA_2_3.ORB) orb).set_delegate(this);
+        } catch (ClassCastException e) {
             throw new org.omg.CORBA.BAD_PARAM
-                ("POA Servant requires an instance of org.omg.CORBA_2_3.ORB");
+                    ("POA Servant requires an instance of org.omg.CORBA_2_3.ORB");
         }
     }
-    
-    public String[] _all_interfaces(org.omg.PortableServer.POA poa, byte[] objectId){
+
+    public String[] _all_interfaces(org.omg.PortableServer.POA poa, byte[] objectId) {
         return (String[]) _type_ids.clone();
     }
-    
-    public OutputStream  _invoke(String method, InputStream _in, ResponseHandler reply) throws SystemException {
+
+    public OutputStream _invoke(String method, InputStream _in, ResponseHandler reply) throws SystemException {
         try {
             CounterImpl target = this.target;
             if (target == null) {
                 throw new java.io.IOException();
             }
-            org.omg.CORBA_2_3.portable.InputStream in = 
-                (org.omg.CORBA_2_3.portable.InputStream) _in;
+            org.omg.CORBA_2_3.portable.InputStream in =
+                    (org.omg.CORBA_2_3.portable.InputStream) _in;
             if (method.equals("increment")) {
                 long arg0 = in.read_longlong();
                 long result = target.increment(arg0);

@@ -18,17 +18,17 @@
  */
 package org.glassfish.jndi.cosnaming;
 
+import org.glassfish.jndi.toolkit.corba.CorbaUtils;
+
 import javax.naming.Name;
 import javax.naming.NamingException;
-
 import java.net.MalformedURLException;
-import java.util.Vector;
 import java.util.StringTokenizer;
-import org.glassfish.jndi.toolkit.corba.CorbaUtils;
+import java.util.Vector;
 
 /**
  * Extract components of an "iiop" or "iiopname" URL.
- *
+ * <p>
  * The format of an iiopname URL is defined in INS 98-10-11 as follows:
  *
  * <pre>
@@ -42,7 +42,7 @@ import org.glassfish.jndi.toolkit.corba.CorbaUtils;
  * minor        = number
  * string_name  = stringified name | empty_string
  * </pre>
- *
+ * <p>
  * The default port is 9999. The default version is "1.0"
  * US-ASCII alphanumeric characters are not escaped. Any characters outside
  * of this range are escaped except for the following:
@@ -51,14 +51,13 @@ import org.glassfish.jndi.toolkit.corba.CorbaUtils;
  * }</pre>
  * Escaped characters is escaped by using a % followed by its 2 hexadecimal
  * numbers representing the octet.
- *
+ * <p>
  * For backward compatibility,  the "iiop" URL as defined in INS 97-6-6
  * is also supported:
  * <pre>{@code
  * iiop url     = "iiop://" [host [":" port]] ["/" string_name]
  * }</pre>
  * The default port is 900.
- *
  */
 
 public final class IiopUrl {
@@ -74,7 +73,7 @@ public final class IiopUrl {
         public String host;
 
         public Address(String hostPortVers, boolean oldFormat)
-            throws MalformedURLException {
+                throws MalformedURLException {
             // [version host [":" port]]
             int start;
 
@@ -88,14 +87,14 @@ public final class IiopUrl {
                 int dot = hostPortVers.indexOf('.');
                 if (dot < 0) {
                     throw new MalformedURLException(
-                        "invalid version: " + hostPortVers);
+                            "invalid version: " + hostPortVers);
                 }
                 try {
                     major = Integer.parseInt(hostPortVers.substring(0, dot));
-                    minor = Integer.parseInt(hostPortVers.substring(dot+1, at));
+                    minor = Integer.parseInt(hostPortVers.substring(dot + 1, at));
                 } catch (NumberFormatException e) {
                     throw new MalformedURLException(
-                        "Nonnumeric version: " + hostPortVers);
+                            "Nonnumeric version: " + hostPortVers);
                 }
                 start = at + 1;  // skip '@' sign
             }
@@ -109,7 +108,7 @@ public final class IiopUrl {
                 int brac = hostPortVers.indexOf(']', start + 1);
                 if (brac < 0 || brac > slash) {
                     throw new IllegalArgumentException(
-                        "IiopURL: name is an Invalid URL: " + hostPortVers);
+                            "IiopURL: name is an Invalid URL: " + hostPortVers);
                 }
 
                 // include brackets
@@ -118,30 +117,30 @@ public final class IiopUrl {
             } else {      // at hostname or IPv4
                 int colon = hostPortVers.indexOf(':', start);
                 int hostEnd = (colon < 0 || colon > slash)
-                    ? slash
-                    : colon;
+                        ? slash
+                        : colon;
                 if (start < hostEnd) {
                     host = hostPortVers.substring(start, hostEnd);
                 }
                 start = hostEnd;   // skip past host
             }
             if ((start + 1 < slash)) {
-                if ( hostPortVers.startsWith(":", start)) { // parse port
+                if (hostPortVers.startsWith(":", start)) { // parse port
                     start++;    // skip past ":"
                     port = Integer.parseInt(hostPortVers.
-                                            substring(start, slash));
+                                                    substring(start, slash));
                 } else {
                     throw new IllegalArgumentException(
-                        "IiopURL: name is an Invalid URL: " + hostPortVers);
+                            "IiopURL: name is an Invalid URL: " + hostPortVers);
                 }
             }
             start = slash;
             if ("".equals(host) || host == null) {
-                host = DEFAULT_HOST ;
+                host = DEFAULT_HOST;
             }
             if (port == -1) {
                 port = (oldFormat ? DEFAULT_IIOP_PORT :
-                                DEFAULT_IIOPNAME_PORT);
+                        DEFAULT_IIOPNAME_PORT);
             }
         }
     }
@@ -180,16 +179,16 @@ public final class IiopUrl {
             addrEnd = url.length();
             stringName = "";
         } else {
-            stringName = CorbaUtils.decode(url.substring(addrEnd+1));
+            stringName = CorbaUtils.decode(url.substring(addrEnd + 1));
         }
         addresses = new Vector<>(3);
         if (oldFormat) {
             // Only one host:port part, not multiple
             addresses.addElement(
-                new Address(url.substring(addrStart, addrEnd), oldFormat));
+                    new Address(url.substring(addrStart, addrEnd), oldFormat));
         } else {
             StringTokenizer tokens =
-                new StringTokenizer(url.substring(addrStart, addrEnd), ",");
+                    new StringTokenizer(url.substring(addrStart, addrEnd), ",");
             while (tokens.hasMoreTokens()) {
                 addresses.addElement(new Address(tokens.nextToken(), oldFormat));
             }

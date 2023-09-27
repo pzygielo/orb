@@ -22,33 +22,34 @@ package corba.poaandequals;
 import WombatStuff.WombatHelper;
 import corba.framework.Controller;
 import corba.framework.InternalProcess;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Hashtable;
 import java.util.Properties;
+
 import org.glassfish.pfl.test.JUnitReportHelper;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.ORBPackage.InvalidName;
 import org.omg.PortableServer.POA;
 
-public class WombatServer implements InternalProcess 
-{
+public class WombatServer implements InternalProcess {
     PrintStream out;
     PrintStream err;
     ORB orb;
 
     static String root = "RootPOA";
 
-    public void writeObjref(org.omg.CORBA.Object ref, 
+    public void writeObjref(org.omg.CORBA.Object ref,
                             String file,
                             String outputDir) throws java.io.IOException {
         String fil = outputDir
-            + File.separator
-            + file;
+                + File.separator
+                + file;
 
-        java.io.DataOutputStream outstr = new 
-            java.io.DataOutputStream(new FileOutputStream(fil));
+        java.io.DataOutputStream outstr = new
+                java.io.DataOutputStream(new FileOutputStream(fil));
         outstr.writeBytes(orb.object_to_string(ref));
     }
 
@@ -56,15 +57,14 @@ public class WombatServer implements InternalProcess
                     String args[],
                     PrintStream out,
                     PrintStream err,
-                    Hashtable extra) throws Exception
-    {
+                    Hashtable extra) throws Exception {
         this.out = out;
         this.err = err;
-        JUnitReportHelper helper = new JUnitReportHelper( WombatServer.class.getName() ) ;
+        JUnitReportHelper helper = new JUnitReportHelper(WombatServer.class.getName());
 
         try {
-            Controller client = (Controller)extra.get("client");
-            orb = (ORB)extra.get("orb");
+            Controller client = (Controller) extra.get("client");
+            orb = (ORB) extra.get("orb");
 
             out.println("Running server");
 
@@ -81,43 +81,43 @@ public class WombatServer implements InternalProcess
             WombatImpl w = new WombatImpl("BooBoo");
             byte[] id = null;
             try {
-                helper.start( "ActivationTest" ) ;
+                helper.start("ActivationTest");
                 id = poa.activate_object(w);
-                writeObjref(poa.create_reference_with_id(id, 
-                    WombatHelper.id()), "WombatObjRef",
-                    environment.getProperty("output.dir"));
+                writeObjref(poa.create_reference_with_id(id,
+                                                         WombatHelper.id()), "WombatObjRef",
+                            environment.getProperty("output.dir"));
                 poa.the_POAManager().activate();
-                helper.pass() ;
+                helper.pass();
             } catch (Exception ex) {
-                err.println(root+" threw "+ex+" after activate_object");
-                helper.fail( ex ) ;
+                err.println(root + " threw " + ex + " after activate_object");
+                helper.fail(ex);
                 throw ex;
             }
 
             out.println("Activated object, starting client");
-        
+
             client.start();
             client.waitFor();
 
             out.println("Client finished, deactivating object");
 
             try {
-                helper.start( "DeactivationTest" ) ;
+                helper.start("DeactivationTest");
                 poa.deactivate_object(id);
-                helper.pass() ;
+                helper.pass();
             } catch (Exception ex) {
-                err.println(root+" threw "+ex+" in deactivate_object");
-                helper.fail( ex ) ;
+                err.println(root + " threw " + ex + " in deactivate_object");
+                helper.fail(ex);
                 throw ex;
             }
 
             out.println("Destroying poa");
-            
+
             poa.destroy(true, false);
 
             out.println("Finished");
         } finally {
-            helper.done() ;
+            helper.done();
         }
     }
 }

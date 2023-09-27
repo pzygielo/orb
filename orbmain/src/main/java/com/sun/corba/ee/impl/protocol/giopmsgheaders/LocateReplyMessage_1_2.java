@@ -19,21 +19,16 @@
 
 package com.sun.corba.ee.impl.protocol.giopmsgheaders;
 
-import org.omg.CORBA.SystemException;
-import org.omg.CORBA.CompletionStatus;
-import org.omg.CORBA_2_3.portable.InputStream;
-
-import com.sun.corba.ee.spi.orb.ORB;
-
-import com.sun.corba.ee.spi.ior.IOR;
-import com.sun.corba.ee.spi.ior.IORFactories;
-
-import com.sun.corba.ee.spi.ior.iiop.GIOPVersion;
-
 import com.sun.corba.ee.impl.encoding.CDRInputObject;
 import com.sun.corba.ee.impl.misc.ORBUtility;
-
+import com.sun.corba.ee.spi.ior.IOR;
+import com.sun.corba.ee.spi.ior.IORFactories;
+import com.sun.corba.ee.spi.ior.iiop.GIOPVersion;
 import com.sun.corba.ee.spi.logging.ORBUtilSystemException;
+import com.sun.corba.ee.spi.orb.ORB;
+import org.omg.CORBA.CompletionStatus;
+import org.omg.CORBA.SystemException;
+import org.omg.CORBA_2_3.portable.InputStream;
 
 /**
  * This implements the GIOP 1.2 LocateReply header.
@@ -67,7 +62,7 @@ public final class LocateReplyMessage_1_2 extends Message_1_2
     LocateReplyMessage_1_2(ORB orb, int _request_id,
                            int _reply_status, IOR _ior) {
         super(Message.GIOPBigMagic, GIOPVersion.V1_2, FLAG_NO_FRAG_BIG_ENDIAN,
-                Message.GIOPLocateReply, 0);
+              Message.GIOPLocateReply, 0);
         this.orb = orb;
         request_id = _request_id;
         reply_status = _reply_status;
@@ -119,17 +114,17 @@ public final class LocateReplyMessage_1_2 extends Message_1_2
             int status = istream.read_long();
 
             switch (status) {
-                case CompletionStatus._COMPLETED_YES:
-                    this.completionStatus = CompletionStatus.COMPLETED_YES;
-                    break;
-                case CompletionStatus._COMPLETED_NO:
-                    this.completionStatus = CompletionStatus.COMPLETED_NO;
-                    break;
-                case CompletionStatus._COMPLETED_MAYBE:
-                    this.completionStatus = CompletionStatus.COMPLETED_MAYBE;
-                    break;
-                default:
-                    throw wrapper.badCompletionStatusInLocateReply(status);
+            case CompletionStatus._COMPLETED_YES:
+                this.completionStatus = CompletionStatus.COMPLETED_YES;
+                break;
+            case CompletionStatus._COMPLETED_NO:
+                this.completionStatus = CompletionStatus.COMPLETED_NO;
+                break;
+            case CompletionStatus._COMPLETED_MAYBE:
+                this.completionStatus = CompletionStatus.COMPLETED_MAYBE;
+                break;
+            default:
+                throw wrapper.badCompletionStatusInLocateReply(status);
             }
         } else if ((this.reply_status == OBJECT_FORWARD) ||
                 (this.reply_status == OBJECT_FORWARD_PERM)) {
@@ -152,7 +147,6 @@ public final class LocateReplyMessage_1_2 extends Message_1_2
         ostream.write_ulong(this.request_id);
         ostream.write_long(this.reply_status);
 
-
         // GIOP 1.2 LocateReply message bodies are not aligned on
         // 8 byte boundaries.
     }
@@ -161,15 +155,15 @@ public final class LocateReplyMessage_1_2 extends Message_1_2
 
     public static void isValidReplyStatus(int replyStatus) {
         switch (replyStatus) {
-            case UNKNOWN_OBJECT:
-            case OBJECT_HERE:
-            case OBJECT_FORWARD:
-            case OBJECT_FORWARD_PERM:
-            case LOC_SYSTEM_EXCEPTION:
-            case LOC_NEEDS_ADDRESSING_MODE:
-                break;
-            default:
-                throw wrapper.illegalReplyStatus();
+        case UNKNOWN_OBJECT:
+        case OBJECT_HERE:
+        case OBJECT_FORWARD:
+        case OBJECT_FORWARD_PERM:
+        case LOC_SYSTEM_EXCEPTION:
+        case LOC_NEEDS_ADDRESSING_MODE:
+            break;
+        default:
+            throw wrapper.illegalReplyStatus();
         }
     }
 

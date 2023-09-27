@@ -19,8 +19,11 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
+import org.glassfish.rmic.tools.java.CompilerError;
+import org.glassfish.rmic.tools.java.Environment;
+import org.glassfish.rmic.tools.java.Type;
+
 import java.io.PrintStream;
 import java.util.Hashtable;
 
@@ -45,73 +48,78 @@ class AssignOpExpression extends BinaryAssignExpression {
 
     /**
      * Select the type
-     *
      */
-    @SuppressWarnings("fallthrough")
-    final void selectType(Environment env, Context ctx, int tm) {
+    @SuppressWarnings("fallthrough") final void selectType(Environment env, Context ctx, int tm) {
         Type rtype = null;      // special conversion type for RHS
-        switch(op) {
-            case ASGADD:
-                if (left.type == Type.tString) {
-                    if (right.type == Type.tVoid) {
-                        // The type of the right hand side can be
-                        // anything except void.  Fix for 4119864.
-                        env.error(where, "incompatible.type",
-                                  opNames[op], Type.tVoid, Type.tString);
-                        type = Type.tError;
-                    } else {
-                        type = itype = Type.tString;
-                    }
-                    return;
-                }
-                /* Fall through */
-            case ASGDIV: case ASGMUL: case ASGSUB: case ASGREM:
-                if ((tm & TM_DOUBLE) != 0) {
-                    itype = Type.tDouble;
-                } else if ((tm & TM_FLOAT) != 0) {
-                    itype = Type.tFloat;
-                } else if ((tm & TM_LONG) != 0) {
-                    itype = Type.tLong;
+        switch (op) {
+        case ASGADD:
+            if (left.type == Type.tString) {
+                if (right.type == Type.tVoid) {
+                    // The type of the right hand side can be
+                    // anything except void.  Fix for 4119864.
+                    env.error(where, "incompatible.type",
+                              opNames[op], Type.tVoid, Type.tString);
+                    type = Type.tError;
                 } else {
-                    itype = Type.tInt;
+                    type = itype = Type.tString;
                 }
-                break;
+                return;
+            }
+            /* Fall through */
+        case ASGDIV:
+        case ASGMUL:
+        case ASGSUB:
+        case ASGREM:
+            if ((tm & TM_DOUBLE) != 0) {
+                itype = Type.tDouble;
+            } else if ((tm & TM_FLOAT) != 0) {
+                itype = Type.tFloat;
+            } else if ((tm & TM_LONG) != 0) {
+                itype = Type.tLong;
+            } else {
+                itype = Type.tInt;
+            }
+            break;
 
-            case ASGBITAND: case ASGBITOR: case ASGBITXOR:
-                if ((tm & TM_BOOLEAN) != 0) {
-                    itype = Type.tBoolean;
-                } else if ((tm & TM_LONG) != 0) {
-                    itype = Type.tLong;
-                } else {
-                    itype = Type.tInt;
-                }
-                break;
+        case ASGBITAND:
+        case ASGBITOR:
+        case ASGBITXOR:
+            if ((tm & TM_BOOLEAN) != 0) {
+                itype = Type.tBoolean;
+            } else if ((tm & TM_LONG) != 0) {
+                itype = Type.tLong;
+            } else {
+                itype = Type.tInt;
+            }
+            break;
 
-            case ASGLSHIFT: case ASGRSHIFT: case ASGURSHIFT:
-                rtype = Type.tInt;
+        case ASGLSHIFT:
+        case ASGRSHIFT:
+        case ASGURSHIFT:
+            rtype = Type.tInt;
 
-                // Fix for bug 4134459.
-                // We allow any integral type (even long) to
-                // be the right hand side of a shift operation.
-                if (right.type.inMask(TM_INTEGER)) {
-                    right = new ConvertExpression(where, Type.tInt, right);
-                }
-                // The intermediate type of the expression is the
-                // type of the left hand side after undergoing
-                // unary (not binary) type promotion.  We ignore
-                // tm -- it contains information about both left
-                // and right hand sides -- and we compute the
-                // type only from the type of the lhs.
-                if (left.type == Type.tLong) {
-                    itype = Type.tLong;
-                } else {
-                    itype = Type.tInt;
-                }
+            // Fix for bug 4134459.
+            // We allow any integral type (even long) to
+            // be the right hand side of a shift operation.
+            if (right.type.inMask(TM_INTEGER)) {
+                right = new ConvertExpression(where, Type.tInt, right);
+            }
+            // The intermediate type of the expression is the
+            // type of the left hand side after undergoing
+            // unary (not binary) type promotion.  We ignore
+            // tm -- it contains information about both left
+            // and right hand sides -- and we compute the
+            // type only from the type of the lhs.
+            if (left.type == Type.tLong) {
+                itype = Type.tLong;
+            } else {
+                itype = Type.tInt;
+            }
 
-                break;
+            break;
 
-            default:
-                throw new CompilerError("Bad assignOp type: " + op);
+        default:
+            throw new CompilerError("Bad assignOp type: " + op);
         }
         if (rtype == null) {
             rtype = itype;
@@ -122,23 +130,25 @@ class AssignOpExpression extends BinaryAssignExpression {
         type = left.type;
     }
 
-
     /**
      * Get the increment, return NOINC if an increment is not possible
      */
     int getIncrement() {
-        if ((left.op == IDENT) && type.isType(TC_INT) && (right.op == INTVAL))
-            if ((op == ASGADD) || (op == ASGSUB))
-                if (((IdentifierExpression)left).field.isLocal()) {
-                    int val = ((IntExpression)right).value;
-                    if (op == ASGSUB)
+        if ((left.op == IDENT) && type.isType(TC_INT) && (right.op == INTVAL)) {
+            if ((op == ASGADD) || (op == ASGSUB)) {
+                if (((IdentifierExpression) left).field.isLocal()) {
+                    int val = ((IntExpression) right).value;
+                    if (op == ASGSUB) {
                         val = -val;
-                    if (val == (short)val)
+                    }
+                    if (val == (short) val) {
                         return val;
+                    }
                 }
+            }
+        }
         return NOINC;
     }
-
 
     /**
      * Check an assignment expression
@@ -175,7 +185,7 @@ class AssignOpExpression extends BinaryAssignExpression {
      * Create a copy of the expression for method inlining
      */
     public Expression copyInline(Context ctx) {
-        AssignOpExpression e = (AssignOpExpression)clone();
+        AssignOpExpression e = (AssignOpExpression) clone();
         e.left = left.copyInline(ctx);
         e.right = right.copyInline(ctx);
         if (updater != null) {
@@ -195,21 +205,21 @@ class AssignOpExpression extends BinaryAssignExpression {
         *----------*/
         if (updater == null) {
             return (getIncrement() != NOINC)
-                // Increment variable in place.  Count 3 bytes for 'iinc'.
-                ? 3
-                // Cost of rhs expression + cost of lhs expression + cost
-                // of load/op/store instructions.  E.g.: iload = 1 or 2,
-                // istore = 1 or 2, iadd = 1.  Cost could be higher if
-                // getfield/putfield or conversions needed, lower if rhs is
-                // a small constant.  Costs are highly approximate.
-                : right.costInline(thresh, env, ctx) +
-                      left.costInline(thresh, env, ctx) + 4;
+                    // Increment variable in place.  Count 3 bytes for 'iinc'.
+                    ? 3
+                    // Cost of rhs expression + cost of lhs expression + cost
+                    // of load/op/store instructions.  E.g.: iload = 1 or 2,
+                    // istore = 1 or 2, iadd = 1.  Cost could be higher if
+                    // getfield/putfield or conversions needed, lower if rhs is
+                    // a small constant.  Costs are highly approximate.
+                    : right.costInline(thresh, env, ctx) +
+                    left.costInline(thresh, env, ctx) + 4;
         } else {
             // Cost of rhs expression + (2 * cost of access method call) +
             // cost of operator.  Does not account for cost of conversions,
             // or duplications in value-needed context.
             return right.costInline(thresh, env, ctx) +
-                updater.costInline(thresh, env, ctx, true) + 1;
+                    updater.costInline(thresh, env, ctx, true) + 1;
         }
     }
 
@@ -223,7 +233,7 @@ class AssignOpExpression extends BinaryAssignExpression {
         // The 'iinc' instruction cannot be used if an access method call is required.
         int val = getIncrement();
         if (val != NOINC && updater == null) {
-            int v = ((LocalMember)((IdentifierExpression)left).field).number;
+            int v = ((LocalMember) ((IdentifierExpression) left).field).number;
             int[] operands = { v, val };
             asm.add(where, opc_iinc, operands);
             if (valNeeded) {
@@ -259,6 +269,7 @@ class AssignOpExpression extends BinaryAssignExpression {
     public void codeValue(Environment env, Context ctx, Assembler asm) {
         code(env, ctx, asm, true);
     }
+
     public void code(Environment env, Context ctx, Assembler asm) {
         code(env, ctx, asm, false);
     }

@@ -65,6 +65,7 @@ public class CDROutputValueTest extends ValueTestBase {
     /**
      * ArrayLists always use chunking because they have custom marshalling. The Value1 type does not, normally.
      * When a Value1 instance is contained in an ArrayList, it must use chunking to comply with the CORBA spec.
+     *
      * @throws IOException
      */
     @Test
@@ -100,6 +101,7 @@ public class CDROutputValueTest extends ValueTestBase {
     /**
      * A ComplexValue does not need chunking; however, it contains an ArrayList which does. The next field is a Value1,
      * which should not use chunking.
+     *
      * @throws IOException
      */
     @Test
@@ -248,8 +250,8 @@ public class CDROutputValueTest extends ValueTestBase {
         getOutputObject().end_value();
         getOutputObject().end_value();
 
-        expectByteArrays(new byte[] {0x7F,FF,FF,0x0A, 0,0,0,4, 'I','D','1',0, 0,0,0,4, 0,0,0,73,
-                                          0x7F,FF,FF,0x0A, 0,0,0,4, 'I','D','2',0, 0,0,0,4, 0,0,0,37, FF,FF,FF,FF });
+        expectByteArrays(new byte[] { 0x7F, FF, FF, 0x0A, 0, 0, 0, 4, 'I', 'D', '1', 0, 0, 0, 0, 4, 0, 0, 0, 73,
+                0x7F, FF, FF, 0x0A, 0, 0, 0, 4, 'I', 'D', '2', 0, 0, 0, 0, 4, 0, 0, 0, 37, FF, FF, FF, FF });
     }
 
     @Test
@@ -259,7 +261,7 @@ public class CDROutputValueTest extends ValueTestBase {
         getOutputObject().write_short((short) 2);
         getOutputObject().write_long(3);
 
-        expectByteArrays(new byte[] {0,0,0,1, 0,2, 0,0}, new byte[] {0,0,0,3});
+        expectByteArrays(new byte[] { 0, 0, 0, 1, 0, 2, 0, 0 }, new byte[] { 0, 0, 0, 3 });
     }
 
     @Test
@@ -270,7 +272,7 @@ public class CDROutputValueTest extends ValueTestBase {
         getOutputObject().write_short((short) 2);
         getOutputObject().write_long(3);
 
-        expectByteArrays(new byte[] {0,0,0,1, 0,2}, new byte[] {0,0,0,3});
+        expectByteArrays(new byte[] { 0, 0, 0, 1, 0, 2 }, new byte[] { 0, 0, 0, 3 });
     }
 
     @Test
@@ -281,7 +283,7 @@ public class CDROutputValueTest extends ValueTestBase {
         getOutputObject().write_short((short) 2);
         getOutputObject().write_long(3);
 
-        expectByteArray(0,0,0,1, 0,2, 0,0, 0,0,0,3);
+        expectByteArray(0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 3);
     }
 
     @Test
@@ -296,18 +298,18 @@ public class CDROutputValueTest extends ValueTestBase {
         getOutputObject().write_long(9);
         getOutputObject().end_block();
 
-        expectByteArrays(new byte[] {0,0,0,16, 0,0,0,1, 0,0,0,2, 0,0,0,3}, new byte[] {0,0,0,5, 0,0,0,8, 0,0,0,6, 0,0,0,9});
+        expectByteArrays(new byte[] { 0, 0, 0, 16, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3 }, new byte[] { 0, 0, 0, 5, 0, 0, 0, 8, 0, 0, 0, 6, 0, 0, 0, 9 });
     }
 
     @Test
     public void whenBufferFullWhileMidChunkAndWritingArray_generateContinuationAfterArray() {
         setFragmentSize(Message.GIOPMessageHeaderLength + 16);
         getOutputObject().start_block();
-        getOutputObject().write_long_array(new int[] {1, 2, 3, 5, 6}, 0, 5);
+        getOutputObject().write_long_array(new int[] { 1, 2, 3, 5, 6 }, 0, 5);
         getOutputObject().write_long(9);
         getOutputObject().end_block();
 
-        expectByteArrays(new byte[] {0,0,0,20, 0,0,0,1, 0,0,0,2, 0,0,0,3}, new byte[] {0,0,0,5, 0,0,0,6, 0,0,0,4, 0,0,0,9});
+        expectByteArrays(new byte[] { 0, 0, 0, 20, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3 }, new byte[] { 0, 0, 0, 5, 0, 0, 0, 6, 0, 0, 0, 4, 0, 0, 0, 9 });
     }
 
     @Test
@@ -354,7 +356,7 @@ public class CDROutputValueTest extends ValueTestBase {
     public void whenExternalizableObjectWritten_invokeWriteExternalMethod() throws Exception {
         Profession profession = Profession.DOCTOR;
         getOutputObject().write_value(profession);
-        
+
         writeValueTag(ONE_REPID_ID | USE_CHUNKING);  // custom marshalling requires a chunk
         writeRepId(Profession.REPID);
 

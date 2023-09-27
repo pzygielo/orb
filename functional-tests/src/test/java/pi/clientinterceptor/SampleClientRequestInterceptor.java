@@ -31,10 +31,9 @@ import org.omg.PortableInterceptor.RequestInfo;
 /**
  * Sample ClientRequestInterceptor for use in testing
  */
-public class SampleClientRequestInterceptor 
-    extends org.omg.CORBA.LocalObject 
-    implements ClientRequestInterceptor
-{
+public class SampleClientRequestInterceptor
+        extends org.omg.CORBA.LocalObject
+        implements ClientRequestInterceptor {
     // This string is modified from within this class and from Client.java.
     // It keeps track of which method was invoked when by appending 
     // two-letter codes in succession.  The following codes are used
@@ -48,7 +47,7 @@ public class SampleClientRequestInterceptor
     //  ro<name> = receive_other
     // For example, sr1sr2rr2rr1 would indicate a normal invocation.
     public static String invocationOrder = "";
-    
+
     // This attribute is set by Client.java to indicate how this interceptor
     // should behave.  There are a predetermined set of behavior values:
     //   MODE_NORMAL - All interceptors exit without throwing an Exception
@@ -65,14 +64,14 @@ public class SampleClientRequestInterceptor
     //     normally, while interceptor 2 throws a SystemException during
     //     receive_other.
     public static int testMode;
-    
+
     public static final int MODE_NORMAL = 0;
     public static final int MODE_SYSTEM_EXCEPTION = 1;
     public static final int MODE_FORWARD_REQUEST = 2;
     public static final int MODE_RECEIVE_REPLY_EXCEPTION = 3;
     public static final int MODE_RECEIVE_EXCEPTION_FORWARD = 4;
     public static final int MODE_RECEIVE_OTHER_EXCEPTION = 5;
-    
+
     private String name;
 
     // Counter to make sure each start is matched by an end
@@ -82,17 +81,16 @@ public class SampleClientRequestInterceptor
 
     public static boolean printPointEntryFlag = false;
 
-    private void printPointEntry( String message, RequestInfo ri )
-    {
+    private void printPointEntry(String message, RequestInfo ri) {
         if (printPointEntryFlag) {
             System.out.println(message +
-                               " " + ri.request_id() +
-                               " " + ri.operation() +
-                               " " + callCounter);
+                                       " " + ri.request_id() +
+                                       " " + ri.operation() +
+                                       " " + callCounter);
         }
     }
 
-    public SampleClientRequestInterceptor( String name ) {
+    public SampleClientRequestInterceptor(String name) {
         this.name = name;
     }
 
@@ -103,27 +101,27 @@ public class SampleClientRequestInterceptor
     public void destroy() {
     }
 
-    public void send_request (ClientRequestInfo ri) 
-        throws ForwardRequest 
-    {
+    public void send_request(ClientRequestInfo ri)
+            throws ForwardRequest {
         // Count all calls (and print entry), not just test ones,
         // to make sure all ORB internal calls are balanced.
         callCounter++;  // Starting point - add
         printPointEntry("send_request", ri);
 
-        if( !enabled ) return;
+        if (!enabled) {
+            return;
+        }
 
         // Log that we did a send_request on this interceptor so we can
         // verify invocation order was correct in test.
         invocationOrder += "sr" + name;
-        
+
         // Only exhibit behavior if we are the initial object, not the
         // forwarded object.
-        if( name.equals( "2" ) && 
-            !TestInitializer.helloRefForward._is_equivalent( 
-            ri.effective_target() ) )
-        {
-            if( testMode == MODE_SYSTEM_EXCEPTION ) {
+        if (name.equals("2") &&
+                !TestInitializer.helloRefForward._is_equivalent(
+                        ri.effective_target())) {
+            if (testMode == MODE_SYSTEM_EXCEPTION) {
                 // If we are the second interceptor, it is our turn to
                 // throw a SystemException here.
 
@@ -131,9 +129,8 @@ public class SampleClientRequestInterceptor
                 // an ending point will not be called.  Therefore,
                 // explicitly decrement the call counter.
                 callCounter--;
-                throw new UNKNOWN( "Valid Test Result" );
-            }
-            else if( testMode == MODE_FORWARD_REQUEST ) {
+                throw new UNKNOWN("Valid Test Result");
+            } else if (testMode == MODE_FORWARD_REQUEST) {
                 // If we are the second interceptor, it is our turn to
                 // throw a ForwardRequest here.
 
@@ -141,30 +138,32 @@ public class SampleClientRequestInterceptor
                 // an ending point will not be called.  Therefore,
                 // explicitly decrement the call counter.
                 callCounter--;
-                throw new ForwardRequest( TestInitializer.helloRefForward );
+                throw new ForwardRequest(TestInitializer.helloRefForward);
             }
         }
     }
 
-    public void send_poll (ClientRequestInfo ri) 
-    {
+    public void send_poll(ClientRequestInfo ri) {
         callCounter++;  // Starting point - add
         printPointEntry("send_poll", ri);
 
-        if( !enabled ) return;
+        if (!enabled) {
+            return;
+        }
 
         // Log that we did a send_poll on this interceptor so we can
         // verify invocation order was correct in test.
         invocationOrder += "sp" + name;
     }
 
-    public void receive_reply (ClientRequestInfo ri) 
-    {
+    public void receive_reply(ClientRequestInfo ri) {
         // Ending points have the print/call statements reverse intentionally.
         printPointEntry("receive_reply", ri);
         callCounter--;  // Ending point - subtracm
 
-        if( !enabled ) return;
+        if (!enabled) {
+            return;
+        }
 
         // Log that we did a receive_reply on this interceptor so we can
         // verify invocation order was correct in test.
@@ -172,67 +171,66 @@ public class SampleClientRequestInterceptor
 
         // Only exhibit behavior if we are the initial object, not the
         // forwarded object.
-        if( name.equals( "2" ) && 
-            !TestInitializer.helloRefForward._is_equivalent( 
-            ri.effective_target() ) )
-        {
-            if( testMode == MODE_RECEIVE_REPLY_EXCEPTION ) {
+        if (name.equals("2") &&
+                !TestInitializer.helloRefForward._is_equivalent(
+                        ri.effective_target())) {
+            if (testMode == MODE_RECEIVE_REPLY_EXCEPTION) {
                 // If we are the second interceptor, it is our turn to
                 // throw a SystemException here.
-                throw new UNKNOWN( "Valid Test Result" );
+                throw new UNKNOWN("Valid Test Result");
             }
         }
     }
 
-    public void receive_exception (ClientRequestInfo ri) 
-        throws ForwardRequest
-    {
+    public void receive_exception(ClientRequestInfo ri)
+            throws ForwardRequest {
         printPointEntry("receive_exception", ri);
         callCounter--;  // Ending point - subtract
 
-        if( !enabled ) return;
+        if (!enabled) {
+            return;
+        }
 
         // Log that we did a receive_exception on this interceptor so we can
         // verify invocation order was correct in test.
         invocationOrder += "re" + name;
-        
+
         // Only exhibit behavior if we are the initial object, not the
         // forwarded object.
-        if( name.equals( "2" ) && 
-            !TestInitializer.helloRefForward._is_equivalent( 
-            ri.effective_target() ) )
-        {
-            if( testMode == MODE_RECEIVE_EXCEPTION_FORWARD ) {
+        if (name.equals("2") &&
+                !TestInitializer.helloRefForward._is_equivalent(
+                        ri.effective_target())) {
+            if (testMode == MODE_RECEIVE_EXCEPTION_FORWARD) {
                 // If we are the second interceptor, it is our turn to
                 // throw a ForwardRequest here.
-                
-                throw new ForwardRequest( TestInitializer.helloRefForward );
+
+                throw new ForwardRequest(TestInitializer.helloRefForward);
             }
         }
     }
 
-    public void receive_other (ClientRequestInfo ri) 
-        throws ForwardRequest 
-    {
+    public void receive_other(ClientRequestInfo ri)
+            throws ForwardRequest {
         printPointEntry("receive_other", ri);
         callCounter--;  // Ending point - subtract
 
-        if( !enabled ) return;
+        if (!enabled) {
+            return;
+        }
 
         // Log that we did a receive_other on this interceptor so we can
         // verify invocation order was correct in test.
         invocationOrder += "ro" + name;
-        
+
         // Only exhibit behavior if we are the initial object, not the
         // forwarded object.
-        if( name.equals( "2" ) && 
-            !TestInitializer.helloRefForward._is_equivalent( 
-            ri.effective_target() ) )
-        {
-            if( testMode == MODE_RECEIVE_OTHER_EXCEPTION ) {
+        if (name.equals("2") &&
+                !TestInitializer.helloRefForward._is_equivalent(
+                        ri.effective_target())) {
+            if (testMode == MODE_RECEIVE_OTHER_EXCEPTION) {
                 // If we are the second interceptor, it is our turn to
                 // throw a SystemException here.
-                throw new UNKNOWN( "Valid Test Result" );
+                throw new UNKNOWN("Valid Test Result");
             }
         }
     }

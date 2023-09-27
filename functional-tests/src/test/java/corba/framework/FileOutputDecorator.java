@@ -27,35 +27,32 @@ import java.util.*;
  * file names to initialize rather than creating the streams.
  * Delegates everything else.
  */
-public class FileOutputDecorator implements Controller
-{
+public class FileOutputDecorator implements Controller {
     private Controller delegate;
     private boolean closed = false;
-    private int emmaPort ;
+    private int emmaPort;
 
-    public FileOutputDecorator(Controller delegate)
-    {
+    public FileOutputDecorator(Controller delegate) {
         this.delegate = delegate;
     }
 
     public long duration() {
-        return delegate.duration() ;
+        return delegate.duration();
     }
 
     /**
      * Setup everything necessary to execute the given class.
      *
-     *@param className    Full class name to execute
-     *@param processName  Name identifying this process for
-     *                    output file name purposes
-     *@param environment  Environment variables to provide
-     *@param VMArgs       Arguments to the VM(can be ignored)
-     *@param programArgs  Arguments to the class when run
-     *@param outFileName  Name of file to pipe stdout to
-     *@param errFileName  Name of file to pipe stderr to
-     *@param extra        Strategy specific initialization extras
-     *
-     *@exception   Exception  Any fatal error that occured
+     * @param className Full class name to execute
+     * @param processName Name identifying this process for
+     * output file name purposes
+     * @param environment Environment variables to provide
+     * @param VMArgs Arguments to the VM(can be ignored)
+     * @param programArgs Arguments to the class when run
+     * @param outFileName Name of file to pipe stdout to
+     * @param errFileName Name of file to pipe stderr to
+     * @param extra Strategy specific initialization extras
+     * @throws Exception Any fatal error that occured
      */
     public void initialize(String className,
                            String processName,
@@ -65,11 +62,10 @@ public class FileOutputDecorator implements Controller
                            String outFileName,
                            String errFileName,
                            Hashtable extra,
-                           int emmaPort ) throws Exception
-    {
+                           int emmaPort) throws Exception {
         OutputStream outstr = CORBAUtil.openFile(outFileName);
         OutputStream errstr = CORBAUtil.openFile(errFileName);
-        this.emmaPort = emmaPort ;
+        this.emmaPort = emmaPort;
 
         delegate.initialize(className,
                             processName,
@@ -88,8 +84,7 @@ public class FileOutputDecorator implements Controller
                            String programArgs[],
                            OutputStream out,
                            OutputStream err,
-                           Hashtable extra) throws Exception
-    {
+                           Hashtable extra) throws Exception {
         // There is no reason to call this (it defeats the
         // purpose of this class), but must be present.
         delegate.initialize(className,
@@ -102,19 +97,17 @@ public class FileOutputDecorator implements Controller
                             extra);
     }
 
-    public void start() throws Exception
-    {
+    public void start() throws Exception {
         delegate.start();
     }
-    
-    public void stop()
-    {
+
+    public void stop() {
         try {
-            EmmaControl.writeCoverageData( emmaPort, Options.getEmmaFile() ) ;
+            EmmaControl.writeCoverageData(emmaPort, Options.getEmmaFile());
 
             try {
-                Thread.sleep( 500 ) ; // give emma time to write out the file
-                                      // (This may not be required)
+                Thread.sleep(500); // give emma time to write out the file
+                // (This may not be required)
             } catch (InterruptedException exc) {
                 // ignore this
             }
@@ -128,9 +121,8 @@ public class FileOutputDecorator implements Controller
             }
         }
     }
-    
-    public void kill()
-    {
+
+    public void kill() {
         try {
 
             delegate.kill();
@@ -143,9 +135,8 @@ public class FileOutputDecorator implements Controller
             }
         }
     }
-    
-    public int waitFor() throws Exception
-    {
+
+    public int waitFor() throws Exception {
         try {
 
             return delegate.waitFor();
@@ -155,10 +146,9 @@ public class FileOutputDecorator implements Controller
         }
     }
 
-    public int waitFor(long timeout) throws Exception
-    {
+    public int waitFor(long timeout) throws Exception {
         try {
-            
+
             return delegate.waitFor(timeout);
 
         } finally {
@@ -166,36 +156,30 @@ public class FileOutputDecorator implements Controller
         }
     }
 
-    public int exitValue() throws IllegalThreadStateException
-    {
+    public int exitValue() throws IllegalThreadStateException {
         return delegate.exitValue();
     }
-    
-    public boolean finished() throws IllegalThreadStateException
-    {
+
+    public boolean finished() throws IllegalThreadStateException {
         return delegate.finished();
     }
 
-    public OutputStream getOutputStream()
-    {
+    public OutputStream getOutputStream() {
         return delegate.getOutputStream();
     }
 
-    public OutputStream getErrorStream()
-    {
+    public OutputStream getErrorStream() {
         return delegate.getErrorStream();
     }
 
-    public Controller getDelegate()
-    {
+    public Controller getDelegate() {
         return delegate;
     }
 
     /**
      * Flushes and closes the streams.
      */
-    public void closeStreams() throws IOException
-    {
+    public void closeStreams() throws IOException {
         if (!closed) {
 
             closed = true;
@@ -204,8 +188,9 @@ public class FileOutputDecorator implements Controller
             // copying of output from a java.lang.Process now
             // closes the streams on its on when the process ends.
             // Closing them here could lead to problems.
-            if (delegate instanceof corba.framework.ExternalExec)
+            if (delegate instanceof corba.framework.ExternalExec) {
                 return;
+            }
 
             OutputStream out = delegate.getOutputStream();
             OutputStream err = delegate.getErrorStream();
@@ -214,21 +199,21 @@ public class FileOutputDecorator implements Controller
                 out.flush();
                 err.flush();
             } finally {
-                if (out != System.out)
+                if (out != System.out) {
                     out.close();
-                if (err != System.err)
+                }
+                if (err != System.err) {
                     err.close();
+                }
             }
         }
     }
 
-    public String getProcessName()
-    {
+    public String getProcessName() {
         return delegate.getProcessName();
     }
 
-    public String getClassName()
-    {
+    public String getClassName() {
         return delegate.getClassName();
     }
 }

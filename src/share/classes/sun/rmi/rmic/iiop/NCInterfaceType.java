@@ -21,6 +21,7 @@
 package sun.rmi.rmic.iiop;
 
 import java.util.Vector;
+
 import sun.tools.java.CompilerError;
 import sun.tools.java.ClassNotFound;
 import sun.tools.java.ClassDefinition;
@@ -29,8 +30,9 @@ import sun.tools.java.ClassDefinition;
  * NCInterfaceType represents any non-special, non-conforming interface.
  * <p>
  * The static forNCInterface(...) method must be used to obtain an instance.
- * @version     1.0, 2/25/98
- * @author      Bryan Atsatt
+ *
+ * @author Bryan Atsatt
+ * @version 1.0, 2/25/98
  */
 public class NCInterfaceType extends InterfaceType {
 
@@ -40,33 +42,37 @@ public class NCInterfaceType extends InterfaceType {
 
     /**
      * Create an NCInterfaceType for the given class.
-     *
+     * <p>
      * If the class is not a properly formed or if some other error occurs, the
      * return value will be null, and errors will have been reported to the
      * supplied BatchEnvironment.
      */
-    public static NCInterfaceType forNCInterface( ClassDefinition classDef,
-                                                  ContextStack stack) {
-        if (stack.anyErrors()) return null;
-                                                    
+    public static NCInterfaceType forNCInterface(ClassDefinition classDef,
+                                                 ContextStack stack) {
+        if (stack.anyErrors()) {
+            return null;
+        }
+
         boolean doPop = false;
         try {
             // Do we already have it?
-                        
-            sun.tools.java.Type theType = classDef.getType();           
-            Type existing = getType(theType,stack);
-                        
+
+            sun.tools.java.Type theType = classDef.getType();
+            Type existing = getType(theType, stack);
+
             if (existing != null) {
-                                
-                if (!(existing instanceof NCInterfaceType)) return null; // False hit.
-                                
-                                // Yep, so return it...
-                                
+
+                if (!(existing instanceof NCInterfaceType)) {
+                    return null; // False hit.
+                }
+
+                // Yep, so return it...
+
                 return (NCInterfaceType) existing;
             }
-                        
+
             NCInterfaceType it = new NCInterfaceType(stack, classDef);
-            putType(theType,it,stack);
+            putType(theType, it, stack);
             stack.push(it);
             doPop = true;
 
@@ -74,12 +80,14 @@ public class NCInterfaceType extends InterfaceType {
                 stack.pop(true);
                 return it;
             } else {
-                removeType(theType,stack);
+                removeType(theType, stack);
                 stack.pop(false);
                 return null;
             }
         } catch (CompilerError e) {
-            if (doPop) stack.pop(false);
+            if (doPop) {
+                stack.pop(false);
+            }
             return null;
         }
     }
@@ -87,7 +95,7 @@ public class NCInterfaceType extends InterfaceType {
     /**
      * Return a string describing this type.
      */
-    public String getTypeDescription () {
+    public String getTypeDescription() {
         return "Non-conforming interface";
     }
 
@@ -100,7 +108,7 @@ public class NCInterfaceType extends InterfaceType {
      * object is not yet completely initialized.
      */
     private NCInterfaceType(ContextStack stack, ClassDefinition classDef) {
-        super(stack,classDef,TYPE_NC_INTERFACE | TM_INTERFACE | TM_COMPOUND);
+        super(stack, classDef, TYPE_NC_INTERFACE | TM_INTERFACE | TM_COMPOUND);
     }
 
     //_____________________________________________________________________
@@ -110,10 +118,10 @@ public class NCInterfaceType extends InterfaceType {
     /**
      * Initialize this instance.
      */
-    private boolean initialize (ContextStack stack) {
+    private boolean initialize(ContextStack stack) {
 
         if (stack.getEnv().getParseNonConforming()) {
-                
+
             Vector directInterfaces = new Vector();
             Vector directMethods = new Vector();
             Vector directMembers = new Vector();
@@ -121,31 +129,31 @@ public class NCInterfaceType extends InterfaceType {
             try {
 
                 // need to include parent interfaces in IDL generation...
-                addNonRemoteInterfaces( directInterfaces,stack );
+                addNonRemoteInterfaces(directInterfaces, stack);
 
                 // Get methods...
 
-                if (addAllMethods(getClassDefinition(),directMethods,false,false,stack) != null) {
+                if (addAllMethods(getClassDefinition(), directMethods, false, false, stack) != null) {
 
                     // Get conforming constants...
 
-                    if (addConformingConstants(directMembers,false,stack)) {
+                    if (addConformingConstants(directMembers, false, stack)) {
 
                         // We're ok, so pass 'em up...
 
-                        if (!initialize(directInterfaces,directMethods,directMembers,stack,false)) {
+                        if (!initialize(directInterfaces, directMethods, directMembers, stack, false)) {
                             return false;
                         }
                     }
                 }
                 return true;
-                
+
             } catch (ClassNotFound e) {
-                classNotFound(stack,e);
+                classNotFound(stack, e);
             }
             return false;
         } else {
-            return initialize(null,null,null,stack,false);
+            return initialize(null, null, null, stack, false);
         }
     }
 }

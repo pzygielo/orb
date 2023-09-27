@@ -25,10 +25,10 @@ import org.omg.CORBA.ORB;
 import org.omg.CORBA_2_3.portable.InputStream;
 import org.omg.CORBA_2_3.portable.OutputStream;
 
-import com.sun.corba.ee.spi.misc.ORBConstants ;
+import com.sun.corba.ee.spi.misc.ORBConstants;
 
 public class Client {
-    
+
     public static void main(String args[]) {
 
         try {
@@ -38,7 +38,7 @@ public class Client {
             ORB orb = ORB.init(args, props);
 
             com.sun.corba.ee.spi.orb.ORB ourORB
-                = (com.sun.corba.ee.spi.orb.ORB) orb;
+                    = (com.sun.corba.ee.spi.orb.ORB) orb;
 
             if (ourORB.getORBData().useRepId() != false) {
                 throw new RuntimeException("ORB.useRepId flag is not false");
@@ -46,12 +46,12 @@ public class Client {
 
             String[] inStrSeq = new String[] { "Hello", "World" };
             OutputStream ostr = (org.omg.CORBA_2_3.portable.OutputStream)
-                                    ourORB.create_output_stream();
+                    ourORB.create_output_stream();
             ostr.write_value(inStrSeq, new test.StringSeqHelper());
             InputStream istr = (org.omg.CORBA_2_3.portable.InputStream)
-                ostr.create_input_stream();
-            String[] outStrSeq = (String[]) 
-                istr.read_value(new test.StringSeqHelper());
+                    ostr.create_input_stream();
+            String[] outStrSeq = (String[])
+                    istr.read_value(new test.StringSeqHelper());
             for (int i = 0; i < outStrSeq.length; i++) {
                 if (!(outStrSeq[i].equals(inStrSeq[i]))) {
                     throw new RuntimeException("Input/output value mismatch");
@@ -61,7 +61,7 @@ public class Client {
         } catch (Exception e) {
             System.out.println("ERROR : " + e);
             e.printStackTrace(System.out);
-            System.exit (1);
+            System.exit(1);
         }
     }
 }

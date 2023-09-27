@@ -21,13 +21,14 @@ package corba.cdrext;
 
 import test.Test;
 import corba.framework.*;
+
 import java.util.*;
+
 import com.sun.corba.ee.spi.misc.ORBConstants;
 
 public class CDRExtTest extends CORBATest {
 
-    protected void doTest() throws Throwable  
-    {
+    protected void doTest() throws Throwable {
         // 2048 since the client assumes 2048 bytes will be enough
         // ahead of any structure to push it totally across a
         // fragment boundary

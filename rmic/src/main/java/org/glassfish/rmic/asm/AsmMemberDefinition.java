@@ -19,13 +19,7 @@
 
 package org.glassfish.rmic.asm;
 
-import org.glassfish.rmic.tools.java.ClassDeclaration;
-import org.glassfish.rmic.tools.java.ClassDefinition;
-import org.glassfish.rmic.tools.java.ClassNotFound;
-import org.glassfish.rmic.tools.java.Environment;
-import org.glassfish.rmic.tools.java.Identifier;
-import org.glassfish.rmic.tools.java.MemberDefinition;
-import org.glassfish.rmic.tools.java.Type;
+import org.glassfish.rmic.tools.java.*;
 
 import java.util.Vector;
 
@@ -35,6 +29,7 @@ public class AsmMemberDefinition extends MemberDefinition {
 
     /**
      * Constructor for a method definition
+     *
      * @param where the location of the definition relative to the class
      * @param clazz the containing class
      * @param modifiers the access modifiers
@@ -51,6 +46,7 @@ public class AsmMemberDefinition extends MemberDefinition {
 
     /**
      * Constructor for a field definition
+     *
      * @param where the location of the definition relative to the class
      * @param clazz the containing class
      * @param modifiers the access modifiers
@@ -66,11 +62,14 @@ public class AsmMemberDefinition extends MemberDefinition {
     }
 
     private ClassDeclaration[] toClassDeclarations(String[] classNames) {
-        if (classNames == null) return new ClassDeclaration[0];
+        if (classNames == null) {
+            return new ClassDeclaration[0];
+        }
 
         ClassDeclaration[] result = new ClassDeclaration[classNames.length];
-        for (int i = 0; i < classNames.length; i++)
-            result[i] = new ClassDeclaration(Identifier.lookup(classNames[i].replace('/','.')));
+        for (int i = 0; i < classNames.length; i++) {
+            result[i] = new ClassDeclaration(Identifier.lookup(classNames[i].replace('/', '.')));
+        }
         return result;
 
     }

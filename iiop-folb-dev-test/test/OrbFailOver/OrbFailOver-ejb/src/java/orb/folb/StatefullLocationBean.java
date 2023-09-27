@@ -27,7 +27,6 @@ package orb.folb;
 import javax.ejb.Stateful;
 
 /**
- *
  * @author ken
  */
 @Stateful

@@ -20,5 +20,6 @@
 
 package omega;
 
-public class MammalOverload 
-    extends java.lang.Exception{}
+public class MammalOverload
+        extends java.lang.Exception {
+}

@@ -43,9 +43,8 @@ import com.sun.corba.ee.spi.misc.ORBConstants;
  * @author Harold Carr
  */
 public class Client
-    extends org.omg.CORBA.LocalObject
-    implements ClientRequestInterceptor, ORBInitializer
-{
+        extends org.omg.CORBA.LocalObject
+        implements ClientRequestInterceptor, ORBInitializer {
     public static final String baseMsg = Client.class.getName();
     public static final String NO_CONNECTION = "no connection";
     public static boolean withSticky = false;
@@ -57,10 +56,9 @@ public class Client
     public static I2 zero2;
     public static ORB orb;
 
-    public static void setProperties(Properties props)
-    {
-        props.setProperty( ORBConstants.DEBUG_PROPERTY,
-            "subcontract,transport" ) ;
+    public static void setProperties(Properties props) {
+        props.setProperty(ORBConstants.DEBUG_PROPERTY,
+                          "subcontract,transport");
 
         //
         // Debugging flags.  Generally commented out.
@@ -93,7 +91,7 @@ public class Client
         //
 
         props.setProperty(ORBConstants.PI_ORB_INITIALIZER_CLASS_PREFIX
-                          + Client.class.getName(),
+                                  + Client.class.getName(),
                           "dummy");
 
         if (withSticky) {
@@ -106,11 +104,10 @@ public class Client
         }
     }
 
-    public static void main(String[] av)
-    {
+    public static void main(String[] av) {
         try {
 
-            if (! ColocatedCS.isColocated) {
+            if (!ColocatedCS.isColocated) {
                 Properties props = new Properties();
                 setProperties(props);
                 orb = ORB.init(av, props);
@@ -135,8 +132,7 @@ public class Client
     }
 
     private static void runTest()
-        throws Exception
-    {
+            throws Exception {
         System.out.println("================================================");
         if (withSticky) {
             System.out.println("WITH STICKY");
@@ -174,9 +170,9 @@ public class Client
         BEGIN("Sticky Test");
 
         iRef =
-            IHelper.narrow(
-                Common.getNameService(orb)
-                    .resolve(Common.makeNameComponent(Common.serverName1)));
+                IHelper.narrow(
+                        Common.getNameService(orb)
+                                .resolve(Common.makeNameComponent(Common.serverName1)));
 
         unregister(SocketInfo.IIOP_CLEAR_TEXT, iRef, false);
 
@@ -208,7 +204,6 @@ public class Client
         Thread.sleep(5000);
         END("register W");
 
-
         BEGIN("unregister W if no sticky, Z if sticky present");
 
         // In the following we really don't care whether we unregister
@@ -223,7 +218,7 @@ public class Client
                        iRef, true);
         } else {
             // Unregister W.
-            unregister(Common.socketTypes[0], iRef, true); 
+            unregister(Common.socketTypes[0], iRef, true);
         }
 
         END("unregister W if no sticky, Z if sticky present");
@@ -241,8 +236,7 @@ public class Client
      * from the test.
      */
     private static void unregister(String socketType, I iRef, boolean checkP)
-        throws Exception
-    {
+            throws Exception {
         BEGIN("unregister: " + socketType);
         iRef.unregister(socketType);
         END("unregister: " + socketType);
@@ -256,8 +250,7 @@ public class Client
         Thread.sleep(5000);
     }
 
-    private static void checkSocketType(String socketType)
-    {
+    private static void checkSocketType(String socketType) {
         if (ColocatedCS.isColocated) {
             socketType = NO_CONNECTION;
         }
@@ -265,22 +258,21 @@ public class Client
         if (socketType.equals(lastSocketTypeUsed)) {
             System.out.println();
             System.out.println("====== Used correct socketType: "
-                               + lastSocketTypeUsed + " ======");
+                                       + lastSocketTypeUsed + " ======");
             System.out.println();
         } else {
             System.out.println();
             System.out.println("++++++ ERROR: INCORRECT SOCKETYPE: "
-                               + lastSocketTypeUsed 
-                               + "; expected: " 
-                               + socketType
-                               + " ++++++");
+                                       + lastSocketTypeUsed
+                                       + "; expected: "
+                                       + socketType
+                                       + " ++++++");
             System.out.println();
             foundErrors = true;
         }
     }
 
-    private static void printSeparator(String s)
-    {
+    private static void printSeparator(String s) {
         for (int i = 0; i < 70; i++) {
             System.out.print(s);
         }
@@ -291,41 +283,34 @@ public class Client
     // Interceptor operations
     //
 
-    public String name() 
-    {
-        return baseMsg; 
+    public String name() {
+        return baseMsg;
     }
 
-    public void destroy() 
-    {
+    public void destroy() {
     }
 
     //
     // ClientRequestInterceptor operations
     //
 
-    public void send_request(ClientRequestInfo ri)
-    {
+    public void send_request(ClientRequestInfo ri) {
         sopCR(baseMsg, "send_request", ri);
     }
 
-    public void send_poll(ClientRequestInfo ri)
-    {
+    public void send_poll(ClientRequestInfo ri) {
         sopCR(baseMsg, "send_poll", ri);
     }
 
-    public void receive_reply(ClientRequestInfo ri)
-    {
+    public void receive_reply(ClientRequestInfo ri) {
         sopCR(baseMsg, "receive_reply", ri);
     }
 
-    public void receive_exception(ClientRequestInfo ri)
-    {
+    public void receive_exception(ClientRequestInfo ri) {
         sopCR(baseMsg, "receive_exception", ri);
     }
 
-    public void receive_other(ClientRequestInfo ri)
-    {
+    public void receive_other(ClientRequestInfo ri) {
         sopCR(baseMsg, "receive_other", ri);
     }
 
@@ -333,29 +318,28 @@ public class Client
     // Utilities.
     //
 
-    public static void sopCR(String clazz, String point, ClientRequestInfo ri)
-    {
+    public static void sopCR(String clazz, String point, ClientRequestInfo ri) {
         try {
-            if (! Common.timing) {
+            if (!Common.timing) {
                 System.out.println(clazz + "." + point + " " + ri.operation());
             }
             if (ri instanceof RequestInfoExt) {
                 RequestInfoExt rie = (RequestInfoExt) ri;
                 if (rie.connection() != null) {
-                    if (! Common.timing) {
+                    if (!Common.timing) {
                         System.out.println("    request on connection: " + rie.connection());
                     }
                     lastConnectionUsed = (Connection) rie.connection();
                     lastSocketTypeUsed = (String)
-                        Common.portToSocketType.get(
-                          new Integer(rie.connection().getSocket().getPort()));
+                            Common.portToSocketType.get(
+                                    new Integer(rie.connection().getSocket().getPort()));
                     if (lastSocketTypeUsed == null) {
                         // NOTE: the last one is running on an emphemeral port
                         // so it does NOT map.  Just assume it.
                         // Also assume we don't look at the primary which
                         // is also NOT mapped.
-                        lastSocketTypeUsed = 
-                            Common.socketTypes[Common.socketTypes.length - 1];
+                        lastSocketTypeUsed =
+                                Common.socketTypes[Common.socketTypes.length - 1];
                     }
                 } else {
                     lastSocketTypeUsed = NO_CONNECTION;
@@ -368,8 +352,7 @@ public class Client
         }
     }
 
-    public void pre_init(ORBInitInfo info)
-    {
+    public void pre_init(ORBInitInfo info) {
         try {
             Client interceptor = new Client();
             info.add_client_request_interceptor(interceptor);
@@ -381,12 +364,10 @@ public class Client
         }
     }
 
-    public void post_init(ORBInitInfo info)
-    {
+    public void post_init(ORBInitInfo info) {
     }
 
-    public static void BEGIN(String msg)
-    {
+    public static void BEGIN(String msg) {
         System.out.println();
         printSeparator("-");
         System.out.println("BEGIN " + msg);
@@ -394,8 +375,7 @@ public class Client
 
     }
 
-    public static void END(String msg)
-    {
+    public static void END(String msg) {
         System.out.println();
         System.out.println("END " + msg);
         printSeparator("-");

@@ -140,8 +140,9 @@ public abstract class ClassDefinitionFactoryTest {
 
     private String[] getClassNames(ClassDeclaration[] declarations) {
         String[] result = new String[declarations.length];
-        for (int i = 0; i < declarations.length; i++)
+        for (int i = 0; i < declarations.length; i++) {
             result[i] = getClassName(declarations[i]);
+        }
         return result;
     }
 
@@ -215,8 +216,11 @@ public abstract class ClassDefinitionFactoryTest {
         ClassDefinition classDefinition = definitionFor(RmiIIServantPOA.class);
 
         List<MemberDefinition> memberDefinitions = new ArrayList<>();
-        for (MemberDefinition member = classDefinition.getFirstMember(); member != null; member = member.getNextMember())
-            if (!isStaticInitializer(member)) memberDefinitions.add(member);
+        for (MemberDefinition member = classDefinition.getFirstMember(); member != null; member = member.getNextMember()) {
+            if (!isStaticInitializer(member)) {
+                memberDefinitions.add(member);
+            }
+        }
 
         assertThat(memberDefinitions, containsInAnyOrder(allMembers(RmiIIServantPOA.class)));
     }
@@ -230,8 +234,11 @@ public abstract class ClassDefinitionFactoryTest {
         ClassDefinition classDefinition = definitionFor(AnimalFinder.class);
 
         List<MemberDefinition> memberDefinitions = new ArrayList<>();
-        for (MemberDefinition member = classDefinition.getFirstMember(); member != null; member = member.getNextMember())
-            if (!isStaticInitializer(member)) memberDefinitions.add(member);
+        for (MemberDefinition member = classDefinition.getFirstMember(); member != null; member = member.getNextMember()) {
+            if (!isStaticInitializer(member)) {
+                memberDefinitions.add(member);
+            }
+        }
 
         assertThat(memberDefinitions, containsInAnyOrder(allMembers(AnimalFinder.class)));
     }
@@ -256,18 +263,21 @@ public abstract class ClassDefinitionFactoryTest {
     @SuppressWarnings("unchecked")
     private Matcher<MemberDefinition>[] allMembers(Class<?> aClass) {
         List<Matcher<MemberDefinition>> matchers = new ArrayList<>();
-        for (Method method : aClass.getDeclaredMethods())
+        for (Method method : aClass.getDeclaredMethods()) {
             matchers.add(isDefinitionFor(method));
-        for (Field field : aClass.getDeclaredFields())
+        }
+        for (Field field : aClass.getDeclaredFields()) {
             matchers.add(isDefinitionFor(field));
-        for (Constructor constructor : aClass.getDeclaredConstructors())
+        }
+        for (Constructor constructor : aClass.getDeclaredConstructors()) {
             matchers.add(isDefinitionFor(constructor));
+        }
         return matchers.toArray(new Matcher[matchers.size()]);
     }
 
     @Test
     public void verifyFinalMemberDefs() throws Exception {
-//        Assume.assumeTrue(factory instanceof BinaryClassFactory);
+        //        Assume.assumeTrue(factory instanceof BinaryClassFactory);
         ClassDefinition classDefinition = definitionFor(RmiTestRemote.class);
         assertThat(getMember(classDefinition, "A_DOUBLE").getMemberValueString(environment), equalTo("123.567D"));
         assertThat(getMember(classDefinition, "A_FLOAT").getMemberValueString(environment), equalTo("123.5F"));
@@ -282,7 +292,9 @@ public abstract class ClassDefinitionFactoryTest {
 
     private MemberDefinition getMember(ClassDefinition classDefinition, String name) {
         for (MemberDefinition def = classDefinition.getFirstMember(); def != null; def = def.getNextMember()) {
-            if (name.equals(def.getName().toString())) return def;
+            if (name.equals(def.getName().toString())) {
+                return def;
+            }
         }
 
         throw new AssertionError("No member named " + name + " found in class " + classDefinition.getName());
@@ -323,12 +335,13 @@ public abstract class ClassDefinitionFactoryTest {
         }
 
         private boolean matches(MemberDefinition memberDefinition) {
-            if (member instanceof Constructor)
+            if (member instanceof Constructor) {
                 return parameterTypesMatch(((Constructor) member).getParameterTypes(), memberDefinition.getType().getArgumentTypes());
-            else if (member instanceof Method)
+            } else if (member instanceof Method) {
                 return isSameMethod(memberDefinition, (Method) this.member);
-            else
+            } else {
                 return getName(member).equals(memberDefinition.getName().toString());
+            }
         }
 
         private boolean isSameMethod(MemberDefinition memberDefinition, Method method) {
@@ -338,10 +351,15 @@ public abstract class ClassDefinitionFactoryTest {
         }
 
         private boolean parameterTypesMatch(Class<?>[] parameterTypes, Type[] memberDefinition) {
-            if (parameterTypes.length != memberDefinition.length) return false;
+            if (parameterTypes.length != memberDefinition.length) {
+                return false;
+            }
 
-            for (int i = 0; i < parameterTypes.length; i++)
-                if (!parameterTypeMatch(parameterTypes[i], memberDefinition[i])) return false;
+            for (int i = 0; i < parameterTypes.length; i++) {
+                if (!parameterTypeMatch(parameterTypes[i], memberDefinition[i])) {
+                    return false;
+                }
+            }
             return true;
         }
 
@@ -350,14 +368,15 @@ public abstract class ClassDefinitionFactoryTest {
         }
 
         private String getName(AccessibleObject member) {
-            if (member instanceof Method)
+            if (member instanceof Method) {
                 return getMethodName((Method) member);
-            else if (member instanceof Field)
+            } else if (member instanceof Field) {
                 return ((Field) member).getName();
-            else if (member instanceof Constructor)
+            } else if (member instanceof Constructor) {
                 return getConstructorName((Constructor) member);
-            else
+            } else {
                 return "??";
+            }
         }
 
         private String getMethodName(Method member) {
@@ -374,8 +393,9 @@ public abstract class ClassDefinitionFactoryTest {
 
         private List<String> toStringList(Class<?>[] parameterTypes) {
             List<String> list = new ArrayList<>();
-            for (Class<?> parameterType : parameterTypes)
+            for (Class<?> parameterType : parameterTypes) {
                 list.add(toDisplayType(parameterType));
+            }
             return list;
         }
 
@@ -402,7 +422,9 @@ public abstract class ClassDefinitionFactoryTest {
 
         @Override
         protected boolean matchesSafely(ClassDeclaration item, Description mismatchDescription) {
-            if (item.getName().toString().equals(classToMatch.getName())) return true;
+            if (item.getName().toString().equals(classToMatch.getName())) {
+                return true;
+            }
 
             mismatchDescription.appendText("declaration for ").appendValue(item.getName());
             return false;

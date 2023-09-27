@@ -19,26 +19,22 @@
 
 package org.glassfish.rmic.tools.java;
 
-import java.util.Hashtable;
-import java.util.Vector;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Collections;
 import java.io.IOException;
+import java.util.*;
 
 /**
  * This class describes the classes and packages imported
  * from a source file. A Hashtable called bindings is maintained
  * to quickly map symbol names to classes. This table is flushed
  * everytime a new import is added.
- *
+ * <p>
  * A class name is resolved as follows:
- *  - if it is a qualified name then return the corresponding class
- *  - if the name corresponds to an individually imported class then return that class
- *  - check if the class is defined in any of the imported packages,
- *    if it is then return it, make sure it is defined in only one package
- *  - assume that the class is defined in the current package
- *
+ * - if it is a qualified name then return the corresponding class
+ * - if the name corresponds to an individually imported class then return that class
+ * - check if the class is defined in any of the imported packages,
+ * if it is then return it, make sure it is defined in only one package
+ * - assume that the class is defined in the current package
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
@@ -129,7 +125,7 @@ class Imports implements Constants {
         // }
 
         Vector<IdentifierToken> resolvedPackages = new Vector<>();
-        for (Enumeration<IdentifierToken> e = packages.elements() ; e.hasMoreElements() ;) {
+        for (Enumeration<IdentifierToken> e = packages.elements(); e.hasMoreElements(); ) {
             IdentifierToken t = e.nextElement();
             Identifier nm = t.getName();
             long where = t.getWhere();
@@ -153,8 +149,9 @@ class Imports implements Constants {
                                   rnm.getTopName());
                     }
                     // Pass an "inner" name to the imports.
-                    if (!rnm.isInner())
+                    if (!rnm.isInner()) {
                         rnm = Identifier.lookupInner(rnm, idNull);
+                    }
                     nm = rnm;
                 } else if (!env.getPackage(nm).exists()) {
                     env.error(where, "package.not.found", nm, "import");
@@ -169,7 +166,7 @@ class Imports implements Constants {
         }
         packages = resolvedPackages;
 
-        for (Enumeration<IdentifierToken> e = singles.elements() ; e.hasMoreElements() ;) {
+        for (Enumeration<IdentifierToken> e = singles.elements(); e.hasMoreElements(); ) {
             IdentifierToken t = e.nextElement();
             Identifier nm = t.getName();
             long where = t.getWhere();
@@ -196,7 +193,6 @@ class Imports implements Constants {
                 }
             }
             classes.put(snm, nm);
-
 
             // The code here needs to check to see, if we
             // are importing an inner class, that all of its
@@ -229,8 +225,8 @@ class Imports implements Constants {
                 // is visible from our perspective.
                 for (; def != null; def = def.getOuterClass()) {
                     if (def.isPrivate()
-                        || !(def.isPublic()
-                             || importedPackage.equals(currentPackage))) {
+                            || !(def.isPublic()
+                            || importedPackage.equals(currentPackage))) {
                         env.error(where, "cant.access.class", def);
                         break;
                     }
@@ -252,7 +248,9 @@ class Imports implements Constants {
      * and packages.
      */
     public synchronized Identifier resolve(Environment env, Identifier nm) throws ClassNotFound {
-        if (tracing) env.dtEnter("Imports.resolve: " + nm);
+        if (tracing) {
+            env.dtEnter("Imports.resolve: " + nm);
+        }
 
         // If the class has the special ambiguous prefix, then we will
         // get the original AmbiguousClass exception by removing the
@@ -264,7 +262,9 @@ class Imports implements Constants {
 
         if (nm.isQualified()) {
             // Don't bother it is already qualified
-            if (tracing) env.dtExit("Imports.resolve: QUALIFIED " + nm);
+            if (tracing) {
+                env.dtExit("Imports.resolve: QUALIFIED " + nm);
+            }
             return nm;
         }
 
@@ -276,7 +276,9 @@ class Imports implements Constants {
         // Check if it was imported before
         Identifier className = classes.get(nm);
         if (className != null) {
-            if (tracing) env.dtExit("Imports.resolve: PREVIOUSLY IMPORTED " + nm);
+            if (tracing) {
+                env.dtExit("Imports.resolve: PREVIOUSLY IMPORTED " + nm);
+            }
             return className;
         }
 
@@ -309,8 +311,9 @@ class Imports implements Constants {
                         // looking for an ambiguity.
                         className = id;
                     } else {
-                        if (tracing)
+                        if (tracing) {
                             env.dtExit("Imports.resolve: AMBIGUOUS " + nm);
+                        }
 
                         // We've found an ambiguity.
                         throw new AmbiguousClass(className, id);
@@ -321,13 +324,17 @@ class Imports implements Constants {
 
         // Make sure a class was found
         if (className == null) {
-            if (tracing) env.dtExit("Imports.resolve: NOT FOUND " + nm);
+            if (tracing) {
+                env.dtExit("Imports.resolve: NOT FOUND " + nm);
+            }
             throw new ClassNotFound(nm);
         }
 
         // Remember the binding
         classes.put(nm, className);
-        if (tracing) env.dtExit("Imports.resolve: FIRST IMPORT " + nm);
+        if (tracing) {
+            env.dtExit("Imports.resolve: FIRST IMPORT " + nm);
+        }
         return className;
     }
 
@@ -359,9 +366,9 @@ class Imports implements Constants {
                 // This should be okay, as we are looking up id.getTopName(),
                 // not id.
                 ClassDeclaration decl =
-                    env.getClassDeclaration(id.getTopName());
+                        env.getClassDeclaration(id.getTopName());
                 ClassDefinition c =
-                    decl.getClassDefinitionNoCheck(env);
+                        decl.getClassDefinitionNoCheck(env);
 
                 return c.innerClassExists(id.getFlatName().getTail());
             } catch (ClassNotFound ee) {
@@ -377,8 +384,9 @@ class Imports implements Constants {
      * This decision is recorded for future reference.
      */
     public synchronized Identifier forceResolve(Environment env, Identifier nm) {
-        if (nm.isQualified())
+        if (nm.isQualified()) {
             return nm;
+        }
 
         Identifier className = classes.get(nm);
         if (className != null) {
@@ -397,6 +405,7 @@ class Imports implements Constants {
     public synchronized void addClass(IdentifierToken t) {
         singles.addElement(t);
     }
+
     // for compatibility
     public void addClass(Identifier nm) throws AmbiguousClass {
         addClass(new IdentifierToken(nm));
@@ -427,6 +436,7 @@ class Imports implements Constants {
         // Add the package to the list.
         packages.addElement(t);
     }
+
     // for compatibility
     public void addPackage(Identifier id) {
         addPackage(new IdentifierToken(id));

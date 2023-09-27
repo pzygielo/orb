@@ -41,7 +41,7 @@ import org.glassfish.rmic.tools.java.Identifier;
  * The static forSpecial(...) method must be used to obtain an instance, and
  * will return null if the type is non-conforming.
  *
- * @author  Bryan Atsatt
+ * @author Bryan Atsatt
  */
 public class SpecialInterfaceType extends InterfaceType {
 
@@ -51,24 +51,28 @@ public class SpecialInterfaceType extends InterfaceType {
 
     /**
      * Create a SpecialInterfaceType object for the given class.
-     *
+     * <p>
      * If the class is not a properly formed or if some other error occurs, the
      * return value will be null, and errors will have been reported to the
      * supplied BatchEnvironment.
      */
-    public static SpecialInterfaceType forSpecial ( ClassDefinition theClass,
-                                                    ContextStack stack) {
+    public static SpecialInterfaceType forSpecial(ClassDefinition theClass,
+                                                  ContextStack stack) {
 
-        if (stack.anyErrors()) return null;
+        if (stack.anyErrors()) {
+            return null;
+        }
 
         // Do we already have it?
 
         org.glassfish.rmic.tools.java.Type type = theClass.getType();
-        Type existing = getType(type,stack);
+        Type existing = getType(type, stack);
 
         if (existing != null) {
 
-            if (!(existing instanceof SpecialInterfaceType)) return null; // False hit.
+            if (!(existing instanceof SpecialInterfaceType)) {
+                return null; // False hit.
+            }
 
             // Yep, so return it...
 
@@ -77,19 +81,19 @@ public class SpecialInterfaceType extends InterfaceType {
 
         // Is it special?
 
-        if (isSpecial(type,theClass,stack)) {
+        if (isSpecial(type, theClass, stack)) {
 
             // Yes...
 
-            SpecialInterfaceType result = new SpecialInterfaceType(stack,0,theClass);
-            putType(type,result,stack);
+            SpecialInterfaceType result = new SpecialInterfaceType(stack, 0, theClass);
+            putType(type, result, stack);
             stack.push(result);
 
-            if (result.initialize(type,stack)) {
+            if (result.initialize(type, stack)) {
                 stack.pop(true);
                 return result;
             } else {
-                removeType(type,stack);
+                removeType(type, stack);
                 stack.pop(false);
                 return null;
             }
@@ -100,7 +104,7 @@ public class SpecialInterfaceType extends InterfaceType {
     /**
      * Return a string describing this type.
      */
-    public String getTypeDescription () {
+    public String getTypeDescription() {
         return "Special interface";
     }
 
@@ -113,8 +117,8 @@ public class SpecialInterfaceType extends InterfaceType {
      */
     private SpecialInterfaceType(ContextStack stack, int typeCode,
                                  ClassDefinition theClass) {
-        super(stack,typeCode | TM_SPECIAL_INTERFACE | TM_INTERFACE | TM_COMPOUND, theClass);
-        setNames(theClass.getName(),null,null); // Fixed in initialize.
+        super(stack, typeCode | TM_SPECIAL_INTERFACE | TM_INTERFACE | TM_COMPOUND, theClass);
+        setNames(theClass.getName(), null, null); // Fixed in initialize.
     }
 
     private static boolean isSpecial(org.glassfish.rmic.tools.java.Type type,
@@ -123,16 +127,28 @@ public class SpecialInterfaceType extends InterfaceType {
         if (type.isType(TC_CLASS)) {
             Identifier id = type.getClassName();
 
-            if (id.equals(idRemote)) return true;
-            if (id == idJavaIoSerializable) return true;
-            if (id == idJavaIoExternalizable) return true;
-            if (id == idCorbaObject) return true;
-            if (id == idIDLEntity) return true;
+            if (id.equals(idRemote)) {
+                return true;
+            }
+            if (id == idJavaIoSerializable) {
+                return true;
+            }
+            if (id == idJavaIoExternalizable) {
+                return true;
+            }
+            if (id == idCorbaObject) {
+                return true;
+            }
+            if (id == idIDLEntity) {
+                return true;
+            }
             BatchEnvironment env = stack.getEnv();
             try {
-                if (env.defCorbaObject.implementedBy(env,theClass.getClassDeclaration())) return true;
+                if (env.defCorbaObject.implementedBy(env, theClass.getClassDeclaration())) {
+                    return true;
+                }
             } catch (ClassNotFound e) {
-                classNotFound(stack,e);
+                classNotFound(stack, e);
             }
         }
         return false;
@@ -175,7 +191,7 @@ public class SpecialInterfaceType extends InterfaceType {
 
                     // Yes, so special case...
 
-                    idlName = IDLNames.getTypeName(typeCode,constant);
+                    idlName = IDLNames.getTypeName(typeCode, constant);
                     idlModuleName = null;
 
                 } else {
@@ -186,11 +202,11 @@ public class SpecialInterfaceType extends InterfaceType {
 
                         // These can fail if we get case-sensitive name matches...
 
-                        idlName = IDLNames.getClassOrInterfaceName(id,env);
-                        idlModuleName = IDLNames.getModuleNames(id,isBoxed(),env);
+                        idlName = IDLNames.getClassOrInterfaceName(id, env);
+                        idlModuleName = IDLNames.getModuleNames(id, isBoxed(), env);
 
                     } catch (Exception e) {
-                        failedConstraint(7,false,stack,id.toString(),e.getMessage());
+                        failedConstraint(7, false, stack, id.toString(), e.getMessage());
                         throw new CompilerError("");
                     }
                 }
@@ -211,10 +227,10 @@ public class SpecialInterfaceType extends InterfaceType {
             throw new CompilerError("Not a special type");
         }
 
-        setNames(id,idlModuleName,idlName);
+        setNames(id, idlModuleName, idlName);
 
         // Initialize CompoundType...
 
-        return initialize(null,null,null,stack,false);
+        return initialize(null, null, null, stack, false);
     }
 }

@@ -20,5 +20,5 @@
 package org.glassfish.rmic.classes.rmipoacounter;
 
 public interface CounterIF extends java.rmi.Remote {
-    long increment( long invalue ) throws java.rmi.RemoteException ;
+    long increment(long invalue) throws java.rmi.RemoteException;
 }

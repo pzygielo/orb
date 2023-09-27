@@ -19,8 +19,8 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
+import org.glassfish.rmic.tools.java.Environment;
 
 /**
  * WARNING: The contents of this source file are not part of any
@@ -35,7 +35,6 @@ class AssignBitOrExpression extends AssignOpExpression {
     public AssignBitOrExpression(long where, Expression left, Expression right) {
         super(ASGBITOR, where, left, right);
     }
-
 
     /**
      * Code

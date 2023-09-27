@@ -24,233 +24,220 @@ package com.sun.tools.corba.ee.idl.toJavaPortable;
 // NOTES:
 // -D61056   <klr> Use Util.helperName
 
+import com.sun.tools.corba.ee.idl.EnumEntry;
+import com.sun.tools.corba.ee.idl.GenFileStream;
+import com.sun.tools.corba.ee.idl.SymtabEntry;
+
 import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-import com.sun.tools.corba.ee.idl.GenFileStream;
-import com.sun.tools.corba.ee.idl.EnumEntry;
-import com.sun.tools.corba.ee.idl.SymtabEntry;
-
 /**
  *
  **/
-public class EnumGen implements com.sun.tools.corba.ee.idl.EnumGen, JavaGenerator
-{
-  /**
-   * Public zero-argument constructor.
-   **/
-  public EnumGen ()
-  {
-  } // ctor
+public class EnumGen implements com.sun.tools.corba.ee.idl.EnumGen, JavaGenerator {
+    /**
+     * Public zero-argument constructor.
+     **/
+    public EnumGen() {
+    } // ctor
 
-  /**
-   * Generate the Java code for an IDL enumeration.
-   **/
-  public void generate (Hashtable symbolTable, EnumEntry e, PrintWriter s)
-  {
-    this.symbolTable = symbolTable;
-    this.e           = e;
-    init ();
-    
-    openStream ();
-    if (stream == null) return;
-    generateHolder ();
-    generateHelper ();
-    writeHeading ();
-    writeBody ();
-    writeClosing ();
-    closeStream ();
-  } // generate
+    /**
+     * Generate the Java code for an IDL enumeration.
+     **/
+    public void generate(Hashtable symbolTable, EnumEntry e, PrintWriter s) {
+        this.symbolTable = symbolTable;
+        this.e = e;
+        init();
 
-  /**
-   * Initialize members unique to this generator.
-   **/
-  protected void init ()
-  {
-    className = e.name ();
-    fullClassName = com.sun.tools.corba.ee.idl.toJavaPortable.Util.javaName(e);
-  }
+        openStream();
+        if (stream == null) {
+            return;
+        }
+        generateHolder();
+        generateHelper();
+        writeHeading();
+        writeBody();
+        writeClosing();
+        closeStream();
+    } // generate
 
-  /**
-   * Open the print stream to which to write the enumeration class.
-   **/
-  protected void openStream ()
-  {
-    stream = com.sun.tools.corba.ee.idl.toJavaPortable.Util.stream(e, ".java");
-  }
-
-  /**
-   * Generate the holder class for this enumeration.
-   **/
-  protected void generateHolder ()
-  {
-    ((com.sun.tools.corba.ee.idl.toJavaPortable.Factories) com.sun.tools.corba.ee.idl.toJavaPortable.Compile.compiler.factories ()).holder ().generate (symbolTable, e);
-  }
-
-  /**
-   * Generate the helper class for this enumeration.
-   **/
-  protected void generateHelper ()
-  {
-    ((com.sun.tools.corba.ee.idl.toJavaPortable.Factories) com.sun.tools.corba.ee.idl.toJavaPortable.Compile.compiler.factories ()).helper ().generate (symbolTable, e);
-  }
-
-  /**
-   * Write the heading of the enumeration class, including the package,
-   * imports, class statement, and open curly.
-   **/
-  protected void writeHeading ()
-  {
-    com.sun.tools.corba.ee.idl.toJavaPortable.Util.writePackage(stream, e);
-    com.sun.tools.corba.ee.idl.toJavaPortable.Util.writeProlog(stream, ((GenFileStream) stream).name());
-    if (e.comment () != null)
-      e.comment ().generate ("", stream);
-    stream.println ("public class " + className + " implements org.omg.CORBA.portable.IDLEntity");
-    stream.println ("{");
-  }
-
-  /**
-   * Write the members of enumeration class.
-   **/
-  protected void writeBody ()
-  {
-    stream.println ("  private        int __value;");
-    stream.println ("  private static int __size = " + (e.elements ().size ()) + ';');
-    stream.println ("  private static " + fullClassName + "[] __array = new " + fullClassName + " [__size];");
-    stream.println ();
-    for (int i = 0; i < e.elements ().size (); ++i)
-    {
-      String label = (String)e.elements ().elementAt (i);
-      stream.println ("  public static final int _" + label + " = " + i + ';');
-      stream.println ("  public static final " + fullClassName + ' ' + label + " = new " + fullClassName + "(_" + label + ");");
+    /**
+     * Initialize members unique to this generator.
+     **/
+    protected void init() {
+        className = e.name();
+        fullClassName = com.sun.tools.corba.ee.idl.toJavaPortable.Util.javaName(e);
     }
-    stream.println ();
-    writeValue ();
-    writeFromInt ();
-    writeCtors ();
-  }
 
-  /**
-   * Write the value method for the enumeration class.
-   **/
-  protected void writeValue ()
-  {
-    stream.println ("  public int value ()");
-    stream.println ("  {");
-    stream.println ("    return __value;");
-    stream.println ("  }");
-    stream.println ();
-  } // writeValue
-
-  /**
-   * Write the from_int method for the enumeration class.
-   **/
-  protected void writeFromInt ()
-  {
-    stream.println ("  public static " + fullClassName + " from_int (int value)");
-    stream.println ("  {");
-    stream.println ("    if (value >= 0 && value < __size)");
-    stream.println ("      return __array[value];");
-    stream.println ("    else");
-    stream.println ("      throw new org.omg.CORBA.BAD_PARAM ();");
-    stream.println ("  }");
-    stream.println ();
-  }
-
-  /**
-   * Write the protected constructor for the enumeration class.
-   **/
-  protected void writeCtors ()
-  {
-    stream.println ("  protected " + className + " (int value)");
-    stream.println ("  {");
-    stream.println ("    __value = value;");
-    stream.println ("    __array[__value] = this;");
-    stream.println ("  }");
-  }
-
-  /**
-   * Close the enumeration class.
-   **/
-  protected void writeClosing ()
-  {
-    stream.println ("} // class " + className);
-  }
-
-  /**
-   * Close the print stream, which writes the stream to file.
-   **/
-  protected void closeStream ()
-  {
-    stream.close ();
-  }
-
-  ///////////////
-  // From JavaGenerator
-  @Override
-  public int helperType (int index, String indent, com.sun.tools.corba.ee.idl.toJavaPortable.TCOffsets tcoffsets, String name, SymtabEntry entry, PrintWriter stream)
-  {
-    tcoffsets.set (entry);
-    EnumEntry enumEntry = (EnumEntry)entry;
-    StringBuilder emit = new StringBuilder("new String[] { ");
-    Enumeration<String> e = enumEntry.elements ().elements ();
-    boolean firstTime = true;
-    while (e.hasMoreElements ())
-    {
-      if (firstTime)
-        firstTime = false;
-      else
-        emit.append (", ");
-      emit.append('"').append(com.sun.tools.corba.ee.idl.toJavaPortable.Util.stripLeadingUnderscores(e.nextElement())).append ('"');
+    /**
+     * Open the print stream to which to write the enumeration class.
+     **/
+    protected void openStream() {
+        stream = com.sun.tools.corba.ee.idl.toJavaPortable.Util.stream(e, ".java");
     }
-    emit.append ("} ");
-    stream.println (indent + name + " = org.omg.CORBA.ORB.init ().create_enum_tc ("
-      + com.sun.tools.corba.ee.idl.toJavaPortable.Util.helperName(enumEntry, true) + ".id (), \"" // <54697> // <d61056>
-//      + "_id, \"" <54697>
-      + com.sun.tools.corba.ee.idl.toJavaPortable.Util.stripLeadingUnderscores(entry.name()) + "\", "
-      + new String (emit) + ");");
-    return index + 1;
 
-  } // helperType
+    /**
+     * Generate the holder class for this enumeration.
+     **/
+    protected void generateHolder() {
+        ((com.sun.tools.corba.ee.idl.toJavaPortable.Factories) com.sun.tools.corba.ee.idl.toJavaPortable.Compile.compiler.factories()).holder()
+                .generate(symbolTable, e);
+    }
 
-  public int type (int index, String indent, com.sun.tools.corba.ee.idl.toJavaPortable.TCOffsets tcoffsets, String name, SymtabEntry entry, PrintWriter stream) {
-    stream.println (indent + name + " = " + com.sun.tools.corba.ee.idl.toJavaPortable.Util.helperName(entry, true) + ".type ();"); // <d61056>
-    return index;
-  } // type
+    /**
+     * Generate the helper class for this enumeration.
+     **/
+    protected void generateHelper() {
+        ((com.sun.tools.corba.ee.idl.toJavaPortable.Factories) com.sun.tools.corba.ee.idl.toJavaPortable.Compile.compiler.factories()).helper()
+                .generate(symbolTable, e);
+    }
 
-  public void helperRead (String entryName, SymtabEntry entry, PrintWriter stream)
-  {
-    stream.println ("    return " + com.sun.tools.corba.ee.idl.toJavaPortable.Util.javaQualifiedName(entry) + ".from_int (istream.read_long ());");
-  } // helperRead
+    /**
+     * Write the heading of the enumeration class, including the package,
+     * imports, class statement, and open curly.
+     **/
+    protected void writeHeading() {
+        com.sun.tools.corba.ee.idl.toJavaPortable.Util.writePackage(stream, e);
+        com.sun.tools.corba.ee.idl.toJavaPortable.Util.writeProlog(stream, ((GenFileStream) stream).name());
+        if (e.comment() != null) {
+            e.comment().generate("", stream);
+        }
+        stream.println("public class " + className + " implements org.omg.CORBA.portable.IDLEntity");
+        stream.println("{");
+    }
 
-  public void helperWrite (SymtabEntry entry, PrintWriter stream)
-  {
-    stream.println ("    ostream.write_long (value.value ());");
-  } // helperWrite
+    /**
+     * Write the members of enumeration class.
+     **/
+    protected void writeBody() {
+        stream.println("  private        int __value;");
+        stream.println("  private static int __size = " + (e.elements().size()) + ';');
+        stream.println("  private static " + fullClassName + "[] __array = new " + fullClassName + " [__size];");
+        stream.println();
+        for (int i = 0; i < e.elements().size(); ++i) {
+            String label = (String) e.elements().elementAt(i);
+            stream.println("  public static final int _" + label + " = " + i + ';');
+            stream.println("  public static final " + fullClassName + ' ' + label + " = new " + fullClassName + "(_" + label + ");");
+        }
+        stream.println();
+        writeValue();
+        writeFromInt();
+        writeCtors();
+    }
 
-  public int read (int index, String indent, String name, SymtabEntry entry, PrintWriter stream)
-  {
-    stream.println (indent + name + " = " + com.sun.tools.corba.ee.idl.toJavaPortable.Util.javaQualifiedName(entry) + ".from_int (istream.read_long ());");
-    return index;
-  } // read
+    /**
+     * Write the value method for the enumeration class.
+     **/
+    protected void writeValue() {
+        stream.println("  public int value ()");
+        stream.println("  {");
+        stream.println("    return __value;");
+        stream.println("  }");
+        stream.println();
+    } // writeValue
 
-  public int write (int index, String indent, String name, SymtabEntry entry, PrintWriter stream)
-  {
-    stream.println (indent + "ostream.write_long (" + name + ".value ());");
-    return index;
-  } // write
+    /**
+     * Write the from_int method for the enumeration class.
+     **/
+    protected void writeFromInt() {
+        stream.println("  public static " + fullClassName + " from_int (int value)");
+        stream.println("  {");
+        stream.println("    if (value >= 0 && value < __size)");
+        stream.println("      return __array[value];");
+        stream.println("    else");
+        stream.println("      throw new org.omg.CORBA.BAD_PARAM ();");
+        stream.println("  }");
+        stream.println();
+    }
 
-  // From JavaGenerator
-  ///////////////
+    /**
+     * Write the protected constructor for the enumeration class.
+     **/
+    protected void writeCtors() {
+        stream.println("  protected " + className + " (int value)");
+        stream.println("  {");
+        stream.println("    __value = value;");
+        stream.println("    __array[__value] = this;");
+        stream.println("  }");
+    }
 
-  protected Hashtable    symbolTable = null;
-  protected EnumEntry    e           = null;
-  protected PrintWriter  stream      = null;
+    /**
+     * Close the enumeration class.
+     **/
+    protected void writeClosing() {
+        stream.println("} // class " + className);
+    }
 
-  // Member data unique to this generator
-  String className     = null;
-  String fullClassName = null;
+    /**
+     * Close the print stream, which writes the stream to file.
+     **/
+    protected void closeStream() {
+        stream.close();
+    }
+
+    ///////////////
+    // From JavaGenerator
+    @Override
+    public int helperType(int index, String indent, com.sun.tools.corba.ee.idl.toJavaPortable.TCOffsets tcoffsets, String name, SymtabEntry entry,
+                          PrintWriter stream) {
+        tcoffsets.set(entry);
+        EnumEntry enumEntry = (EnumEntry) entry;
+        StringBuilder emit = new StringBuilder("new String[] { ");
+        Enumeration<String> e = enumEntry.elements().elements();
+        boolean firstTime = true;
+        while (e.hasMoreElements()) {
+            if (firstTime) {
+                firstTime = false;
+            } else {
+                emit.append(", ");
+            }
+            emit.append('"').append(com.sun.tools.corba.ee.idl.toJavaPortable.Util.stripLeadingUnderscores(e.nextElement())).append('"');
+        }
+        emit.append("} ");
+        stream.println(indent + name + " = org.omg.CORBA.ORB.init ().create_enum_tc ("
+                               + com.sun.tools.corba.ee.idl.toJavaPortable.Util.helperName(enumEntry, true) + ".id (), \"" // <54697> // <d61056>
+                               //      + "_id, \"" <54697>
+                               + com.sun.tools.corba.ee.idl.toJavaPortable.Util.stripLeadingUnderscores(entry.name()) + "\", "
+                               + new String(emit) + ");");
+        return index + 1;
+
+    } // helperType
+
+    public int type(int index, String indent, com.sun.tools.corba.ee.idl.toJavaPortable.TCOffsets tcoffsets, String name, SymtabEntry entry,
+                    PrintWriter stream) {
+        stream.println(indent + name + " = " + com.sun.tools.corba.ee.idl.toJavaPortable.Util.helperName(entry, true) + ".type ();"); // <d61056>
+        return index;
+    } // type
+
+    public void helperRead(String entryName, SymtabEntry entry, PrintWriter stream) {
+        stream.println("    return " + com.sun.tools.corba.ee.idl.toJavaPortable.Util.javaQualifiedName(entry) + ".from_int (istream.read_long ());");
+    } // helperRead
+
+    public void helperWrite(SymtabEntry entry, PrintWriter stream) {
+        stream.println("    ostream.write_long (value.value ());");
+    } // helperWrite
+
+    public int read(int index, String indent, String name, SymtabEntry entry, PrintWriter stream) {
+        stream.println(indent + name + " = " + com.sun.tools.corba.ee.idl.toJavaPortable.Util.javaQualifiedName(entry) + ".from_int (istream.read_long ());");
+        return index;
+    } // read
+
+    public int write(int index, String indent, String name, SymtabEntry entry, PrintWriter stream) {
+        stream.println(indent + "ostream.write_long (" + name + ".value ());");
+        return index;
+    } // write
+
+    // From JavaGenerator
+    ///////////////
+
+    protected Hashtable symbolTable = null;
+    protected EnumEntry e = null;
+    protected PrintWriter stream = null;
+
+    // Member data unique to this generator
+    String className = null;
+    String fullClassName = null;
 } // class EnumGen
 
 

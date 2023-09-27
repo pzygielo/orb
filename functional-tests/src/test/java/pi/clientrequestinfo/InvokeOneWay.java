@@ -28,15 +28,14 @@ import org.omg.CORBA.*;
  * and one that is oneway, in that order.
  */
 public class InvokeOneWay
-    extends InvokeStrategy
-{
+        extends InvokeStrategy {
     public void invoke() throws Exception {
         super.invoke();
 
         // Invoke normal call
-        invokeMethod( "sayHello" );
+        invokeMethod("sayHello");
 
         // Invoke oneway call
-        invokeMethod( "sayOneway" );
+        invokeMethod("sayOneway");
     }
 }

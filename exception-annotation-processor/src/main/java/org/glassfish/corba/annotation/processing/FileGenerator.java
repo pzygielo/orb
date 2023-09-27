@@ -28,13 +28,13 @@ import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Date;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
-* This class generates properties files based on annotations.
-*/
+ * This class generates properties files based on annotations.
+ */
 class FileGenerator {
     private Element classElement;
     private Date creationDate;
@@ -78,13 +78,14 @@ class FileGenerator {
     }
 
     void writePropertyLines(Writer writer) throws IOException {
-        for (Element methodElement : methodElements)
+        for (Element methodElement : methodElements) {
             writePropertyLine(writer, methodElement);
+        }
     }
 
     private void writePropertyLine(Writer writer, Element methodElement) throws IOException {
         writer.append('.').append(methodElement.getSimpleName()).append("=\"").append(getPrefix())
-              .append(": ").append(getMessage(methodElement)).append("\"\n");
+                .append(": ").append(getMessage(methodElement)).append("\"\n");
     }
 
     private String getMessage(Element methodElement) {

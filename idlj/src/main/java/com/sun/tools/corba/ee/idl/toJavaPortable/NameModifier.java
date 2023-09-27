@@ -20,8 +20,9 @@
 package com.sun.tools.corba.ee.idl.toJavaPortable;
 
 public interface NameModifier {
-    /** Create a modified name from the base name.
-    */
-    String makeName( String base ) ;
-} ;
+    /**
+     * Create a modified name from the base name.
+     */
+    String makeName(String base);
+};
 

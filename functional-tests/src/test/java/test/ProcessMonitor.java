@@ -26,12 +26,12 @@ import java.io.*;
  * ProcessMonitor provides a thread which will consume output from a
  * java.lang.Process and write it to the specified local streams.
  *
- * @version     1.0, 6/11/98
- * @author      Bryan Atsatt
- *
+ * @author Bryan Atsatt
+ * <p>
  * Split into StreamReaders by Everett Anderson 8/1/2000.  Note that
  * the output streams will be closed at the end of the
  * process's inputs.
+ * @version 1.0, 6/11/98
  */
 public class ProcessMonitor {
     Process process;
@@ -41,31 +41,33 @@ public class ProcessMonitor {
 
     /**
      * Constructor.
+     *
      * @param theProcess The process to monitor.
      * @param out The stream to which to copy Process.getInputStream() data.
      * @param err The stream to which to copy Process.getErrorStream() data.
      */
-    public ProcessMonitor (Process theProcess,
-                           OutputStream out,
-                           OutputStream err) {
+    public ProcessMonitor(Process theProcess,
+                          OutputStream out,
+                          OutputStream err) {
 
         process = theProcess;
-        
+
         outReader = new StreamReader(out, theProcess.getInputStream());
         errReader = new StreamReader(err, theProcess.getErrorStream());
     }
-    
+
     /**
      * Constructor.
+     *
      * @param theProcess The process to monitor.
      * @param out The stream to which to copy Process.getInputStream() data.
      * @param err The stream to which to copy Process.getErrorStream() data.
      * @param prefix String to prepend to all copied output lines.
      */
-    public ProcessMonitor (Process theProcess,
-                           OutputStream out,
-                           OutputStream err,
-                           String handshake) {
+    public ProcessMonitor(Process theProcess,
+                          OutputStream out,
+                          OutputStream err,
+                          String handshake) {
         process = theProcess;
 
         outReader = new StreamReader(out,
@@ -78,11 +80,11 @@ public class ProcessMonitor {
                                      null);
     }
 
-    public ProcessMonitor (Process theProcess,
-                           OutputStream out,
-                           OutputStream err,
-                           String handshake,
-                           String prefix) {
+    public ProcessMonitor(Process theProcess,
+                          OutputStream out,
+                          OutputStream err,
+                          String handshake,
+                          String prefix) {
 
         process = theProcess;
 
@@ -97,7 +99,6 @@ public class ProcessMonitor {
                                      prefix);
     }
 
-
     public void start() {
         outReader.start();
         errReader.start();
@@ -109,8 +110,7 @@ public class ProcessMonitor {
 
     // The process should have been killed/finished before
     // calling this.
-    public void finishWriting() throws InterruptedException
-    {
+    public void finishWriting() throws InterruptedException {
         outReader.join();
         errReader.join();
     }

@@ -20,14 +20,14 @@
 package org.glassfish.rmic.tools.java;
 
 import java.io.File;
-import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * This class is used to represent a file loaded from the class path, and
  * is a regular file.
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
@@ -78,7 +78,7 @@ class FileClassFile extends ClassFile {
         return file.getName();
     }
 
-//JCOV
+    //JCOV
     @Override
     public String getAbsoluteName() {
         String absoluteName;
@@ -89,7 +89,7 @@ class FileClassFile extends ClassFile {
         }
         return absoluteName;
     }
-// end JCOV
+    // end JCOV
 
     @Override
     public long length() {

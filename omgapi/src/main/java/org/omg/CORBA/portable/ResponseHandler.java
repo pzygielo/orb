@@ -20,9 +20,9 @@
 package org.omg.CORBA.portable;
 
 /**
-This interface is supplied by an ORB to a servant at invocation time and allows
-the servant to later retrieve an OutputStream for returning the invocation results.
-*/
+ * This interface is supplied by an ORB to a servant at invocation time and allows
+ * the servant to later retrieve an OutputStream for returning the invocation results.
+ */
 
 public interface ResponseHandler {
     /**
@@ -31,7 +31,6 @@ public interface ResponseHandler {
      * exception occurred.
      *
      * @return an OutputStream suitable for marshalling the reply.
-     *
      * @see <a href="package-summary.html#unimpl"><code>portable</code>
      * package comments for unimplemented features</a>
      */

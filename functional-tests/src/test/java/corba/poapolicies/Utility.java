@@ -24,15 +24,16 @@ import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Properties;
+
 import org.omg.CORBA.ORB;
 
 public class Utility {
     private ORB orb;
-    
+
     public Utility(String[] orbArgs) {
         orb = createORB(orbArgs);
     }
-    
+
     private ORB createORB(String[] args) {
         Properties props = System.getProperties();
         props.put("org.omg.CORBA.ORBClass",
@@ -47,30 +48,30 @@ public class Utility {
 
     public void writeObjref(org.omg.CORBA.Object ref, String file) {
         String fil = System.getProperty("output.dir")
-            + System.getProperty("file.separator")
-            + file;
+                + System.getProperty("file.separator")
+                + file;
         try {
-            DataOutputStream out = new 
-                DataOutputStream(new FileOutputStream(fil));
+            DataOutputStream out = new
+                    DataOutputStream(new FileOutputStream(fil));
             out.writeBytes(orb.object_to_string(ref));
         } catch (java.io.IOException e) {
-            System.err.println("Unable to open file "+fil);
+            System.err.println("Unable to open file " + fil);
             System.exit(1);
         }
     }
 
     public org.omg.CORBA.Object readObjref(String file) {
         String fil = System.getProperty("output.dir")
-            + System.getProperty("file.separator")
-            + file;
+                + System.getProperty("file.separator")
+                + file;
         try {
-            DataInputStream in = 
-                new DataInputStream(new FileInputStream(fil));
+            DataInputStream in =
+                    new DataInputStream(new FileInputStream(fil));
             String ior = in.readLine();
-            System.out.println("IOR: "+ior);
+            System.out.println("IOR: " + ior);
             return orb.string_to_object(ior);
         } catch (java.io.IOException e) {
-            System.err.println("Unable to open file "+fil);
+            System.err.println("Unable to open file " + fil);
             System.exit(1);
         }
         return null;

@@ -9,6 +9,7 @@ import java.rmi.RemoteException;
 import java.rmi.UnexpectedException;
 import javax.rmi.CORBA.Stub;
 import javax.rmi.CORBA.Util;
+
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.SystemException;
 import org.omg.CORBA.portable.ApplicationException;
@@ -18,87 +19,86 @@ import org.omg.CORBA.portable.RemarshalException;
 import org.omg.CORBA.portable.ResponseHandler;
 import org.omg.CORBA.portable.ServantObject;
 
-
 public class _RmiTestRemote_Stub extends Stub implements RmiTestRemote {
-    
+
     private static final String[] _type_ids = {
-        "RMI:org.glassfish.rmic.classes.primitives.RmiTestRemote:0000000000000000"
+            "RMI:org.glassfish.rmic.classes.primitives.RmiTestRemote:0000000000000000"
     };
-    
-        public String[] _ids() { 
-            return (String[]) _type_ids.clone();
-        }
-        
-        public void test_ping() throws java.rmi.RemoteException {
-            if (!Util.isLocal(this)) {
+
+    public String[] _ids() {
+        return (String[]) _type_ids.clone();
+    }
+
+    public void test_ping() throws java.rmi.RemoteException {
+        if (!Util.isLocal(this)) {
+            try {
+                org.omg.CORBA.portable.InputStream in = null;
                 try {
-                    org.omg.CORBA.portable.InputStream in = null;
-                    try {
-                        OutputStream out = _request("test_ping", true);
-                        _invoke(out);
-                    } catch (ApplicationException ex) {
-                        in = ex.getInputStream();
-                        String $_id = in.read_string();
-                        throw new UnexpectedException($_id);
-                    } catch (RemarshalException ex) {
-                        test_ping();
-                    } finally {
-                        _releaseReply(in);
-                    }
-                } catch (SystemException ex) {
-                    throw Util.mapSystemException(ex);
-                }
-            } else {
-                ServantObject so = _servant_preinvoke("test_ping",RmiTestRemote.class);
-                if (so == null) {
+                    OutputStream out = _request("test_ping", true);
+                    _invoke(out);
+                } catch (ApplicationException ex) {
+                    in = ex.getInputStream();
+                    String $_id = in.read_string();
+                    throw new UnexpectedException($_id);
+                } catch (RemarshalException ex) {
                     test_ping();
-                    return ;
-                }
-                try {
-                    ((RmiTestRemote)so.servant).test_ping();
-                } catch (Throwable ex) {
-                    Throwable exCopy = (Throwable)Util.copyObject(ex,_orb());
-                    throw Util.wrapException(exCopy);
                 } finally {
-                    _servant_postinvoke(so);
+                    _releaseReply(in);
                 }
+            } catch (SystemException ex) {
+                throw Util.mapSystemException(ex);
             }
-        }
-        
-        public int test_int(int arg0) throws java.rmi.RemoteException {
-            if (!Util.isLocal(this)) {
-                try {
-                    org.omg.CORBA.portable.InputStream in = null;
-                    try {
-                        OutputStream out = _request("test_int", true);
-                        out.write_long(arg0);
-                        in = _invoke(out);
-                        return in.read_long();
-                    } catch (ApplicationException ex) {
-                        in = ex.getInputStream();
-                        String $_id = in.read_string();
-                        throw new UnexpectedException($_id);
-                    } catch (RemarshalException ex) {
-                        return test_int(arg0);
-                    } finally {
-                        _releaseReply(in);
-                    }
-                } catch (SystemException ex) {
-                    throw Util.mapSystemException(ex);
-                }
-            } else {
-                ServantObject so = _servant_preinvoke("test_int",RmiTestRemote.class);
-                if (so == null) {
-                    return test_int(arg0);
-                }
-                try {
-                    return ((RmiTestRemote)so.servant).test_int(arg0);
-                } catch (Throwable ex) {
-                    Throwable exCopy = (Throwable)Util.copyObject(ex,_orb());
-                    throw Util.wrapException(exCopy);
-                } finally {
-                    _servant_postinvoke(so);
-                }
+        } else {
+            ServantObject so = _servant_preinvoke("test_ping", RmiTestRemote.class);
+            if (so == null) {
+                test_ping();
+                return;
+            }
+            try {
+                ((RmiTestRemote) so.servant).test_ping();
+            } catch (Throwable ex) {
+                Throwable exCopy = (Throwable) Util.copyObject(ex, _orb());
+                throw Util.wrapException(exCopy);
+            } finally {
+                _servant_postinvoke(so);
             }
         }
     }
+
+    public int test_int(int arg0) throws java.rmi.RemoteException {
+        if (!Util.isLocal(this)) {
+            try {
+                org.omg.CORBA.portable.InputStream in = null;
+                try {
+                    OutputStream out = _request("test_int", true);
+                    out.write_long(arg0);
+                    in = _invoke(out);
+                    return in.read_long();
+                } catch (ApplicationException ex) {
+                    in = ex.getInputStream();
+                    String $_id = in.read_string();
+                    throw new UnexpectedException($_id);
+                } catch (RemarshalException ex) {
+                    return test_int(arg0);
+                } finally {
+                    _releaseReply(in);
+                }
+            } catch (SystemException ex) {
+                throw Util.mapSystemException(ex);
+            }
+        } else {
+            ServantObject so = _servant_preinvoke("test_int", RmiTestRemote.class);
+            if (so == null) {
+                return test_int(arg0);
+            }
+            try {
+                return ((RmiTestRemote) so.servant).test_int(arg0);
+            } catch (Throwable ex) {
+                Throwable exCopy = (Throwable) Util.copyObject(ex, _orb());
+                throw Util.wrapException(exCopy);
+            } finally {
+                _servant_postinvoke(so);
+            }
+        }
+    }
+}

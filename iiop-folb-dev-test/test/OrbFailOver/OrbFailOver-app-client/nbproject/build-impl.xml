@@ -195,18 +195,18 @@
             </and>
         </condition>
         <fail if="missing.j2ee.server.home">
-The Java EE server classpath is not correctly set up - server home directory is missing.
-Either open the project in the IDE and assign the server or setup the server classpath manually.
-For example like this:
-   ant -Dj2ee.server.home=&lt;app_server_installation_directory&gt;
-                </fail>
+            The Java EE server classpath is not correctly set up - server home directory is missing.
+            Either open the project in the IDE and assign the server or setup the server classpath manually.
+            For example like this:
+            ant -Dj2ee.server.home=&lt;app_server_installation_directory&gt;
+        </fail>
         <fail unless="j2ee.platform.classpath">
-The Java EE server classpath is not correctly set up. Your active server type is ${j2ee.server.type}.
-Either open the project in the IDE and assign the server or setup the server classpath manually.
-For example like this:
-   ant -Duser.properties.file=&lt;path_to_property_file&gt; (where you put the property "j2ee.platform.classpath" in a .properties file)
-or ant -Dj2ee.platform.classpath=&lt;server_classpath&gt; (where no properties file is used)
-                </fail>
+            The Java EE server classpath is not correctly set up. Your active server type is ${j2ee.server.type}.
+            Either open the project in the IDE and assign the server or setup the server classpath manually.
+            For example like this:
+            ant -Duser.properties.file=&lt;path_to_property_file&gt; (where you put the property "j2ee.platform.classpath" in a .properties file)
+            or ant -Dj2ee.platform.classpath=&lt;server_classpath&gt; (where no properties file is used)
+        </fail>
     </target>
     <target name="-init-macrodef-property">
         <macrodef name="property" uri="http://www.netbeans.org/ns/car-project/1">
@@ -233,7 +233,9 @@ or ant -Dj2ee.platform.classpath=&lt;server_classpath&gt; (where no properties f
                 <property location="${build.dir}/empty" name="empty.dir"/>
                 <mkdir dir="${empty.dir}"/>
                 <mkdir dir="@{apgeneratedsrcdir}"/>
-                <javac debug="@{debug}" deprecation="${javac.deprecation}" destdir="@{destdir}" encoding="${source.encoding}" excludes="@{excludes}" fork="${javac.fork}" includeantruntime="false" includes="@{includes}" source="${javac.source}" srcdir="@{srcdir}" target="${javac.target}">
+                <javac debug="@{debug}" deprecation="${javac.deprecation}" destdir="@{destdir}" encoding="${source.encoding}" excludes="@{excludes}"
+                       fork="${javac.fork}" includeantruntime="false" includes="@{includes}" source="${javac.source}" srcdir="@{srcdir}"
+                       target="${javac.target}">
                     <src>
                         <dirset dir="@{gensrcdir}" erroronmissingdir="false">
                             <include name="*"/>
@@ -270,7 +272,8 @@ or ant -Dj2ee.platform.classpath=&lt;server_classpath&gt; (where no properties f
             <sequential>
                 <property location="${build.dir}/empty" name="empty.dir"/>
                 <mkdir dir="${empty.dir}"/>
-                <javac debug="@{debug}" deprecation="${javac.deprecation}" destdir="@{destdir}" encoding="${source.encoding}" excludes="@{excludes}" includeantruntime="false" includes="@{includes}" source="${javac.source}" srcdir="@{srcdir}" target="${javac.target}">
+                <javac debug="@{debug}" deprecation="${javac.deprecation}" destdir="@{destdir}" encoding="${source.encoding}" excludes="@{excludes}"
+                       includeantruntime="false" includes="@{includes}" source="${javac.source}" srcdir="@{srcdir}" target="${javac.target}">
                     <src>
                         <dirset dir="@{gensrcdir}" erroronmissingdir="false">
                             <include name="*"/>
@@ -467,7 +470,8 @@ or ant -Dj2ee.platform.classpath=&lt;server_classpath&gt; (where no properties f
     <target depends="-init-ap-cmdline-properties,-init-ap-cmdline-supported" name="-init-ap-cmdline">
         <property name="ap.cmd.line.internal" value=""/>
     </target>
-    <target depends="-pre-init,-pre-init-am,-init-private,-init-user,-init-project,-do-init,-post-init,-init-check,-init-macrodef-property,-init-macrodef-javac,-init-macrodef-junit,-init-macrodef-java,-init-macrodef-nbjpda,-init-macrodef-debug,-init-taskdefs,-init-ap-cmdline" name="init"/>
+    <target depends="-pre-init,-pre-init-am,-init-private,-init-user,-init-project,-do-init,-post-init,-init-check,-init-macrodef-property,-init-macrodef-javac,-init-macrodef-junit,-init-macrodef-java,-init-macrodef-nbjpda,-init-macrodef-debug,-init-taskdefs,-init-ap-cmdline"
+            name="init"/>
     <!--
                 ===================
                 COMPILATION SECTION
@@ -475,8 +479,8 @@ or ant -Dj2ee.platform.classpath=&lt;server_classpath&gt; (where no properties f
             -->
     <target name="-check-main-class">
         <fail>
-                    Main class must be set. Go to OrbFailOver-app-client project properties -&gt; Run and set the main class there.
-                    <condition>
+            Main class must be set. Go to OrbFailOver-app-client project properties -&gt; Run and set the main class there.
+            <condition>
                 <not>
                     <or>
                         <isset property="dist.ear.dir"/>
@@ -525,12 +529,13 @@ or ant -Dj2ee.platform.classpath=&lt;server_classpath&gt; (where no properties f
         <copy file="${file.reference.gmbal.jar}" todir="${dist.ear.dir}/lib"/>
         <copy file="${file.reference.javaee.jar}" todir="${dist.ear.dir}/lib"/>
         <copy todir="${dist.ear.dir}/lib">
-            <fileset dir="../../../${j2ee.server.home}/modules"> 
+            <fileset dir="../../../${j2ee.server.home}/modules">
                 <filename name="${file.reference.glassfish-corba-*.jar}"/>
             </fileset>
         </copy>
         <manifest file="${build.ear.classes.dir}/META-INF/MANIFEST.MF" mode="update">
-            <attribute name="Class-Path" value="${manifest.file.reference.gmbal.jar} lib/${manifest.file.reference.gmbal.jar} ${manifest.file.reference.javaee.jar} lib/${manifest.file.reference.javaee.jar} ${manifest.file.reference.glassfish-corba-asm.jar} lib/${manifest.file.reference.glassfish-corba-asm.jar} ${manifest.file.reference.glassfish-corba-codegen.jar} lib/${manifest.file.reference.glassfish-corba-codegen.jar} ${manifest.file.reference.glassfish-corba-csiv2-idl.jar} lib/${manifest.file.reference.glassfish-corba-csiv2-idl.jar} ${manifest.file.reference.glassfish-corba-internal-api.jar} lib/${manifest.file.reference.glassfish-corba-internal-api.jar} ${manifest.file.reference.glassfish-corba-newtimer.jar} lib/${manifest.file.reference.glassfish-corba-newtimer.jar} ${manifest.file.reference.glassfish-corba-omgapi.jar} lib/${manifest.file.reference.glassfish-corba-omgapi.jar} ${manifest.file.reference.glassfish-corba-orb.jar} lib/${manifest.file.reference.glassfish-corba-orb.jar} ${manifest.file.reference.glassfish-corba-orbgeneric.jar} lib/${manifest.file.reference.glassfish-corba-orbgeneric.jar} "/>
+            <attribute name="Class-Path"
+                       value="${manifest.file.reference.gmbal.jar} lib/${manifest.file.reference.gmbal.jar} ${manifest.file.reference.javaee.jar} lib/${manifest.file.reference.javaee.jar} ${manifest.file.reference.glassfish-corba-asm.jar} lib/${manifest.file.reference.glassfish-corba-asm.jar} ${manifest.file.reference.glassfish-corba-codegen.jar} lib/${manifest.file.reference.glassfish-corba-codegen.jar} ${manifest.file.reference.glassfish-corba-csiv2-idl.jar} lib/${manifest.file.reference.glassfish-corba-csiv2-idl.jar} ${manifest.file.reference.glassfish-corba-internal-api.jar} lib/${manifest.file.reference.glassfish-corba-internal-api.jar} ${manifest.file.reference.glassfish-corba-newtimer.jar} lib/${manifest.file.reference.glassfish-corba-newtimer.jar} ${manifest.file.reference.glassfish-corba-omgapi.jar} lib/${manifest.file.reference.glassfish-corba-omgapi.jar} ${manifest.file.reference.glassfish-corba-orb.jar} lib/${manifest.file.reference.glassfish-corba-orb.jar} ${manifest.file.reference.glassfish-corba-orbgeneric.jar} lib/${manifest.file.reference.glassfish-corba-orbgeneric.jar} "/>
         </manifest>
     </target>
     <target name="-copy-meta-inf">
@@ -632,7 +637,8 @@ or ant -Dj2ee.platform.classpath=&lt;server_classpath&gt; (where no properties f
     <target name="-run" unless="j2ee.appclient.tool.args">
         <carproject:run-appclient/>
     </target>
-    <target depends="dist,run-deploy,-as-retrieve-option-workaround,-init-run-macros,-run-single-pregfv3,-run-single" description="Run a single class." name="run-single"/>
+    <target depends="dist,run-deploy,-as-retrieve-option-workaround,-init-run-macros,-run-single-pregfv3,-run-single" description="Run a single class."
+            name="run-single"/>
     <target depends="dist,run-deploy,-as-retrieve-option-workaround,-init-run-macros" name="-run-single" unless="j2ee.appclient.tool.args">
         <fail unless="run.class">Must select one file in the IDE or set run.class</fail>
         <carproject:run-appclient serverparams="${j2ee.appclient.tool.jvmoptions.class}${run.class}"/>
@@ -717,7 +723,8 @@ or ant -Dj2ee.platform.classpath=&lt;server_classpath&gt; (where no properties f
     <target name="-run-deploy-am">
         <!-- Task to deploy to the Access Manager runtime. -->
     </target>
-    <target depends="init,compile,dist,pre-run-deploy,-pre-nbmodule-run-deploy,-run-deploy-nb,-init-deploy-ant,-deploy-ant,-run-deploy-am,-post-nbmodule-run-deploy,post-run-deploy,-do-update-breakpoints" name="run-deploy"/>
+    <target depends="init,compile,dist,pre-run-deploy,-pre-nbmodule-run-deploy,-run-deploy-nb,-init-deploy-ant,-deploy-ant,-run-deploy-am,-post-nbmodule-run-deploy,post-run-deploy,-do-update-breakpoints"
+            name="run-deploy"/>
     <target if="netbeans.home" name="-run-deploy-nb">
         <nbdeploy clientUrlPart="${client.urlPart}" debugmode="false" forceRedeploy="${forceRedeploy}"/>
     </target>
@@ -786,8 +793,8 @@ or ant -Dj2ee.platform.classpath=&lt;server_classpath&gt; (where no properties f
     </target>
     <target depends="-get-browser" if="do.display.browser.cl" name="-display-browser-cl">
         <fail unless="browser">
-                    Browser not found, cannot launch the deployed application. Try to set the BROWSER environment variable.
-                </fail>
+            Browser not found, cannot launch the deployed application. Try to set the BROWSER environment variable.
+        </fail>
         <property name="browse.url" value="${deploy.ant.client.url}${client.urlPart}"/>
         <echo>Launching ${browse.url}</echo>
         <exec executable="${browser}" spawn="true">
@@ -832,7 +839,8 @@ or ant -Dj2ee.platform.classpath=&lt;server_classpath&gt; (where no properties f
             </sequential>
         </macrodef>
     </target>
-    <target depends="init,compile,run-deploy,-init-debug-args,-as-retrieve-option-workaround,-init-debug-macros,-debug-appclient-start-nbjpda,-debug-appclient-pregfv3,-debug-appclient" description="Debug project in IDE." if="netbeans.home" name="debug"/>
+    <target depends="init,compile,run-deploy,-init-debug-args,-as-retrieve-option-workaround,-init-debug-macros,-debug-appclient-start-nbjpda,-debug-appclient-pregfv3,-debug-appclient"
+            description="Debug project in IDE." if="netbeans.home" name="debug"/>
     <target name="-debug-appclient-start-nbjpda">
         <carproject:nbjpdastart classpath="" name="${app.client}"/>
     </target>
@@ -862,7 +870,8 @@ or ant -Dj2ee.platform.classpath=&lt;server_classpath&gt; (where no properties f
     <target if="j2ee.appclient.tool.args" name="-debug-single-pregfv3">
         <carproject:debug-appclient serverparams="${j2ee.appclient.tool.jvmoptions.class}${debug.class}"/>
     </target>
-    <target depends="init,compile,run-deploy,-init-debug-args,-as-retrieve-option-workaround,-init-debug-macros,-debug-start-nbjpda-single,-debug-single,-debug-single-pregfv3" if="netbeans.home" name="debug-single"/>
+    <target depends="init,compile,run-deploy,-init-debug-args,-as-retrieve-option-workaround,-init-debug-macros,-debug-start-nbjpda-single,-debug-single,-debug-single-pregfv3"
+            if="netbeans.home" name="debug-single"/>
     <target depends="init" name="-pre-debug-fix">
         <fail unless="fix.includes">Must set fix.includes</fail>
         <property name="javac.includes" value="${fix.includes}.java"/>
@@ -901,7 +910,8 @@ or ant -Dj2ee.platform.classpath=&lt;server_classpath&gt; (where no properties f
     </target>
     <target depends="init,compile,-pre-pre-compile-test,-pre-compile-test-single" if="have.tests" name="-do-compile-test-single">
         <fail unless="javac.includes">Must select some files in the IDE or set javac.includes</fail>
-        <carproject:javac classpath="${javac.test.classpath}" debug="true" destdir="${build.test.classes.dir}" excludes="" includes="${javac.includes}" srcdir="${test.src.dir}"/>
+        <carproject:javac classpath="${javac.test.classpath}" debug="true" destdir="${build.test.classes.dir}" excludes="" includes="${javac.includes}"
+                          srcdir="${test.src.dir}"/>
         <copy todir="${build.test.classes.dir}">
             <fileset dir="${test.src.dir}" excludes="${build.classes.excludes},${excludes}" includes="${includes}"/>
         </copy>
@@ -938,7 +948,8 @@ or ant -Dj2ee.platform.classpath=&lt;server_classpath&gt; (where no properties f
     <target depends="init,compile-test-single,-pre-test-run-single,-do-test-run-single" if="have.tests" name="-post-test-run-single">
         <fail if="tests.failed" unless="ignore.failing.tests">Some tests failed; see details above.</fail>
     </target>
-    <target depends="init,compile-test-single,-pre-test-run-single,-do-test-run-single,-post-test-run-single" description="Run single unit test." name="test-single"/>
+    <target depends="init,compile-test-single,-pre-test-run-single,-do-test-run-single,-post-test-run-single" description="Run single unit test."
+            name="test-single"/>
     <!--
                 =======================
                 JUNIT DEBUGGING SECTION
@@ -950,7 +961,8 @@ or ant -Dj2ee.platform.classpath=&lt;server_classpath&gt; (where no properties f
         <delete file="${test.report.file}"/>
         <!-- the directory must exist, otherwise the XML formatter would fail -->
         <mkdir dir="${build.test.results.dir}"/>
-        <carproject:debug classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner" classpath="${ant.home}/lib/ant.jar:${ant.home}/lib/ant-junit.jar:${debug.test.classpath}">
+        <carproject:debug classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner"
+                          classpath="${ant.home}/lib/ant.jar:${ant.home}/lib/ant-junit.jar:${debug.test.classpath}">
             <customize>
                 <arg value="${test.class}"/>
                 <arg value="formatter=org.apache.tools.ant.taskdefs.optional.junit.BriefJUnitResultFormatter"/>

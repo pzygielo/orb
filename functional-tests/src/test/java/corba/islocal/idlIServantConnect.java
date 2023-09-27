@@ -27,17 +27,14 @@ package corba.islocal;
 import corba.hcks.U;
 
 class idlIServantConnect
-    extends 
-        _idlIImplBase 
-{
+        extends
+        _idlIImplBase {
     public static final String baseMsg = idlIServantConnect.class.getName();
 
-    public idlIServantConnect()
-    {
+    public idlIServantConnect() {
     }
 
-    public String o(String arg1)
-    {
+    public String o(String arg1) {
         // REVISIT : IDL stubs do NOT have colocated branch yet.
         //Server.checkThread(baseMsg);
         String result = Server.filter(arg1, baseMsg);

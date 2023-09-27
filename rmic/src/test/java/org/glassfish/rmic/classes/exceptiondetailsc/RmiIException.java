@@ -20,8 +20,7 @@
 package org.glassfish.rmic.classes.exceptiondetailsc;
 
 public class RmiIException extends Exception {
-    RmiIException(String x)
-    {
+    RmiIException(String x) {
         super(x);
     }
 }

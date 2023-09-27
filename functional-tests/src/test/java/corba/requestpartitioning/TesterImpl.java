@@ -21,8 +21,7 @@ package corba.requestpartitioning;
 
 import com.sun.corba.ee.spi.orb.ORB;
 
-public class TesterImpl extends TesterPOA
-{
+public class TesterImpl extends TesterPOA {
     private ORB orb = null;
 
     public void setORB(ORB orb_val) {
@@ -41,11 +40,10 @@ public class TesterImpl extends TesterPOA
         String tmpStr = null;
         if (threadName.charAt(5) == ';') {
             // double digit thread id
-            tmpStr = threadName.substring(3,5);
-        }
-        else {
+            tmpStr = threadName.substring(3, 5);
+        } else {
             // single digit thread id
-            tmpStr = threadName.substring(3,4);
+            tmpStr = threadName.substring(3, 4);
         }
 
         result = Integer.valueOf(tmpStr).intValue();

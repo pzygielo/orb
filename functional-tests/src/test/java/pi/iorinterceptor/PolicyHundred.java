@@ -21,30 +21,29 @@ package pi.iorinterceptor;
 
 import java.util.*;
 import java.io.*;
+
 import org.omg.CORBA.*;
 
-/** 
+/**
  * This Policy object's type is 100.
  */
 public class PolicyHundred extends LocalObject
-    implements Policy
-{
+        implements Policy {
     private int value;
 
-    public PolicyHundred( int value ) {
+    public PolicyHundred(int value) {
         this.value = value;
     }
 
-    public int policy_type( ) {
+    public int policy_type() {
         return 100;
     }
 
-
-    public org.omg.CORBA.Policy copy( ) {
+    public org.omg.CORBA.Policy copy() {
         return this;
     }
 
-    public void destroy ( ) {
+    public void destroy() {
         // Do Nothing
     }
 

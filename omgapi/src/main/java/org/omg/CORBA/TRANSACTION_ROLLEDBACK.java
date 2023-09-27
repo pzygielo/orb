@@ -20,9 +20,9 @@
 package org.omg.CORBA;
 
 /**
- * Exception  thrown when the transaction associated with the request has 
- * already been rolled back or marked to roll back. Thus, the requested 
- * operation either could not be performed or was not performed because 
+ * Exception  thrown when the transaction associated with the request has
+ * already been rolled back or marked to roll back. Thus, the requested
+ * operation either could not be performed or was not performed because
  * further computation on behalf of the transaction would be fruitless.<P>
  * See the OMG Transaction
  * Service specification for details.
@@ -30,9 +30,9 @@ package org.omg.CORBA;
  * what caused the exception, and a completion status. It may also contain
  * a string describing the exception.
  *
+ * @version 1.5 09/09/97
  * @see <A href="../../../../guide/idl/jidlExceptions.html">documentation on
  * Java&nbsp;IDL exceptions</A>
- * @version     1.5 09/09/97
  */
 
 public final class TRANSACTION_ROLLEDBACK extends SystemException {
@@ -49,6 +49,7 @@ public final class TRANSACTION_ROLLEDBACK extends SystemException {
      * Constructs a <code>TRANSACTION_ROLLEDBACK</code> exception with the
      * specified description message,
      * a minor code of 0, and a completion state of COMPLETED_NO.
+     *
      * @param s the String containing a detail message
      */
     public TRANSACTION_ROLLEDBACK(String s) {
@@ -58,6 +59,7 @@ public final class TRANSACTION_ROLLEDBACK extends SystemException {
     /**
      * Constructs a <code>TRANSACTION_ROLLEDBACK</code> exception with the specified
      * minor code and completion status.
+     *
      * @param minor the minor code
      * @param completed the completion status
      */
@@ -68,6 +70,7 @@ public final class TRANSACTION_ROLLEDBACK extends SystemException {
     /**
      * Constructs a <code>TRANSACTION_ROLLEDBACK</code> exception with the
      * specified description message, minor code, and completion status.
+     *
      * @param s the String containing a description message
      * @param minor the minor code
      * @param completed the completion status

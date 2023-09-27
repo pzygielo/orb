@@ -17,14 +17,14 @@
  * Classpath-exception-2.0
  */
 
-package corba.framework ;
+package corba.framework;
 
-/** A listener for MethodEvent objects.  Is notified of both method entry
+/**
+ * A listener for MethodEvent objects.  Is notified of both method entry
  * and method exit.
  */
-public interface MethodEventListener
-{
-    void methodEntered( MethodEvent event ) ;
+public interface MethodEventListener {
+    void methodEntered(MethodEvent event);
 
-    void methodExited( MethodEvent event ) ;
+    void methodExited(MethodEvent event);
 }

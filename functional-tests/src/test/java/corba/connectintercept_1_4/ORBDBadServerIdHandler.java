@@ -32,23 +32,23 @@ import com.sun.corba.ee.spi.activation.LocatorPackage.ServerLocationPerORB;
 
 import com.sun.corba.ee.spi.ior.IOR;
 import com.sun.corba.ee.spi.ior.IORTemplate;
-import com.sun.corba.ee.spi.ior.ObjectKey ;
-import com.sun.corba.ee.spi.ior.IORFactories ;
-import com.sun.corba.ee.spi.ior.ObjectKeyFactory ;
+import com.sun.corba.ee.spi.ior.ObjectKey;
+import com.sun.corba.ee.spi.ior.IORFactories;
+import com.sun.corba.ee.spi.ior.ObjectKeyFactory;
 
-import com.sun.corba.ee.spi.ior.iiop.IIOPFactories ;
-import com.sun.corba.ee.spi.ior.iiop.IIOPProfileTemplate ;
-import com.sun.corba.ee.spi.ior.iiop.GIOPVersion; 
+import com.sun.corba.ee.spi.ior.iiop.IIOPFactories;
+import com.sun.corba.ee.spi.ior.iiop.IIOPProfileTemplate;
+import com.sun.corba.ee.spi.ior.iiop.GIOPVersion;
 
-import com.sun.corba.ee.spi.protocol.ForwardException; 
+import com.sun.corba.ee.spi.protocol.ForwardException;
 
-import com.sun.corba.ee.spi.orb.ORB; 
+import com.sun.corba.ee.spi.orb.ORB;
 
 import com.sun.corba.ee.spi.misc.ORBConstants;
 import com.sun.corba.ee.impl.misc.ORBUtility;
 
 import com.sun.corba.ee.impl.ior.IORImpl;
-import com.sun.corba.ee.impl.ior.POAObjectKeyTemplate ;
+import com.sun.corba.ee.impl.ior.POAObjectKeyTemplate;
 
 import com.sun.corba.ee.impl.oa.poa.BadServerIdHandler;
 
@@ -58,21 +58,18 @@ import org.omg.CORBA.ORBPackage.InvalidName;
 import org.omg.CORBA.OBJECT_NOT_EXIST;
 
 public class ORBDBadServerIdHandler
-    implements
-        BadServerIdHandler
-{
+        implements
+        BadServerIdHandler {
     public static final String baseMsg =
-        ORBDBadServerIdHandler.class.getName();
+            ORBDBadServerIdHandler.class.getName();
 
     private ORB orb;
 
-    public ORBDBadServerIdHandler(org.omg.CORBA.ORB orb)
-    {
+    public ORBDBadServerIdHandler(org.omg.CORBA.ORB orb) {
         this.orb = (com.sun.corba.ee.spi.orb.ORB) orb;
     }
 
-    public void handle(ObjectKey okey)
-    {
+    public void handle(ObjectKey okey) {
         Locator locator = null;
         try {
             locator = LocatorHelper.narrow(orb.resolve_initial_references(ORBConstants.SERVER_LOCATOR_NAME));
@@ -86,28 +83,28 @@ public class ORBDBadServerIdHandler
         ServerLocationPerORB location;
 
         POAObjectKeyTemplate poktemp = (POAObjectKeyTemplate)
-            (okey.getTemplate());
-        int serverId = poktemp.getServerId() ;
-        String orbId = poktemp.getORBId() ;
+                (okey.getTemplate());
+        int serverId = poktemp.getServerId();
+        String orbId = poktemp.getORBId();
 
         try {
-            location  = locator.locateServerForORB(serverId, orbId);
+            location = locator.locateServerForORB(serverId, orbId);
 
-            int clearPort = 
-                locator.getServerPortForType(location, IIOP_CLEAR_TEXT.value);
+            int clearPort =
+                    locator.getServerPortForType(location, IIOP_CLEAR_TEXT.value);
 
             int myType1Port
-                = locator.getServerPortForType(location, Common.MyType1);
+                    = locator.getServerPortForType(location, Common.MyType1);
             int myType2Port
-                = locator.getServerPortForType(location, Common.MyType2);
+                    = locator.getServerPortForType(location, Common.MyType2);
             int myType3Port
-                = locator.getServerPortForType(location, Common.MyType3);
+                    = locator.getServerPortForType(location, Common.MyType3);
 
             String componentData =
-                Common.createComponentData(baseMsg + ".handle: ",
-                                           myType1Port,
-                                           myType2Port,
-                                           myType3Port);
+                    Common.createComponentData(baseMsg + ".handle: ",
+                                               myType1Port,
+                                               myType2Port,
+                                               myType3Port);
 
             /*
               1. Use ObjectKeyFactory.create( byte[]) to convert byte[]
@@ -125,16 +122,16 @@ public class ORBDBadServerIdHandler
               8. Make IOR immutable.
             */
 
-            IIOPProfileTemplate sipt = 
-                IIOPFactories.makeIIOPProfileTemplate(
-                    (com.sun.corba.ee.spi.orb.ORB)orb,
-                    GIOPVersion.V1_2,
-                    IIOPFactories.makeIIOPAddress( location.hostname, clearPort));
+            IIOPProfileTemplate sipt =
+                    IIOPFactories.makeIIOPProfileTemplate(
+                            (com.sun.corba.ee.spi.orb.ORB) orb,
+                            GIOPVersion.V1_2,
+                            IIOPFactories.makeIIOPAddress(location.hostname, clearPort));
             sipt.add(new ORBDListenPortsComponent(componentData));
-            IORTemplate iortemp = IORFactories.makeIORTemplate( poktemp ) ;
-            iortemp.add( sipt ) ;
-            newIOR = iortemp.makeIOR( (com.sun.corba.ee.spi.orb.ORB)orb, 
-                "IDL:org/omg/CORBA/Object:1.0", okey.getId() );
+            IORTemplate iortemp = IORFactories.makeIORTemplate(poktemp);
+            iortemp.add(sipt);
+            newIOR = iortemp.makeIOR((com.sun.corba.ee.spi.orb.ORB) orb,
+                                     "IDL:org/omg/CORBA/Object:1.0", okey.getId());
 
             /*
             // REVISIT - add component data.
@@ -150,7 +147,7 @@ public class ORBDBadServerIdHandler
             throw new OBJECT_NOT_EXIST();
         }
 
-        throw new ForwardException( (com.sun.corba.ee.spi.orb.ORB)orb, newIOR);
+        throw new ForwardException((com.sun.corba.ee.spi.orb.ORB) orb, newIOR);
     }
 }
 

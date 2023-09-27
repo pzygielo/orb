@@ -20,12 +20,11 @@
 package corba.serialization.good;
 
 import corba.framework.*;
+
 import java.util.*;
 
-public class GoodRepIdTest extends CORBATest
-{
-    protected void doTest() throws Throwable
-    {
+public class GoodRepIdTest extends CORBATest {
+    protected void doTest() throws Throwable {
         Controller server = createServer("corba.serialization.good.ShowRepid");
 
         server.start();

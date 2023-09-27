@@ -20,33 +20,17 @@
 
 package org.glassfish.rmic;
 
-import org.glassfish.rmic.tools.java.ClassDeclaration;
-import org.glassfish.rmic.tools.java.ClassFile;
-import org.glassfish.rmic.tools.java.ClassNotFound;
-import org.glassfish.rmic.tools.java.ClassPath;
-import org.glassfish.rmic.tools.java.Identifier;
+import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.javac.SourceClass;
 import org.glassfish.rmic.tools.util.CommandLine;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.StringTokenizer;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Main "rmic" program.
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
@@ -66,7 +50,7 @@ public class Main implements org.glassfish.rmic.Constants {
     String[] generatorArgs;
     Vector<Generator> generators;
     Class<? extends BatchEnvironment> environmentClass =
-        BatchEnvironment.class;
+            BatchEnvironment.class;
     boolean iiopGeneration = false;
 
     /**
@@ -157,7 +141,7 @@ public class Main implements org.glassfish.rmic.Constants {
         nowrite = false;
         nocompile = false;
         keepGenerated = false;
-        generatorArgs = getArray("generator.args",true);
+        generatorArgs = getArray("generator.args", true);
         if (generatorArgs == null) {
             return false;
         }
@@ -171,13 +155,13 @@ public class Main implements org.glassfish.rmic.Constants {
             return false;
         } catch (IOException e) {
             e.printStackTrace(out instanceof PrintStream ?
-                              (PrintStream) out :
-                              new PrintStream(out, true));
+                                      (PrintStream) out :
+                                      new PrintStream(out, true));
             return false;
         }
 
         // Parse arguments
-        for (int i = 0 ; i < argv.length ; i++) {
+        for (int i = 0; i < argv.length; i++) {
             if (argv[i] != null) {
                 if (argv[i].equals("-g")) {
                     flags &= ~F_OPT;
@@ -208,7 +192,7 @@ public class Main implements org.glassfish.rmic.Constants {
                     keepGenerated = true;
                     argv[i] = null;
                 } else if (argv[i].equals("-keep") ||
-                           argv[i].equals("-keepgenerated")) {
+                        argv[i].equals("-keepgenerated")) {
                     keepGenerated = true;
                     argv[i] = null;
                 } else if (argv[i].equals("-show")) {
@@ -281,14 +265,13 @@ public class Main implements org.glassfish.rmic.Constants {
                         return false;
                     }
                 } else {
-                    if (!checkGeneratorArg(argv,i)) {
+                    if (!checkGeneratorArg(argv, i)) {
                         usage();
                         return false;
                     }
                 }
             }
         }
-
 
         // Now that all generators have had a chance at the args,
         // scan what's left for classes and illegal args...
@@ -304,7 +287,6 @@ public class Main implements org.glassfish.rmic.Constants {
                 }
             }
         }
-
 
         // If the generators vector is empty, add the default generator...
 
@@ -331,7 +313,7 @@ public class Main implements org.glassfish.rmic.Constants {
                     if (gen == null) {
                         return false;
                     }
-                    result = gen.parseArgs(argv,this);
+                    result = gen.parseArgs(argv, this);
                     break;
                 }
             }
@@ -351,14 +333,14 @@ public class Main implements org.glassfish.rmic.Constants {
 
         String className = getString("generator.class." + arg);
         if (className == null) {
-            error("rmic.missing.property",arg);
+            error("rmic.missing.property", arg);
             return null;
         }
 
         try {
             gen = (Generator) Class.forName(className).newInstance();
         } catch (Exception e) {
-            error("rmic.cannot.instantiate",className);
+            error("rmic.cannot.instantiate", className);
             return null;
         }
 
@@ -389,12 +371,12 @@ public class Main implements org.glassfish.rmic.Constants {
 
                         // No, so it's a conflict...
 
-                        error("rmic.cannot.use.both",environmentClass.getName(),envClass.getName());
+                        error("rmic.cannot.use.both", environmentClass.getName(), envClass.getName());
                         return null;
                     }
                 }
             } catch (ClassNotFoundException e) {
-                error("rmic.class.not.found",env);
+                error("rmic.class.not.found", env);
                 return null;
             }
         }
@@ -411,6 +393,7 @@ public class Main implements org.glassfish.rmic.Constants {
     /**
      * Grab a resource string and parse it into an array of strings. Assumes
      * comma separated list.
+     *
      * @param name The resource name.
      * @param mustExist If true, throws error if resource does not exist. If
      * false and resource does not exist, returns zero element array.
@@ -420,14 +403,14 @@ public class Main implements org.glassfish.rmic.Constants {
         String value = getString(name);
         if (value == null) {
             if (mustExist) {
-                error("rmic.resource.not.found",name);
+                error("rmic.resource.not.found", name);
                 return null;
             } else {
                 return new String[0];
             }
         }
 
-        StringTokenizer parser = new StringTokenizer(value,", \t\n\r", false);
+        StringTokenizer parser = new StringTokenizer(value, ", \t\n\r", false);
         int count = parser.countTokens();
         result = new String[count];
         for (int i = 0; i < count; i++) {
@@ -443,23 +426,21 @@ public class Main implements org.glassfish.rmic.Constants {
     public BatchEnvironment getEnv() {
 
         ClassPath classPath =
-            BatchEnvironment.createClassPath(classPathString,
-                                             sysClassPathArg);
+                BatchEnvironment.createClassPath(classPathString,
+                                                 sysClassPathArg);
         BatchEnvironment result = null;
         try {
-            Class<?>[] ctorArgTypes = {OutputStream.class,ClassPath.class,File.class};
-            Object[] ctorArgs = {out,classPath,getDestinationDir()};
+            Class<?>[] ctorArgTypes = { OutputStream.class, ClassPath.class, File.class };
+            Object[] ctorArgs = { out, classPath, getDestinationDir() };
             Constructor<? extends BatchEnvironment> constructor =
-                environmentClass.getConstructor(ctorArgTypes);
-            result =  constructor.newInstance(ctorArgs);
+                    environmentClass.getConstructor(ctorArgTypes);
+            result = constructor.newInstance(ctorArgs);
             result.reset();
-        }
-        catch (Exception e) {
-            error("rmic.cannot.instantiate",environmentClass.getName());
+        } catch (Exception e) {
+            error("rmic.cannot.instantiate", environmentClass.getName());
         }
         return result;
     }
-
 
     /**
      * Do the compile with the switches and files already supplied
@@ -499,15 +480,15 @@ public class Main implements org.glassfish.rmic.Constants {
             if (env.nerrors == 0 || env.dump()) {
                 env.error(0, "fatal.error");
                 ee.printStackTrace(out instanceof PrintStream ?
-                                   (PrintStream) out :
-                                   new PrintStream(out, true));
+                                           (PrintStream) out :
+                                           new PrintStream(out, true));
             }
         } catch (Exception ee) {
             if (env.nerrors == 0 || env.dump()) {
                 env.error(0, "fatal.exception");
                 ee.printStackTrace(out instanceof PrintStream ?
-                                   (PrintStream) out :
-                                   new PrintStream(out, true));
+                                           (PrintStream) out :
+                                           new PrintStream(out, true));
             }
         }
 
@@ -549,15 +530,17 @@ public class Main implements org.glassfish.rmic.Constants {
     }
 
     private void generateClasses(BatchEnvironment env) {
-        for (String className : classes)
+        for (String className : classes) {
             generateClass(env, getClassIdentifier(env, className));
+        }
     }
 
     void generateClass(BatchEnvironment env, Identifier implClassName) {
         ClassDeclaration decl = env.getClassDeclaration(implClassName);
         try {
-            for (Generator gen : generators)
+            for (Generator gen : generators) {
                 gen.generate(env, destDir, decl.getClassDefinition(env));
+            }
         } catch (ClassNotFound ex) {
             env.error(0, "rmic.class.not.found", implClassName);
         }
@@ -565,10 +548,16 @@ public class Main implements org.glassfish.rmic.Constants {
 
     boolean displayErrors(BatchEnvironment env) {
         List<String> summary = new ArrayList<>();
-        
-        if (env.nerrors > 0) summary.add(getErrorSummary(env));
-        if (env.nwarnings > 0) summary.add(getWarningSummary(env));
-        if (!summary.isEmpty()) output(String.join(", ", summary));
+
+        if (env.nerrors > 0) {
+            summary.add(getErrorSummary(env));
+        }
+        if (env.nwarnings > 0) {
+            summary.add(getWarningSummary(env));
+        }
+        if (!summary.isEmpty()) {
+            output(String.join(", ", summary));
+        }
 
         return env.nerrors == 0;
     }
@@ -584,26 +573,26 @@ public class Main implements org.glassfish.rmic.Constants {
     static Identifier getClassIdentifier(BatchEnvironment env, String className) {
         Identifier implClassName = Identifier.lookup(className);
 
-                /*
-                 * Fix bugid 4049354: support using '.' as an inner class
-                 * qualifier on the command line (previously, only mangled
-                 * inner class names were understood, like "pkg.Outer$Inner").
-                 *
-                 * The following method, also used by "javap", resolves the
-                 * given unmangled inner class name to the appropriate
-                 * internal identifier.  For example, it translates
-                 * "pkg.Outer.Inner" to "pkg.Outer. Inner".
-                 */
+        /*
+         * Fix bugid 4049354: support using '.' as an inner class
+         * qualifier on the command line (previously, only mangled
+         * inner class names were understood, like "pkg.Outer$Inner").
+         *
+         * The following method, also used by "javap", resolves the
+         * given unmangled inner class name to the appropriate
+         * internal identifier.  For example, it translates
+         * "pkg.Outer.Inner" to "pkg.Outer. Inner".
+         */
         implClassName = env.resolvePackageQualifiedName(implClassName);
-                /*
-                 * But if we use such an internal inner class name identifier
-                 * to load the class definition, the Java compiler will notice
-                 * if the impl class is a "private" inner class and then deny
-                 * skeletons (needed unless "-v1.2" is used) the ability to
-                 * cast to it.  To work around this problem, we mangle inner
-                 * class name identifiers to their binary "outer" class name:
-                 * "pkg.Outer. Inner" becomes "pkg.Outer$Inner".
-                 */
+        /*
+         * But if we use such an internal inner class name identifier
+         * to load the class definition, the Java compiler will notice
+         * if the impl class is a "private" inner class and then deny
+         * skeletons (needed unless "-v1.2" is used) the ability to
+         * cast to it.  To work around this problem, we mangle inner
+         * class name identifiers to their binary "outer" class name:
+         * "pkg.Outer. Inner" becomes "pkg.Outer$Inner".
+         */
         implClassName = Names.mangleClass(implClassName);
         return implClassName;
     }
@@ -611,18 +600,18 @@ public class Main implements org.glassfish.rmic.Constants {
     /*
      * Compile all classes that need to be compiled.
      */
-    public void compileAllClasses (BatchEnvironment env)
-        throws ClassNotFound,
-               IOException,
-               InterruptedException {
+    public void compileAllClasses(BatchEnvironment env)
+            throws ClassNotFound,
+            IOException,
+            InterruptedException {
         ByteArrayOutputStream buf = new ByteArrayOutputStream(4096);
         boolean done;
 
         do {
             done = true;
-            for (Enumeration<?> e = env.getClasses() ; e.hasMoreElements() ; ) {
-                ClassDeclaration c = (ClassDeclaration)e.nextElement();
-                done = compileClass(c,buf,env);
+            for (Enumeration<?> e = env.getClasses(); e.hasMoreElements(); ) {
+                ClassDeclaration c = (ClassDeclaration) e.nextElement();
+                done = compileClass(c, buf, env);
             }
         } while (!done);
     }
@@ -631,113 +620,109 @@ public class Main implements org.glassfish.rmic.Constants {
      * Compile a single class.
      * Fallthrough is intentional
      */
-    @SuppressWarnings({"fallthrough", "deprecation"})
-    public boolean compileClass (ClassDeclaration c,
-                                 ByteArrayOutputStream buf,
-                                 BatchEnvironment env)
-        throws ClassNotFound,
-               IOException,
-               InterruptedException {
+    @SuppressWarnings({ "fallthrough", "deprecation" })
+    public boolean compileClass(ClassDeclaration c,
+                                ByteArrayOutputStream buf,
+                                BatchEnvironment env)
+            throws ClassNotFound,
+            IOException,
+            InterruptedException {
         boolean done = true;
         env.flushErrors();
         SourceClass src;
 
         switch (c.getStatus()) {
-        case CS_UNDEFINED:
-            {
-                if (!env.dependencies()) {
-                    break;
-                }
-                // fall through
+        case CS_UNDEFINED: {
+            if (!env.dependencies()) {
+                break;
+            }
+            // fall through
+        }
+
+        case CS_SOURCE: {
+            done = false;
+            env.loadDefinition(c);
+            if (c.getStatus() != CS_PARSED) {
+                break;
+            }
+            // fall through
+        }
+
+        case CS_PARSED: {
+            if (c.getClassDefinition().isInsideLocal()) {
+                break;
+            }
+            // If we get to here, then compilation is going
+            // to occur. If the -Xnocompile switch is set
+            // then fail. Note that this check is required
+            // here because this method is called from
+            // generators, not just from within this class...
+
+            if (nocompile) {
+                throw new IOException("Compilation required, but -Xnocompile option in effect");
             }
 
-        case CS_SOURCE:
-            {
-                done = false;
-                env.loadDefinition(c);
-                if (c.getStatus() != CS_PARSED) {
-                    break;
-                }
-                // fall through
-            }
+            done = false;
 
-        case CS_PARSED:
-            {
-                if (c.getClassDefinition().isInsideLocal()) {
-                    break;
-                }
-                // If we get to here, then compilation is going
-                // to occur. If the -Xnocompile switch is set
-                // then fail. Note that this check is required
-                // here because this method is called from
-                // generators, not just from within this class...
+            src = (SourceClass) c.getClassDefinition(env);
+            src.check(env);
+            c.setDefinition(src, CS_CHECKED);
+            // fall through
+        }
 
-                if (nocompile) {
-                    throw new IOException("Compilation required, but -Xnocompile option in effect");
-                }
-
-                done = false;
-
-                src = (SourceClass)c.getClassDefinition(env);
-                src.check(env);
-                c.setDefinition(src, CS_CHECKED);
-                // fall through
-            }
-
-        case CS_CHECKED:
-            {
-                src = (SourceClass)c.getClassDefinition(env);
-                // bail out if there were any errors
-                if (src.getError()) {
-                    c.setDefinition(src, CS_COMPILED);
-                    break;
-                }
-                done = false;
-                buf.reset();
-                src.compile(buf);
+        case CS_CHECKED: {
+            src = (SourceClass) c.getClassDefinition(env);
+            // bail out if there were any errors
+            if (src.getError()) {
                 c.setDefinition(src, CS_COMPILED);
-                src.cleanup(env);
+                break;
+            }
+            done = false;
+            buf.reset();
+            src.compile(buf);
+            c.setDefinition(src, CS_COMPILED);
+            src.cleanup(env);
 
-                if (src.getError() || nowrite) {
+            if (src.getError() || nowrite) {
+                break;
+            }
+
+            String pkgName = c.getName().getQualifier().toString().replace('.', File.separatorChar);
+            String className = c.getName().getFlatName().toString().replace('.', SIGC_INNERCLASS) + ".class";
+
+            File file;
+            if (destDir != null) {
+                if (pkgName.length() > 0) {
+                    file = new File(destDir, pkgName);
+                    if (!file.exists()) {
+                        file.mkdirs();
+                    }
+                    file = new File(file, className);
+                } else {
+                    file = new File(destDir, className);
+                }
+            } else {
+                ClassFile classfile = (ClassFile) src.getSource();
+                if (classfile.isZipped()) {
+                    env.error(0, "cant.write", classfile.getPath());
                     break;
                 }
-
-                String pkgName = c.getName().getQualifier().toString().replace('.', File.separatorChar);
-                String className = c.getName().getFlatName().toString().replace('.', SIGC_INNERCLASS) + ".class";
-
-                File file;
-                if (destDir != null) {
-                    if (pkgName.length() > 0) {
-                        file = new File(destDir, pkgName);
-                        if (!file.exists()) {
-                            file.mkdirs();
-                        }
-                        file = new File(file, className);
-                    } else {
-                        file = new File(destDir, className);
-                    }
-                } else {
-                    ClassFile classfile = (ClassFile)src.getSource();
-                    if (classfile.isZipped()) {
-                        env.error(0, "cant.write", classfile.getPath());
-                        break;
-                    }
-                    file = new File(classfile.getPath());
-                    file = new File(file.getParent(), className);
-                }
-
-                // Create the file
-                try {
-                    FileOutputStream out = new FileOutputStream(file.getPath());
-                    buf.writeTo(out);
-                    out.close();
-                    if (env.verbose()) {
-                        output(getText("rmic.wrote", file.getPath()));
-                    }
-                } catch (IOException ee) {
-                    env.error(0, "cant.write", file.getPath());
-                }
+                file = new File(classfile.getPath());
+                file = new File(file.getParent(), className);
             }
+
+            // Create the file
+            try {
+                FileOutputStream out = new FileOutputStream(file.getPath());
+                buf.writeTo(out);
+                out.close();
+                if (env.verbose()) {
+                    output(getText("rmic.wrote", file.getPath()));
+                }
+            } catch (IOException ee) {
+                env.error(0, "cant.write", file.getPath());
+            }
+        }
         }
         return done;
     }
@@ -765,7 +750,8 @@ public class Main implements org.glassfish.rmic.Constants {
         if (resourcesExt != null) {
             try {
                 return resourcesExt.getString(key);
-            } catch (MissingResourceException e) {}
+            } catch (MissingResourceException e) {
+            }
         }
 
         try {
@@ -782,15 +768,16 @@ public class Main implements org.glassfish.rmic.Constants {
     private static void initResources() {
         try {
             resources =
-                ResourceBundle.getBundle("org.glassfish.rmic.resources.rmic");
+                    ResourceBundle.getBundle("org.glassfish.rmic.resources.rmic");
             resourcesInitialized = true;
             try {
                 resourcesExt =
-                    ResourceBundle.getBundle("org.glassfish.rmic.resources.rmicext");
-            } catch (MissingResourceException e) {}
+                        ResourceBundle.getBundle("org.glassfish.rmic.resources.rmicext");
+            } catch (MissingResourceException e) {
+            }
         } catch (MissingResourceException e) {
             throw new Error("fatal: missing resource bundle: " +
-                            e.getClassName());
+                                    e.getClassName());
         }
     }
 
@@ -815,8 +802,7 @@ public class Main implements org.glassfish.rmic.Constants {
     }
 
     public static String getText(String key,
-                                 String arg0, String arg1, String arg2)
-    {
+                                 String arg0, String arg1, String arg2) {
         String format = getString(key);
         if (format == null) {
             format = "no text found: key = \"" + key + "\", " + "arguments = \"{0}\", \"{1}\", \"{2}\"";

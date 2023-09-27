@@ -17,73 +17,74 @@
  * Classpath-exception-2.0
  */
 
-package argparser ;
+package argparser;
 
-/** A utilitiy class representing a generic types Pair of elements.
+/**
+ * A utilitiy class representing a generic types Pair of elements.
  * Useful for simple data structures, returning multiple values, etc.
  * Pair<Object,Object> is similar to a cons cell.
  */
-public class Pair<S,T> {
-    protected S _first ;
-    protected T _second ;
+public class Pair<S, T> {
+    protected S _first;
+    protected T _second;
 
-    public Pair( final S first, final T second ) {
-	_first = first ;
-	_second = second ;
+    public Pair(final S first, final T second) {
+        _first = first;
+        _second = second;
     }
 
-    public Pair( final S first ) {
-	this( first, null ) ;
+    public Pair(final S first) {
+        this(first, null);
     }
 
     public Pair() {
-	this( null ) ;
+        this(null);
     }
 
     public S first() {
-	return _first ;
+        return _first;
     }
 
     public T second() {
-	return _second ;
+        return _second;
     }
 
     @Override
-    public boolean equals( Object obj ) {
-	if (obj == this) {
-	    return true ;
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
         }
 
-	if (!(obj instanceof Pair)) {
-	    return false ;
+        if (!(obj instanceof Pair)) {
+            return false;
         }
 
-	Pair pair = Pair.class.cast( obj ) ;
+        Pair pair = Pair.class.cast(obj);
 
-	if (first() == null ? 
-	    pair.first() == null : first().equals( pair.first())) {
-	    return (second() == null ? 
-		pair.second() == null : second().equals( pair.second())) ;
-	} else {
-	    return false ;
-	}
+        if (first() == null ?
+                pair.first() == null : first().equals(pair.first())) {
+            return (second() == null ?
+                    pair.second() == null : second().equals(pair.second()));
+        } else {
+            return false;
+        }
     }
 
     @Override
     public int hashCode() {
-	int result = 0 ;
-	if (_first != null) {
+        int result = 0;
+        if (_first != null) {
             result ^= _first.hashCode();
         }
-	if (_second != null) {
+        if (_second != null) {
             result ^= _second.hashCode();
         }
 
-	return result ;
+        return result;
     }
 
     @Override
     public String toString() {
-	return "Pair[" + _first + "," + _second + "]" ;
+        return "Pair[" + _first + "," + _second + "]";
     }
 }

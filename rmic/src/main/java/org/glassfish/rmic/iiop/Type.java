@@ -104,7 +104,8 @@ import java.util.Vector;
  * method can be used to get the array dimension.
  * <p>
  * <i><strong>NOTE:</strong> None of these types is multi-thread-safe</i>
- * @author      Bryan Atsatt
+ *
+ * @author Bryan Atsatt
  */
 public abstract class Type implements org.glassfish.rmic.iiop.Constants, ContextElement, Cloneable {
 
@@ -188,6 +189,7 @@ public abstract class Type implements org.glassfish.rmic.iiop.Constants, Context
      * IDL_Naming
      * Return the fully qualified IDL name for this type (e.g. com.acme.Dynamite would
      * return "com::acme::Dynamite").
+     *
      * @param global If true, prepends "::".
      */
     public String getQualifiedIDLName(boolean global) {
@@ -288,7 +290,6 @@ public abstract class Type implements org.glassfish.rmic.iiop.Constants, Context
         return (fullTypeCode & typeCodeMask) > 0;
     }
 
-
     /**
      * Return the fullTypeCode. If an array, returns the
      * type code from the element type.
@@ -321,7 +322,6 @@ public abstract class Type implements org.glassfish.rmic.iiop.Constants, Context
     public boolean isInner() {
         return (fullTypeCode & TM_INNER) == TM_INNER;
     }
-
 
     /**
      * Return true if this type is-a SpecialInterfaceType.
@@ -369,28 +369,28 @@ public abstract class Type implements org.glassfish.rmic.iiop.Constants, Context
      * Return a string representation of this type.
      */
     @Override
-    public String toString () {
+    public String toString() {
         return getQualifiedName();
     }
 
     /**
      * Get element type. Returns null if not an array.
      */
-    public Type getElementType () {
+    public Type getElementType() {
         return null;
     }
 
     /**
      * Get array dimension. Returns zero if not an array.
      */
-    public int getArrayDimension () {
+    public int getArrayDimension() {
         return 0;
     }
 
     /**
      * Get brackets string. Returns "" if not an array.
      */
-    public String getArrayBrackets () {
+    public String getArrayBrackets() {
         return "";
     }
 
@@ -401,32 +401,34 @@ public abstract class Type implements org.glassfish.rmic.iiop.Constants, Context
     public boolean equals(Object obj) {
 
         String us = toString();
-        String them = ((Type)obj).toString();
+        String them = ((Type) obj).toString();
         return us.equals(them);
     }
 
     /**
      * Collect all the matching types referenced directly or indirectly
      * by this type, including itself.
+     *
      * @param typeCodeFilter The typeCode to use as a filter.
      */
-    public Type[] collectMatching (int typeCodeFilter) {
-        return collectMatching(typeCodeFilter,new HashSet<>(env.allTypes.size()));
+    public Type[] collectMatching(int typeCodeFilter) {
+        return collectMatching(typeCodeFilter, new HashSet<>(env.allTypes.size()));
     }
 
     /**
      * Collect all the matching types referenced directly or indirectly
      * by this type, including itself.
+     *
      * @param typeCodeFilter The typeCode to use as a filter.
      * @param alreadyChecked Contains types which have previously been checked
      * and will be ignored. Updated during collection.
      */
-    public Type[] collectMatching (int typeCodeFilter, HashSet<Type> alreadyChecked) {
+    public Type[] collectMatching(int typeCodeFilter, HashSet<Type> alreadyChecked) {
         Vector<Type> matching = new Vector<>();
 
         // Fill up the list...
 
-        addTypes(typeCodeFilter,alreadyChecked,matching);
+        addTypes(typeCodeFilter, alreadyChecked, matching);
 
         // Copy vector contents to array and return it...
 
@@ -439,17 +441,18 @@ public abstract class Type implements org.glassfish.rmic.iiop.Constants, Context
     /**
      * Return a string describing this type.
      */
-    public abstract String getTypeDescription ();
+    public abstract String getTypeDescription();
 
     /**
      * Return the name of this type. For arrays, will include "[]" if useIDLNames == false.
+     *
      * @param useQualifiedNames If true, print qualified names; otherwise, print unqualified names.
      * @param useIDLNames If true, print IDL names; otherwise, print java names.
      * @param globalIDLNames If true and useIDLNames true, prepends "::".
      */
-    public String getTypeName ( boolean useQualifiedNames,
-                                boolean useIDLNames,
-                                boolean globalIDLNames) {
+    public String getTypeName(boolean useQualifiedNames,
+                              boolean useIDLNames,
+                              boolean globalIDLNames) {
         if (useIDLNames) {
             if (useQualifiedNames) {
                 return getQualifiedIDLName(globalIDLNames);
@@ -468,87 +471,89 @@ public abstract class Type implements org.glassfish.rmic.iiop.Constants, Context
     /**
      * Print all types referenced directly or indirectly by this type which
      * match the filter.
+     *
      * @param writer The stream to print to.
      * @param typeCodeFilter The type codes to print.
      * @param useQualifiedNames If true, print qualified names; otherwise, print unqualified names.
      * @param useIDLNames If true, print IDL names; otherwise, print java names.
      * @param globalIDLNames If true and useIDLNames true, prepends "::".
      */
-    public void print ( IndentingWriter writer,
-                        int typeCodeFilter,
-                        boolean useQualifiedNames,
-                        boolean useIDLNames,
-                        boolean globalIDLNames) throws IOException {
+    public void print(IndentingWriter writer,
+                      int typeCodeFilter,
+                      boolean useQualifiedNames,
+                      boolean useIDLNames,
+                      boolean globalIDLNames) throws IOException {
 
         Type[] theTypes = collectMatching(typeCodeFilter);
-        print(writer,theTypes,useQualifiedNames,useIDLNames,globalIDLNames);
+        print(writer, theTypes, useQualifiedNames, useIDLNames, globalIDLNames);
     }
 
     /**
      * Print an array of types.
+     *
      * @param writer The stream to print to.
      * @param theTypes The types to print.
      * @param useQualifiedNames If true, print qualified names; otherwise, print unqualified names.
      * @param useIDLNames If true, print IDL names; otherwise, print java names.
      * @param globalIDLNames If true and useIDLNames true, prepends "::".
      */
-    public static void print (  IndentingWriter writer,
-                                Type[] theTypes,
-                                boolean useQualifiedNames,
-                                boolean useIDLNames,
-                                boolean globalIDLNames) throws IOException {
+    public static void print(IndentingWriter writer,
+                             Type[] theTypes,
+                             boolean useQualifiedNames,
+                             boolean useIDLNames,
+                             boolean globalIDLNames) throws IOException {
 
         for (Type theType : theTypes) {
             theType.println(writer, useQualifiedNames, useIDLNames, globalIDLNames);
         }
     }
 
-
     /**
      * Print this type.
+     *
      * @param writer The stream to print to.
      * @param useQualifiedNames If true, print qualified names; otherwise, print unqualified names.
      * @param useIDLNames If true, print IDL names; otherwise, print java names.
      * @param globalIDLNames If true and useIDLNames true, prepends "::".
      */
-    public void print ( IndentingWriter writer,
-                        boolean useQualifiedNames,
-                        boolean useIDLNames,
-                        boolean globalIDLNames) throws IOException {
-        printTypeName(writer,useQualifiedNames,useIDLNames,globalIDLNames);
+    public void print(IndentingWriter writer,
+                      boolean useQualifiedNames,
+                      boolean useIDLNames,
+                      boolean globalIDLNames) throws IOException {
+        printTypeName(writer, useQualifiedNames, useIDLNames, globalIDLNames);
     }
 
     /**
      * Print this type, followed by a newline.
+     *
      * @param writer The stream to print to.
      * @param useQualifiedNames If true, print qualified names; otherwise, print unqualified names.
      * @param useIDLNames If true, print IDL names; otherwise, print java names.
      * @param globalIDLNames If true and useIDLNames true, prepends "::".
      */
-    public void println (       IndentingWriter writer,
-                                boolean useQualifiedNames,
-                                boolean useIDLNames,
-                                boolean globalIDLNames) throws IOException  {
+    public void println(IndentingWriter writer,
+                        boolean useQualifiedNames,
+                        boolean useIDLNames,
+                        boolean globalIDLNames) throws IOException {
 
-        print(writer,useQualifiedNames,useIDLNames,globalIDLNames);
+        print(writer, useQualifiedNames, useIDLNames, globalIDLNames);
         writer.pln();
     }
 
-
-
     /**
      * Print the name of this type.
+     *
      * @param writer The stream to print to.
      * @param useQualifiedNames If true, print qualified names; otherwise, print unqualified names.
      * @param useIDLNames If true, print IDL names; otherwise, print java names.
      * @param globalIDLNames If true and useIDLNames true, prepends "::".
      */
-    public void printTypeName ( IndentingWriter writer,
-                                boolean useQualifiedNames,
-                                boolean useIDLNames,
-                                boolean globalIDLNames) throws IOException {
+    public void printTypeName(IndentingWriter writer,
+                              boolean useQualifiedNames,
+                              boolean useIDLNames,
+                              boolean globalIDLNames) throws IOException {
 
-        writer.p(getTypeName(useQualifiedNames,useIDLNames,globalIDLNames));
+        writer.p(getTypeName(useQualifiedNames, useIDLNames, globalIDLNames));
     }
 
     /**
@@ -564,11 +569,12 @@ public abstract class Type implements org.glassfish.rmic.iiop.Constants, Context
 
     /**
      * Print the "opening" of the package or module of this type.
+     *
      * @param writer The stream to print to.
      * @param useIDLNames If true, print IDL names; otherwise, print java names.
      */
-    protected void printPackageOpen (   IndentingWriter writer,
-                                        boolean useIDLNames) throws IOException {
+    protected void printPackageOpen(IndentingWriter writer,
+                                    boolean useIDLNames) throws IOException {
 
         if (useIDLNames) {
             String[] moduleNames = getIDLModuleNames();
@@ -586,14 +592,14 @@ public abstract class Type implements org.glassfish.rmic.iiop.Constants, Context
     /**
      * Get a type out of the table.
      */
-    protected static Type getType (org.glassfish.rmic.tools.java.Type key, ContextStack stack) {
-        return getType(key.toString(),stack);
+    protected static Type getType(org.glassfish.rmic.tools.java.Type key, ContextStack stack) {
+        return getType(key.toString(), stack);
     }
 
     /**
      * Get a type out of the table.
      */
-    protected static Type getType (String key, ContextStack stack) {
+    protected static Type getType(String key, ContextStack stack) {
         Type result = stack.getEnv().allTypes.get(key);
 
         if (result != null) {
@@ -606,46 +612,45 @@ public abstract class Type implements org.glassfish.rmic.iiop.Constants, Context
     /**
      * Remove a type from the table.
      */
-    protected static void removeType (String key, ContextStack stack) {
+    protected static void removeType(String key, ContextStack stack) {
         Type value = stack.getEnv().allTypes.remove(key);
-        stack.getEnv().invalidTypes.put(value,key);
+        stack.getEnv().invalidTypes.put(value, key);
     }
 
     /**
      * Remove a type from the table.
      */
-    protected static void removeType (org.glassfish.rmic.tools.java.Type key, ContextStack stack) {
+    protected static void removeType(org.glassfish.rmic.tools.java.Type key, ContextStack stack) {
         String theKey = key.toString();
         Type old = stack.getEnv().allTypes.remove(theKey);
-        putInvalidType(old,theKey,stack);
+        putInvalidType(old, theKey, stack);
     }
 
     /**
      * Put a type into the table.
      */
-    protected static void putType (org.glassfish.rmic.tools.java.Type key, Type value, ContextStack stack) {
-        stack.getEnv().allTypes.put(key.toString(),value);
+    protected static void putType(org.glassfish.rmic.tools.java.Type key, Type value, ContextStack stack) {
+        stack.getEnv().allTypes.put(key.toString(), value);
     }
 
     /**
      * Put a type into the table.
      */
-    protected static void putType (String key, Type value, ContextStack stack) {
-        stack.getEnv().allTypes.put(key,value);
+    protected static void putType(String key, Type value, ContextStack stack) {
+        stack.getEnv().allTypes.put(key, value);
     }
 
     /**
      * Put an invalid type into the.
      */
-    protected static void putInvalidType (Type key, String value, ContextStack stack) {
-        stack.getEnv().invalidTypes.put(key,value);
+    protected static void putInvalidType(Type key, String value, ContextStack stack) {
+        stack.getEnv().invalidTypes.put(key, value);
     }
-
 
     /**
      * Remove all invalid types...
      */
-    public void removeInvalidTypes () {
+    public void removeInvalidTypes() {
         if (env.invalidTypes.size() > 0) {
             env.invalidTypes.clear();
         }
@@ -654,13 +659,13 @@ public abstract class Type implements org.glassfish.rmic.iiop.Constants, Context
     /**
      * Walk all types and tell them to update invalid types...
      */
-    protected static void updateAllInvalidTypes (ContextStack stack) {
+    protected static void updateAllInvalidTypes(ContextStack stack) {
         BatchEnvironment env = stack.getEnv();
         if (env.invalidTypes.size() > 0) {
 
             // Walk all types and swap invalid...
 
-            for (Enumeration<Type> e = env.allTypes.elements() ; e.hasMoreElements() ;) {
+            for (Enumeration<Type> e = env.allTypes.elements(); e.hasMoreElements(); ) {
                 Type it = e.nextElement();
                 it.swapInvalidTypes();
             }
@@ -674,21 +679,21 @@ public abstract class Type implements org.glassfish.rmic.iiop.Constants, Context
     /**
      * Return count of previously parsed types.
      */
-    protected int countTypes () {
+    protected int countTypes() {
         return env.allTypes.size();
     }
 
     /**
      * Reset types removes all previously parsed types.
      */
-    void resetTypes () {
+    void resetTypes() {
         env.reset();
     }
 
     /**
      * Release all resources.
      */
-    protected void destroy () {
+    protected void destroy() {
         if (!destroyed) {
             id = null;
             name = null;
@@ -708,13 +713,13 @@ public abstract class Type implements org.glassfish.rmic.iiop.Constants, Context
     /**
      * Convert all invalid types to valid ones.
      */
-    protected void swapInvalidTypes () {
+    protected void swapInvalidTypes() {
     }
 
     /**
      * Convert an invalid type to a valid one.
      */
-    protected Type getValidType (Type invalidType) {
+    protected Type getValidType(Type invalidType) {
         if (invalidType.getStatus() == STATUS_VALID) {
             return invalidType;
         }
@@ -736,14 +741,15 @@ public abstract class Type implements org.glassfish.rmic.iiop.Constants, Context
 
     /**
      * Print the "closing" of the package or module of this type.
+     *
      * @param writer The stream to print to.
      * @param useIDLNames If true, print IDL names; otherwise, print java names.
      */
-    protected void printPackageClose (  IndentingWriter writer,
-                                        boolean useIDLNames) throws IOException {
+    protected void printPackageClose(IndentingWriter writer,
+                                     boolean useIDLNames) throws IOException {
         if (useIDLNames) {
             String[] moduleNames = getIDLModuleNames();
-            for (int i = 0; i < moduleNames.length; i++ ) {
+            for (int i = 0; i < moduleNames.length; i++) {
                 writer.pOln("};");
             }
         }
@@ -784,9 +790,8 @@ public abstract class Type implements org.glassfish.rmic.iiop.Constants, Context
             qualifiedName = name;
         }
 
-        setIDLNames(idlModuleNames,idlName);
+        setIDLNames(idlModuleNames, idlName);
     }
-
 
     /**
      * Set IDL name. May only be called during initialization.
@@ -799,7 +804,7 @@ public abstract class Type implements org.glassfish.rmic.iiop.Constants, Context
         } else {
             this.idlModuleNames = new String[0];
         }
-        qualifiedIDLName = IDLNames.getQualifiedName(idlModuleNames,idlName);
+        qualifiedIDLName = IDLNames.getQualifiedName(idlModuleNames, idlName);
     }
 
     /**
@@ -807,7 +812,7 @@ public abstract class Type implements org.glassfish.rmic.iiop.Constants, Context
      */
     protected static void classNotFound(ContextStack stack,
                                         ClassNotFound e) {
-        classNotFound(false,stack,e);
+        classNotFound(false, stack, e);
     }
 
     /**
@@ -816,15 +821,18 @@ public abstract class Type implements org.glassfish.rmic.iiop.Constants, Context
     protected static void classNotFound(boolean quiet,
                                         ContextStack stack,
                                         ClassNotFound e) {
-        if (!quiet) stack.getEnv().error(0, "rmic.class.not.found", e.name);
+        if (!quiet) {
+            stack.getEnv().error(0, "rmic.class.not.found", e.name);
+        }
         stack.traceCallStack();
     }
 
     /**
      * Report a constraint failure thru the compiler environment.
+     *
      * @param constraintNum Used to generate a key of the form
-     "rmic.iiop.constraint.N", which must identify a message
-     in the "rmic.properties" file.
+     * "rmic.iiop.constraint.N", which must identify a message
+     * in the "rmic.properties" file.
      * @param quiet True if should not cause failure or message.
      * @param stack The context stack.
      * @param arg0 An object to substitute for {0} in the message.
@@ -839,12 +847,12 @@ public abstract class Type implements org.glassfish.rmic.iiop.Constants, Context
         String message = "rmic.iiop.constraint." + constraintNum;
 
         if (!quiet) {
-            stack.getEnv().error(0,message,
+            stack.getEnv().error(0, message,
                                  (arg0 != null ? arg0.toString() : null),
                                  (arg1 != null ? arg1.toString() : null),
                                  (arg2 != null ? arg2.toString() : null));
         } else {
-            String error = stack.getEnv().errorString(message,arg0,arg1,arg2);
+            String error = stack.getEnv().errorString(message, arg0, arg1, arg2);
             stack.traceln(error);
         }
 
@@ -853,9 +861,10 @@ public abstract class Type implements org.glassfish.rmic.iiop.Constants, Context
 
     /**
      * Report a constraint failure thru the compiler environment.
+     *
      * @param constraintNum Used to generate a key of the form
-     "rmic.iiop.constraint.N", which must identify a message
-     in the "rmic.properties" file.
+     * "rmic.iiop.constraint.N", which must identify a message
+     * in the "rmic.properties" file.
      * @param quiet True if should not cause failure or message.
      * @param stack The context stack.
      * @param arg0 An object to substitute for {0} in the message.
@@ -866,15 +875,15 @@ public abstract class Type implements org.glassfish.rmic.iiop.Constants, Context
                                               boolean quiet,
                                               ContextStack stack,
                                               Object arg0, Object arg1) {
-        return failedConstraint(constraintNum,quiet,stack,arg0,arg1,null);
+        return failedConstraint(constraintNum, quiet, stack, arg0, arg1, null);
     }
-
 
     /**
      * Report a constraint failure thru the compiler environment.
+     *
      * @param constraintNum Used to generate a key of the form
-     "rmic.iiop.constraint.N", which must identify a message
-     in the "rmic.properties" file.
+     * "rmic.iiop.constraint.N", which must identify a message
+     * in the "rmic.properties" file.
      * @param quiet True if should not cause failure or message.
      * @param stack The context stack.
      * @param arg0 An object to substitute for {0} in the message.
@@ -884,22 +893,23 @@ public abstract class Type implements org.glassfish.rmic.iiop.Constants, Context
                                               boolean quiet,
                                               ContextStack stack,
                                               Object arg0) {
-        return failedConstraint(constraintNum,quiet,stack,arg0,null,null);
+        return failedConstraint(constraintNum, quiet, stack, arg0, null, null);
     }
 
     /**
      * Report a constraint failure thru the compiler environment.
+     *
      * @param quiet True if should not cause failure or message.
      * @param stack The context stack.
      * @param constraintNum Used to generate a key of the form
-     "rmic.iiop.constraint.N", which must identify a message
-     in the "rmic.properties" file.
+     * "rmic.iiop.constraint.N", which must identify a message
+     * in the "rmic.properties" file.
      * @return false.
      */
     protected static boolean failedConstraint(int constraintNum,
                                               boolean quiet,
                                               ContextStack stack) {
-        return failedConstraint(constraintNum,quiet,stack,null,null,null);
+        return failedConstraint(constraintNum, quiet, stack, null, null, null);
     }
 
     /**
@@ -918,9 +928,9 @@ public abstract class Type implements org.glassfish.rmic.iiop.Constants, Context
      * Add matching types to list. Return true if this type has not
      * been previously checked, false otherwise.
      */
-    protected boolean addTypes (int typeCodeFilter,
-                                HashSet<Type> checked,
-                                Vector<Type> matching) {
+    protected boolean addTypes(int typeCodeFilter,
+                               HashSet<Type> checked,
+                               Vector<Type> matching) {
 
         boolean result;
 
@@ -964,7 +974,7 @@ public abstract class Type implements org.glassfish.rmic.iiop.Constants, Context
         if (ourClass == null) {
             ourClass = loadClass();
             if (ourClass == null) {
-                failedConstraint(27,false,stack,getQualifiedName());
+                failedConstraint(27, false, stack, getQualifiedName());
                 return false;
             }
         }
@@ -989,10 +999,10 @@ public abstract class Type implements org.glassfish.rmic.iiop.Constants, Context
         return true;
     }
 
-
     //_____________________________________________________________________
     // Internal Interfaces
     //_____________________________________________________________________
 
-    private Type () {} // Disallowed.
+    private Type() {
+    } // Disallowed.
 }

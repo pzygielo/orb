@@ -45,27 +45,46 @@ package com.sun.tools.corba.ee.idl;
  * Note that this class MUST have a public default constructor (one which
  * takes no parameters).
  **/
-public interface GenFactory
-{
-  public AttributeGen createAttributeGen ();
-  public com.sun.tools.corba.ee.idl.ConstGen createConstGen ();
-  public com.sun.tools.corba.ee.idl.EnumGen createEnumGen ();
-  public com.sun.tools.corba.ee.idl.ExceptionGen createExceptionGen ();
-  public com.sun.tools.corba.ee.idl.ForwardGen createForwardGen ();
-  public com.sun.tools.corba.ee.idl.ForwardValueGen createForwardValueGen ();
-  public com.sun.tools.corba.ee.idl.IncludeGen createIncludeGen ();
-  public com.sun.tools.corba.ee.idl.InterfaceGen createInterfaceGen ();
-  public com.sun.tools.corba.ee.idl.ValueGen createValueGen ();
-  public com.sun.tools.corba.ee.idl.ValueBoxGen createValueBoxGen ();
-  public com.sun.tools.corba.ee.idl.MethodGen createMethodGen ();
-  public com.sun.tools.corba.ee.idl.ModuleGen createModuleGen ();
-  public com.sun.tools.corba.ee.idl.NativeGen createNativeGen ();
-  public com.sun.tools.corba.ee.idl.ParameterGen createParameterGen ();
-  public com.sun.tools.corba.ee.idl.PragmaGen createPragmaGen ();
-  public com.sun.tools.corba.ee.idl.PrimitiveGen createPrimitiveGen ();
-  public com.sun.tools.corba.ee.idl.SequenceGen createSequenceGen ();
-  public com.sun.tools.corba.ee.idl.StringGen createStringGen ();
-  public com.sun.tools.corba.ee.idl.StructGen createStructGen ();
-  public com.sun.tools.corba.ee.idl.TypedefGen createTypedefGen ();
-  public com.sun.tools.corba.ee.idl.UnionGen createUnionGen ();
+public interface GenFactory {
+    public AttributeGen createAttributeGen();
+
+    public com.sun.tools.corba.ee.idl.ConstGen createConstGen();
+
+    public com.sun.tools.corba.ee.idl.EnumGen createEnumGen();
+
+    public com.sun.tools.corba.ee.idl.ExceptionGen createExceptionGen();
+
+    public com.sun.tools.corba.ee.idl.ForwardGen createForwardGen();
+
+    public com.sun.tools.corba.ee.idl.ForwardValueGen createForwardValueGen();
+
+    public com.sun.tools.corba.ee.idl.IncludeGen createIncludeGen();
+
+    public com.sun.tools.corba.ee.idl.InterfaceGen createInterfaceGen();
+
+    public com.sun.tools.corba.ee.idl.ValueGen createValueGen();
+
+    public com.sun.tools.corba.ee.idl.ValueBoxGen createValueBoxGen();
+
+    public com.sun.tools.corba.ee.idl.MethodGen createMethodGen();
+
+    public com.sun.tools.corba.ee.idl.ModuleGen createModuleGen();
+
+    public com.sun.tools.corba.ee.idl.NativeGen createNativeGen();
+
+    public com.sun.tools.corba.ee.idl.ParameterGen createParameterGen();
+
+    public com.sun.tools.corba.ee.idl.PragmaGen createPragmaGen();
+
+    public com.sun.tools.corba.ee.idl.PrimitiveGen createPrimitiveGen();
+
+    public com.sun.tools.corba.ee.idl.SequenceGen createSequenceGen();
+
+    public com.sun.tools.corba.ee.idl.StringGen createStringGen();
+
+    public com.sun.tools.corba.ee.idl.StructGen createStructGen();
+
+    public com.sun.tools.corba.ee.idl.TypedefGen createTypedefGen();
+
+    public com.sun.tools.corba.ee.idl.UnionGen createUnionGen();
 } // interface GenFactory

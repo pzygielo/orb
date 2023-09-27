@@ -17,14 +17,14 @@
  * Classpath-exception-2.0
  */
 
-package com.sun.corba.ee.spi.transport ;
-
+package com.sun.corba.ee.spi.transport;
 
 import com.sun.corba.ee.spi.ior.IOR;
+
 import java.util.Iterator;
 
 public abstract interface ContactInfoListIterator
-    extends Iterator<ContactInfo> {
+        extends Iterator<ContactInfo> {
 
     public void reportAddrDispositionRetry(ContactInfo contactInfo,
                                            short disposition);

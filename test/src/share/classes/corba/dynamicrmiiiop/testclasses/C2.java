@@ -17,11 +17,10 @@
  * Classpath-exception-2.0
  */
 
-package corba.dynamicrmiiiop.testclasses ;
+package corba.dynamicrmiiiop.testclasses;
 
-import java.util.HashMap ;
+import java.util.HashMap;
 
-public class C2 extends HashMap implements B
-{
+public class C2 extends HashMap implements B {
 }
 

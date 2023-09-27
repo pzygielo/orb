@@ -27,20 +27,20 @@ public class RemoteObjectServer extends PortableRemoteObject implements RemoteOb
 
     int value;
 
-    public RemoteObjectServer (int value) throws java.rmi.RemoteException {
+    public RemoteObjectServer(int value) throws java.rmi.RemoteException {
         this.value = value;
     }
 
-    public boolean isValue () throws java.rmi.RemoteException {
+    public boolean isValue() throws java.rmi.RemoteException {
         return false;
     }
 
-    public int getValue () throws java.rmi.RemoteException {
+    public int getValue() throws java.rmi.RemoteException {
         return value;
     }
 
     public String getCodeBase() throws java.rmi.RemoteException {
-        return RMIClassLoader.getClassAnnotation(getClass());  
+        return RMIClassLoader.getClassAnnotation(getClass());
     }
 }
 

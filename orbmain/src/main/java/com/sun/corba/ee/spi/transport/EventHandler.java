@@ -19,19 +19,19 @@
 
 package com.sun.corba.ee.spi.transport;
 
+import com.sun.corba.ee.spi.threadpool.Work;
+
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 
-import com.sun.corba.ee.spi.threadpool.Work;
-
 /**
  * @author Harold Carr
- *
+ * <p>
  * This should only be registered with ONE selector.
  */
-public interface EventHandler 
-{
+public interface EventHandler {
     public void setUseSelectThreadToWait(boolean x);
+
     public boolean shouldUseSelectThreadToWait();
 
     public SelectableChannel getChannel();
@@ -39,6 +39,7 @@ public interface EventHandler
     public int getInterestOps();
 
     public void setSelectionKey(SelectionKey selectionKey);
+
     public SelectionKey getSelectionKey();
 
     public void handleEvent();
@@ -47,13 +48,16 @@ public interface EventHandler
     // allow discrimination between different ops and how threading
     // is handled.
     public void setUseWorkerThreadForEvent(boolean x);
+
     public boolean shouldUseWorkerThreadForEvent();
 
     public void setWork(Work work);
+
     public Work getWork();
 
     // REVISIT: need base class with two derived.
     public Acceptor getAcceptor();
+
     public Connection getConnection();
 
 }

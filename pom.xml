@@ -20,13 +20,14 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.eclipse.ee4j</groupId>
         <artifactId>project</artifactId>
         <version>1.0.8</version>
-        <relativePath/>  
+        <relativePath/>
     </parent>
 
     <groupId>org.glassfish.corba</groupId>
@@ -53,11 +54,11 @@
 
     <mailingLists>
         <mailingList>
-          <name>ORB mailing list</name>
-          <post>orb-dev@eclipse.org</post>
-          <subscribe>https://dev.eclipse.org/mailman/listinfo/orb-dev</subscribe>
-          <unsubscribe>https://dev.eclipse.org/mailman/listinfo/orb-dev</unsubscribe>
-          <archive>https://dev.eclipse.org/mhonarc/lists/orb-dev</archive>
+            <name>ORB mailing list</name>
+            <post>orb-dev@eclipse.org</post>
+            <subscribe>https://dev.eclipse.org/mailman/listinfo/orb-dev</subscribe>
+            <unsubscribe>https://dev.eclipse.org/mailman/listinfo/orb-dev</unsubscribe>
+            <archive>https://dev.eclipse.org/mhonarc/lists/orb-dev</archive>
         </mailingList>
     </mailingLists>
 
@@ -139,19 +140,19 @@
                 <version>2.9.0</version>
             </dependency>
             <dependency>
-              <groupId>org.glassfish.pfl</groupId>
-              <artifactId>pfl-basic</artifactId>
-              <version>${pfl-version}</version>
+                <groupId>org.glassfish.pfl</groupId>
+                <artifactId>pfl-basic</artifactId>
+                <version>${pfl-version}</version>
             </dependency>
             <dependency>
-              <groupId>org.glassfish.pfl</groupId>
-              <artifactId>pfl-dynamic</artifactId>
-              <version>${pfl-version}</version>
+                <groupId>org.glassfish.pfl</groupId>
+                <artifactId>pfl-dynamic</artifactId>
+                <version>${pfl-version}</version>
             </dependency>
             <dependency>
-              <groupId>org.glassfish.pfl</groupId>
-              <artifactId>pfl-tf</artifactId>
-              <version>${pfl-version}</version>
+                <groupId>org.glassfish.pfl</groupId>
+                <artifactId>pfl-tf</artifactId>
+                <version>${pfl-version}</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.pfl</groupId>
@@ -336,7 +337,7 @@
                     <version>2.9</version>
                 </plugin>
                 <plugin>
-                    <groupId>org.apache.maven.plugins</groupId> 
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
                     <version>3.0.0-M2</version>
                 </plugin>
@@ -345,40 +346,40 @@
                     <artifactId>maven-gpg-plugin</artifactId>
                     <version>1.6</version>
                 </plugin>
-                <plugin> 
-                     <groupId>org.apache.maven.plugins</groupId>
-                     <artifactId>maven-source-plugin</artifactId>
-                     <version>3.0.1</version>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.0.1</version>
                 </plugin>
                 <plugin>
-                     <groupId>org.apache.maven.plugins</groupId>
-                     <artifactId>maven-javadoc-plugin</artifactId>
-                     <version>3.0.1</version>
-                </plugin>  
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.0.1</version>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.10.1</version>
                 </plugin>
                 <plugin>
-                  <groupId>org.jacoco</groupId>
-                  <artifactId>jacoco-maven-plugin</artifactId>
-                  <version>0.8.5</version>
-                  <executions>
-                    <execution>
-                      <id>coverage-initialize</id>
-                      <goals>
-                        <goal>prepare-agent</goal>
-                      </goals>
-                    </execution>
-                    <execution>
-                      <id>coverage-report</id>
-                      <phase>post-integration-test</phase>
-                      <goals>
-                        <goal>report</goal>
-                      </goals>
-                    </execution>
-                  </executions>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.8.5</version>
+                    <executions>
+                        <execution>
+                            <id>coverage-initialize</id>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>coverage-report</id>
+                            <phase>post-integration-test</phase>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.glassfish.copyright</groupId>
@@ -398,27 +399,27 @@
     </build>
 
     <reporting>
-      <plugins>
-<!--
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>findbugs-maven-plugin</artifactId>
-          <version>3.0.1</version>
-          <configuration>
-               <findbugsXmlOutput>true</findbugsXmlOutput>
-               <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
-               <xmlOutput>true</xmlOutput>
-          </configuration>
-        </plugin>
--->
-<!--
-        <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>cobertura-maven-plugin</artifactId>
-            <version>2.5.1</version>
-        </plugin>
--->
-      </plugins>
+        <plugins>
+            <!--
+                    <plugin>
+                      <groupId>org.codehaus.mojo</groupId>
+                      <artifactId>findbugs-maven-plugin</artifactId>
+                      <version>3.0.1</version>
+                      <configuration>
+                           <findbugsXmlOutput>true</findbugsXmlOutput>
+                           <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
+                           <xmlOutput>true</xmlOutput>
+                      </configuration>
+                    </plugin>
+            -->
+            <!--
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>cobertura-maven-plugin</artifactId>
+                        <version>2.5.1</version>
+                    </plugin>
+            -->
+        </plugins>
     </reporting>
 
     <profiles>
@@ -433,7 +434,7 @@
                 <additionalparam>-Xdoclint:none</additionalparam>
             </properties>
         </profile>
-        
+
         <profile>
             <!-- include required legal artifacts in module jars -->
             <id>install-legal-files</id>
@@ -449,37 +450,38 @@
                         <artifactId>copy-rename-maven-plugin</artifactId>
                         <version>1.0.1</version>
                         <executions>
-                          <execution>
-                            <id>copy-legal-files</id>
-                            <phase>generate-resources</phase>
-                            <goals>
-                              <goal>copy</goal>
-                            </goals>
-                            <configuration>
-                                <fileSets>
-                                    <fileSet>
-                                        <sourceFile>${project.basedir}/../LICENSE.md</sourceFile>
-                                        <destinationFile>${project.build.outputDirectory}/META-INF/LICENSE</destinationFile>
-                                    </fileSet>
-                                    <fileSet>
-                                        <sourceFile>${project.basedir}/../NOTICE.md</sourceFile>
-                                        <destinationFile>${project.build.outputDirectory}/META-INF/NOTICE</destinationFile>
-                                    </fileSet>
-                                </fileSets>
-                            </configuration>
-                          </execution>
+                            <execution>
+                                <id>copy-legal-files</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>copy</goal>
+                                </goals>
+                                <configuration>
+                                    <fileSets>
+                                        <fileSet>
+                                            <sourceFile>${project.basedir}/../LICENSE.md</sourceFile>
+                                            <destinationFile>${project.build.outputDirectory}/META-INF/LICENSE</destinationFile>
+                                        </fileSet>
+                                        <fileSet>
+                                            <sourceFile>${project.basedir}/../NOTICE.md</sourceFile>
+                                            <destinationFile>${project.build.outputDirectory}/META-INF/NOTICE</destinationFile>
+                                        </fileSet>
+                                    </fileSets>
+                                </configuration>
+                            </execution>
                         </executions>
-                      </plugin>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
         <profile>
-          <id>compiler-release-with-jdk9plus</id>
+            <id>compiler-release-with-jdk9plus</id>
             <activation>
-              <jdk>[9,)</jdk>
+                <jdk>[9,)</jdk>
             </activation>
             <properties>
-              <maven.compiler.release>${jdkVersion}</maven.compiler.release>
+                <maven.compiler.release>${jdkVersion}</maven.compiler.release>
             </properties>
-        </profile>    </profiles>
+        </profile>
+    </profiles>
 </project>

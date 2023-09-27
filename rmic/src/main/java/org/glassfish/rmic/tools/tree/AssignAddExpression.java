@@ -19,8 +19,8 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
+import org.glassfish.rmic.tools.java.*;
 
 /**
  * WARNING: The contents of this source file are not part of any
@@ -35,7 +35,6 @@ class AssignAddExpression extends AssignOpExpression {
     public AssignAddExpression(long where, Expression left, Expression right) {
         super(ASGADD, where, left, right);
     }
-
 
     /**
      * The cost of inlining this statement
@@ -52,9 +51,9 @@ class AssignAddExpression extends AssignOpExpression {
             // Create code for     String += <value>
             try {
                 // Create new string buffer.
-                Type argTypes[] = {Type.tString};
+                Type argTypes[] = { Type.tString };
                 ClassDeclaration c =
-                    env.getClassDeclaration(idJavaLangStringBuffer);
+                        env.getClassDeclaration(idJavaLangStringBuffer);
 
                 if (updater == null) {
 
@@ -75,14 +74,14 @@ class AssignAddExpression extends AssignOpExpression {
                     // call .<init>(String)
                     ClassDefinition sourceClass = ctx.field.getClassDefinition();
                     MemberDefinition f = c.getClassDefinition(env)
-                        .matchMethod(env, sourceClass,
-                                     idInit, argTypes);
+                            .matchMethod(env, sourceClass,
+                                         idInit, argTypes);
                     asm.add(where, opc_invokespecial, f);
                     // stack: ...[<getter args>]<initialized buffer>
                     // .append(value).toString()
                     right.codeAppend(env, ctx, asm, c, false);
                     f = c.getClassDefinition(env)
-                        .matchMethod(env, sourceClass, idToString);
+                            .matchMethod(env, sourceClass, idToString);
                     asm.add(where, opc_invokevirtual, f);
                     // stack: ...[<getter args>]<string>
                     // dup the string past the <getter args>, if necessary.
@@ -110,14 +109,14 @@ class AssignAddExpression extends AssignOpExpression {
                     // call .<init>(String)
                     ClassDefinition sourceClass = ctx.field.getClassDefinition();
                     MemberDefinition f = c.getClassDefinition(env)
-                        .matchMethod(env, sourceClass,
-                                     idInit, argTypes);
+                            .matchMethod(env, sourceClass,
+                                         idInit, argTypes);
                     asm.add(where, opc_invokespecial, f);
                     // stack: ...[<getter args>]<initialized buffer>
                     // .append(value).toString()
                     right.codeAppend(env, ctx, asm, c, false);
                     f = c.getClassDefinition(env)
-                        .matchMethod(env, sourceClass, idToString);
+                            .matchMethod(env, sourceClass, idToString);
                     asm.add(where, opc_invokevirtual, f);
                     // stack: .. [<getter args>]<string>
                     updater.finishUpdate(env, ctx, asm, valNeeded);

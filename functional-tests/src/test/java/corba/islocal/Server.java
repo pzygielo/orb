@@ -38,23 +38,22 @@ import corba.hcks.U;
 import com.sun.corba.ee.spi.transport.TransportManager;
 import com.sun.corba.ee.spi.orb.ORB;
 
-public class Server 
-{
+public class Server {
     public static final String baseMsg = Server.class.getName();
     public static final String main = baseMsg + ".main";
-    public static final String thisPackage = 
-        Server.class.getPackage().getName();
+    public static final String thisPackage =
+            Server.class.getPackage().getName();
 
-    public static final String rmiiIServantPOA_Tie = 
-        thisPackage + "._rmiiIServantPOA_Tie";
+    public static final String rmiiIServantPOA_Tie =
+            thisPackage + "._rmiiIServantPOA_Tie";
 
-    public static final String idlIConnect  = "idlIConnect";
-    public static final String idlIPOA      = "idlIPOA";
+    public static final String idlIConnect = "idlIConnect";
+    public static final String idlIPOA = "idlIPOA";
     public static final String rmiiIConnect = "rmiiIConnect";
     public static final String rmiiIConnectDifferentLoader =
-        "rmiiIConnectDifferentLoader";
-    public static final String rmiiIPOA     = "rmiiIPOA";
-    public static final String SLPOA        = "SLPOA";
+            "rmiiIConnectDifferentLoader";
+    public static final String rmiiIPOA = "rmiiIPOA";
+    public static final String SLPOA = "SLPOA";
 
     public static ORB orb;
     public static InitialContext initialContext;
@@ -64,12 +63,11 @@ public class Server
 
     public static CustomClassLoader loader;
 
-    public static void main(String[] av)
-    {
+    public static void main(String[] av) {
         try {
             U.sop(main + " starting");
 
-            if (! ColocatedClientServer.isColocated) {
+            if (!ColocatedClientServer.isColocated) {
                 U.sop(main + " : creating ORB.");
                 orb = (ORB) ORB.init(av, null);
                 U.sop(main + " : creating InitialContext.");
@@ -80,8 +78,8 @@ public class Server
             rootPOA.the_POAManager().activate();
 
             Policy[] policies = U.createUseServantManagerPolicies(
-                rootPOA,
-                ServantRetentionPolicyValue.NON_RETAIN);
+                    rootPOA,
+                    ServantRetentionPolicyValue.NON_RETAIN);
             slPOA = U.createPOAWithServantManager(rootPOA, SLPOA, policies,
                                                   new MyServantLocator(orb));
 
@@ -89,7 +87,7 @@ public class Server
             // IDL references.
             //
 
-            U.createWithConnectAndBind(idlIConnect, 
+            U.createWithConnectAndBind(idlIConnect,
                                        new idlIServantConnect(), orb);
             U.createWithServantAndBind(idlIPOA,
                                        new idlIServantPOA(), rootPOA, orb);
@@ -102,17 +100,17 @@ public class Server
             ClassLoader classLoader;
 
             System.out.println("getSystemClassLoader: "
-                               + ClassLoader.getSystemClassLoader());
+                                       + ClassLoader.getSystemClassLoader());
 
             // Create one in standard class loader.
 
             rmiiIServantConnectInstance = new rmiiIServantConnect();
-            classLoader = 
-                rmiiIServantConnectInstance.getClass().getClassLoader();
+            classLoader =
+                    rmiiIServantConnectInstance.getClass().getClassLoader();
             System.out.println("rmiiIServantConnectInstance: " +
-                               rmiiIServantConnectInstance);
+                                       rmiiIServantConnectInstance);
             System.out.println("rmiiIServantConnectInstance classLoader: " +
-                               classLoader);
+                                       classLoader);
             initialContext.rebind(rmiiIConnect, rmiiIServantConnectInstance);
 
             // Create one is a different class loader.
@@ -135,7 +133,7 @@ public class Server
             synchronized (ColocatedClientServer.signal) {
                 ColocatedClientServer.signal.notifyAll();
             }
-            
+
             orb.run();
 
         } catch (Exception e) {
@@ -146,18 +144,16 @@ public class Server
         System.exit(Controller.SUCCESS);
     }
 
-    public static String filter(String a, String msg)
-    {
+    public static String filter(String a, String msg) {
         return a + " (echo from " + msg + ")";
     }
 
-    public static void  checkThread(String msg)
-    {
+    public static void checkThread(String msg) {
         if (ColocatedClientServer.isColocated) {
             if (Client.clientThread == Thread.currentThread()) {
-                U.sop("NOTE: " 
-                      + msg
-                      + ": colocated call correctly running in server on client thread");
+                U.sop("NOTE: "
+                              + msg
+                              + ": colocated call correctly running in server on client thread");
             } else {
                 Client.errors++;
                 U.sop("!!! " + msg + ": incorrect thread !!!");

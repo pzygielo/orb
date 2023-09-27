@@ -32,7 +32,8 @@ import java.util.Vector;
  * <p>
  * The static forAbstract(...) method must be used to obtain an instance, and will
  * return null if the ClassDefinition is non-conforming.
- * @author      Bryan Atsatt
+ *
+ * @author Bryan Atsatt
  */
 public class AbstractType extends RemoteType {
 
@@ -42,15 +43,14 @@ public class AbstractType extends RemoteType {
 
     /**
      * Create an AbstractType for the given class.
-     *
+     * <p>
      * If the class is not a properly formed or if some other error occurs, the
      * return value will be null, and errors will have been reported to the
      * supplied BatchEnvironment.
      */
     public static AbstractType forAbstract(ClassDefinition classDef,
                                            ContextStack stack,
-                                           boolean quiet)
-    {
+                                           boolean quiet) {
         boolean doPop = false;
         AbstractType result = null;
 
@@ -59,13 +59,15 @@ public class AbstractType extends RemoteType {
             // Do we already have it?
 
             org.glassfish.rmic.tools.java.Type theType = classDef.getType();
-            Type existing = getType(theType,stack);
+            Type existing = getType(theType, stack);
 
             if (existing != null) {
 
-                if (!(existing instanceof AbstractType)) return null; // False hit.
+                if (!(existing instanceof AbstractType)) {
+                    return null; // False hit.
+                }
 
-                                // Yep, so return it...
+                // Yep, so return it...
 
                 return (AbstractType) existing;
 
@@ -73,25 +75,27 @@ public class AbstractType extends RemoteType {
 
             // Could this be an abstract?
 
-            if (couldBeAbstract(stack,classDef,quiet)) {
+            if (couldBeAbstract(stack, classDef, quiet)) {
 
                 // Yes, so try it...
 
                 AbstractType it = new AbstractType(stack, classDef);
-                putType(theType,it,stack);
+                putType(theType, it, stack);
                 stack.push(it);
                 doPop = true;
 
-                if (it.initialize(quiet,stack)) {
+                if (it.initialize(quiet, stack)) {
                     stack.pop(true);
                     result = it;
                 } else {
-                    removeType(theType,stack);
+                    removeType(theType, stack);
                     stack.pop(false);
                 }
             }
         } catch (CompilerError e) {
-            if (doPop) stack.pop(false);
+            if (doPop) {
+                stack.pop(false);
+            }
         }
 
         return result;
@@ -100,7 +104,7 @@ public class AbstractType extends RemoteType {
     /**
      * Return a string describing this type.
      */
-    public String getTypeDescription () {
+    public String getTypeDescription() {
         return "Abstract interface";
     }
 
@@ -113,13 +117,12 @@ public class AbstractType extends RemoteType {
      * object is not yet completely initialized.
      */
     private AbstractType(ContextStack stack, ClassDefinition classDef) {
-        super(stack,classDef,TYPE_ABSTRACT | TM_INTERFACE | TM_COMPOUND);
+        super(stack, classDef, TYPE_ABSTRACT | TM_INTERFACE | TM_COMPOUND);
     }
 
     //_____________________________________________________________________
     // Internal Interfaces
     //_____________________________________________________________________
-
 
     private static boolean couldBeAbstract(ContextStack stack, ClassDefinition classDef,
                                            boolean quiet) {
@@ -132,24 +135,24 @@ public class AbstractType extends RemoteType {
             BatchEnvironment env = stack.getEnv();
 
             try {
-                result = ! env.defRemote.implementedBy(env, classDef.getClassDeclaration());
-                if (!result) failedConstraint(15,quiet,stack,classDef.getName());
+                result = !env.defRemote.implementedBy(env, classDef.getClassDeclaration());
+                if (!result) {
+                    failedConstraint(15, quiet, stack, classDef.getName());
+                }
             } catch (ClassNotFound e) {
-                classNotFound(stack,e);
+                classNotFound(stack, e);
             }
         } else {
-            failedConstraint(14,quiet,stack,classDef.getName());
+            failedConstraint(14, quiet, stack, classDef.getName());
         }
-
 
         return result;
     }
 
-
     /**
      * Initialize this instance.
      */
-    private boolean initialize (boolean quiet,ContextStack stack) {
+    private boolean initialize(boolean quiet, ContextStack stack) {
 
         boolean result = false;
         ClassDefinition self = getClassDefinition();
@@ -160,7 +163,7 @@ public class AbstractType extends RemoteType {
 
             Vector directMethods = new Vector();
 
-            if (addAllMethods(self,directMethods,true,quiet,stack) != null) {
+            if (addAllMethods(self, directMethods, true, quiet, stack) != null) {
 
                 // Do we have any methods?
 
@@ -168,11 +171,11 @@ public class AbstractType extends RemoteType {
 
                 if (directMethods.size() > 0) {
 
-                                // Yes. Walk 'em, ensuring each is a valid remote method...
+                    // Yes. Walk 'em, ensuring each is a valid remote method...
 
                     for (int i = 0; i < directMethods.size(); i++) {
 
-                        if (! isConformingRemoteMethod((Method) directMethods.elementAt(i),true)) {
+                        if (!isConformingRemoteMethod((Method) directMethods.elementAt(i), true)) {
                             validMethods = false;
                         }
                     }
@@ -182,11 +185,11 @@ public class AbstractType extends RemoteType {
 
                     // We're ok, so pass 'em up...
 
-                    result = initialize(null,directMethods,null,stack,quiet);
+                    result = initialize(null, directMethods, null, stack, quiet);
                 }
             }
         } catch (ClassNotFound e) {
-            classNotFound(stack,e);
+            classNotFound(stack, e);
         }
 
         return result;

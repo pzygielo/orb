@@ -21,31 +21,32 @@ package corba.codebase;
 
 import test.Test;
 import corba.framework.*;
+
 import java.util.*;
 import java.io.*;
+
 import com.sun.corba.ee.spi.orb.ORB;
 
-public class CodeBaseTest extends CORBATest
-{
+public class CodeBaseTest extends CORBATest {
     public static final String VALUE_DIR = "values";
     public static final String STUBTIE_DIR = "stubtie";
-    public static final String[] VALUES 
-        = new String[] { "TestValue.java" };
+    public static final String[] VALUES
+            = new String[] { "TestValue.java" };
 
-        protected void doTest() throws Throwable {
-        
+    protected void doTest() throws Throwable {
+
         if (test.Test.useJavaSerialization()) {
             return;
         }
 
         // Generate stubs and ties in the STUBTIE_DIR off of
         // the main output directory.
-        String stubTieDir = (new File(Options.getOutputDirectory() 
-                                      + STUBTIE_DIR
-                                      + File.separator)).getAbsolutePath();
-        String valueDir = (new File(Options.getOutputDirectory() 
-                                    + VALUE_DIR
-                                    + File.separator)).getAbsolutePath();
+        String stubTieDir = (new File(Options.getOutputDirectory()
+                                              + STUBTIE_DIR
+                                              + File.separator)).getAbsolutePath();
+        String valueDir = (new File(Options.getOutputDirectory()
+                                            + VALUE_DIR
+                                            + File.separator)).getAbsolutePath();
 
         String oldOutputDir = Options.getOutputDirectory();
 
@@ -64,12 +65,12 @@ public class CodeBaseTest extends CORBATest
         Options.setOutputDirectory(oldOutputDir);
 
         String oldClasspath = Options.getClasspath();
-        String cpWithAllClasses = 
-            stubTieDir
-            + File.pathSeparator
-            + valueDir
-            + File.pathSeparator
-            + Options.getClasspath();
+        String cpWithAllClasses =
+                stubTieDir
+                        + File.pathSeparator
+                        + valueDir
+                        + File.pathSeparator
+                        + Options.getClasspath();
 
         Controller orbd = createORBD();
         orbd.start();
@@ -88,12 +89,12 @@ public class CodeBaseTest extends CORBATest
         Properties clientProps = Options.getClientProperties();
 
         String baseURL = "http://localhost:"
-            + webServerPort
-            + "/";
+                + webServerPort
+                + "/";
 
-        String fullCodeBase 
-            = baseURL + STUBTIE_DIR + "/ "
-            + baseURL + VALUE_DIR + "/";
+        String fullCodeBase
+                = baseURL + STUBTIE_DIR + "/ "
+                + baseURL + VALUE_DIR + "/";
 
         // First test code downloading where the client downloads the
         // stub and value classes
@@ -121,8 +122,7 @@ public class CodeBaseTest extends CORBATest
 
     void testDownloading(String fullClasspath,
                          String shortClasspath,
-                         boolean serverDownloading) throws Exception
-    {
+                         boolean serverDownloading) throws Exception {
         Controller server, client;
 
         Properties clientProps = Options.getClientProperties();
@@ -140,20 +140,20 @@ public class CodeBaseTest extends CORBATest
             Options.setClasspath(fullClasspath);
         }
 
-
-        Test.dprint("Testing code downloading by the " 
-                    + (serverDownloading ? "server" : "client"));
+        Test.dprint("Testing code downloading by the "
+                            + (serverDownloading ? "server" : "client"));
 
         server.start();
-        client.start( );
+        client.start();
 
         // Note that the test framework will handle reporting if the overall
         // test failed since it will check the exit codes of the client and
         // server controllers during cleanup
-        if (client.waitFor(120000) == Controller.SUCCESS)
+        if (client.waitFor(120000) == Controller.SUCCESS) {
             Test.dprint("PASSED");
-        else
+        } else {
             Test.dprint("FAILED");
+        }
 
         client.stop();
         server.stop();
@@ -161,28 +161,28 @@ public class CodeBaseTest extends CORBATest
 
     public Controller createWebServer(String webRootDirectory,
                                       int webServerPort)
-        throws Exception
-    {
+            throws Exception {
         Test.dprint("Creating WebServer object...");
 
         Controller executionStrategy;
-        if (debugProcessNames.contains("WebServer"))
+        if (debugProcessNames.contains("WebServer")) {
             executionStrategy = new DebugExec();
-        else
+        } else {
             executionStrategy = new ExternalExec();
+        }
 
-        Properties props = Options.getServerProperties() ;
-        int emmaPort = EmmaControl.setCoverageProperties( props ) ;
+        Properties props = Options.getServerProperties();
+        int emmaPort = EmmaControl.setCoverageProperties(props);
 
-        String args[] = new String[] { 
-                             "-port",
-                             "" + webServerPort,
-                             "-docroot",
-                             webRootDirectory
-                             };
+        String args[] = new String[] {
+                "-port",
+                "" + webServerPort,
+                "-docroot",
+                webRootDirectory
+        };
 
         FileOutputDecorator exec =
-            new FileOutputDecorator(executionStrategy);
+                new FileOutputDecorator(executionStrategy);
 
         Hashtable extra = new Hashtable(1);
 
@@ -197,7 +197,7 @@ public class CodeBaseTest extends CORBATest
                         Options.getReportDirectory() + "webserver.out.txt",
                         Options.getReportDirectory() + "webserver.err.txt",
                         extra,
-                        emmaPort ) ;
+                        emmaPort);
 
         controllers.add(exec);
 

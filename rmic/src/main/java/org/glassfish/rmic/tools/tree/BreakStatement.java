@@ -19,9 +19,10 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
-import org.glassfish.rmic.tools.asm.Label;
+import org.glassfish.rmic.tools.java.Environment;
+import org.glassfish.rmic.tools.java.Identifier;
+
 import java.io.PrintStream;
 import java.util.Hashtable;
 
@@ -48,7 +49,7 @@ class BreakStatement extends Statement {
     Vset check(Environment env, Context ctx, Vset vset, Hashtable<Object, Object> exp) {
         reach(env, vset);
         checkLabel(env, ctx);
-        CheckContext destctx = (CheckContext)new CheckContext(ctx, this).getBreakContext(lbl);
+        CheckContext destctx = (CheckContext) new CheckContext(ctx, this).getBreakContext(lbl);
         if (destctx != null) {
             if (destctx.frameNumber != ctx.frameNumber) {
                 env.error(where, "branch.to.uplevel", lbl);
@@ -80,7 +81,7 @@ class BreakStatement extends Statement {
      */
     public void code(Environment env, Context ctx, Assembler asm) {
         CodeContext newctx = new CodeContext(ctx, this);
-        CodeContext destctx = (CodeContext)newctx.getBreakContext(lbl);
+        CodeContext destctx = (CodeContext) newctx.getBreakContext(lbl);
         codeFinally(env, ctx, asm, destctx, null);
         asm.add(where, opc_goto, destctx.breakLabel);
         asm.add(newctx.breakLabel);

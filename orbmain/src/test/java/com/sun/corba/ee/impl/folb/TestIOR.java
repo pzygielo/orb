@@ -27,11 +27,7 @@ import com.sun.corba.ee.spi.ior.iiop.IIOPProfileTemplate;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA_2_3.portable.OutputStream;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.meterware.simplestub.Stub.createStrictStub;
 
@@ -75,8 +71,9 @@ abstract class TestIOR implements IOR {
 
     static TestIIOPProfileTemplate createIIOPProfileTemplateWithTaggedComponents(int id, org.omg.IOP.TaggedComponent... components) {
         TestIIOPProfileTemplate template = createStrictStub(TestIIOPProfileTemplate.class);
-        for (org.omg.IOP.TaggedComponent component : components)
+        for (org.omg.IOP.TaggedComponent component : components) {
             template.addTaggedComponent(id, component);
+        }
         return template;
     }
 
@@ -84,7 +81,7 @@ abstract class TestIOR implements IOR {
         private Map<Integer, List<TaggedComponent>> taggedComponents = new HashMap<Integer, List<TaggedComponent>>();
 
         public void addTaggedComponent(int id, org.omg.IOP.TaggedComponent component) {
-            getTaggedComponentList(id).add(new TestTaggedComponent(id,component));
+            getTaggedComponentList(id).add(new TestTaggedComponent(id, component));
         }
 
         public Iterator<TaggedComponent> iteratorById(int id) {

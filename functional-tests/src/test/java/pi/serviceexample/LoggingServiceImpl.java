@@ -32,16 +32,14 @@ import org.omg.PortableServer.POA;
 import java.util.Properties;
 
 class LoggingServiceImpl
-    extends LoggingServicePOA
-{
+        extends LoggingServicePOA {
     public static ORB orb;
 
     //
     // The IDL operations.
     //
 
-    public void log(String a1)
-    {
+    public void log(String a1) {
         System.out.println(a1);
     }
 
@@ -49,25 +47,24 @@ class LoggingServiceImpl
     // The server.
     //
 
-    public static void main(String[] av)
-    {
+    public static void main(String[] av) {
         try {
             if (orb == null) {
                 orb = ORB.init(av, null);
             }
-            
-            POA rootPOA =  (POA) orb.resolve_initial_references("RootPOA");
+
+            POA rootPOA = (POA) orb.resolve_initial_references("RootPOA");
             rootPOA.the_POAManager().activate();
-            
+
             byte[] objectId =
-                rootPOA.activate_object(new LoggingServiceImpl());
+                    rootPOA.activate_object(new LoggingServiceImpl());
             org.omg.CORBA.Object ref = rootPOA.id_to_reference(objectId);
 
-            NamingContext nameService = 
-                NamingContextHelper.narrow(
-                    orb.resolve_initial_references("NameService"));
+            NamingContext nameService =
+                    NamingContextHelper.narrow(
+                            orb.resolve_initial_references("NameService"));
             NameComponent path[] =
-                { new NameComponent("LoggingService", "") };
+                    { new NameComponent("LoggingService", "") };
             nameService.rebind(path, ref);
 
             // Only relevant for colocated example.

@@ -31,23 +31,21 @@ import corba.framework.CORBATest;
  * @author Harold Carr
  */
 public class FolbTest
-    extends
-        CORBATest
-{
+        extends
+        CORBATest {
     public static final String thisPackage =
-        FolbTest.class.getPackage().getName();
+            FolbTest.class.getPackage().getName();
 
     protected void doTest()
-        throws
-            Throwable
-    {
+            throws
+            Throwable {
         Controller orbd;
         Controller server;
         Controller client;
-        Controller colocated ;
+        Controller colocated;
         ////////////////////////////////////////////////////
 
-        orbd   = createORBD();
+        orbd = createORBD();
         orbd.start();
 
         ////////////////////////////////////////////////////
@@ -74,7 +72,7 @@ public class FolbTest
         ////////////////////////////////////////////////////
 
         colocated = createClient(thisPackage + "." + "ColocatedCS",
-                                            "ColocatedCS");
+                                 "ColocatedCS");
         colocated.start();
         colocated.waitFor();
         colocated.stop();
@@ -109,66 +107,66 @@ public class FolbTest
 
         ////////////////////////////////////////////////////
         /** TODO: Issue # GLASSFISH_CORBA-7. Fix and Uncomment following failing tests.
-         * 
-        server = createServer(thisPackage + "." + "Server",
-                              "ServerForTiming1");
-        server.start();
-        client = createClient(thisPackage + "." + "ClientForTiming_NoFs_NoF_NoC",
-                              "ClientForTiming_NoFs_NoF_NoC");
-        client.start();
-        client.waitFor();
-        client.stop();
-        server.stop();
+         *
+         server = createServer(thisPackage + "." + "Server",
+         "ServerForTiming1");
+         server.start();
+         client = createClient(thisPackage + "." + "ClientForTiming_NoFs_NoF_NoC",
+         "ClientForTiming_NoFs_NoF_NoC");
+         client.start();
+         client.waitFor();
+         client.stop();
+         server.stop();
 
-        //-------------------------
+         //-------------------------
 
-        server = createServer(thisPackage + "." + "Server",
-                              "ServerForTiming2");
-        server.start();
-        client = createClient(thisPackage + "." + "ClientForTiming_Fs_NoF_NoC",
-                              "ClientForTiming_Fs_NoF_NoC");
-        client.start();
-        client.waitFor();
-        client.stop();
-        server.stop();
+         server = createServer(thisPackage + "." + "Server",
+         "ServerForTiming2");
+         server.start();
+         client = createClient(thisPackage + "." + "ClientForTiming_Fs_NoF_NoC",
+         "ClientForTiming_Fs_NoF_NoC");
+         client.start();
+         client.waitFor();
+         client.stop();
+         server.stop();
 
-        //-------------------------
+         //-------------------------
 
-        server = createServer(thisPackage + "." + "Server",
-                              "ServerForTiming3");
-        server.start();
-        client = createClient(thisPackage + "." + "ClientForTiming_Fs_NoF_C",
-                              "ClientForTiming_Fs_NoF_C");
-        client.start();
-        client.waitFor();
-        client.stop();
-        server.stop();
+         server = createServer(thisPackage + "." + "Server",
+         "ServerForTiming3");
+         server.start();
+         client = createClient(thisPackage + "." + "ClientForTiming_Fs_NoF_C",
+         "ClientForTiming_Fs_NoF_C");
+         client.start();
+         client.waitFor();
+         client.stop();
+         server.stop();
 
-        //-------------------------
+         //-------------------------
 
 
-        server = createServer(thisPackage + "." + "Server",
-                              "ServerForTiming4");
-        server.start();
-        client = createClient(thisPackage + "." + "ClientForTiming_Fs_F_NoC",
-                              "ClientForTiming_Fs_F_NoC");
-        client.start();
-        client.waitFor();
-        client.stop();
-        server.stop();
+         server = createServer(thisPackage + "." + "Server",
+         "ServerForTiming4");
+         server.start();
+         client = createClient(thisPackage + "." + "ClientForTiming_Fs_F_NoC",
+         "ClientForTiming_Fs_F_NoC");
+         client.start();
+         client.waitFor();
+         client.stop();
+         server.stop();
 
-        //-------------------------
-        server = createServer(thisPackage + "." + "Server",
-                              "ServerForTiming");
-        server.start();
-        client = createClient(thisPackage + "." + "ClientForTiming_Fs_F_C",
-                              "ClientForTiming_Fs_F_C");
-        client.start();
-        client.waitFor();
-        client.stop();
-        server.stop();
-        *** End Issue # GLASSFISH_CORBA-7.
-        ***/
+         //-------------------------
+         server = createServer(thisPackage + "." + "Server",
+         "ServerForTiming");
+         server.start();
+         client = createClient(thisPackage + "." + "ClientForTiming_Fs_F_C",
+         "ClientForTiming_Fs_F_C");
+         client.start();
+         client.waitFor();
+         client.stop();
+         server.stop();
+         *** End Issue # GLASSFISH_CORBA-7.
+         ***/
         ////////////////////////////////////////////////////
 
         orbd.stop();

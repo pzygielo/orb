@@ -29,8 +29,7 @@ import javax.naming.InitialContext;
 import com.sun.corba.ee.spi.misc.ORBConstants;
 import corba.hcks.U;
 
-public class Client extends Thread
-{
+public class Client extends Thread {
     private final static int NUMBER_OF_CLIENTS = 6;
     private final static boolean dprint = false;
     private final static int stringSize = 131072;
@@ -51,7 +50,7 @@ public class Client extends Thread
     }
 
     private void runTest(Tester tester, int iterations)
-        throws RemoteException {
+            throws RemoteException {
         for (int i = 0; i < iterations; i++) {
             tmpString = tester.passString(reallyReallyBigString);
         }
@@ -65,8 +64,8 @@ public class Client extends Thread
             java.lang.Object tst = rootContext.lookup("Tester");
             U.sop("Narrowing...");
             Tester tester
-                    = (Tester)PortableRemoteObject.narrow(tst,
-                    Tester.class);
+                    = (Tester) PortableRemoteObject.narrow(tst,
+                                                           Tester.class);
             runTest(tester, TEST_SIZE);
         } catch (Throwable t) {
             U.sop("Unexpected throwable...");

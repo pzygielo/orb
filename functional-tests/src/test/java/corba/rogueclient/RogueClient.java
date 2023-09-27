@@ -30,7 +30,6 @@ import com.sun.corba.ee.spi.transport.ContactInfoList;
 import com.sun.corba.ee.impl.misc.ORBUtility;
 import com.sun.corba.ee.impl.protocol.giopmsgheaders.Message;
 
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -40,34 +39,34 @@ import java.rmi.RemoteException;
 import javax.naming.InitialContext;
 import javax.rmi.PortableRemoteObject;
 
-import java.util.concurrent.atomic.AtomicInteger ;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.glassfish.pfl.test.JUnitReportHelper;
 
-public class RogueClient implements Runnable
-{
+public class RogueClient implements Runnable {
     // shared across all instances of RogueClients
     private static final boolean dprint = false;
     private static final boolean itsBigEndian = (ByteOrder.BIG_ENDIAN == ByteOrder.nativeOrder());
     private static final int NUM_ROGUE_CLIENTS = 10;
-    private static final byte HEX_G = (byte)0x47;
-    private static final byte HEX_I = (byte)0x49;
-    private static final byte HEX_O = (byte)0x4f;
-    private static final byte HEX_P = (byte)0x50;
+    private static final byte HEX_G = (byte) 0x47;
+    private static final byte HEX_I = (byte) 0x49;
+    private static final byte HEX_O = (byte) 0x4f;
+    private static final byte HEX_P = (byte) 0x50;
     private static final byte[] BOGUS_BYTES = new byte[] {
-        0x00,0x00,0x00,0x06,0x03,0x00,0x00,0x00,0x00,0x00,
-        0x00,0x02,0x00,0x00,0x00,0x19,-0x51,-0x55,-0x35,0x00,
-        0x00,0x00,0x00,0x02,0x7a,-0x24,0x1d,-0x69,0x00,0x00,
-        0x00,0x08,0x00,0x00,0x00,0x01 };
+            0x00, 0x00, 0x00, 0x06, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x02, 0x00, 0x00, 0x00, 0x19, -0x51, -0x55, -0x35, 0x00,
+            0x00, 0x00, 0x00, 0x02, 0x7a, -0x24, 0x1d, -0x69, 0x00, 0x00,
+            0x00, 0x08, 0x00, 0x00, 0x00, 0x01 };
 
     // unique to each instance of a RogueClient
     private String itsHostname = null;
     private int itsPort = 0;
     private SocketChannel itsSocketChannel = null;
-    private JUnitReportHelper helper = new JUnitReportHelper( RogueClient.class.getName() ) ;
-    private int createConnectionToServerCallCounter = 0 ;
-    private static AtomicInteger numFailures = new AtomicInteger() ;
+    private JUnitReportHelper helper = new JUnitReportHelper(RogueClient.class.getName());
+    private int createConnectionToServerCallCounter = 0;
+    private static AtomicInteger numFailures = new AtomicInteger();
 
-    private static volatile boolean useHelper = true ;
+    private static volatile boolean useHelper = true;
     private int clientNum;
     private static int numClients;
 
@@ -75,29 +74,32 @@ public class RogueClient implements Runnable
         clientNum = numClients++;
     }
 
-    private void start( String name, int ctr ) {
-        if (useHelper)
-            helper.start( name + ctr ) ;
+    private void start(String name, int ctr) {
+        if (useHelper) {
+            helper.start(name + ctr);
+        }
 
         print("RogueClient." + name + "()");
     }
 
-    private void start( String name ) {
-        if (useHelper)
-            helper.start( name ) ;
+    private void start(String name) {
+        if (useHelper) {
+            helper.start(name);
+        }
 
         print("RogueClient." + name + "()");
     }
 
     private void handlePass() {
-        if (useHelper)
-            helper.pass() ;
+        if (useHelper) {
+            helper.pass();
+        }
 
         print("PASS");
     }
 
     private void handleException(Exception ex) throws Exception {
-        numFailures.incrementAndGet() ;
+        numFailures.incrementAndGet();
 
         print("Unexpected exception -> " + ex);
 
@@ -106,9 +108,9 @@ public class RogueClient implements Runnable
             print(aSte.toString());
         }
 
-        helper.fail( ex ) ;
+        helper.fail(ex);
 
-        throw ex ;
+        throw ex;
     }
 
     private void printBuffer(ByteBuffer byteBuffer) {
@@ -121,24 +123,26 @@ public class RogueClient implements Runnable
         try {
 
             for (int i = 0; i < byteBuffer.position(); i += 16) {
-                
+
                 int j = 0;
-                
+
                 // For every 16 bytes, there is one line
                 // of output.  First, the hex output of
                 // the 16 bytes with each byte separated
                 // by a space.
                 while (j < 16 && j + i < byteBuffer.position()) {
                     int k = byteBuffer.get(i + j);
-                    if (k < 0)
+                    if (k < 0) {
                         k = 256 + k;
+                    }
                     String hex = Integer.toHexString(k);
-                    if (hex.length() == 1)
+                    if (hex.length() == 1) {
                         hex = "0" + hex;
+                    }
                     System.out.print(hex + " ");
                     j++;
                 }
-                
+
                 // Add any extra spaces to align the
                 // text column in case we didn't end
                 // at 16
@@ -146,15 +150,16 @@ public class RogueClient implements Runnable
                     System.out.print("   ");
                     j++;
                 }
-                
+
                 // Now output the ASCII equivalents.  Non-ASCII
                 // characters are shown as periods.
                 int x = 0;
                 while (x < 16 && x + i < byteBuffer.position()) {
-                    if (ORBUtility.isPrintable((char)byteBuffer.get(i + x)))
-                        charBuf[x] = (char)byteBuffer.get(i + x);
-                    else
+                    if (ORBUtility.isPrintable((char) byteBuffer.get(i + x))) {
+                        charBuf[x] = (char) byteBuffer.get(i + x);
+                    } else {
                         charBuf[x] = '.';
+                    }
                     x++;
                 }
                 print(new String(charBuf, 0, x));
@@ -165,52 +170,49 @@ public class RogueClient implements Runnable
         print("++++++++++++++++++++++++++++++");
     }
 
-    private void getHostnameAndPort(Tester tester)
-    {
+    private void getHostnameAndPort(Tester tester) {
         // Get the host and port number of server
         print("RogueClient.getHostnameAndPort()");
         ClientDelegate delegate =
-            (ClientDelegate)StubAdapter.getDelegate(tester);
+                (ClientDelegate) StubAdapter.getDelegate(tester);
         ContactInfoList ccil = delegate.getContactInfoList();
         IOR effectiveTargetIOR = ccil.getEffectiveTargetIOR();
         IIOPProfile iiopProfile = effectiveTargetIOR.getProfile();
         IIOPProfileTemplate iiopProfileTemplate =
-            (IIOPProfileTemplate)iiopProfile.getTaggedProfileTemplate() ;
-        IIOPAddress primary = iiopProfileTemplate.getPrimaryAddress() ;
+                (IIOPProfileTemplate) iiopProfile.getTaggedProfileTemplate();
+        IIOPAddress primary = iiopProfileTemplate.getPrimaryAddress();
 
         itsHostname = primary.getHost().toLowerCase();
         itsPort = primary.getPort();
-        
+
         String testerIOR = tester.toString();
         print("\tRemote object, Tester " + testerIOR);
         print("\tCan be found at:");
         print("\tHostname -> " + itsHostname);
         print("\tPort -> " + itsPort);
         print("Successful");
-    } 
+    }
 
     private void createConnectionToServer() throws Exception {
-        start( "createConnectionToServer",
-            createConnectionToServerCallCounter++ ) ;
-        
+        start("createConnectionToServer",
+              createConnectionToServerCallCounter++);
+
         // create SocketChannel to server
         try {
             InetSocketAddress isa = new InetSocketAddress(itsHostname, itsPort);
             itsSocketChannel = ORBUtility.openSocketChannel(isa);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             handleException(ex);
         }
 
-        handlePass() ;
+        handlePass();
     }
 
     private void write_octet(byte[] theBuf, int index, byte theValue) {
         theBuf[index] = theValue;
     }
 
-    private void buildGIOPHeader(byte[] theBuf, int theMessageSize)
-    {
+    private void buildGIOPHeader(byte[] theBuf, int theMessageSize) {
         int index = 0;
 
         // write GIOP string, always written big endian
@@ -241,20 +243,20 @@ public class RogueClient implements Runnable
     private void write_message_size(byte[] theBuf, int index, int theMessageSize) {
         // write message size, bytes 9,10,11,12
         if (itsBigEndian) {
-            write_octet(theBuf, index++, (byte)((theMessageSize >>> 24) & 0xFF));
-            write_octet(theBuf, index++, (byte)((theMessageSize >>> 16) & 0xFF));
-            write_octet(theBuf, index++, (byte)((theMessageSize >>> 8) & 0xFF));
-            write_octet(theBuf, index,   (byte)(theMessageSize & 0xFF));
+            write_octet(theBuf, index++, (byte) ((theMessageSize >>> 24) & 0xFF));
+            write_octet(theBuf, index++, (byte) ((theMessageSize >>> 16) & 0xFF));
+            write_octet(theBuf, index++, (byte) ((theMessageSize >>> 8) & 0xFF));
+            write_octet(theBuf, index, (byte) (theMessageSize & 0xFF));
         } else {
-            write_octet(theBuf, index++, (byte)(theMessageSize & 0xFF));
-            write_octet(theBuf, index++, (byte)((theMessageSize >>> 8) & 0xFF));
-            write_octet(theBuf, index++, (byte)((theMessageSize >>> 16) & 0xFF));
-            write_octet(theBuf, index,   (byte)((theMessageSize >>> 24) & 0xFF));
+            write_octet(theBuf, index++, (byte) (theMessageSize & 0xFF));
+            write_octet(theBuf, index++, (byte) ((theMessageSize >>> 8) & 0xFF));
+            write_octet(theBuf, index++, (byte) ((theMessageSize >>> 16) & 0xFF));
+            write_octet(theBuf, index, (byte) ((theMessageSize >>> 24) & 0xFF));
         }
     }
 
     private void sendData(ByteBuffer byteBuffer, int numBytesToWrite)
-        throws Exception { 
+            throws Exception {
 
         int bytesWrit;
         do {
@@ -273,17 +275,17 @@ public class RogueClient implements Runnable
         // add some bogus junk to a rogue request
         for (int i = 0; i < BOGUS_BYTES.length; i++) {
             write_octet(request,
-                        i+Message.GIOPMessageHeaderLength,
+                        i + Message.GIOPMessageHeaderLength,
                         BOGUS_BYTES[i]);
         }
 
         ByteBuffer byteBuffer = ByteBuffer.wrap(request);
         byteBuffer.position(0);
-        byteBuffer.limit(Message.GIOPMessageHeaderLength+BOGUS_BYTES.length);
+        byteBuffer.limit(Message.GIOPMessageHeaderLength + BOGUS_BYTES.length);
 
         if (dprint) {
             ByteBuffer viewBuffer = byteBuffer.asReadOnlyBuffer();
-            viewBuffer.position(Message.GIOPMessageHeaderLength+BOGUS_BYTES.length);
+            viewBuffer.position(Message.GIOPMessageHeaderLength + BOGUS_BYTES.length);
             printBuffer(viewBuffer);
         }
 
@@ -291,7 +293,7 @@ public class RogueClient implements Runnable
     }
 
     private void runValidHeaderSlowBody() throws Exception {
-        start( "runValidHeaderSlowBody" ) ;
+        start("runValidHeaderSlowBody");
 
         ByteBuffer byteBuffer = createGIOPMessage();
 
@@ -304,7 +306,7 @@ public class RogueClient implements Runnable
 
         try {
             sendData(b, Message.GIOPMessageHeaderLength);
-            
+
             // send message body 1 byte a time with a delay between them
             for (int i = Message.GIOPMessageHeaderLength; i < byteBuffer.limit(); i++) {
                 b = ByteBuffer.allocateDirect(1);
@@ -323,22 +325,22 @@ public class RogueClient implements Runnable
                 itsSocketChannel.close();
             } catch (IOException ioex) {
                 handleException(ioex);
-                throw ioex ;
+                throw ioex;
             }
 
-            handleException( ioe ) ;
+            handleException(ioe);
             createConnectionToServer();
-            throw ioe ;
+            throw ioe;
         } catch (Exception ex) {
             handleException(ex);
-            throw ex ;
+            throw ex;
         }
 
-        handlePass() ;
+        handlePass();
     }
 
     private void runSlowGIOPHeader() throws Exception {
-        start( "runSlowGIOPHeader" ) ;
+        start("runSlowGIOPHeader");
 
         ByteBuffer byteBuffer = createGIOPMessage();
 
@@ -364,22 +366,22 @@ public class RogueClient implements Runnable
                 itsSocketChannel.close();
             } catch (IOException ioex) {
                 handleException(ioex);
-                throw ioex ;
+                throw ioex;
             }
             createConnectionToServer();
         } catch (Exception ex) {
             handleException(ex);
-            throw ex ;
+            throw ex;
         }
 
-        handlePass() ;
+        handlePass();
     }
 
     private void runValidHeaderBogusLength() throws Exception {
-        start( "runValidHeaderBogusLength" ) ;
+        start("runValidHeaderBogusLength");
 
         ByteBuffer byteBuffer = createGIOPMessage();
-        write_message_size(byteBuffer.array(),8,byteBuffer.limit() + 50);
+        write_message_size(byteBuffer.array(), 8, byteBuffer.limit() + 50);
 
         try {
             // send valid header with bogus message length
@@ -389,14 +391,13 @@ public class RogueClient implements Runnable
             handleException(ex);
         }
 
-        handlePass() ;
+        handlePass();
         print("PASSED");
     }
 
-
     private void runSendMessageAndCloseConnection() throws Exception {
-        start( "runSendMessageAndCloseConnection" ) ;
-        
+        start("runSendMessageAndCloseConnection");
+
         ByteBuffer byteBuffer = createGIOPMessage();
         byteBuffer.flip();
         try {
@@ -407,13 +408,13 @@ public class RogueClient implements Runnable
             handleException(ex);
         }
 
-        handlePass() ;
+        handlePass();
 
         createConnectionToServer();
     }
 
     private void runRogueConnectManyTests() throws Exception {
-        helper.start( "runRogueConnectManyTests" ) ;
+        helper.start("runRogueConnectManyTests");
         try {
             String message = "RogueClient.runRogueConnectManyTests()";
             print(message);
@@ -427,17 +428,18 @@ public class RogueClient implements Runnable
             for (Thread thread : rogueClientThreads) {
                 thread.start();
             }
-            
+
             for (Thread thread : rogueClientThreads) {
                 thread.join();
             }
 
             print("PASSED");
         } finally {
-            if (numFailures.get() == 0)
-                helper.pass() ;
-            else
-                helper.fail( "Failed with " + numFailures.get() + " errors" ) ;
+            if (numFailures.get() == 0) {
+                helper.pass();
+            } else {
+                helper.fail("Failed with " + numFailures.get() + " errors");
+            }
         }
     }
 
@@ -446,8 +448,7 @@ public class RogueClient implements Runnable
     }
 
     private void runSaneTest(Tester tester)
-        throws RemoteException
-    {
+            throws RemoteException {
         // call a method on the Tester object
         print("RogueClient.runSaneTest()");
         String desc = tester.getDescription();
@@ -463,9 +464,9 @@ public class RogueClient implements Runnable
             print("Looking up Tester...");
             java.lang.Object tst = rootContext.lookup("Tester");
             print("Narrowing...");
-            Tester tester 
-                = (Tester)PortableRemoteObject.narrow(tst,
-                                                      Tester.class);
+            Tester tester
+                    = (Tester) PortableRemoteObject.narrow(tst,
+                                                           Tester.class);
             getHostnameAndPort(tester);
             createConnectionToServer();
             runSaneTest(tester);
@@ -482,14 +483,14 @@ public class RogueClient implements Runnable
                 sb.append(aSte);
             }
             print("Received an expected org.omg.COMM_FAILURE: " + c.toString()
-                    + " stack trace :\n" + sb.toString());
+                          + " stack trace :\n" + sb.toString());
         } catch (Throwable t) {
             print("Unexpected throwable!!!");
             t.printStackTrace();
-            helper.done() ;
-            System.exit(1) ;
+            helper.done();
+            System.exit(1);
         } finally {
-            helper.done() ;
+            helper.done();
         }
     }
 
@@ -503,20 +504,21 @@ public class RogueClient implements Runnable
             clientThread.start();
             clientThread.join();
 
-            useHelper = false ;
+            useHelper = false;
 
             // run a bunch of RogueClients
             rogueClient.runRogueConnectManyTests();
 
         } catch (Exception ex) {
-            ex.printStackTrace() ;
-        } 
+            ex.printStackTrace();
+        }
 
-        int failures = numFailures.get() ;
-        if (failures == 0) 
+        int failures = numFailures.get();
+        if (failures == 0) {
             System.out.println("Test finished successfully...");
+        }
 
-        System.exit( numFailures.get() ) ;
+        System.exit(numFailures.get());
     }
 }
 

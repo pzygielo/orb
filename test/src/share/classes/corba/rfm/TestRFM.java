@@ -21,12 +21,11 @@ package corba.rfm;
 
 import test.Test;
 import corba.framework.*;
+
 import java.util.*;
 
-public class TestRFM extends CORBATest
-{
-    protected void doTest() throws Throwable
-    {
+public class TestRFM extends CORBATest {
+    protected void doTest() throws Throwable {
         // Controller orbd = createORBD() ;
         // orbd.start() ;
 

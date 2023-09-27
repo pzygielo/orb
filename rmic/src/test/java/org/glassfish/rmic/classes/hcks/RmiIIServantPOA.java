@@ -29,7 +29,7 @@ import org.omg.CORBA.ORB;
 import javax.rmi.PortableRemoteObject;
 import java.rmi.RemoteException;
 
-@SuppressWarnings({"WeakerAccess", "unused"})
+@SuppressWarnings({ "WeakerAccess", "unused" })
 public class RmiIIServantPOA extends PortableRemoteObject implements RmiII {
     public static final String baseMsg = RmiIIServantPOA.class.getName();
 
@@ -45,7 +45,9 @@ public class RmiIIServantPOA extends PortableRemoteObject implements RmiII {
     }
 
     public int sendBytes(byte[] x) {
-        if (x == null) return -1;
+        if (x == null) {
+            return -1;
+        }
         return x.length;
     }
 

@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.Vector;
+
 import org.glassfish.pfl.test.JUnitReportHelper;
 
 import test.RemoteTest;
@@ -50,25 +51,24 @@ import test.Test;
  * for each individual test.  It provides an easy way to run
  * IDL, RMI, and Java compilers; start ORBD, client(s), and server(s);
  * and manage output from each.
- * <P>
+ * <p>
  * The default is to run all of these in separate processes, but this
  * can be changed for ORBD, client, and server by specifying what execution
  * strategy to use.
- * <P>
+ * <p>
  * It extends test.RemoteTest to gain access to some data (command
  * line arguments, especially), but doesn't use RemoteTest's RMI/RMI-IIOP
  * system by default.
- * <P>
+ * <p>
  * An individual test can configure a wide variety of things by
  * setting values in the Options singleton class.
  *
- *@see corba.example.Example
- *@see test.Test
- *@see test.RemoteTest
- *@see corba.framework.Options
+ * @see corba.example.Example
+ * @see test.Test
+ * @see test.RemoteTest
+ * @see corba.framework.Options
  */
-public abstract class CORBATest extends test.RemoteTest
-{
+public abstract class CORBATest extends test.RemoteTest {
     /**
      * Skip any IDL compiling.  This could be useful if you
      * didn't wipe the output directory, and wanted to change
@@ -104,7 +104,7 @@ public abstract class CORBATest extends test.RemoteTest
      * This sets the system property com.sun.corba.ee.ORBDebug to the list
      * of flags for a controller named name
      */
-    public static final String TRACE_FLAG = "-orbtrace" ;
+    public static final String TRACE_FLAG = "-orbtrace";
 
     /**
      * Force use of the ODebugExec execution strategy for the
@@ -146,7 +146,7 @@ public abstract class CORBATest extends test.RemoteTest
             Options.init(this);
 
             parseDebugExecFlags();
-            parseTraceFlag() ;
+            parseTraceFlag();
         } catch (ThreadDeath death) {
             throw death;
         } catch (Throwable e) {
@@ -162,21 +162,21 @@ public abstract class CORBATest extends test.RemoteTest
      * is used by the IBM tests.  Any exceptions of errors thrown will result
      * in the test framework reporting "FAILED," and printing the exception's
      * stack trace.
-     * <P>
+     * <p>
      * Tests which don't use RMI/RMI-IIOP can avoid this method by using
      * the Options class to set files for RMIC compilation, then calling
      * compileRMIFiles().  After that, they can load a servant or client
      * just as they would with CORBA and IDL.
-     * <P>
+     * <p>
      * Calls doTest() by default.  To use this, override usesOldFramework
      * to return true.  You will also need to specify what remote
      * files to use with getRemoteSevantClasses.  See test.RemoteTestExample.
      *
-     *@param       context    Allows the test to manage servant life-cycle
-     *@exception   Throwable  Any errors which signal that this test failed
-     *@see         test.RemoteTest
-     *@see         test.ServantContext
-     *@see         test.RemoteTestExample
+     * @param context Allows the test to manage servant life-cycle
+     * @throws Throwable Any errors which signal that this test failed
+     * @see test.RemoteTest
+     * @see test.ServantContext
+     * @see test.RemoteTestExample
      */
     protected void doTest(ServantContext context) throws Throwable {
         doTest();
@@ -187,9 +187,9 @@ public abstract class CORBATest extends test.RemoteTest
      * test.RemoteTest's way of managing servants (with ServantContexts).
      * Returns false by default.
      *
-     *@return  True when the framework should use test.RemoteTest's
-     *         servant management, false for the newer framework's
-     *         system.
+     * @return True when the framework should use test.RemoteTest's
+     * servant management, false for the newer framework's
+     * system.
      */
     protected boolean usesOldFramework() {
         return false;
@@ -201,7 +201,7 @@ public abstract class CORBATest extends test.RemoteTest
      * reporting "FAILED," and printing the exception's stack trace.
      * No-op by default.
      *
-     *@exception   Throwable  Any errors which signal that this test failed
+     * @throws Throwable Any errors which signal that this test failed
      */
     protected void doTest() throws Throwable {
         // Subclasses should override one of the doTest methods
@@ -210,14 +210,13 @@ public abstract class CORBATest extends test.RemoteTest
     /**
      * Calls the appropriate version of doTest, then handles exit values
      * and exceptions.
-     *
+     * <p>
      * This is called by the test framework and shouldn't need to be changed.
      */
     @Override
-    public void run()
-    {
-        CORBAUtil.mkdir( Options.getOutputDirectory() ) ;
-        CORBAUtil.mkdir( Options.getReportDirectory() ) ;
+    public void run() {
+        CORBAUtil.mkdir(Options.getOutputDirectory());
+        CORBAUtil.mkdir(Options.getReportDirectory());
         boolean errorOccured = false;
 
         try {
@@ -253,11 +252,10 @@ public abstract class CORBATest extends test.RemoteTest
      * the Options singleton, just as it does with IDL and
      * .java files.
      *
-     *@return  Array of class names to go through RMIC
+     * @return Array of class names to go through RMIC
      */
-    protected String[] getRemoteServantClasses()
-    {
-        return new String [0];
+    protected String[] getRemoteServantClasses() {
+        return new String[0];
     }
 
     /**
@@ -267,13 +265,11 @@ public abstract class CORBATest extends test.RemoteTest
      * to be full paths, just the names.  To toggle IDL
      * compilation on the command line, use the -noidlj parameter.
      *
-     *@see Options#setIDLFiles
-     *
-     *@exception  Any error that occured during compilation (bad exit
-     *            value for the process would be the most common)
+     * @throws Any error that occured during compilation (bad exit
+     * value for the process would be the most common)
+     * @see Options#setIDLFiles
      */
-    protected void compileIDLFiles() throws Exception
-    {
+    protected void compileIDLFiles() throws Exception {
         if (!getArgs().containsKey(SKIP_IDLJ_FLAG)) {
 
             String files[] = Options.getIDLFiles();
@@ -300,13 +296,11 @@ public abstract class CORBATest extends test.RemoteTest
      * Specify the class names with the Options singleton.  To
      * toggle RMIC use on the command line, use the -normic parameter.
      *
-     *@see Options#setRMICClasses
-     *
-     *@exception  Any error that occured during compilation (bad exit
-     *            value for the process would be the most common)
+     * @throws Any error that occured during compilation (bad exit
+     * value for the process would be the most common)
+     * @see Options#setRMICClasses
      */
-    protected void compileRMICFiles() throws Exception
-    {
+    protected void compileRMICFiles() throws Exception {
         if (!getArgs().containsKey(RemoteTest.SKIP_RMIC_FLAG)) {
             rmic.compile(Options.getRMICClasses(),
                          Options.getRMICArgs(),
@@ -321,16 +315,15 @@ public abstract class CORBATest extends test.RemoteTest
      * file if its class file is present and the class file is newer
      * than the .java file.
      *
-     *@param     files     Current Vector of .java files to augment
-     *@param     dir       Directory to examine
+     * @param files Current Vector of .java files to augment
+     * @param dir Directory to examine
      */
-    private void getGenJavaFilesHelper(Vector files, File dir)
-    {
+    private void getGenJavaFilesHelper(Vector files, File dir) {
         // Create a filter that accepts directory names and .java files
         FileFilter dotJavaFilter = new FileFilter() {
             public boolean accept(File pathname) {
                 return ((pathname.isFile()
-                         && pathname.toString().endsWith(".java"))
+                        && pathname.toString().endsWith(".java"))
                         || (pathname.isDirectory()));
             }
         };
@@ -356,12 +349,12 @@ public abstract class CORBATest extends test.RemoteTest
 
                 String path = fileArray[i].getAbsolutePath();
                 String dotClassName = path.substring(0, path.indexOf(".java"))
-                    + ".class";
+                        + ".class";
 
                 File dotClassFile = new File(dotClassName);
 
                 if (!dotClassFile.exists() ||
-                    fileArray[i].lastModified() > dotClassFile.lastModified()) {
+                        fileArray[i].lastModified() > dotClassFile.lastModified()) {
 
                     files.add(fileArray[i].getAbsolutePath());
                 }
@@ -376,12 +369,11 @@ public abstract class CORBATest extends test.RemoteTest
      * assumes to be wiped each time the test is run (unless
      * debugging), this is reasonable.
      *
-     *@return   Array of absolute paths to .java files or the empty array
-     *          if none
+     * @return Array of absolute paths to .java files or the empty array
+     * if none
      */
-    private Vector getGeneratedJavaFiles()
-    {
-        File dir = new File (Options.getOutputDirectory());
+    private Vector getGeneratedJavaFiles() {
+        File dir = new File(Options.getOutputDirectory());
 
         Vector files = new Vector();
 
@@ -399,14 +391,12 @@ public abstract class CORBATest extends test.RemoteTest
      * singleton.  This can be skipped by specifying the -nojavac
      * flag on the command line.
      *
-     *@see Options#setJavaFiles
-     *
-     *@exception  Any error that occured during compilation (bad exit
-     *            value for the process would be the most common)
+     * @throws Any error that occured during compilation (bad exit
+     * value for the process would be the most common)
+     * @see Options#setJavaFiles
      */
     @SuppressWarnings("unchecked")
-    protected void compileJavaFiles() throws Exception
-    {
+    protected void compileJavaFiles() throws Exception {
         if (getArgs().containsKey(SKIP_JAVAC_FLAG)) {
             return;
         }
@@ -430,7 +420,7 @@ public abstract class CORBATest extends test.RemoteTest
         // Convert any non-generated file names to absolute paths
         CORBAUtil.toAbsolutePaths(files,
                                   new String[] { Options.getTestDirectory(),
-                                                 Options.getOutputDirectory() });
+                                          Options.getOutputDirectory() });
 
         javac.compile(files,
                       Options.getJavacArgs(),
@@ -438,10 +428,12 @@ public abstract class CORBATest extends test.RemoteTest
                       Options.getReportDirectory());
     }
 
-    private enum ControllerKind { CLIENT, SERVER, ORBD } ;
+    private enum ControllerKind {CLIENT, SERVER, ORBD}
 
-    private Controller createProcess( String className, ControllerKind kind, String name,
-        Properties props, Vector args, Hashtable extra ) throws Exception {
+    ;
+
+    private Controller createProcess(String className, ControllerKind kind, String name,
+                                     Properties props, Vector args, Hashtable extra) throws Exception {
 
         Controller executionStrategy;
         if (odebugProcessNames.contains(name)) {
@@ -452,15 +444,15 @@ public abstract class CORBATest extends test.RemoteTest
             executionStrategy = new DebugExec();
         } else {
             switch (kind) {
-                case CLIENT :
-                    executionStrategy = newClientController() ;
-                    break ;
-                case SERVER :
-                    executionStrategy = newServerController() ;
-                    break ;
-                default :
-                    executionStrategy = new ExternalExec() ;
-                    break ;
+            case CLIENT:
+                executionStrategy = newClientController();
+                break;
+            case SERVER:
+                executionStrategy = newServerController();
+                break;
+            default:
+                executionStrategy = new ExternalExec();
+                break;
             }
         }
 
@@ -470,28 +462,28 @@ public abstract class CORBATest extends test.RemoteTest
         // avoid unpleasant surprises!
         String argArray[] = CORBAUtil.toArray(args);
 
-        Properties copy = new Properties() ;
-        Enumeration en = props.propertyNames() ;
+        Properties copy = new Properties();
+        Enumeration en = props.propertyNames();
         while (en.hasMoreElements()) {
-            String key = (String)en.nextElement() ;
-            copy.setProperty( key,
-                props.getProperty( key ) ) ;
+            String key = (String) en.nextElement();
+            copy.setProperty(key,
+                             props.getProperty(key));
         }
 
-        props.setProperty( "corba.test.controller.name", name ) ;
+        props.setProperty("corba.test.controller.name", name);
 
-        String traceFlags = (String) traceMap.get(name) ;
+        String traceFlags = (String) traceMap.get(name);
         if (traceFlags != null) {
             copy.setProperty(ORBConstants.DEBUG_PROPERTY, traceFlags);
         }
 
-        int emmaPort = EmmaControl.setCoverageProperties( copy ) ;
+        int emmaPort = EmmaControl.setCoverageProperties(copy);
 
-        Hashtable hash = new Hashtable( extra ) ;
+        Hashtable hash = new Hashtable(extra);
 
-        exec.initialize(className, name, copy, null, argArray, 
-            Options.getReportDirectory() + name + ".out.txt", 
-            Options.getReportDirectory() + name + ".err.txt", hash, emmaPort); 
+        exec.initialize(className, name, copy, null, argArray,
+                        Options.getReportDirectory() + name + ".out.txt",
+                        Options.getReportDirectory() + name + ".err.txt", hash, emmaPort);
 
         controllers.add(exec);
 
@@ -503,100 +495,92 @@ public abstract class CORBATest extends test.RemoteTest
      * and returns a Controller wrapped in a FileOutputDecorator.  Most of the
      * arguments to the Controller can be set in the Options class.
      *
-     *@return   Controller object representing the ORBD process, but
-     *          not yet started.
-     *
-     *@exception  Exception   Any problem generated by initializing the
-     *                        Controller
-     *
-     *@see Controller
+     * @return Controller object representing the ORBD process, but
+     * not yet started.
+     * @throws Exception Any problem generated by initializing the
+     * Controller
+     * @see Controller
      */
-    public Controller createORBD() throws Exception
-    {
+    public Controller createORBD() throws Exception {
         String javaIDLHome = Options.getJavaIDLHome();
         CORBAUtil.mkdir(javaIDLHome);
 
         Test.dprint("ORB initial port: " + Options.getORBInitialPort());
         Test.dprint("Activation port: " + Options.getActivationPort());
 
-        return createProcess( "com.sun.corba.ee.impl.activation.ORBD", ControllerKind.ORBD,
-            "ORBD", Options.getORBDProperties(), Options.getORBDArgs(),
-            Options.getORBDExtra() ) ;
+        return createProcess("com.sun.corba.ee.impl.activation.ORBD", ControllerKind.ORBD,
+                             "ORBD", Options.getORBDProperties(), Options.getORBDArgs(),
+                             Options.getORBDExtra());
     }
 
     /**
      * Create and initialize the Controller for a server.  This
      * initializes and wraps it in a FileOutputDecorator.
      *
-     *@param       className   Fully qualified class name of the server
-     *@param       serverName  Name used to identify this server for
-     *                         output file name purposes
-     *@return      Controller  Initialized (but not started) Controller
-     *                         for the server
-     *@exception   Exception   Any problem generated by initializing
-     *
-     *@see Controller
-     *@see #newServerController
-     *@see Options
+     * @param className Fully qualified class name of the server
+     * @param serverName Name used to identify this server for
+     * output file name purposes
+     * @return Controller  Initialized (but not started) Controller
+     * for the server
+     * @throws Exception Any problem generated by initializing
+     * @see Controller
+     * @see #newServerController
+     * @see Options
      */
     public Controller createServer(String className, String serverName)
-        throws Exception
-    {
+            throws Exception {
         Test.dprint("Creating server object...");
-        return createProcess( className, ControllerKind.SERVER, serverName, 
-            Options.getServerProperties(), Options.getServerArgs(), Options.getServerExtra() ) ;
+        return createProcess(className, ControllerKind.SERVER, serverName,
+                             Options.getServerProperties(), Options.getServerArgs(), Options.getServerExtra());
     }
 
     /**
      * Same as createServer(String, String) but uses the default
      * name "server."  This is sufficient for one server tests.
      */
-    public Controller createServer(String className) throws Exception
-    {
+    public Controller createServer(String className) throws Exception {
         return createServer(className, "server");
     }
 
     /**
      * Creates a new Controller of the appropriate type for the server.
      *
-     *@return Controller  A new Controller object
-     *@see ExternalExec
+     * @return Controller  A new Controller object
+     * @see ExternalExec
      */
-    protected Controller newServerController()
-    {
+    protected Controller newServerController() {
         return new ExternalExec();
     }
 
-    private JUnitReportHelper helper = new JUnitReportHelper( "Controller_" + this.getClass().getName() ) ;
+    private JUnitReportHelper helper = new JUnitReportHelper("Controller_" + this.getClass().getName());
 
     /**
      * Create and initialize the Controller for the client.  This
      * initializes and wraps it in a FileOutputDecorator;
      *
-     *@param       className    Fully qualified class name of the client
-     *@param       clientName   Name used to identify this client for
-     *                          output file name purposes.
-     *@return      Controller   Initialized (but not started) Controller
-     *                          for the client
-     *@exception   Exception    Any problem generated by starting
-     *@see Controller
-     *@see #newClientController
-     *@see Options
+     * @param className Fully qualified class name of the client
+     * @param clientName Name used to identify this client for
+     * output file name purposes.
+     * @return Controller   Initialized (but not started) Controller
+     * for the client
+     * @throws Exception Any problem generated by starting
+     * @see Controller
+     * @see #newClientController
+     * @see Options
      */
     public Controller createClient(String className, String clientName)
-        throws Exception {
+            throws Exception {
 
         Test.dprint("Creating client object...");
-        return createProcess( className, ControllerKind.CLIENT, clientName, 
-            Options.getClientProperties(), Options.getClientArgs(), Options.getClientExtra() ) ;
+        return createProcess(className, ControllerKind.CLIENT, clientName,
+                             Options.getClientProperties(), Options.getClientArgs(), Options.getClientExtra());
     }
 
     /**
      * Same as createClient(String, String) but uses the default name
      * of "client."  This is sufficient for one client tests.
      */
-    public Controller createClient(String className) throws Exception
-    {
+    public Controller createClient(String className) throws Exception {
         return createClient(className, "client");
     }
 
@@ -606,11 +590,10 @@ public abstract class CORBATest extends test.RemoteTest
      * so the Controller's start() method returns immediately after
      * starting a separate Process.
      *
-     *@return Controller  A new Controller object
-     *@see ExternalExec
+     * @return Controller  A new Controller object
+     * @see ExternalExec
      */
-    protected Controller newClientController()
-    {
+    protected Controller newClientController() {
         return new ExternalExec();
     }
 
@@ -618,8 +601,7 @@ public abstract class CORBATest extends test.RemoteTest
      * Makes sure the given process has ended, and cleans up its
      * output streams.  This catches all exceptions.
      */
-    private void cleanUpHelp(Controller process)
-    {
+    private void cleanUpHelp(Controller process) {
         if (process == null) {
             return;
         }
@@ -628,11 +610,11 @@ public abstract class CORBATest extends test.RemoteTest
 
         Test.dprint("Cleaning up " + name + "...");
 
-        helper.start( name ) ;
+        helper.start(name);
 
-        process.kill() ;
-        int exitValue = process.exitValue() ;
-        long duration = process.duration() ;
+        process.kill();
+        int exitValue = process.exitValue();
+        long duration = process.duration();
         if (exitValue <= 0) {
             helper.pass(duration / 1000);
         } else {
@@ -689,33 +671,31 @@ public abstract class CORBATest extends test.RemoteTest
     /**
      * Call cleanUpHelp for any Controllers that were created.
      */
-    private void cleanUp()
-    {
+    private void cleanUp() {
         for (Controller ctrl : controllers) {
             cleanUpHelp(ctrl);
         }
 
-        EmmaControl.resetPortAllocator() ;
-        helper.done() ;
+        EmmaControl.resetPortAllocator();
+        helper.done();
     }
-
 
     /**
      * Confirm all Controllers were either stopped or exited with
      * success values.  If something failed, the test's status
      * member is set to a new Error documenting the problem(s).
      */
-    private void handleExitValues()
-    {
+    private void handleExitValues() {
         int failures = 0;
         String lineSeparator = System.getProperty("line.separator");
         StringBuilder failedMsg = new StringBuilder("Bad exit value(s):"
-                                                  + lineSeparator);
+                                                            + lineSeparator);
 
         for (Controller controller : controllers) {
             try {
                 controller.kill();
-            } catch (IllegalThreadStateException ex) {}
+            } catch (IllegalThreadStateException ex) {
+            }
 
             int exitValue = 1;
 
@@ -728,9 +708,9 @@ public abstract class CORBATest extends test.RemoteTest
             }
 
             if (exitValue != Controller.SUCCESS &&
-                exitValue != Controller.STOPPED) {
+                    exitValue != Controller.STOPPED) {
                 failedMsg.append(controller.getProcessName()).append("[")
-                    .append(exitValue).append("]").append(lineSeparator);
+                        .append(exitValue).append("]").append(lineSeparator);
                 failures++;
             }
         }
@@ -746,9 +726,8 @@ public abstract class CORBATest extends test.RemoteTest
      * servers, or the ORBD process is created and its process name is
      * found in the set, it will be executed with the DebugExec strategy.
      */
-    private void parseDebugExecFlags()
-    {
-        String processNames = (String)getArgs().get(DEBUG_STRATEGY_FLAG);
+    private void parseDebugExecFlags() {
+        String processNames = (String) getArgs().get(DEBUG_STRATEGY_FLAG);
 
         if (processNames != null) {
             // The process names should be separated by commas
@@ -760,7 +739,7 @@ public abstract class CORBATest extends test.RemoteTest
             }
         }
 
-        processNames = (String)getArgs().get(RDEBUG_STRATEGY_FLAG) ;
+        processNames = (String) getArgs().get(RDEBUG_STRATEGY_FLAG);
 
         if (processNames != null) {
             // The process names should be separated by commas
@@ -772,7 +751,7 @@ public abstract class CORBATest extends test.RemoteTest
             }
         }
 
-        processNames = (String)getArgs().get(ODEBUG_STRATEGY_FLAG) ;
+        processNames = (String) getArgs().get(ODEBUG_STRATEGY_FLAG);
 
         if (processNames != null) {
             // The process names should be separated by commas
@@ -785,9 +764,8 @@ public abstract class CORBATest extends test.RemoteTest
         }
     }
 
-    private void parseTraceFlag()
-    {
-        String traceData = (String)getArgs().get(TRACE_FLAG) ;
+    private void parseTraceFlag() {
+        String traceData = (String) getArgs().get(TRACE_FLAG);
         if (traceData == null) {
             return;
         }
@@ -797,18 +775,18 @@ public abstract class CORBATest extends test.RemoteTest
         // group == name ":" name ( "," name ) *
         // name == [a-zA-Z0-9]+
 
-        StringTokenizer dataST = new StringTokenizer( traceData, ";" ) ;
+        StringTokenizer dataST = new StringTokenizer(traceData, ";");
         while (dataST.hasMoreTokens()) {
-            String group = dataST.nextToken() ;
-            StringTokenizer groupST = new StringTokenizer( group, ":" ) ;
+            String group = dataST.nextToken();
+            StringTokenizer groupST = new StringTokenizer(group, ":");
             if (groupST.countTokens() != 2) {
                 throw new IllegalArgumentException("Bad syntax in trace command");
             }
 
-            String name = groupST.nextToken() ;
-            String debugArgs = groupST.nextToken() ;
+            String name = groupST.nextToken();
+            String debugArgs = groupST.nextToken();
 
-            traceMap.put( name, debugArgs ) ;
+            traceMap.put(name, debugArgs);
         }
     }
 
@@ -841,7 +819,7 @@ public abstract class CORBATest extends test.RemoteTest
      * This allows setting the ORB debug flags from the test
      * arguments.
      */
-    protected Map traceMap = new HashMap() ;
+    protected Map traceMap = new HashMap();
 
     protected List<Controller> controllers = new ArrayList<Controller>();
 }

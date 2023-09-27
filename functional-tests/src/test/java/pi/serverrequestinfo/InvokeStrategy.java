@@ -31,15 +31,15 @@ abstract public class InvokeStrategy {
     /**
      * Invokes the method with the given name
      */
-    protected void invokeMethod( String name ) throws Exception {
-        ServerCommon.server.invokeMethod( name );
+    protected void invokeMethod(String name) throws Exception {
+        ServerCommon.server.invokeMethod(name);
     }
 
     public void invoke() throws Exception {
         // Reset the request interceptor to prepare for test:
         SampleServerRequestInterceptor.enabled = true;
-        SampleServerRequestInterceptor.receiveRequestServiceContextsEnabled = 
-            true;
+        SampleServerRequestInterceptor.receiveRequestServiceContextsEnabled =
+                true;
         SampleServerRequestInterceptor.receiveRequestEnabled = true;
         SampleServerRequestInterceptor.sendReplyEnabled = true;
         SampleServerRequestInterceptor.sendExceptionEnabled = true;

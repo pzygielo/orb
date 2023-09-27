@@ -40,21 +40,18 @@ import org.omg.PortableInterceptor.ServerRequestInterceptor;
 import org.omg.PortableInterceptor.ServerRequestInfo;
 
 public class AServiceInterceptor
-    extends org.omg.CORBA.LocalObject
-    implements ClientRequestInterceptor, ServerRequestInterceptor
-{
+        extends org.omg.CORBA.LocalObject
+        implements ClientRequestInterceptor, ServerRequestInterceptor {
     private int slotId;
     private Codec codec;
 
     private static final int serviceContextId = 1234;
 
-    public AServiceInterceptor(int slotId)
-    {
+    public AServiceInterceptor(int slotId) {
         this.slotId = slotId;
     }
 
-    void setCodec(Codec codec)
-    {
+    void setCodec(Codec codec) {
         this.codec = codec;
     }
 
@@ -62,28 +59,25 @@ public class AServiceInterceptor
     // Interceptor operations
     //
 
-    public String name() 
-    {
+    public String name() {
         return "AServiceInterceptor";
     }
 
-    public void destroy() 
-    {
+    public void destroy() {
     }
 
     //
     // ClientRequestInterceptor operations
     //
 
-    public void send_request(ClientRequestInfo ri)
-    {
+    public void send_request(ClientRequestInfo ri) {
         //
         // See if the target object contains an ASERVICE_COMPONENT.
         //
 
         try {
             TaggedComponent taggedComponent =
-                ri.get_effective_component(TAG_ASERVICE_COMPONENT.value);
+                    ri.get_effective_component(TAG_ASERVICE_COMPONENT.value);
 
             Any sAny = null;
             try {
@@ -96,7 +90,7 @@ public class AServiceInterceptor
             }
 
             ASERVICE_COMPONENT aServiceComponent =
-                ASERVICE_COMPONENTHelper.extract(sAny);
+                    ASERVICE_COMPONENTHelper.extract(sAny);
 
             //
             // Only send the service context if the target object requires it.
@@ -108,17 +102,17 @@ public class AServiceInterceptor
                     if (any.type().kind().equals(TCKind.tk_long)) {
                         int serviceId = any.extract_long();
                         byte[] serviceContextData = {
-                            // Little endian to make it
-                            // easier to see in debugger.
-                            (byte)((serviceId >>>  0) &  0xFF),
-                            (byte)((serviceId >>>  8) &  0xFF),
-                            (byte)((serviceId >>> 16) &  0xFF),
-                            (byte)((serviceId >>> 24) &  0xFF)
+                                // Little endian to make it
+                                // easier to see in debugger.
+                                (byte) ((serviceId >>> 0) & 0xFF),
+                                (byte) ((serviceId >>> 8) & 0xFF),
+                                (byte) ((serviceId >>> 16) & 0xFF),
+                                (byte) ((serviceId >>> 24) & 0xFF)
                         };
                         ri.add_request_service_context(
-                            new ServiceContext(serviceContextId,
-                                               serviceContextData),
-                            false);
+                                new ServiceContext(serviceContextId,
+                                                   serviceContextData),
+                                false);
                     }
                 } catch (InvalidSlot e) {
                     System.out.println("Exception handling not shown.");
@@ -130,35 +124,30 @@ public class AServiceInterceptor
         }
     }
 
-    public void send_poll(ClientRequestInfo ri)
-    {
+    public void send_poll(ClientRequestInfo ri) {
     }
 
-    public void receive_reply(ClientRequestInfo ri)
-    {
+    public void receive_reply(ClientRequestInfo ri) {
     }
 
-    public void receive_exception(ClientRequestInfo ri)
-    {
+    public void receive_exception(ClientRequestInfo ri) {
     }
 
-    public void receive_other(ClientRequestInfo ri)
-    {
+    public void receive_other(ClientRequestInfo ri) {
     }
 
     //
     // ServerRequestInterceptor operations
     //
 
-    public void receive_request_service_contexts(ServerRequestInfo ri)
-    {
+    public void receive_request_service_contexts(ServerRequestInfo ri) {
         try {
             ServiceContext serviceContext =
-                ri.get_request_service_context(serviceContextId);
+                    ri.get_request_service_context(serviceContextId);
             byte[] data = serviceContext.context_data;
             int b1, b2, b3, b4;
-            b4 = (data[0] <<  0) & 0x000000FF;
-            b3 = (data[1] <<  8) & 0x0000FF00;
+            b4 = (data[0] << 0) & 0x000000FF;
+            b3 = (data[1] << 8) & 0x0000FF00;
             b2 = (data[2] << 16) & 0x00FF0000;
             b1 = (data[3] << 24) & 0xFF000000;
             int serviceId = (b1 | b2 | b3 | b4);
@@ -174,20 +163,16 @@ public class AServiceInterceptor
         }
     }
 
-    public void receive_request(ServerRequestInfo ri)
-    {
+    public void receive_request(ServerRequestInfo ri) {
     }
 
-    public void send_reply(ServerRequestInfo ri)
-    {
+    public void send_reply(ServerRequestInfo ri) {
     }
 
-    public void send_exception(ServerRequestInfo ri)
-    {
+    public void send_exception(ServerRequestInfo ri) {
     }
 
-    public void send_other(ServerRequestInfo ri)
-    {
+    public void send_other(ServerRequestInfo ri) {
     }
 }
 

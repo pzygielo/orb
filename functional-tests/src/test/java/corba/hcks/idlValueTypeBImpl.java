@@ -25,21 +25,19 @@
 package corba.hcks;
 
 public class idlValueTypeBImpl
-    extends
-        idlValueTypeB
-{
+        extends
+        idlValueTypeB {
     public static final String baseMsg = idlValueTypeBImpl.class.getName();
 
-    public idlValueTypeBImpl () {}
+    public idlValueTypeBImpl() {
+    }
 
-    public idlValueTypeBImpl (short a, short b)
-    { 
+    public idlValueTypeBImpl(short a, short b) {
         this.a = a;
         this.b = b;
     }
 
-    public String toString ()
-    {
+    public String toString() {
         return baseMsg + " " + a + " " + b;
     }
 

@@ -23,16 +23,20 @@ package ibmspace.common;
 import java.awt.Point;
 import java.io.Serializable;
 
+public interface PlanetView extends Planet {
+    long getMetal();
 
-public interface PlanetView extends Planet
-{
-    long          getMetal ();
-    long          getPopulation ();
-    long          getIncome ();
-    double        getTemp ();
-    double        getGravity ();
-    double        getSuitability ();
-    boolean       isOwned ();
+    long getPopulation();
+
+    long getIncome();
+
+    double getTemp();
+
+    double getGravity();
+
+    double getSuitability();
+
+    boolean isOwned();
 }
 
 

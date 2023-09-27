@@ -24,6 +24,7 @@ import java.rmi.RemoteException;
 
 public interface Tester extends Remote {
     public String getDescription() throws RemoteException;
+
     public String passString(String theString) throws RemoteException;
 }
 

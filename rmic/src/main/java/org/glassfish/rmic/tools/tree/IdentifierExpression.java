@@ -19,9 +19,10 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
 import org.glassfish.rmic.tools.asm.LocalVariable;
+import org.glassfish.rmic.tools.java.*;
+
 import java.io.PrintStream;
 import java.util.Hashtable;
 
@@ -43,9 +44,11 @@ class IdentifierExpression extends Expression {
         super(IDENT, where, Type.tError);
         this.id = id;
     }
+
     public IdentifierExpression(IdentifierToken id) {
         this(id.getWhere(), id.getName());
     }
+
     public IdentifierExpression(long where, MemberDefinition field) {
         super(IDENT, where, field.getType());
         this.id = field.getName();
@@ -53,8 +56,9 @@ class IdentifierExpression extends Expression {
     }
 
     public Expression getImplementation() {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation;
+        }
         return this;
     }
 
@@ -65,13 +69,12 @@ class IdentifierExpression extends Expression {
         return this.id.equals(id);
     }
 
-
     /**
      * Assign a value to this identifier.  [It must already be "bound"]
      */
     private Vset assign(Environment env, Context ctx, Vset vset) {
         if (field.isLocal()) {
-            LocalMember local = (LocalMember)field;
+            LocalMember local = (LocalMember) field;
             if (local.scopeNumber < ctx.frameNumber) {
                 env.error(where, "assign.to.uplevel", id);
             }
@@ -97,7 +100,7 @@ class IdentifierExpression extends Expression {
      */
     private Vset get(Environment env, Context ctx, Vset vset) {
         if (field.isLocal()) {
-            LocalMember local = (LocalMember)field;
+            LocalMember local = (LocalMember) field;
             if (local.scopeNumber < ctx.frameNumber && !local.isFinal()) {
                 env.error(where, "invalid.uplevel", id);
             }
@@ -154,7 +157,7 @@ class IdentifierExpression extends Expression {
 
             // Find out how to access this variable.
             if (field.isLocal()) {
-                LocalMember local = (LocalMember)field;
+                LocalMember local = (LocalMember) field;
                 if (local.scopeNumber < ctx.frameNumber) {
                     // get a "val$x" copy via the current object
                     implementation = ctx.makeReference(env, local);
@@ -173,7 +176,9 @@ class IdentifierExpression extends Expression {
                     MemberDefinition f2 = ctx.getApparentField(env, id);
                     if (f2 != null && f2 != f) {
                         ClassDefinition c = ctx.findScope(env, fclass);
-                        if (c == null)  c = f.getClassDefinition();
+                        if (c == null) {
+                            c = f.getClassDefinition();
+                        }
                         if (f2.isLocal()) {
                             env.error(where, "inherited.hides.local",
                                       id, c.getClassDeclaration());
@@ -195,7 +200,7 @@ class IdentifierExpression extends Expression {
 
                 if (f.isStatic()) {
                     Expression base = new TypeExpression(where,
-                                        f.getClassDeclaration().getType());
+                                                         f.getClassDeclaration().getType());
                     implementation = new FieldExpression(where, null, f);
                 } else {
                     Expression base = ctx.findOuterLink(env, where, f);
@@ -234,8 +239,9 @@ class IdentifierExpression extends Expression {
         if (bind(env, ctx)) {
             vset = get(env, ctx, vset);
             ctx.field.getClassDefinition().addDependency(field.getClassDeclaration());
-            if (implementation != null)
+            if (implementation != null) {
                 vset = implementation.checkValue(env, ctx, vset, exp);
+            }
         }
         return vset;
     }
@@ -245,11 +251,13 @@ class IdentifierExpression extends Expression {
      */
     public Vset checkLHS(Environment env, Context ctx,
                          Vset vset, Hashtable<Object, Object> exp) {
-        if (!bind(env, ctx))
+        if (!bind(env, ctx)) {
             return vset;
+        }
         vset = assign(env, ctx, vset);
-        if (implementation != null)
+        if (implementation != null) {
             vset = implementation.checkValue(env, ctx, vset, exp);
+        }
         return vset;
     }
 
@@ -258,11 +266,13 @@ class IdentifierExpression extends Expression {
      */
     public Vset checkAssignOp(Environment env, Context ctx,
                               Vset vset, Hashtable<Object, Object> exp, Expression outside) {
-        if (!bind(env, ctx))
+        if (!bind(env, ctx)) {
             return vset;
+        }
         vset = assign(env, ctx, get(env, ctx, vset));
-        if (implementation != null)
+        if (implementation != null) {
             vset = implementation.checkValue(env, ctx, vset, exp);
+        }
         return vset;
     }
 
@@ -270,8 +280,9 @@ class IdentifierExpression extends Expression {
      * Return an accessor if one is needed for assignments to this expression.
      */
     public FieldUpdater getAssigner(Environment env, Context ctx) {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation.getAssigner(env, ctx);
+        }
         return null;
     }
 
@@ -279,8 +290,9 @@ class IdentifierExpression extends Expression {
      * Return an updater if one is needed for assignments to this expression.
      */
     public FieldUpdater getUpdater(Environment env, Context ctx) {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation.getUpdater(env, ctx);
+        }
         return null;
     }
 
@@ -382,8 +394,9 @@ class IdentifierExpression extends Expression {
      * Check if constant:  Will it inline away?
      */
     public boolean isConstant() {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation.isConstant();
+        }
         if (field != null) {
             return field.isConstant();
         }
@@ -396,16 +409,18 @@ class IdentifierExpression extends Expression {
     public Expression inline(Environment env, Context ctx) {
         return null;
     }
+
     public Expression inlineValue(Environment env, Context ctx) {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation.inlineValue(env, ctx);
+        }
         if (field == null) {
             return this;
         }
         try {
             if (field.isLocal()) {
                 if (field.isInlineable(env, false)) {
-                    Expression e = (Expression)field.getValue(env);
+                    Expression e = (Expression) field.getValue(env);
                     return (e == null) ? this : e.inlineValue(env, ctx);
                 }
                 return this;
@@ -415,26 +430,30 @@ class IdentifierExpression extends Expression {
             throw new CompilerError(e);
         }
     }
+
     public Expression inlineLHS(Environment env, Context ctx) {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation.inlineLHS(env, ctx);
+        }
         return this;
     }
 
     public Expression copyInline(Context ctx) {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation.copyInline(ctx);
+        }
         IdentifierExpression e =
-            (IdentifierExpression)super.copyInline(ctx);
+                (IdentifierExpression) super.copyInline(ctx);
         if (field != null && field.isLocal()) {
-            e.field = ((LocalMember)field).getCurrentInlineCopy(ctx);
+            e.field = ((LocalMember) field).getCurrentInlineCopy(ctx);
         }
         return e;
     }
 
     public int costInline(int thresh, Environment env, Context ctx) {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation.costInline(thresh, env, ctx);
+        }
         return super.costInline(thresh, env, ctx);
     }
 
@@ -444,15 +463,18 @@ class IdentifierExpression extends Expression {
     int codeLValue(Environment env, Context ctx, Assembler asm) {
         return 0;
     }
+
     void codeLoad(Environment env, Context ctx, Assembler asm) {
         asm.add(where, opc_iload + type.getTypeCodeOffset(),
-                ((LocalMember)field).number);
+                ((LocalMember) field).number);
     }
+
     void codeStore(Environment env, Context ctx, Assembler asm) {
-        LocalMember local = (LocalMember)field;
+        LocalMember local = (LocalMember) field;
         asm.add(where, opc_istore + type.getTypeCodeOffset(),
                 new LocalVariable(local, local.number));
     }
+
     public void codeValue(Environment env, Context ctx, Assembler asm) {
         codeLValue(env, ctx, asm);
         codeLoad(env, ctx, asm);

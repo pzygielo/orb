@@ -30,13 +30,14 @@ public interface ValueHandlerMultiFormat extends ValueHandler {
      * by this ValueHandler object. The ValueHandler
      * object must support the returned stream format version and
      * all lower versions.
-     *
+     * <p>
      * An ORB may use this value to include in a standard
      * IOR tagged component or service context to indicate to other
      * ORBs the maximum RMI-IIOP stream format that it
      * supports.  If not included, the default for GIOP 1.2
      * is stream format version 1, and stream format version
      * 2 for GIOP 1.3 and higher.
+     *
      * @return the maximum version supported
      */
     byte getMaximumStreamFormatVersion();
@@ -57,6 +58,7 @@ public interface ValueHandlerMultiFormat extends ValueHandler {
      * method must implement the ValueOutputStream interface, and the
      * ORB input stream passed to the ValueHandler.readValue method must
      * implement the ValueInputStream interface.
+     *
      * @param out stream to write the value out to
      * @param value a {@link java.io.Serializable} value to write
      * @param streamFormatVersion stream format version

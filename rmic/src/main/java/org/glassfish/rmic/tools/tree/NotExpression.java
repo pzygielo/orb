@@ -19,9 +19,11 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
 import org.glassfish.rmic.tools.asm.Label;
+import org.glassfish.rmic.tools.java.Environment;
+import org.glassfish.rmic.tools.java.Type;
+
 import java.util.Hashtable;
 
 /**
@@ -81,40 +83,40 @@ class NotExpression extends UnaryExpression {
     Expression simplify() {
         // Check if the expression can be optimized
         switch (right.op) {
-          case NOT:
-            return ((NotExpression)right).right;
+        case NOT:
+            return ((NotExpression) right).right;
 
-          case EQ:
-          case NE:
-          case LT:
-          case LE:
-          case GT:
-          case GE:
+        case EQ:
+        case NE:
+        case LT:
+        case LE:
+        case GT:
+        case GE:
             break;
 
-          default:
+        default:
             return this;
         }
 
         // Can't negate real comparisons
-        BinaryExpression bin = (BinaryExpression)right;
+        BinaryExpression bin = (BinaryExpression) right;
         if (bin.left.type.inMask(TM_REAL)) {
             return this;
         }
 
         // Negate comparison
         switch (right.op) {
-          case EQ:
+        case EQ:
             return new NotEqualExpression(where, bin.left, bin.right);
-          case NE:
+        case NE:
             return new EqualExpression(where, bin.left, bin.right);
-          case LT:
+        case LT:
             return new GreaterOrEqualExpression(where, bin.left, bin.right);
-          case LE:
+        case LE:
             return new GreaterExpression(where, bin.left, bin.right);
-          case GT:
+        case GT:
             return new LessOrEqualExpression(where, bin.left, bin.right);
-          case GE:
+        case GE:
             return new LessExpression(where, bin.left, bin.right);
         }
         return this;

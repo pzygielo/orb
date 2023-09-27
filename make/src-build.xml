@@ -25,37 +25,37 @@
         This is the Ant file that builds the GlassFish ORB.
     </description>
 
-    <property name="root.dir"                   value="${basedir}"/>
+    <property name="root.dir" value="${basedir}"/>
     <property file="make/build.properties"/>
 
     <target name="init">
         <property name="repo.url"
-            value="svn:https://svn.java.net/svn/maven2-repository~svn/trunk/repository"/>
-        <property name="file.url"               value="file:/tmp/maven"/>
+                  value="svn:https://svn.java.net/svn/maven2-repository~svn/trunk/repository"/>
+        <property name="file.url" value="file:/tmp/maven"/>
 
         <!-- environmental dependencies -->
         <property environment="env"/>
-        <property name="java.home"              value="${env.JAVA_HOME}"/>
+        <property name="java.home" value="${env.JAVA_HOME}"/>
         <echo message="java.home=${java.home}"/> <!-- Why does this end in jre? -->
 
         <!-- Required JAR files -->
-        <property name="tools-jar"              value="${java.home}/../lib/tools.jar"/>
+        <property name="tools-jar" value="${java.home}/../lib/tools.jar"/>
 
         <!-- Places where the build puts things -->
-        <property name="build.dir"              location="${root.dir}/build"/>
-        <property name="lib.dir"                location="${build.dir}/lib"/>
-        <property name="gensrc.dir"             location="${build.dir}/gensrc"/>
-        <property name="classes.dir"            location="${build.dir}/classes"/>
+        <property name="build.dir" location="${root.dir}/build"/>
+        <property name="lib.dir" location="${build.dir}/lib"/>
+        <property name="gensrc.dir" location="${build.dir}/gensrc"/>
+        <property name="classes.dir" location="${build.dir}/classes"/>
 
         <!-- Main ORB build directories -->
-        <property name="src.dir"                value="${root.dir}/src/share/classes"/>
+        <property name="src.dir" value="${root.dir}/src/share/classes"/>
 
         <property name="mavenized.test.classes" value="${root.dir}/functional-tests/target/test-classes"/>
 
         <!-- javac flags -->
-        <property name="deprecation"            value="off"/>
-        <property name="javac.optimize"         value="true"/>
-        <property name="javac.debug"            value="true"/>
+        <property name="deprecation" value="off"/>
+        <property name="javac.optimize" value="true"/>
+        <property name="javac.debug" value="true"/>
 
         <mkdir dir="${build.dir}"/>
         <mkdir dir="${lib.dir}"/>
@@ -66,11 +66,11 @@
 
         <!-- properties needed for updating and validating copyright headers -->
         <property name="copyright.file"
-            value="${root.dir}/make/copyright-information/copyright.txt"/>
+                  value="${root.dir}/make/copyright-information/copyright.txt"/>
         <property name="copyright.roots"
-            value="lib,make,nbproject,src,test,tools,www"/>
+                  value="lib,make,nbproject,src,test,tools,www"/>
         <property name="copyright.skip"
-            value=".hg,.DS_Store,copyright-information,apache,objectweb,build,webrev,test-output,gen,lib,pom,felix-cache"/>
+                  value=".hg,.DS_Store,copyright-information,apache,objectweb,build,webrev,test-output,gen,lib,pom,felix-cache"/>
 
 
         <path id="classpath.master">
@@ -83,7 +83,7 @@
     <!-- ========================= CLEAN ========================= -->
 
     <target name="clean"
-        depends="init,clean-tests">
+            depends="init,clean-tests">
         <delete dir="${build.dir}"/>
         <delete dir="${test-build.dir}"/>
     </target>

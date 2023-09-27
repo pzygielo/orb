@@ -24,12 +24,12 @@ import org.glassfish.rmic.TypeCode;
 /**
  * This class represents an Java array type.
  * It overrides the relevant methods in class Type.
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
  *
- * @author      Arthur van Hoff
+ * @author Arthur van Hoff
  */
 public final
 class ArrayType extends Type {

@@ -19,13 +19,16 @@
 
 package org.glassfish.rmic.tools.asm;
 
-import org.glassfish.rmic.tools.java.*;
-import java.io.IOException;
+import org.glassfish.rmic.tools.java.ClassDeclaration;
+import org.glassfish.rmic.tools.java.Environment;
+import org.glassfish.rmic.tools.java.Type;
+
 import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
  * This is a class constant pool item.
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
@@ -42,7 +45,7 @@ class ClassConstantData extends ConstantPoolData {
         String sig = clazz.getType().getTypeSignature();
         // sig is like "Lfoo/bar;", name is like "foo/bar".
         // We assume SIG_CLASS and SIG_ENDCLASS are 1 char each.
-        name = sig.substring(1, sig.length()-1);
+        name = sig.substring(1, sig.length() - 1);
         tab.put(name);
     }
 

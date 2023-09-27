@@ -25,6 +25,7 @@
 package mantis.m4764130;
 
 import java.util.Properties;
+
 import corba.framework.Controller;
 import corba.framework.CORBATest;
 import corba.framework.Options;
@@ -38,7 +39,7 @@ public class SendingContextTest extends CORBATest {
             return;
         }
 
-        Controller orbd   = createORBD();
+        Controller orbd = createORBD();
         orbd.start();
 
         Controller server = createServer("mantis.m4764130.Server");

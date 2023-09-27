@@ -25,9 +25,8 @@
 package orb.folb;
 
 /**
- *
  * @author ken
  */
 public interface Location {
-   public String getLocation();
+    public String getLocation();
 }

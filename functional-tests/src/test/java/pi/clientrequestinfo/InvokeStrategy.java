@@ -31,8 +31,8 @@ abstract public class InvokeStrategy {
     /**
      * Invokes the method with the given name
      */
-    protected void invokeMethod( String name ) throws Exception {
-        ClientCommon.client.invokeMethod( name );
+    protected void invokeMethod(String name) throws Exception {
+        ClientCommon.client.invokeMethod(name);
     }
 
     public void invoke() throws Exception {

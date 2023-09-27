@@ -34,13 +34,9 @@ public class RmicUncheckedIOException extends RuntimeException {
     /**
      * Constructs an instance of this class.
      *
-     * @param   message
-     *          the detail message, can be null
-     * @param   cause
-     *          the {@code IOException}
-     *
-     * @throws  NullPointerException
-     *          if the cause is {@code null}
+     * @param message the detail message, can be null
+     * @param cause the {@code IOException}
+     * @throws NullPointerException if the cause is {@code null}
      */
     public RmicUncheckedIOException(String message, IOException cause) {
         super(message, Objects.requireNonNull(cause));
@@ -49,11 +45,8 @@ public class RmicUncheckedIOException extends RuntimeException {
     /**
      * Constructs an instance of this class.
      *
-     * @param   cause
-     *          the {@code IOException}
-     *
-     * @throws  NullPointerException
-     *          if the cause is {@code null}
+     * @param cause the {@code IOException}
+     * @throws NullPointerException if the cause is {@code null}
      */
     public RmicUncheckedIOException(IOException cause) {
         super(Objects.requireNonNull(cause));
@@ -62,7 +55,7 @@ public class RmicUncheckedIOException extends RuntimeException {
     /**
      * Returns the cause of this exception.
      *
-     * @return  the {@code IOException} which is the cause of this exception.
+     * @return the {@code IOException} which is the cause of this exception.
      */
     @Override
     public IOException getCause() {
@@ -72,16 +65,15 @@ public class RmicUncheckedIOException extends RuntimeException {
     /**
      * Called to read the object from a stream.
      *
-     * @throws  InvalidObjectException
-     *          if the object is invalid or has a cause that is not
-     *          an {@code IOException}
+     * @throws InvalidObjectException if the object is invalid or has a cause that is not
+     * an {@code IOException}
      */
     private void readObject(ObjectInputStream s)
-        throws IOException, ClassNotFoundException
-    {
+            throws IOException, ClassNotFoundException {
         s.defaultReadObject();
         Throwable cause = super.getCause();
-        if (!(cause instanceof IOException))
+        if (!(cause instanceof IOException)) {
             throw new InvalidObjectException("Cause must be an IOException");
+        }
     }
 }

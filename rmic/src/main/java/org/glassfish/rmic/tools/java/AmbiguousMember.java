@@ -22,7 +22,7 @@ package org.glassfish.rmic.tools.java;
 /**
  * This exception is thrown when a field reference is
  * ambiguous.
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.

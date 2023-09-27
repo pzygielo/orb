@@ -19,8 +19,10 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
+import org.glassfish.rmic.tools.java.Environment;
+import org.glassfish.rmic.tools.java.Type;
+
 import java.util.Hashtable;
 
 /**
@@ -78,6 +80,7 @@ class CommaExpression extends BinaryExpression {
         }
         return simplify();
     }
+
     public Expression inlineValue(Environment env, Context ctx) {
         if (left != null) {
             left = left.inline(env, ctx);
@@ -133,6 +136,7 @@ class CommaExpression extends BinaryExpression {
         }
         right.codeValue(env, ctx, asm);
     }
+
     public void code(Environment env, Context ctx, Assembler asm) {
         if (left != null) {
             left.code(env, ctx, asm);

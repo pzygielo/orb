@@ -17,7 +17,7 @@
  * Classpath-exception-2.0
  */
 
-package com.sun.corba.ee.org.omg.CORBA ;
+package com.sun.corba.ee.org.omg.CORBA;
 
 /**
  * A convenience class for retrieving the string value of a system
@@ -29,14 +29,14 @@ package com.sun.corba.ee.org.omg.CORBA ;
  * <code>AccessController.doPrivileged</code>.
  *
  * <p>The following code retrieves the value of the system
- * property named <code>"prop"</code> as a privileged action: 
+ * property named <code>"prop"</code> as a privileged action:
  * </p>
  *
  * <pre>
  * String s = (String) java.security.AccessController.doPrivileged(
  *                         new GetPropertyAction("prop"));
  * </pre>
- *
+ * <p>
  * DO NOT GENERIFY THIS UNTIL WE HAVE A NEW RMIC -IIOP!!
  * (javax.rmi.CORBA.Stub depends on this, and may be visible to rmic)
  *
@@ -77,7 +77,7 @@ public class GetPropertyAction implements java.security.PrivilegedAction {
      * name was specified in the constructor.
      *
      * @return the string value of the system property,
-     *         or the default value if there is no property with that key.
+     * or the default value if there is no property with that key.
      */
     public Object run() {
         String value = System.getProperty(theProp);

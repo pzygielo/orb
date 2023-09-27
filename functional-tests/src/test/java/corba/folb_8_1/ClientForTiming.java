@@ -27,11 +27,10 @@ package corba.folb_8_1;
 import java.io.File;
 import java.util.Properties;
 
-
 import com.sun.corba.ee.spi.transport.TransportManager;
 import com.sun.corba.ee.spi.transport.ContactInfo;
 
-import com.sun.corba.ee.spi.orb.ORB ;
+import com.sun.corba.ee.spi.orb.ORB;
 import com.sun.corba.ee.spi.transport.SocketInfo;
 
 import com.sun.corba.ee.spi.misc.ORBConstants;
@@ -50,8 +49,7 @@ import org.glassfish.pfl.tf.timer.spi.TimerManager;
 /**
  * @author Harold Carr
  */
-public class ClientForTiming
-{
+public class ClientForTiming {
     public static boolean debug = true;
 
     public static final int NUMBER_OF_WARMUP_LOOPS = 5;//20000;
@@ -63,15 +61,15 @@ public class ClientForTiming
     public static String[] av;
 
     public static ORB orb;
-/*
-    public static TimerManager<TimingPoints> tm ;
-    public static TimerFactory tf ;
-    public static TimerEventController controller ;
-    public static LogEventHandler log ;
-    public static TimingPoints tp ;
-*/
-    public static Timer totalTestTime ;
-    public static Timer clientInvoke ;
+    /*
+        public static TimerManager<TimingPoints> tm ;
+        public static TimerFactory tf ;
+        public static TimerEventController controller ;
+        public static LogEventHandler log ;
+        public static TimingPoints tp ;
+    */
+    public static Timer totalTestTime;
+    public static Timer clientInvoke;
 
     public static IIOPPrimaryToContactInfoImpl primaryToContactInfo;
     public static ContactInfo serverPrimaryContactInfo;
@@ -79,29 +77,28 @@ public class ClientForTiming
 
     // These are used as self-documenting values below.
     public static final boolean FAILOVER_SUPPORT = true;
-    public static final boolean FAILOVER         = true;
-    public static final boolean CACHE            = true;
+    public static final boolean FAILOVER = true;
+    public static final boolean CACHE = true;
 
-    public static void main(String[] argv)
-    {
+    public static void main(String[] argv) {
         // NOTE: must give to ORB.init - contains ORBInitialPort
         av = argv;
 
         try {
 
             boolean failoverSupport = false;
-            boolean failover        = false;
-            boolean cache           = false;
+            boolean failover = false;
+            boolean cache = false;
 
             for (int i = 0; i < av.length; ++i) {
                 String x = av[i];
-                System.out.print(x +" ");
+                System.out.print(x + " ");
                 if (x.equals(Common.FAILOVER_SUPPORT)) {
                     failoverSupport = true;
                 } else if (x.equals(Common.FAILOVER)) {
-                    failover        = true;
+                    failover = true;
                 } else if (x.equals(Common.CACHE)) {
-                    cache           = true;
+                    cache = true;
                 }
             }
             System.out.println();
@@ -127,33 +124,31 @@ public class ClientForTiming
     // FROM EARLIER RESULTS BECAUSE OF HOTSPOT - NOT BECAUSE OF WHAT IS BEING
     // TIMED.
     public static void runAllTests()
-        throws Exception
-    {
+            throws Exception {
         runTest(!FAILOVER_SUPPORT, !FAILOVER, !CACHE);
-        runTest( FAILOVER_SUPPORT, !FAILOVER, !CACHE);
-        runTest( FAILOVER_SUPPORT, !FAILOVER,  CACHE);
-        runTest( FAILOVER_SUPPORT,  FAILOVER, !CACHE);
-        runTest( FAILOVER_SUPPORT,  FAILOVER,  CACHE);
+        runTest(FAILOVER_SUPPORT, !FAILOVER, !CACHE);
+        runTest(FAILOVER_SUPPORT, !FAILOVER, CACHE);
+        runTest(FAILOVER_SUPPORT, FAILOVER, !CACHE);
+        runTest(FAILOVER_SUPPORT, FAILOVER, CACHE);
     }
 
     public static void runTest(boolean failoverSupport,
                                boolean failover,
                                boolean cache)
-        throws Exception
-    {
+            throws Exception {
         BEGIN(failoverSupport, failover, cache);
 
         // don't print to log files - including warmup runs.
-        if (! debug) {
+        if (!debug) {
             Common.timing = true;
         }
 
         setup(failoverSupport, cache);
 
         primaryToContactInfo = (IIOPPrimaryToContactInfoImpl)
-            orb.getORBData().getIIOPPrimaryToContactInfo();
+                orb.getORBData().getIIOPPrimaryToContactInfo();
 
-        if (! debug && cache) {
+        if (!debug && cache) {
             // don't print debug info.
             // Note: this must be done *AFTER* setup *BEFORE* lookup.
             // Setup to get the ORB.  But before it is used (i.e., lookup).
@@ -185,15 +180,14 @@ public class ClientForTiming
 
         File file = new File(makeFileName(failoverSupport, failover, cache));
         file.delete();
-//      TimerUtils.dumpLogToFile( tf, log, file ) ;
+        //      TimerUtils.dumpLogToFile( tf, log, file ) ;
         //log.clear() ;
 
         END(failoverSupport, failover, cache);
     }
 
     public static void setupFailover(boolean cache)
-        throws Exception
-    {
+            throws Exception {
         dprint();
         dprint("starting setupFailover");
         dprint();
@@ -211,13 +205,13 @@ public class ClientForTiming
         i2Ref.foo(1);
 
         serverPrimaryContactInfo =
-            ((ContactInfoListImpl)
-             ((ClientDelegate)
-              ((_I2Stub)i2Ref)._get_delegate())
-              .getContactInfoList()).getPrimaryContactInfo();
-        
-        dprint("--------- i2Ref primaryContactInfo: " 
-               + serverPrimaryContactInfo);
+                ((ContactInfoListImpl)
+                        ((ClientDelegate)
+                                ((_I2Stub) i2Ref)._get_delegate())
+                                .getContactInfoList()).getPrimaryContactInfo();
+
+        dprint("--------- i2Ref primaryContactInfo: "
+                       + serverPrimaryContactInfo);
         dprint();
 
         if (cache) {
@@ -228,7 +222,7 @@ public class ClientForTiming
             dprint("in map: " + primaryToContactInfo.map);
 
             serverClearTextEntry = (ContactInfo)
-                primaryToContactInfo.map.get(serverClearTextEntry);
+                    primaryToContactInfo.map.get(serverClearTextEntry);
 
             dprint("found entry: " + serverClearTextEntry);
             dprint();
@@ -248,19 +242,18 @@ public class ClientForTiming
 
             // Make the map not contain an entry for the server.
 
-            Object o=primaryToContactInfo.map.remove(serverPrimaryContactInfo);
+            Object o = primaryToContactInfo.map.remove(serverPrimaryContactInfo);
             dprint();
             dprint("Removed from map:"
-                   + "  key: "  + serverPrimaryContactInfo
-                   + " entry: " + serverClearTextEntry);
+                           + "  key: " + serverPrimaryContactInfo
+                           + " entry: " + serverClearTextEntry);
         }
         dprint();
         dprint("ending setupFailover");
         dprint();
     }
 
-    public static void revertCache()
-    {
+    public static void revertCache() {
         dprint();
         dprint("revertCache");
         dprint();
@@ -269,40 +262,38 @@ public class ClientForTiming
         dprint("was mapped to: " + o);
         primaryToContactInfo.map.put(serverPrimaryContactInfo,
                                      serverClearTextEntry);
-        dprint("now mapped to: " 
-               + primaryToContactInfo.map.get(serverClearTextEntry));
+        dprint("now mapped to: "
+                       + primaryToContactInfo.map.get(serverClearTextEntry));
         dprint();
     }
 
     public static void killFailedOverToConnection()
-        throws Exception
-    {
+            throws Exception {
         TransportManager transportManager = orb.getTransportManager();
 
         dprint();
         dprint("killFailedOverToConnection");
         dprint("key: " + serverPrimaryContactInfo);
         dprint("removing connection: " + Client.lastConnectionUsed);
-        dprint("from connection cache BEFORE: " + 
-               transportManager
-                   .getOutboundConnectionCache(serverPrimaryContactInfo));
+        dprint("from connection cache BEFORE: " +
+                       transportManager
+                               .getOutboundConnectionCache(serverPrimaryContactInfo));
         Client.lastConnectionUsed.close();
         Thread.sleep(1000);
         dprint();
-        dprint("from connection cache AFTER: " + 
-               transportManager
-                   .getOutboundConnectionCache(serverPrimaryContactInfo));
+        dprint("from connection cache AFTER: " +
+                       transportManager
+                               .getOutboundConnectionCache(serverPrimaryContactInfo));
         dprint();
     }
 
     public static void loop(int times, boolean failover, boolean cache)
-        throws Exception
-    {
+            throws Exception {
         dprint();
         dprint("starting loop");
         dprint();
 
-        for (int i = 0 ; i < times; ++i) {
+        for (int i = 0; i < times; ++i) {
             //controller.enter( clientInvoke ) ;
             i2Ref.foo(1);
             //controller.exit( clientInvoke ) ;
@@ -324,14 +315,13 @@ public class ClientForTiming
 
     public static void setup(boolean failoverSupport,
                              boolean cache)
-        throws Exception
-    {
+            throws Exception {
         dprint();
         dprint("starting setup");
         dprint();
 
         Properties props = new Properties();
-        props.setProperty( ORBConstants.TIMING_POINTS_ENABLED, "true" ) ;
+        props.setProperty(ORBConstants.TIMING_POINTS_ENABLED, "true");
 
         if (failoverSupport) {
             props.setProperty(ORBConstants.IOR_TO_SOCKET_INFO_CLASS_PROPERTY,
@@ -369,21 +359,20 @@ public class ClientForTiming
     }
 
     public static void lookup()
-        throws Exception
-    {
+            throws Exception {
         dprint();
         dprint("starting lookup");
         dprint();
 
         iRef =
-            IHelper.narrow(
-                Common.getNameService(orb)
-                    .resolve(Common.makeNameComponent(Common.serverName1)));
+                IHelper.narrow(
+                        Common.getNameService(orb)
+                                .resolve(Common.makeNameComponent(Common.serverName1)));
 
         i2Ref =
-            I2Helper.narrow(
-                Common.getNameService(orb)
-                    .resolve(Common.makeNameComponent(Common.serverName2)));
+                I2Helper.narrow(
+                        Common.getNameService(orb)
+                                .resolve(Common.makeNameComponent(Common.serverName2)));
 
         dprint();
         dprint("ending lookup");
@@ -392,8 +381,7 @@ public class ClientForTiming
 
     public static void BEGIN(boolean failoverSupport,
                              boolean failover,
-                             boolean cache)
-    {
+                             boolean cache) {
         System.out.println();
         System.out.println("------------------------------------------------");
         System.out.print("BEGIN ");
@@ -403,8 +391,7 @@ public class ClientForTiming
 
     public static void END(boolean failoverSupport,
                            boolean failover,
-                           boolean cache)
-    {
+                           boolean cache) {
         System.out.println();
         System.out.print("END ");
         BEGINEND(failoverSupport, failover, cache);
@@ -414,15 +401,13 @@ public class ClientForTiming
 
     public static void BEGINEND(boolean failoverSupport,
                                 boolean failover,
-                                boolean cache)
-    {
+                                boolean cache) {
         System.out.println(withOrWithout(failoverSupport, "FailoverSupport"));
         System.out.println(withOrWithout(failover, "Failover"));
         System.out.println(withOrWithout(cache, "Cache"));
     }
 
-    public static String withOrWithout(boolean with, String msg)
-    {
+    public static String withOrWithout(boolean with, String msg) {
         if (with) {
             return msg;
         }
@@ -431,22 +416,20 @@ public class ClientForTiming
 
     public static String makeFileName(boolean failoverSupport,
                                       boolean failover,
-                                      boolean cache)
-    {
-        String directory = 
-            System.getProperty("output.dir")
-            + System.getProperty("file.separator");
-        return 
-            //"/tmp/"
-            directory
-            + withOrWithout(failoverSupport, "FailoverSupport")
-            + withOrWithout(failover, "Failover")
-            + withOrWithout(cache, "Cache")
-            + ".log";
+                                      boolean cache) {
+        String directory =
+                System.getProperty("output.dir")
+                        + System.getProperty("file.separator");
+        return
+                //"/tmp/"
+                directory
+                        + withOrWithout(failoverSupport, "FailoverSupport")
+                        + withOrWithout(failover, "Failover")
+                        + withOrWithout(cache, "Cache")
+                        + ".log";
     }
 
-    public static void setTimerPoints(boolean x)
-    {
+    public static void setTimerPoints(boolean x) {
         /* tp.transport not available.
         if (x)
             tp.transport().enable() ;
@@ -455,12 +438,11 @@ public class ClientForTiming
         */
     }
 
-    public static void dprint()
-    {
+    public static void dprint() {
         dprint("");
     }
-    public static void dprint(String msg)
-    {
+
+    public static void dprint(String msg) {
         if (debug) {
             System.out.println(msg);
         }

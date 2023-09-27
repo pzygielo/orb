@@ -20,19 +20,19 @@
 package org.omg.CORBA;
 
 /**
- * Exception  thrown when the ORB attempted to reach an object and failed. 
+ * Exception  thrown when the ORB attempted to reach an object and failed.
  * It is not an indication that an object does not exist. Instead, it simply
- * means that no further determination of an object's status was possible 
- * because it could not be reached. This exception is raised if an attempt 
- * to establish a connection fails, for example, because the server or the 
+ * means that no further determination of an object's status was possible
+ * because it could not be reached. This exception is raised if an attempt
+ * to establish a connection fails, for example, because the server or the
  * implementation repository is down.<P>
  * It contains a minor code, which gives more detailed information about
  * what caused the exception, and a completion status. It may also contain
  * a string describing the exception.
  *
+ * @version 1.17 09/09/97
  * @see <A href="../../../../guide/idl/jidlExceptions.html">documentation on
  * Java&nbsp;IDL exceptions</A>
- * @version     1.17 09/09/97
  */
 
 public final class TRANSIENT extends SystemException {
@@ -48,6 +48,7 @@ public final class TRANSIENT extends SystemException {
     /**
      * Constructs a <code>TRANSIENT</code> exception with the specified description message,
      * a minor code of 0, and a completion state of COMPLETED_NO.
+     *
      * @param s the String containing a detail message
      */
     public TRANSIENT(String s) {
@@ -57,6 +58,7 @@ public final class TRANSIENT extends SystemException {
     /**
      * Constructs a <code>TRANSIENT</code> exception with the specified
      * minor code and completion status.
+     *
      * @param minor the minor code
      * @param completed the completion status
      */
@@ -67,6 +69,7 @@ public final class TRANSIENT extends SystemException {
     /**
      * Constructs a <code>TRANSIENT</code> exception with the specified description
      * message, minor code, and completion status.
+     *
      * @param s the String containing a description message
      * @param minor the minor code
      * @param completed the completion status

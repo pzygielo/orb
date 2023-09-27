@@ -19,12 +19,12 @@
 
 package org.omg.CORBA;
 
-import org.omg.CORBA.portable.Streamable;
 import org.omg.CORBA.portable.InputStream;
 import org.omg.CORBA.portable.OutputStream;
+import org.omg.CORBA.portable.Streamable;
 
 /**
- * The Holder for <tt>Char</tt>.  For more information on 
+ * The Holder for <tt>Char</tt>.  For more information on
  * Holder files, see <a href="doc-files/generatedfiles.html#holder">
  * "Generated Files: Holder Files"</a>.<P>
  * A Holder class for a <code>char</code>
@@ -36,13 +36,13 @@ import org.omg.CORBA.portable.OutputStream;
  * must also fill the "in" value to be sent to the server.
  * Before the method invocation returns, the ORB will fill in the
  * value corresponding to the "out" value returned from the server.
- * <P>
+ * <p>
  * If <code>myCharHolder</code> is an instance of <code>CharHolder</code>,
  * the value stored in its <code>value</code> field can be accessed with
  * <code>myCharHolder.value</code>.
  *
- * @version     1.14, 09/09/97
- * @since       JDK1.2
+ * @version 1.14, 09/09/97
+ * @since JDK1.2
  */
 public final class CharHolder implements Streamable {
 
@@ -51,27 +51,28 @@ public final class CharHolder implements Streamable {
      * object.
      */
     public char value;
-    
+
     /**
      * Constructs a new <code>CharHolder</code> object with its
      * <code>value</code> field initialized to <code>0</code>.
      */
     public CharHolder() {
     }
-    
+
     /**
      * Constructs a new <code>CharHolder</code> object for the given
      * <code>char</code>.
+     *
      * @param initial the <code>char</code> with which to initialize
-     *                the <code>value</code> field of the new
-     *                <code>CharHolder</code> object
+     * the <code>value</code> field of the new
+     * <code>CharHolder</code> object
      */
     public CharHolder(char initial) {
         value = initial;
     }
 
     /**
-     * Reads from <code>input</code> and initalizes the value in 
+     * Reads from <code>input</code> and initalizes the value in
      * this <code>CharHolder</code> object
      * with the unmarshalled data.
      *
@@ -93,11 +94,11 @@ public final class CharHolder implements Streamable {
 
     /**
      * Returns the <code>TypeCode</code> object  corresponding
-     * to the value held in 
+     * to the value held in
      * this <code>CharHolder</code> object.
      *
-     * @return    the TypeCode of the value held in 
-     *            this <code>CharHolder</code> object
+     * @return the TypeCode of the value held in
+     * this <code>CharHolder</code> object
      */
     public org.omg.CORBA.TypeCode _type() {
         return ORB.init().get_primitive_tc(TCKind.tk_char);

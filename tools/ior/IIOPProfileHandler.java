@@ -20,6 +20,7 @@
 package tools.ior;
 
 import java.io.IOException;
+
 import org.omg.CORBA.portable.*;
 import org.omg.IOP.*;
 import org.omg.IIOP.*;
@@ -28,16 +29,15 @@ import org.omg.CORBA.Any;
 /**
  * Handles the IIOP Profile.  Correctly recognizes 1.0 and 1.1
  * versions, delegating to the appropriate ProfileBody helper.
- *
+ * <p>
  * This is necessary since we have to decide what to do
  * depending on the Version at the beginning.
  */
-public class IIOPProfileHandler implements EncapsHandler
-{
-    public void display(byte[] data, 
+public class IIOPProfileHandler implements EncapsHandler {
+    public void display(byte[] data,
                         TextOutputHandler out,
                         Utility util)
-        throws DecodingException {
+            throws DecodingException {
 
         try {
 
@@ -55,17 +55,18 @@ public class IIOPProfileHandler implements EncapsHandler
             // after GIOP 1.2.  Currently this is handled
             // since the caller dumps the data when getting
             // a DecodingException.
-            if (version.major != 1 || version.minor > 2)
+            if (version.major != 1 || version.minor > 2) {
                 throw new DecodingException("Unknown IIOP Profile version: "
-                                            + version.major
-                                            + '.'
-                                            + version.minor);
+                                                    + version.major
+                                                    + '.'
+                                                    + version.minor);
+            }
 
             if (version.minor == 0) {
                 Any bodyAny = codec.decode_value(data,
                                                  ProfileBody_1_0Helper.type());
                 java.lang.Object body
-                    = ProfileBody_1_0Helper.extract(bodyAny);
+                        = ProfileBody_1_0Helper.extract(bodyAny);
 
                 util.recursiveDisplay("ProfileBody_1_0", body, out);
 
@@ -76,7 +77,7 @@ public class IIOPProfileHandler implements EncapsHandler
                                                  ProfileBody_1_1Helper.type());
 
                 java.lang.Object body
-                    = ProfileBody_1_1Helper.extract(bodyAny);
+                        = ProfileBody_1_1Helper.extract(bodyAny);
 
                 util.recursiveDisplay("ProfileBody_1_1", body, out);
             }

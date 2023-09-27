@@ -37,27 +37,25 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Stack;
 
-
 /**
  * IIOPOutputStream is ...
  *
- * @author  Stephen Lewallen
+ * @author Stephen Lewallen
  * @version 0.01, 4/6/98
- * @since   JDK1.1.6
+ * @since JDK1.1.6
  */
 
 @ValueHandlerWrite
 public class IIOPOutputStream
-    extends com.sun.corba.ee.impl.io.OutputStreamHook
-{
-    private static Bridge bridge = 
-        AccessController.doPrivileged(
-            new PrivilegedAction<Bridge>() {
-                public Bridge run() {
-                    return Bridge.get() ;
-                }
-            } 
-        ) ;
+        extends com.sun.corba.ee.impl.io.OutputStreamHook {
+    private static Bridge bridge =
+            AccessController.doPrivileged(
+                    new PrivilegedAction<Bridge>() {
+                        public Bridge run() {
+                            return Bridge.get();
+                        }
+                    }
+            );
 
     private org.omg.CORBA_2_3.portable.OutputStream orbStream;
 
@@ -71,12 +69,11 @@ public class IIOPOutputStream
 
     private IOException abortIOException = null;
 
-    private Stack<ObjectStreamClass> classDescStack = 
-        new Stack<ObjectStreamClass>();
+    private Stack<ObjectStreamClass> classDescStack =
+            new Stack<ObjectStreamClass>();
 
     public IIOPOutputStream()
-        throws java.io.IOException
-   {
+            throws java.io.IOException {
         super();
     }
 
@@ -89,7 +86,7 @@ public class IIOPOutputStream
         if (streamFormatVersion == 2) {
 
             org.omg.CORBA.portable.ValueOutputStream vout
-                = (org.omg.CORBA.portable.ValueOutputStream)orbStream;
+                    = (org.omg.CORBA.portable.ValueOutputStream) orbStream;
 
             vout.start_value(currentClassDesc.getRMIIIOPOptionalDataRepId());
         }
@@ -104,19 +101,18 @@ public class IIOPOutputStream
     }
 
     @InfoMethod
-    private void recursionDepthInfo( int rd ) {}
-
-    @ValueHandlerWrite
-    final void increaseRecursionDepth(){
-        recursionDepth++;
-        recursionDepthInfo( recursionDepth ) ;
+    private void recursionDepthInfo(int rd) {
     }
 
-    @ValueHandlerWrite
-    final int decreaseRecursionDepth(){
+    @ValueHandlerWrite final void increaseRecursionDepth() {
+        recursionDepth++;
+        recursionDepthInfo(recursionDepth);
+    }
+
+    @ValueHandlerWrite final int decreaseRecursionDepth() {
         --recursionDepth;
         recursionDepthInfo(recursionDepth);
-        return recursionDepth ;
+        return recursionDepth;
     }
 
     @ValueHandlerWrite
@@ -127,24 +123,26 @@ public class IIOPOutputStream
     /**
      * Override the actions of the final method "writeObject()"
      * in ObjectOutputStream.
-     * @since     JDK1.1.6
+     *
+     * @since JDK1.1.6
      */
     @ValueHandlerWrite
     @Override
     public final void writeObjectOverride(Object obj)
-        throws IOException {
+            throws IOException {
 
         writeObjectState.writeData(this);
 
-        Util.getInstance().writeAbstractObject((OutputStream)orbStream, obj);
+        Util.getInstance().writeAbstractObject((OutputStream) orbStream, obj);
     }
 
     /**
      * Override the actions of the final method "writeObject()"
      * in ObjectOutputStream.
+     *
      * @param obj Object to write
      * @param formatVersion Format version
-     * @since     JDK1.1.6
+     * @since JDK1.1.6
      */
     @ValueHandlerWrite
     public final void simpleWriteObject(Object obj, byte formatVersion) {
@@ -181,7 +179,7 @@ public class IIOPOutputStream
         }
 
         if (pending != null) {
-            bridge.throwException( pending ) ;
+            bridge.throwException(pending);
         }
     }
 
@@ -193,25 +191,25 @@ public class IIOPOutputStream
     /**
      * Override the actions of the final method "defaultWriteObject()"
      * in ObjectOutputStream.
-     * @since     JDK1.1.6
+     *
+     * @since JDK1.1.6
      */
     @ValueHandlerWrite
     @Override
     public final void defaultWriteObjectDelegate()
-    /* throws IOException */
-    {
+    /* throws IOException */ {
         try {
             if (currentObject == null || currentClassDesc == null) {
                 throw new NotActiveException("defaultWriteObjectDelegate");
             }
 
             ObjectStreamField[] fields =
-                currentClassDesc.getFieldsNoCopy();
+                    currentClassDesc.getFieldsNoCopy();
             if (fields.length > 0) {
                 outputClassFields(currentObject, currentClassDesc.forClass(),
                                   fields);
             }
-        } catch(IOException ioe) {
+        } catch (IOException ioe) {
             bridge.throwException(ioe);
         }
     }
@@ -219,47 +217,46 @@ public class IIOPOutputStream
     /**
      * Override the actions of the final method "enableReplaceObject()"
      * in ObjectOutputStream.
+     *
      * @param enable ignored
      * @return {@code false}
-     * @since     JDK1.1.6
+     * @since JDK1.1.6
      */
     public final boolean enableReplaceObjectDelegate(boolean enable)
-    /* throws SecurityException */
-    {
+    /* throws SecurityException */ {
         return false;
-                
-    }
 
-
-    @Override
-    protected final void annotateClass(Class<?> cl) throws IOException{
-        throw Exceptions.self.annotateClassNotSupported() ;
     }
 
     @Override
-    public final void close() throws IOException{
+    protected final void annotateClass(Class<?> cl) throws IOException {
+        throw Exceptions.self.annotateClassNotSupported();
+    }
+
+    @Override
+    public final void close() throws IOException {
         // no op
     }
 
     @Override
-    protected final void drain() throws IOException{
+    protected final void drain() throws IOException {
         // no op
     }
 
     @ValueHandlerWrite
     @Override
-    public final void flush() throws IOException{
-        try{
+    public final void flush() throws IOException {
+        try {
             orbStream.flush();
-        } catch(Error e) {
-            throw new IOException(e) ;
+        } catch (Error e) {
+            throw new IOException(e);
         }
     }
 
     @ValueHandlerWrite
     @Override
-    protected final Object replaceObject(Object obj) throws IOException{
-        throw Exceptions.self.replaceObjectNotSupported() ;
+    protected final Object replaceObject(Object obj) throws IOException {
+        throw Exceptions.self.replaceObjectNotSupported();
     }
 
     /**
@@ -270,12 +267,13 @@ public class IIOPOutputStream
      * at the same point.  Objects previously written to the stream
      * will not be refered to as already being in the stream.  They
      * will be written to the stream again.
-     * @since     JDK1.1
+     *
+     * @since JDK1.1
      */
     @ValueHandlerWrite
     @Override
-    public final void reset() throws IOException{
-        try{
+    public final void reset() throws IOException {
+        try {
             //orbStream.reset();
 
             if (currentObject != null || currentClassDesc != null) {
@@ -286,176 +284,176 @@ public class IIOPOutputStream
 
             if (classDescStack == null) {
                 classDescStack =
-                    new Stack<ObjectStreamClass>();
+                        new Stack<ObjectStreamClass>();
             } else {
                 classDescStack.setSize(0);
             }
 
-        } catch(Error e) {
-            throw new IOException(e) ;
+        } catch (Error e) {
+            throw new IOException(e);
         }
     }
 
     @ValueHandlerWrite
     @Override
-    public final void write(byte b[]) throws IOException{
-        try{
+    public final void write(byte b[]) throws IOException {
+        try {
             writeObjectState.writeData(this);
 
             orbStream.write_octet_array(b, 0, b.length);
-        } catch(Error e) {
-            throw new IOException(e) ;
+        } catch (Error e) {
+            throw new IOException(e);
         }
     }
 
     @ValueHandlerWrite
     @Override
-    public final void write(byte b[], int off, int len) throws IOException{
-        try{
+    public final void write(byte b[], int off, int len) throws IOException {
+        try {
             writeObjectState.writeData(this);
 
             orbStream.write_octet_array(b, off, len);
-        } catch(Error e) {
-            throw new IOException(e) ;
+        } catch (Error e) {
+            throw new IOException(e);
         }
     }
 
     @ValueHandlerWrite
     @Override
-    public final void write(int data) throws IOException{
-        try{
+    public final void write(int data) throws IOException {
+        try {
             writeObjectState.writeData(this);
 
-            orbStream.write_octet((byte)(data & 0xFF));
-        } catch(Error e) {
-            throw new IOException(e) ;
+            orbStream.write_octet((byte) (data & 0xFF));
+        } catch (Error e) {
+            throw new IOException(e);
         }
     }
 
     @ValueHandlerWrite
     @Override
-    public final void writeBoolean(boolean data) throws IOException{
-        try{
+    public final void writeBoolean(boolean data) throws IOException {
+        try {
             writeObjectState.writeData(this);
 
             orbStream.write_boolean(data);
-        } catch(Error e) {
-            throw new IOException(e) ;
+        } catch (Error e) {
+            throw new IOException(e);
         }
     }
 
     @ValueHandlerWrite
     @Override
-    public final void writeByte(int data) throws IOException{
-        try{
+    public final void writeByte(int data) throws IOException {
+        try {
             writeObjectState.writeData(this);
 
-            orbStream.write_octet((byte)data);
-        } catch(Error e) {
-            throw new IOException(e) ;
+            orbStream.write_octet((byte) data);
+        } catch (Error e) {
+            throw new IOException(e);
         }
     }
 
     @ValueHandlerWrite
     @Override
-    public final void writeBytes(String data) throws IOException{
-        try{
+    public final void writeBytes(String data) throws IOException {
+        try {
             writeObjectState.writeData(this);
 
             byte buf[] = data.getBytes();
             orbStream.write_octet_array(buf, 0, buf.length);
-        } catch(Error e) {
-            throw new IOException(e) ;
+        } catch (Error e) {
+            throw new IOException(e);
         }
     }
 
     @ValueHandlerWrite
     @Override
-    public final void writeChar(int data) throws IOException{
-        try{
+    public final void writeChar(int data) throws IOException {
+        try {
             writeObjectState.writeData(this);
 
-            orbStream.write_wchar((char)data);
-        } catch(Error e) {
-            throw new IOException(e) ;
+            orbStream.write_wchar((char) data);
+        } catch (Error e) {
+            throw new IOException(e);
         }
     }
 
     @ValueHandlerWrite
     @Override
-    public final void writeChars(String data) throws IOException{
-        try{
+    public final void writeChars(String data) throws IOException {
+        try {
             writeObjectState.writeData(this);
 
             char buf[] = data.toCharArray();
             orbStream.write_wchar_array(buf, 0, buf.length);
-        } catch(Error e) {
-            throw new IOException(e) ;
+        } catch (Error e) {
+            throw new IOException(e);
         }
     }
 
     @ValueHandlerWrite
     @Override
-    public final void writeDouble(double data) throws IOException{
-        try{
+    public final void writeDouble(double data) throws IOException {
+        try {
             writeObjectState.writeData(this);
 
             orbStream.write_double(data);
-        } catch(Error e) {
-            throw new IOException(e) ;
+        } catch (Error e) {
+            throw new IOException(e);
         }
     }
 
     @ValueHandlerWrite
     @Override
-    public final void writeFloat(float data) throws IOException{
-        try{
+    public final void writeFloat(float data) throws IOException {
+        try {
             writeObjectState.writeData(this);
 
             orbStream.write_float(data);
-        } catch(Error e) {
-            throw new IOException(e) ;
+        } catch (Error e) {
+            throw new IOException(e);
         }
     }
 
     @ValueHandlerWrite
     @Override
-    public final void writeInt(int data) throws IOException{
-        try{
+    public final void writeInt(int data) throws IOException {
+        try {
             writeObjectState.writeData(this);
 
             orbStream.write_long(data);
-        } catch(Error e) {
-            throw new IOException(e) ;
+        } catch (Error e) {
+            throw new IOException(e);
         }
     }
 
     @ValueHandlerWrite
     @Override
-    public final void writeLong(long data) throws IOException{
-        try{
+    public final void writeLong(long data) throws IOException {
+        try {
             writeObjectState.writeData(this);
 
             orbStream.write_longlong(data);
-        } catch(Error e) {
-            throw new IOException(e) ;
+        } catch (Error e) {
+            throw new IOException(e);
         }
     }
 
     @ValueHandlerWrite
     @Override
-    public final void writeShort(int data) throws IOException{
-        try{
+    public final void writeShort(int data) throws IOException {
+        try {
             writeObjectState.writeData(this);
 
-            orbStream.write_short((short)data);
-        } catch(Error e) {
-            throw new IOException(e) ;
+            orbStream.write_short((short) data);
+        } catch (Error e) {
+            throw new IOException(e);
         }
     }
 
     @Override
-    protected final void writeStreamHeader() throws IOException{
+    protected final void writeStreamHeader() throws IOException {
         // no op
     }
 
@@ -464,24 +462,24 @@ public class IIOPOutputStream
      * with larger than 8-bit chars).  The old behavior was preserved
      * in orbutil.IIOPInputStream_1_3 in order to interoperate with
      * our legacy ORBs.
+     *
      * @param stream Stream to write to
      * @param data Data to write
      */
     protected void internalWriteUTF(org.omg.CORBA.portable.OutputStream stream,
-                                    String data) 
-    {
+                                    String data) {
         stream.write_wstring(data);
     }
 
     @ValueHandlerWrite
     @Override
-    public final void writeUTF(String data) throws IOException{
-        try{
+    public final void writeUTF(String data) throws IOException {
+        try {
             writeObjectState.writeData(this);
 
             internalWriteUTF(orbStream, data);
-        } catch(Error e) {
-            throw new IOException(e) ;
+        } catch (Error e) {
+            throw new IOException(e);
         }
     }
 
@@ -500,7 +498,7 @@ public class IIOPOutputStream
         //}
 
         if (obj instanceof ObjectStreamClass) {
-            throw Exceptions.self.serializationObjectStreamClassNotSupported() ;
+            throw Exceptions.self.serializationObjectStreamClassNotSupported();
         }
 
         return false;
@@ -511,10 +509,9 @@ public class IIOPOutputStream
      * These classes are replaceable.
      */
     private boolean checkSubstitutableSpecialClasses(Object obj)
-        throws IOException
-    {
+            throws IOException {
         if (obj instanceof String) {
-            orbStream.write_value((java.io.Serializable)obj);
+            orbStream.write_value((java.io.Serializable) obj);
             return true;
         }
 
@@ -525,7 +522,7 @@ public class IIOPOutputStream
      * Write out the object
      */
     @ValueHandlerWrite
-    private void outputObject(final Object obj) throws IOException{
+    private void outputObject(final Object obj) throws IOException {
         currentObject = obj;
         Class<?> currclass = obj.getClass();
 
@@ -534,7 +531,7 @@ public class IIOPOutputStream
          */
         currentClassDesc = ObjectStreamClass.lookup(currclass);
         if (currentClassDesc == null) {
-            throw Exceptions.self.notSerializable( currclass.getName() ) ;
+            throw Exceptions.self.notSerializable(currclass.getName());
         }
 
         /* If the object is externalizable,
@@ -543,20 +540,20 @@ public class IIOPOutputStream
          */
         if (currentClassDesc.isExternalizable()) {
             // Write format version
-            writeFormatVersion() ;
+            writeFormatVersion();
 
             // KMC issue 5161: need to save state for Externalizable also!
             // Obviously an Externalizable may also call writeObject, which
             // calls writeObjectOverride, which sends the writeData input to
             // the state machine.  So we need a new state machine here!
-            WriteObjectState oldState = writeObjectState ;
-            setState( NOT_IN_WRITE_OBJECT ) ;
+            WriteObjectState oldState = writeObjectState;
+            setState(NOT_IN_WRITE_OBJECT);
 
             try {
-                Externalizable ext = (Externalizable)obj;
+                Externalizable ext = (Externalizable) obj;
                 ext.writeExternal(this);
             } finally {
-                setState(oldState) ;
+                setState(oldState);
             }
         } else {
             /* The object's classes should be processed from supertype to
@@ -565,7 +562,7 @@ public class IIOPOutputStream
              * pushed.
              */
             if (currentClassDesc.forClass().getName().equals("java.lang.String")) {
-                this.writeUTF((String)obj);
+                this.writeUTF((String) obj);
                 return;
             }
             int stackMark = classDescStack.size();
@@ -583,7 +580,7 @@ public class IIOPOutputStream
                         setState(NOT_IN_WRITE_OBJECT);
 
                         if (currentClassDesc.hasWriteObject()) {
-                            invokeObjectWriter(currentClassDesc, obj );
+                            invokeObjectWriter(currentClassDesc, obj);
                         } else {
                             defaultWriteObjectDelegate();
                         }
@@ -591,7 +588,7 @@ public class IIOPOutputStream
                         setState(oldState);
                     }
                 } while (classDescStack.size() > stackMark &&
-                    (currentClassDesc = classDescStack.pop()) != null);
+                        (currentClassDesc = classDescStack.pop()) != null);
             } finally {
                 classDescStack.setSize(stackMark);
             }
@@ -605,18 +602,18 @@ public class IIOPOutputStream
      */
     @ValueHandlerWrite
     private void invokeObjectWriter(ObjectStreamClass osc, Object obj)
-        throws IOException {
+            throws IOException {
 
-        Class<?> c = osc.forClass() ;
+        Class<?> c = osc.forClass();
 
         try {
             // Write format version
-            writeFormatVersion() ;
+            writeFormatVersion();
 
             writeObjectState.enterWriteObject(this);
 
             try {
-                osc.getWriteObjectMethod().invoke( obj, this ) ;
+                osc.getWriteObjectMethod().invoke(obj, this);
             } finally {
                 writeObjectState.exitWriteObject(this);
             }
@@ -637,71 +634,71 @@ public class IIOPOutputStream
     @ValueHandlerWrite
     void writeField(ObjectStreamField field, Object value) throws IOException {
         switch (field.getTypeCode()) {
-            case 'B':
-                if (value == null) {
-                    orbStream.write_octet((byte) 0);
-                } else {
-                    orbStream.write_octet(((Byte) value).byteValue());
-                }
-                break;
-            case 'C':
-                if (value == null) {
-                    orbStream.write_wchar((char) 0);
-                } else {
-                    orbStream.write_wchar(((Character) value).charValue());
-                }
-                break;
-            case 'F':
-                if (value == null) {
-                    orbStream.write_float((float) 0);
-                } else {
-                    orbStream.write_float(((Float) value).floatValue());
-                }
-                break;
-            case 'D':
-                if (value == null) {
-                    orbStream.write_double((double) 0);
-                } else {
-                    orbStream.write_double(((Double) value).doubleValue());
-                }
-                break;
-            case 'I':
-                if (value == null) {
-                    orbStream.write_long(0);
-                } else {
-                    orbStream.write_long(((Integer) value).intValue());
-                }
-                break;
-            case 'J':
-                if (value == null) {
-                    orbStream.write_longlong((long) 0);
-                } else {
-                    orbStream.write_longlong(((Long) value).longValue());
-                }
-                break;
-            case 'S':
-                if (value == null) {
-                    orbStream.write_short((short) 0);
-                } else {
-                    orbStream.write_short(((Short) value).shortValue());
-                }
-                break;
-            case 'Z':
-                if (value == null) {
-                    orbStream.write_boolean(false);
-                } else {
-                    orbStream.write_boolean(((Boolean) value).booleanValue());
-                }
-                break;
-            case '[':
-            case 'L':
-                // What to do if it's null?
-                writeObjectField(field, value);
-                break;
-            default:
-                throw Exceptions.self.invalidClassForWrite(
-                    currentClassDesc.getName());
+        case 'B':
+            if (value == null) {
+                orbStream.write_octet((byte) 0);
+            } else {
+                orbStream.write_octet(((Byte) value).byteValue());
             }
+            break;
+        case 'C':
+            if (value == null) {
+                orbStream.write_wchar((char) 0);
+            } else {
+                orbStream.write_wchar(((Character) value).charValue());
+            }
+            break;
+        case 'F':
+            if (value == null) {
+                orbStream.write_float((float) 0);
+            } else {
+                orbStream.write_float(((Float) value).floatValue());
+            }
+            break;
+        case 'D':
+            if (value == null) {
+                orbStream.write_double((double) 0);
+            } else {
+                orbStream.write_double(((Double) value).doubleValue());
+            }
+            break;
+        case 'I':
+            if (value == null) {
+                orbStream.write_long(0);
+            } else {
+                orbStream.write_long(((Integer) value).intValue());
+            }
+            break;
+        case 'J':
+            if (value == null) {
+                orbStream.write_longlong((long) 0);
+            } else {
+                orbStream.write_longlong(((Long) value).longValue());
+            }
+            break;
+        case 'S':
+            if (value == null) {
+                orbStream.write_short((short) 0);
+            } else {
+                orbStream.write_short(((Short) value).shortValue());
+            }
+            break;
+        case 'Z':
+            if (value == null) {
+                orbStream.write_boolean(false);
+            } else {
+                orbStream.write_boolean(((Boolean) value).booleanValue());
+            }
+            break;
+        case '[':
+        case 'L':
+            // What to do if it's null?
+            writeObjectField(field, value);
+            break;
+        default:
+            throw Exceptions.self.invalidClassForWrite(
+                    currentClassDesc.getName());
+        }
     }
 
     @ValueHandlerWrite
@@ -710,15 +707,14 @@ public class IIOPOutputStream
 
         if (ObjectStreamClassCorbaExt.isAny(field.getTypeString())) {
             Util.getInstance().writeAny(orbStream, objectValue);
-        }
-        else {
+        } else {
             Class<?> type = field.getType();
             int callType = ValueHandlerImpl.kValueType;
-            ClassInfoCache.ClassInfo cinfo = field.getClassInfo() ;
+            ClassInfoCache.ClassInfo cinfo = field.getClassInfo();
 
-            if (cinfo.isInterface()) { 
+            if (cinfo.isInterface()) {
                 String className = type.getName();
-                
+
                 if (cinfo.isARemote(type)) {
                     // RMI Object reference...
                     callType = ValueHandlerImpl.kRemoteType;
@@ -732,24 +728,24 @@ public class IIOPOutputStream
                     callType = ValueHandlerImpl.kAbstractType;
                 }
             }
-                                        
+
             switch (callType) {
-            case ValueHandlerImpl.kRemoteType: 
+            case ValueHandlerImpl.kRemoteType:
                 Util.getInstance().writeRemoteObject(orbStream, objectValue);
                 break;
-            case ValueHandlerImpl.kAbstractType: 
+            case ValueHandlerImpl.kAbstractType:
                 Util.getInstance().writeAbstractObject(orbStream, objectValue);
                 break;
             case ValueHandlerImpl.kValueType:
-                try{
-                    orbStream.write_value((java.io.Serializable)objectValue, 
-                        type);
-                } catch(ClassCastException cce){
+                try {
+                    orbStream.write_value((java.io.Serializable) objectValue,
+                                          type);
+                } catch (ClassCastException cce) {
                     if (objectValue instanceof java.io.Serializable) {
                         throw cce;
                     } else {
                         Utility.throwNotSerializableForCorba(objectValue.getClass().
-                            getName());
+                                                                     getName());
                     }
                 }
             }
@@ -762,7 +758,7 @@ public class IIOPOutputStream
     @ValueHandlerWrite
     private void outputClassFields(Object o, Class cl,
                                    ObjectStreamField[] fields)
-        throws IOException, InvalidClassException {
+            throws IOException, InvalidClassException {
 
         // replace this all with
         // for (int i = 0; i < fields.length; i++) {
@@ -771,53 +767,53 @@ public class IIOPOutputStream
         // Could also unroll and codegen this.
 
         for (int i = 0; i < fields.length; i++) {
-            ObjectStreamField field = fields[i] ;
-            final long offset = field.getFieldID() ;
+            ObjectStreamField field = fields[i];
+            final long offset = field.getFieldID();
             if (offset == Bridge.INVALID_FIELD_OFFSET) {
                 throw new InvalidClassException(cl.getName(),
-                    "Nonexistent field " + fields[i].getName());
+                                                "Nonexistent field " + fields[i].getName());
             }
             switch (field.getTypeCode()) {
-                case 'B':
-                    byte byteValue = bridge.getByte( o, offset ) ;
-                    orbStream.write_octet(byteValue);
-                    break;
-                case 'C':
-                    char charValue = bridge.getChar( o, offset ) ;
-                    orbStream.write_wchar(charValue);
-                    break;
-                case 'F':
-                    float floatValue = bridge.getFloat( o, offset ) ;
-                    orbStream.write_float(floatValue);
-                    break;
-                case 'D' :
-                    double doubleValue = bridge.getDouble( o, offset ) ;
-                    orbStream.write_double(doubleValue);
-                    break;
-                case 'I':
-                    int intValue = bridge.getInt( o, offset ) ;
-                    orbStream.write_long(intValue);
-                    break;
-                case 'J':
-                    long longValue = bridge.getLong( o, offset ) ;
-                    orbStream.write_longlong(longValue);
-                    break;
-                case 'S':
-                    short shortValue = bridge.getShort( o, offset ) ;
-                    orbStream.write_short(shortValue);
-                    break;
-                case 'Z':
-                    boolean booleanValue = bridge.getBoolean( o, offset ) ;
-                    orbStream.write_boolean(booleanValue);
-                    break;
-                case '[':
-                case 'L':
-                    Object objectValue = bridge.getObject( o, offset ) ;
-                    writeObjectField(fields[i], objectValue);
-                    break;
-                default:
-                    throw Exceptions.self.invalidClassForWrite(
-                        cl.getName() ) ;
+            case 'B':
+                byte byteValue = bridge.getByte(o, offset);
+                orbStream.write_octet(byteValue);
+                break;
+            case 'C':
+                char charValue = bridge.getChar(o, offset);
+                orbStream.write_wchar(charValue);
+                break;
+            case 'F':
+                float floatValue = bridge.getFloat(o, offset);
+                orbStream.write_float(floatValue);
+                break;
+            case 'D':
+                double doubleValue = bridge.getDouble(o, offset);
+                orbStream.write_double(doubleValue);
+                break;
+            case 'I':
+                int intValue = bridge.getInt(o, offset);
+                orbStream.write_long(intValue);
+                break;
+            case 'J':
+                long longValue = bridge.getLong(o, offset);
+                orbStream.write_longlong(longValue);
+                break;
+            case 'S':
+                short shortValue = bridge.getShort(o, offset);
+                orbStream.write_short(shortValue);
+                break;
+            case 'Z':
+                boolean booleanValue = bridge.getBoolean(o, offset);
+                orbStream.write_boolean(booleanValue);
+                break;
+            case '[':
+            case 'L':
+                Object objectValue = bridge.getObject(o, offset);
+                writeObjectField(fields[i], objectValue);
+                break;
+            default:
+                throw Exceptions.self.invalidClassForWrite(
+                        cl.getName());
             }
         }
     }

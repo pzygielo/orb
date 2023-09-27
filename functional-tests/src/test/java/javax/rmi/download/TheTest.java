@@ -39,17 +39,17 @@ import java.util.Vector;
  */
 public class TheTest extends test.Test {
     // This test runs the NameServer on port 1050.
-    private static  String[] myArgs = new String[]{"-ORBInitialPort" , "1050" };
+    private static String[] myArgs = new String[] { "-ORBInitialPort", "1050" };
 
-    public  void run() {
-        JUnitReportHelper helper = new JUnitReportHelper( 
-            this.getClass().getName() ) ;
+    public void run() {
+        JUnitReportHelper helper = new JUnitReportHelper(
+                this.getClass().getName());
 
-        String testName     = new TheTest().getClass().getName();
-        Process nameServer  = null;
-        Process server      = null;
-        Process client      = null;
-        boolean testPassed  = true;
+        String testName = new TheTest().getClass().getName();
+        Process nameServer = null;
+        Process server = null;
+        Process client = null;
+        boolean testPassed = true;
         WebServer webServer = null;
 
         try {
@@ -64,106 +64,105 @@ public class TheTest extends test.Test {
             if (!getArgs().containsKey("-normic")) {
                 compileClasses();
             }
-            
+
             // Now we need to start the NameServer and
             // our test server. The test server will register
             // with the NameServer.
-            
-            nameServer  = Util.startNameServer("1050",true);
+
+            nameServer = Util.startNameServer("1050", true);
 
             // Start up the HTTP server
             int port = Util.getHttpServerPort();
             File rootDir = new File(System.getProperty("http.server.root.directory"));
-            webServer = new WebServer(port,rootDir,1);
+            webServer = new WebServer(port, rootDir, 1);
             webServer.start();
 
             // Create user.dir property (this is how the server knows
             // where the test value is but we (this client) does not).
             Vector properties = new Vector();
-            properties.addElement("-Djava.rmi.server.codebase=" + (String)System.getProperty("java.rmi.server.codebase"));
-            String testPolicy = (String)System.getProperty("java.security.policy");
-            if (testPolicy!=null)
-                properties.addElement("-Djava.security.policy="+testPolicy);
-                
-                        
+            properties.addElement("-Djava.rmi.server.codebase=" + (String) System.getProperty("java.rmi.server.codebase"));
+            String testPolicy = (String) System.getProperty("java.security.policy");
+            if (testPolicy != null) {
+                properties.addElement("-Djava.security.policy=" + testPolicy);
+            }
 
             //Class c = java.rmi.server.RMIClassLoader.loadClass(new java.net.URL(System.getProperty("java.rmi.server.codebase")), "javax.rmi.download.values.TheValueImpl");
             //System.out.println("Found : " + c.toString());
 
             // Start it
-            server      = Util.startServer("javax.rmi.download.TheServer", 
-                                           properties);
-            
+            server = Util.startServer("javax.rmi.download.TheServer",
+                                      properties);
+
             // Lets setup some properties that we are using
             // for this test and then create the ORB Object...
 
             Properties props = System.getProperties();
-            
-            props.put(  "java.naming.factory.initial",
-                        JndiConstants.COSNAMING_CONTEXT_FACTORY);
-            
-            props.put(  "org.omg.CORBA.ORBClass", 
-                        "com.sun.corba.ee.impl.orb.ORBImpl");
-            
-            props.put(  "org.omg.CORBA.ORBSingletonClass", 
-                        "com.sun.corba.ee.impl.orb.ORBSingleton");
-            
+
+            props.put("java.naming.factory.initial",
+                      JndiConstants.COSNAMING_CONTEXT_FACTORY);
+
+            props.put("org.omg.CORBA.ORBClass",
+                      "com.sun.corba.ee.impl.orb.ORBImpl");
+
+            props.put("org.omg.CORBA.ORBSingletonClass",
+                      "com.sun.corba.ee.impl.orb.ORBSingleton");
+
             ORB orb = ORB.init(myArgs, props);
-                
+
             // We are going to use JNDI/CosNaming so lets go ahead and
             // create our root naming context.  NOTE:  We setup CosNaming
             // as our naming plug-in for JNDI by setting properties above.
             Hashtable env = new Hashtable();
-            env.put(  "java.naming.corba.orb", orb);
+            env.put("java.naming.corba.orb", orb);
             Context ic = new InitialContext(env);
-            
+
             // Let the test begin...
-            helper.start( "test1" ) ;
+            helper.start("test1");
             // Resolve the Object Reference using JNDI/CosNaming
-            java.lang.Object objref  = ic.lookup("TheDownloadTestServer");
+            java.lang.Object objref = ic.lookup("TheDownloadTestServer");
 
             // This test is designed to verify PortableRemoteObject.narrow
-            try{
+            try {
                 Servant narrowTo = null;
-                if ( (narrowTo = (Servant)
-                      PortableRemoteObject.narrow(objref,Servant.class)) != null ) {
+                if ((narrowTo = (Servant)
+                        PortableRemoteObject.narrow(objref, Servant.class)) != null) {
                     Servant serv1 = narrowTo;
                     String mssg = narrowTo.getValue().sayHello();
                     if (!mssg.equals("Hello, world!")) {
                         System.err.println(mssg);
                         throw new Exception("javax.rmi.download.TheTest: SingleRemoteInterface() narrow failed");
                     }
-                                        
+
                     IIOPTestSerializable ones = new IIOPTestSerializable();
                     ones.setRef(serv1);
-                    IIOPTestSerializable twos = (IIOPTestSerializable)serv1.testWriteReadObject(ones);
+                    IIOPTestSerializable twos = (IIOPTestSerializable) serv1.testWriteReadObject(ones);
                     Servant serv2 = twos.getRef();
                     String mssg2 = serv2.EchoSingleRemoteInterface();
                     if (!mssg2.equals("EchoSingleRemoteInterface")) {
                         System.err.println(mssg);
                         throw new Exception("javax.rmi.download.TheTest: Reverse pass failed");
-                    }   
+                    }
                 }
-                                        
+
                 // Now try from separate client that has no codebase of its own
                 Vector properties2 = new Vector();
-                properties.addElement("-Djava.security.policy="+testPolicy);
-                client = Util.startServer("javax.rmi.download.TheClient", 
+                properties.addElement("-Djava.security.policy=" + testPolicy);
+                client = Util.startServer("javax.rmi.download.TheClient",
                                           properties);
-                helper.pass() ;
+                helper.pass();
             } catch (Throwable ex) {
                 System.out.println(testName + " FAILED.");
                 ex.printStackTrace();
                 testPassed = false;
-                helper.fail( ex ) ;
+                helper.fail(ex);
             }
         } catch (Exception ex) {
             System.out.println(testName + " FAILED.");
             ex.printStackTrace();
             testPassed = false;
-            helper.fail( ex ) ;
+            helper.fail(ex);
         } finally {
-            helper.done() ;
+            helper.done();
 
             if (client != null) {
                 client.destroy();
@@ -172,16 +171,17 @@ public class TheTest extends test.Test {
             if (server != null) {
                 server.destroy();
             }
-  
+
             if (nameServer != null) {
                 nameServer.destroy();
             }
-                        
-            if (webServer != null)
+
+            if (webServer != null) {
                 webServer.quit();
+            }
         }
 
-        if ( testPassed == true ) {
+        if (testPassed == true) {
             status = null;
         } else {
             status = new Error("PortableRemoteObject.narrow Test Failed");
@@ -191,25 +191,24 @@ public class TheTest extends test.Test {
 
     // Compiling ComboInterface cause the compiler to compile
     // all the other classes that need to be compiled.
-    
-    private  void compileClasses () throws Exception
-    {
+
+    private void compileClasses() throws Exception {
         String arg = "-iiop";
         String[] additionalArgs = null;
-        String[] classes = {"javax.rmi.download.ServantImpl"};
-        
+        String[] classes = { "javax.rmi.download.ServantImpl" };
+
         // Create the additional args array...
-               
+
         String outputDirectory = null;
         int length = 3;
         Hashtable flags = getArgs();
         if (flags.containsKey(test.Test.OUTPUT_DIRECTORY)) {
-            outputDirectory = (String)flags.get(test.Test.OUTPUT_DIRECTORY);
+            outputDirectory = (String) flags.get(test.Test.OUTPUT_DIRECTORY);
             length += 2;
         }
         additionalArgs = new String[length];
         int offset = 0;
-        
+
         if (outputDirectory != null) {
             additionalArgs[offset++] = "-d";
             additionalArgs[offset++] = outputDirectory;
@@ -217,9 +216,9 @@ public class TheTest extends test.Test {
         additionalArgs[offset++] = "-Xreverseids";
         additionalArgs[offset++] = "-alwaysgenerate";
         additionalArgs[offset++] = "-keepgenerated";
-        
+
         // Run rmic...
-        
-        Util.rmic(arg,additionalArgs,classes,false);
+
+        Util.rmic(arg, additionalArgs, classes, false);
     }
 }

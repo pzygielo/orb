@@ -259,7 +259,8 @@ is divided into following sections:
         </jar>
     </target>
     <target depends="init,compile,pre-dist,-do-tmp-dist-without-manifest,-do-tmp-dist-with-manifest" name="-do-dist-directory-deploy"/>
-    <target depends="init,compile,pre-dist,-do-dist-directory-deploy,post-dist" description="Build distribution (JAR) - if directory deployment is not supported." name="dist-directory-deploy"/>
+    <target depends="init,compile,pre-dist,-do-dist-directory-deploy,post-dist"
+            description="Build distribution (JAR) - if directory deployment is not supported." name="dist-directory-deploy"/>
     <!--
                 END TARGETS NEEDED TO SUPPORT DIRECTORY DEPLOYMENT
             -->
@@ -293,7 +294,8 @@ is divided into following sections:
         <ant antfile="${project.OrbFailOver-app-client}/build.xml" inheritall="false" target="-run-deploy-am"/>
         <ant antfile="${project.OrbFailOver-ejb}/build.xml" inheritall="false" target="-run-deploy-am"/>
     </target>
-    <target depends="-init-cos,dist-directory-deploy,pre-run-deploy,-pre-nbmodule-run-deploy,-run-deploy-nb,-init-deploy-ant,-deploy-ant,-run-deploy-am,-post-nbmodule-run-deploy,post-run-deploy" name="run-deploy"/>
+    <target depends="-init-cos,dist-directory-deploy,pre-run-deploy,-pre-nbmodule-run-deploy,-run-deploy-nb,-init-deploy-ant,-deploy-ant,-run-deploy-am,-post-nbmodule-run-deploy,post-run-deploy"
+            name="run-deploy"/>
     <target if="netbeans.home" name="-run-deploy-nb">
         <nbdeploy clientModuleUri="${client.module.uri}" clientUrlPart="${client.urlPart}" debugmode="false" forceRedeploy="${forceRedeploy}"/>
     </target>
@@ -465,7 +467,8 @@ is divided into following sections:
     <target if="can.debug.appclient" name="run-debug-appclient">
         <antcall target="-run-debug-appclient"/>
     </target>
-    <target depends="init,-init-debug-args,-debug-appclient-deploy,-as-retrieve-option-workaround,-init-debug-macros,-debug-appclient-start-nbjpda,-debug-appclient-pregfv3,-debug-appclient,connect-debugger" name="-run-debug-appclient"/>
+    <target depends="init,-init-debug-args,-debug-appclient-deploy,-as-retrieve-option-workaround,-init-debug-macros,-debug-appclient-start-nbjpda,-debug-appclient-pregfv3,-debug-appclient,connect-debugger"
+            name="-run-debug-appclient"/>
     <target name="-init-debug-args">
         <property name="version-output" value="java version &quot;${ant.java.version}"/>
         <condition property="have-jdk-older-than-1.4">
@@ -548,13 +551,15 @@ is divided into following sections:
         <antcall target="start-loadgen"/>
     </target>
     <target name="start-profiled-server">
-        <nbstartprofiledserver forceRestart="${profiler.j2ee.serverForceRestart}" javaPlatform="${profiler.info.javaPlatform}" startupTimeout="${profiler.j2ee.serverStartupTimeout}">
+        <nbstartprofiledserver forceRestart="${profiler.j2ee.serverForceRestart}" javaPlatform="${profiler.info.javaPlatform}"
+                               startupTimeout="${profiler.j2ee.serverStartupTimeout}">
             <jvmarg value="${profiler.info.jvmargs.agent}"/>
             <jvmarg value="${profiler.j2ee.agentID}"/>
         </nbstartprofiledserver>
     </target>
     <target name="start-profiled-server-extraargs">
-        <nbstartprofiledserver forceRestart="${profiler.j2ee.serverForceRestart}" javaPlatform="${profiler.info.javaPlatform}" startupTimeout="${profiler.j2ee.serverStartupTimeout}">
+        <nbstartprofiledserver forceRestart="${profiler.j2ee.serverForceRestart}" javaPlatform="${profiler.info.javaPlatform}"
+                               startupTimeout="${profiler.j2ee.serverStartupTimeout}">
             <jvmarg value="${profiler.info.jvmargs.extra}"/>
             <jvmarg value="${profiler.info.jvmargs.agent}"/>
             <jvmarg value="${profiler.j2ee.agentID}"/>

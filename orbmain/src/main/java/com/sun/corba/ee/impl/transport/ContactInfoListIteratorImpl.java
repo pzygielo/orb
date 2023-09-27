@@ -19,45 +19,37 @@
 
 package com.sun.corba.ee.impl.transport;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set ;
-import java.util.HashSet ;
-
+import com.sun.corba.ee.impl.protocol.InvocationInfo;
+import com.sun.corba.ee.spi.ior.IOR;
+import com.sun.corba.ee.spi.logging.ORBUtilSystemException;
+import com.sun.corba.ee.spi.orb.ORB;
+import com.sun.corba.ee.spi.trace.Transport;
+import com.sun.corba.ee.spi.transport.*;
+import org.glassfish.pfl.tf.spi.annotation.InfoMethod;
 import org.omg.CORBA.COMM_FAILURE;
 import org.omg.CORBA.CompletionStatus;
 import org.omg.CORBA.SystemException;
 import org.omg.CORBA.TRANSIENT;
 
-import com.sun.corba.ee.spi.ior.IOR ;
-import com.sun.corba.ee.spi.orb.ORB ;
-import com.sun.corba.ee.spi.transport.TcpTimeouts;
-import com.sun.corba.ee.spi.transport.ContactInfo;
-import com.sun.corba.ee.spi.transport.ContactInfoList;
-import com.sun.corba.ee.spi.transport.ContactInfoListIterator;
-import com.sun.corba.ee.spi.transport.IIOPPrimaryToContactInfo;
-
-import com.sun.corba.ee.spi.logging.ORBUtilSystemException;
-import com.sun.corba.ee.impl.protocol.InvocationInfo;
-
-import com.sun.corba.ee.spi.trace.Transport;
-import org.glassfish.pfl.tf.spi.annotation.InfoMethod;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 // REVISIT: create a unit test for this class.
 
 @Transport
 public class ContactInfoListIteratorImpl
-    implements
-        ContactInfoListIterator
-{
+        implements
+        ContactInfoListIterator {
     protected static final ORBUtilSystemException wrapper =
-        ORBUtilSystemException.self ;
+            ORBUtilSystemException.self;
 
     protected ORB orb;
     protected ContactInfoList contactInfoList;
     protected RuntimeException failureException;
-    private boolean usePRLB ;
-    protected TcpTimeouts tcpTimeouts ;
+    private boolean usePRLB;
+    protected TcpTimeouts tcpTimeouts;
 
     // ITERATOR state
     protected Iterator<ContactInfo> effectiveTargetIORIterator;
@@ -67,28 +59,27 @@ public class ContactInfoListIteratorImpl
     protected IIOPPrimaryToContactInfo primaryToContactInfo;
     protected ContactInfo primaryContactInfo;
     protected List<ContactInfo> listOfContactInfos;
-    protected TcpTimeouts.Waiter waiter ;
+    protected TcpTimeouts.Waiter waiter;
     // Set of endpoints that have failed since the last successful communication
     // with the IOR.
-    protected Set<ContactInfo> failedEndpoints ;
+    protected Set<ContactInfo> failedEndpoints;
     // End ITERATOR state
 
     public ContactInfoListIteratorImpl(
-        ORB orb,
-        ContactInfoList corbaContactInfoList,
-        ContactInfo primaryContactInfo,
-        List listOfContactInfos,
-        boolean usePerRequestLoadBalancing )
-    {
+            ORB orb,
+            ContactInfoList corbaContactInfoList,
+            ContactInfo primaryContactInfo,
+            List listOfContactInfos,
+            boolean usePerRequestLoadBalancing) {
         this.orb = orb;
-        this.tcpTimeouts = orb.getORBData().getTransportTcpConnectTimeouts() ;
+        this.tcpTimeouts = orb.getORBData().getTransportTcpConnectTimeouts();
         this.contactInfoList = corbaContactInfoList;
         this.primaryContactInfo = primaryContactInfo;
         if (listOfContactInfos != null) {
             // listOfContactInfos is null when used by the legacy
             // socket factory.  In that case this iterator is NOT used.
-            
-            this.effectiveTargetIORIterator = listOfContactInfos.iterator() ;
+
+            this.effectiveTargetIORIterator = listOfContactInfos.iterator();
         }
         // List is immutable so no need to synchronize access.
         this.listOfContactInfos = listOfContactInfos;
@@ -99,27 +90,30 @@ public class ContactInfoListIteratorImpl
 
         this.failureException = null;
 
-        this.waiter = tcpTimeouts.waiter() ;
-        this.failedEndpoints = new HashSet<ContactInfo>() ;
+        this.waiter = tcpTimeouts.waiter();
+        this.failedEndpoints = new HashSet<ContactInfo>();
 
-        this.usePRLB = usePerRequestLoadBalancing ;
+        this.usePRLB = usePerRequestLoadBalancing;
 
         if (usePerRequestLoadBalancing) {
             // We certainly DON'T want sticky behavior if we are using PRLB.
-            primaryToContactInfo = null ;
+            primaryToContactInfo = null;
         } else {
             primaryToContactInfo = orb.getORBData().getIIOPPrimaryToContactInfo();
         }
     }
 
     @InfoMethod
-    private void display( String msg ) { }
+    private void display(String msg) {
+    }
 
     @InfoMethod
-    private void display( String msg, Object value ) { }
+    private void display(String msg, Object value) {
+    }
 
     @InfoMethod
-    private void display( String msg, long value ) { }
+    private void display(String msg, long value) {
+    }
 
     ////////////////////////////////////////////////////
     //
@@ -133,18 +127,18 @@ public class ContactInfoListIteratorImpl
             display("backoff before retry previous");
 
             if (waiter.isExpired()) {
-                display("time to wait for connection exceeded " ,
-                   tcpTimeouts.get_max_time_to_wait());
-                
+                display("time to wait for connection exceeded ",
+                        tcpTimeouts.get_max_time_to_wait());
+
                 // NOTE: Need to indicate the timeout.
                 // And it needs to break the loop in the delegate.
                 failureException = wrapper.communicationsRetryTimeout(
-                    failureException, tcpTimeouts.get_max_time_to_wait());
+                        failureException, tcpTimeouts.get_max_time_to_wait());
                 return false;
             }
 
-            waiter.sleepTime() ;
-            waiter.advance() ;
+            waiter.sleepTime();
+            waiter.advance();
             return true;
         }
 
@@ -153,8 +147,8 @@ public class ContactInfoListIteratorImpl
         }
 
         if (primaryToContactInfo != null) {
-            result = primaryToContactInfo.hasNext( primaryContactInfo, 
-                previousContactInfo, listOfContactInfos);
+            result = primaryToContactInfo.hasNext(primaryContactInfo,
+                                                  previousContactInfo, listOfContactInfos);
         } else {
             result = effectiveTargetIORIterator.hasNext();
         }
@@ -167,7 +161,7 @@ public class ContactInfoListIteratorImpl
                 primaryToContactInfo.reset(primaryContactInfo);
             } else {
                 // Argela:
-                effectiveTargetIORIterator = listOfContactInfos.iterator() ;
+                effectiveTargetIORIterator = listOfContactInfos.iterator();
             }
 
             result = hasNext();
@@ -196,9 +190,9 @@ public class ContactInfoListIteratorImpl
 
         if (primaryToContactInfo != null) {
             previousContactInfo = (ContactInfo)
-                primaryToContactInfo.next(primaryContactInfo,
-                                          previousContactInfo,
-                                          listOfContactInfos);
+                    primaryToContactInfo.next(primaryContactInfo,
+                                              previousContactInfo,
+                                              listOfContactInfos);
         } else {
             previousContactInfo = effectiveTargetIORIterator.next();
         }
@@ -207,45 +201,42 @@ public class ContactInfoListIteratorImpl
         // there is a IIOPPrimaryToContactInfo or not.
         // Failure to do this resulted in bug 6568174.
         if (failedEndpoints.contains(previousContactInfo)) {
-            failedEndpoints.clear() ;
-            waiter.sleepTime() ;
-            waiter.advance() ;
+            failedEndpoints.clear();
+            waiter.sleepTime();
+            waiter.advance();
         }
 
         return previousContactInfo;
     }
 
-    public void remove()
-    {
+    public void remove() {
         throw new UnsupportedOperationException();
     }
 
-    public ContactInfoList getContactInfoList()
-    {
+    public ContactInfoList getContactInfoList() {
         return contactInfoList;
     }
 
     @Transport
-    public void reportSuccess(ContactInfo contactInfo)
-    {
-        display( "contactInfo", contactInfo) ;
-        failedEndpoints.clear() ;
-        waiter.reset() ; // not strictly necessary
+    public void reportSuccess(ContactInfo contactInfo) {
+        display("contactInfo", contactInfo);
+        failedEndpoints.clear();
+        waiter.reset(); // not strictly necessary
     }
 
     @Transport
     public boolean reportException(ContactInfo contactInfo,
                                    RuntimeException ex) {
         boolean result = false;
-        display( "contactInfo", contactInfo) ;
+        display("contactInfo", contactInfo);
 
-        failedEndpoints.add( contactInfo ) ;
+        failedEndpoints.add(contactInfo);
         this.failureException = ex;
         if (ex instanceof COMM_FAILURE) {
             SystemException se = (SystemException) ex;
             if (se.minor == ORBUtilSystemException.CONNECTION_REBIND) {
-                display( "COMM_FAILURE(connection rebind): " 
-                    + "retry with previous contact info", ex ) ;
+                display("COMM_FAILURE(connection rebind): "
+                                + "retry with previous contact info", ex);
 
                 retryWithPreviousContactInfo = true;
                 result = true;
@@ -253,16 +244,16 @@ public class ContactInfoListIteratorImpl
             } else {
                 if (se.completed == CompletionStatus.COMPLETED_NO) {
                     if (hasNext()) {
-                        display( "COMM_FAILURE(COMPLETED_NO, hasNext true): "
-                            + "retry with next contact info", ex ) ;
+                        display("COMM_FAILURE(COMPLETED_NO, hasNext true): "
+                                        + "retry with next contact info", ex);
                         result = true;
                         return result;
                     }
                     if (contactInfoList.getEffectiveTargetIOR() !=
-                        contactInfoList.getTargetIOR()) {
-                        display( "COMM_FAILURE(COMPLETED_NO, hasNext false, " +
-                            "effective != target): "
-                            + "retry with target", ex ) ;
+                            contactInfoList.getTargetIOR()) {
+                        display("COMM_FAILURE(COMPLETED_NO, hasNext false, " +
+                                        "effective != target): "
+                                        + "retry with target", ex);
 
                         // retry from root ior
                         updateEffectiveTargetIOR(contactInfoList.getTargetIOR());
@@ -272,20 +263,19 @@ public class ContactInfoListIteratorImpl
                 }
             }
         } else if (ex instanceof TRANSIENT) {
-            display( "TRANSIENT: retry with previous contact info", ex ) ;
+            display("TRANSIENT: retry with previous contact info", ex);
             retryWithPreviousContactInfo = true;
             result = true;
             return result;
         }
         result = false;
-        waiter.reset() ; // not strictly necessary.
+        waiter.reset(); // not strictly necessary.
         return result;
     }
 
-    public RuntimeException getFailureException()
-    {
+    public RuntimeException getFailureException() {
         if (failureException == null) {
-            return wrapper.invalidContactInfoListIteratorFailureException() ;
+            return wrapper.invalidContactInfoListIteratorFailureException();
         } else {
             return failureException;
         }
@@ -298,19 +288,17 @@ public class ContactInfoListIteratorImpl
 
     @Transport
     public void reportAddrDispositionRetry(ContactInfo contactInfo,
-                                           short disposition)
-    {
+                                           short disposition) {
         previousContactInfo.setAddressingDisposition(disposition);
         isAddrDispositionRetry = true;
-        waiter.reset() ; // necessary
+        waiter.reset(); // necessary
     }
 
     @Transport
     public void reportRedirect(ContactInfo contactInfo,
-                               IOR forwardedIOR)
-    {
+                               IOR forwardedIOR) {
         updateEffectiveTargetIOR(forwardedIOR);
-        waiter.reset() ; // Necessary
+        waiter.reset(); // Necessary
     }
 
     ////////////////////////////////////////////////////
@@ -332,8 +320,7 @@ public class ContactInfoListIteratorImpl
     // that exception.
     //
 
-    public void updateEffectiveTargetIOR(IOR newIOR)
-    {
+    public void updateEffectiveTargetIOR(IOR newIOR) {
         contactInfoList.setEffectiveTargetIOR(newIOR);
         // If we report the exception in _request (i.e., beginRequest
         // we cannot throw RemarshalException to the stub because _request
@@ -349,10 +336,10 @@ public class ContactInfoListIteratorImpl
         //
         // Remove this hack once we figure out why we get all of the
         // membership changes when the cluster shape does not change.
-        ContactInfoListImpl.setSkipRotate() ;
+        ContactInfoListImpl.setSkipRotate();
 
-        ((InvocationInfo)orb.getInvocationInfo())
-            .setContactInfoListIterator(contactInfoList.iterator());
+        ((InvocationInfo) orb.getInvocationInfo())
+                .setContactInfoListIterator(contactInfoList.iterator());
     }
 }
 

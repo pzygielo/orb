@@ -18,15 +18,15 @@
  */
 package org.glassfish.jndi.cosnaming;
 
+import org.glassfish.jndi.toolkit.corba.CorbaUtils;
+
 import javax.naming.Name;
 import javax.naming.NamingException;
-
 import java.net.MalformedURLException;
-import org.glassfish.jndi.toolkit.corba.CorbaUtils;
 
 /**
  * Extract components of a "corbaname" URL.
- *
+ * <p>
  * The format of an corbaname URL is defined in INS 99-12-03 as follows.
  * <pre>{@code
  * corbaname url = "corbaname:" <corbaloc_obj> ["#" <string_name>]
@@ -58,7 +58,6 @@ import org.glassfish.jndi.toolkit.corba.CorbaUtils;
  * }</pre>
  * <li>Resolve {@code <string_name>} in the NamingContext.
  * </ol>
- *
  */
 
 public final class CorbanameUrl {
@@ -94,14 +93,14 @@ public final class CorbanameUrl {
             addrEnd = url.length();
             stringName = "";
         } else {
-            stringName = CorbaUtils.decode(url.substring(addrEnd+1));
+            stringName = CorbaUtils.decode(url.substring(addrEnd + 1));
         }
         location = url.substring(addrStart, addrEnd);
 
         int keyStart = location.indexOf('/');
         if (keyStart >= 0) {
             // Has key string
-            if (keyStart == (location.length() -1)) {
+            if (keyStart == (location.length() - 1)) {
                 location += "NameService";
             }
         } else {

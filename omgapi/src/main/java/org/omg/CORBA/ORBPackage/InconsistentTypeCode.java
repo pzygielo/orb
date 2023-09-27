@@ -26,20 +26,21 @@ package org.omg.CORBA.ORBPackage;
  */
 // @SuppressWarnings({"serial"})
 public final class InconsistentTypeCode
-    extends org.omg.CORBA.UserException {
+        extends org.omg.CORBA.UserException {
     /**
      * Constructs an <code>InconsistentTypeCode</code> user exception
      * with no reason message.
-    */
+     */
     public InconsistentTypeCode() {
         super();
     }
 
     /**
-    * Constructs an <code>InconsistentTypeCode</code> user exception
-    * with the specified reason message.
-    * @param reason The String containing a reason message
-    */
+     * Constructs an <code>InconsistentTypeCode</code> user exception
+     * with the specified reason message.
+     *
+     * @param reason The String containing a reason message
+     */
     public InconsistentTypeCode(String reason) {
         super(reason);
     }

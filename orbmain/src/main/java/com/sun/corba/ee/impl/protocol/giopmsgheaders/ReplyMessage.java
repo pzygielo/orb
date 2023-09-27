@@ -19,9 +19,8 @@
 
 package com.sun.corba.ee.impl.protocol.giopmsgheaders;
 
-import com.sun.corba.ee.spi.servicecontext.ServiceContexts;
-import org.omg.CORBA.SystemException;
 import com.sun.corba.ee.spi.ior.IOR;
+import com.sun.corba.ee.spi.servicecontext.ServiceContexts;
 
 /**
  * This interface captures the ReplyMessage contract.
@@ -42,5 +41,6 @@ public interface ReplyMessage extends Message, LocateReplyOrReplyMessage {
     int NEEDS_ADDRESSING_MODE = 5;  // 1.2
 
     ServiceContexts getServiceContexts();
-    void setIOR( IOR newIOR );
+
+    void setIOR(IOR newIOR);
 }

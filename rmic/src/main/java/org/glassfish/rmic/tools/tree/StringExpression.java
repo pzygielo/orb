@@ -19,8 +19,10 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
+import org.glassfish.rmic.tools.java.Environment;
+import org.glassfish.rmic.tools.java.Type;
+
 import java.io.PrintStream;
 
 /**
@@ -43,6 +45,7 @@ class StringExpression extends ConstantExpression {
     public boolean equals(String s) {
         return value.equals(s);
     }
+
     public boolean isNonNull() {
         return true;            // string literal is never null
     }
@@ -73,7 +76,7 @@ class StringExpression extends ConstantExpression {
      */
     public boolean equals(Object obj) {
         if ((obj != null) && (obj instanceof StringExpression)) {
-            return value.equals(((StringExpression)obj).value);
+            return value.equals(((StringExpression) obj).value);
         }
         return false;
     }

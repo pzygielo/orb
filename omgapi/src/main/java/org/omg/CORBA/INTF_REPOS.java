@@ -21,17 +21,17 @@ package org.omg.CORBA;
 
 /**
  * Exception raised
- * when an ORB cannot reach the interface 
- * repository, or some other failure relating to the interface repository 
+ * when an ORB cannot reach the interface
+ * repository, or some other failure relating to the interface repository
  * is detected.<P>
  * It contains a minor code, which gives more detailed information about
  * what caused the exception, and a completion status. It may also contain
  * a string describing the exception.
  *
+ * @version 1.16, 09/09/97
  * @see <A href="../../../../guide/idl/jidlExceptions.html">documentation on
  * Java&nbsp;IDL exceptions</A>
- * @version     1.16, 09/09/97
- * @since       JDK1.2
+ * @since JDK1.2
  */
 
 public final class INTF_REPOS extends SystemException {
@@ -45,6 +45,7 @@ public final class INTF_REPOS extends SystemException {
 
     /**
      * Constructs an <code>INTF_REPOS</code> exception with the specified detail.
+     *
      * @param s the String containing a detail message
      */
     public INTF_REPOS(String s) {
@@ -54,6 +55,7 @@ public final class INTF_REPOS extends SystemException {
     /**
      * Constructs an <code>INTF_REPOS</code> exception with the specified
      * minor code and completion status.
+     *
      * @param minor the minor code
      * @param completed the completion status
      */
@@ -65,6 +67,7 @@ public final class INTF_REPOS extends SystemException {
      * Constructs an <code>INTF_REPOS</code> exception with the specified detail
      * message, minor code, and completion status.
      * A detail message is a String that describes this particular exception.
+     *
      * @param s the String containing a detail message
      * @param minor the minor code
      * @param completed the completion status

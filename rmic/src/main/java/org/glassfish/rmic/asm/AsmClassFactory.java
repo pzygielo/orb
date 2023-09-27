@@ -20,18 +20,9 @@
 package org.glassfish.rmic.asm;
 
 import org.glassfish.rmic.Names;
-import org.glassfish.rmic.tools.java.ClassDeclaration;
-import org.glassfish.rmic.tools.java.ClassDefinition;
-import org.glassfish.rmic.tools.java.ClassDefinitionFactory;
-import org.glassfish.rmic.tools.java.Environment;
-import org.glassfish.rmic.tools.java.Identifier;
-import org.glassfish.rmic.tools.java.MemberDefinition;
 import org.glassfish.rmic.tools.java.Type;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.FieldVisitor;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
+import org.glassfish.rmic.tools.java.*;
+import org.objectweb.asm.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,11 +41,14 @@ public class AsmClassFactory implements ClassDefinitionFactory {
     private Map<Identifier, Identifier> outerClasses = new HashMap<>();
 
     public AsmClassFactory() {
-        if (simulateMissingASM) throw new NoClassDefFoundError();
+        if (simulateMissingASM) {
+            throw new NoClassDefFoundError();
+        }
     }
 
     /**
      * Returns the latest API supported by the active version of ASM.
+     *
      * @return an integer value
      */
     static int getLatestVersion() {
@@ -62,7 +56,7 @@ public class AsmClassFactory implements ClassDefinitionFactory {
             int latest = 0;
             for (Field field : Opcodes.class.getDeclaredFields()) {
                 if (field.getName().startsWith("ASM") && field.getType().equals(int.class)
-                    && field.getAnnotation(Deprecated.class) == null) {
+                        && field.getAnnotation(Deprecated.class) == null) {
                     latest = Math.max(latest, field.getInt(Opcodes.class));
                 }
             }
@@ -74,6 +68,7 @@ public class AsmClassFactory implements ClassDefinitionFactory {
 
     /**
      * Returns the latest API supported by the active version of ASM.
+     *
      * @return an integer value
      */
     static int getLatestClassVersion() {
@@ -91,8 +86,9 @@ public class AsmClassFactory implements ClassDefinitionFactory {
     }
 
     Identifier getOuterClassName(Identifier className) {
-        if (isResolvedInnerClassName(className))
+        if (isResolvedInnerClassName(className)) {
             className = Names.mangleClass(className);
+        }
         return outerClasses.get(className);
     }
 
@@ -135,8 +131,9 @@ public class AsmClassFactory implements ClassDefinitionFactory {
 
         private String toSourceFileName(String name) {
             String className = toClassName(name);
-            if (className.contains("$"))
+            if (className.contains("$")) {
                 className = className.substring(0, className.indexOf("$"));
+            }
             return className + ".java";
         }
 
@@ -146,8 +143,9 @@ public class AsmClassFactory implements ClassDefinitionFactory {
 
         private ClassDeclaration[] toClassDeclarations(String... names) {
             ClassDeclaration[] result = new ClassDeclaration[names.length];
-            for (int i = 0; i < names.length; i++)
+            for (int i = 0; i < names.length; i++) {
                 result[i] = new ClassDeclaration(getIdentifier(names[i]));
+            }
             return result;
         }
 
@@ -161,8 +159,9 @@ public class AsmClassFactory implements ClassDefinitionFactory {
 
         @Override
         public void visitInnerClass(String name, String outerName, String innerName, int access) {
-            if (outerName != null)
+            if (outerName != null) {
                 outerClasses.put(getIdentifier(name), getIdentifier(outerName));
+            }
         }
 
         @Override

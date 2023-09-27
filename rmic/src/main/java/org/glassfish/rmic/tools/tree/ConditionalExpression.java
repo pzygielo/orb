@@ -19,9 +19,12 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
 import org.glassfish.rmic.tools.asm.Label;
+import org.glassfish.rmic.tools.java.ClassNotFound;
+import org.glassfish.rmic.tools.java.Environment;
+import org.glassfish.rmic.tools.java.Type;
+
 import java.io.PrintStream;
 import java.util.Hashtable;
 
@@ -47,7 +50,7 @@ class ConditionalExpression extends BinaryExpression {
      */
     public Expression order() {
         if (precedence() > cond.precedence()) {
-            UnaryExpression e = (UnaryExpression)cond;
+            UnaryExpression e = (UnaryExpression) cond;
             cond = e.right;
             e.right = order();
             return e;
@@ -61,7 +64,7 @@ class ConditionalExpression extends BinaryExpression {
     public Vset checkValue(Environment env, Context ctx, Vset vset, Hashtable<Object, Object> exp) {
         ConditionVars cvars = cond.checkCondition(env, ctx, vset, exp);
         vset = left.checkValue(env, ctx, cvars.vsTrue, exp).join(
-               right.checkValue(env, ctx, cvars.vsFalse, exp) );
+                right.checkValue(env, ctx, cvars.vsFalse, exp));
         cond = convert(env, ctx, Type.tBoolean, cond);
 
         int tm = left.type.getTypeMask() | right.type.getTypeMask();
@@ -82,7 +85,7 @@ class ConditionalExpression extends BinaryExpression {
                 // This is wrong.  We should be using their most common
                 // ancestor, instead.
                 type = env.implicitCast(right.type, left.type)
-                    ? left.type : right.type;
+                        ? left.type : right.type;
             } catch (ClassNotFound e) {
                 type = Type.tError;
             }
@@ -161,16 +164,16 @@ class ConditionalExpression extends BinaryExpression {
         // This call can happen, for example, in MemberDefinition#cleanup().
         // (Fix for 4069861).
         return 1 +
-            cond.costInline(thresh, env, ctx) +
-            left.costInline(thresh, env, ctx) +
-            ((right == null) ? 0 : right.costInline(thresh, env, ctx));
+                cond.costInline(thresh, env, ctx) +
+                left.costInline(thresh, env, ctx) +
+                ((right == null) ? 0 : right.costInline(thresh, env, ctx));
     }
 
     /**
      * Create a copy of the expression for method inlining
      */
     public Expression copyInline(Context ctx) {
-        ConditionalExpression e = (ConditionalExpression)clone();
+        ConditionalExpression e = (ConditionalExpression) clone();
         e.cond = cond.copyInline(ctx);
         e.left = left.copyInline(ctx);
 
@@ -195,6 +198,7 @@ class ConditionalExpression extends BinaryExpression {
         right.codeValue(env, ctx, asm);
         asm.add(l2);
     }
+
     public void code(Environment env, Context ctx, Assembler asm) {
         Label l1 = new Label();
         cond.codeBranch(env, ctx, asm, l1, false);

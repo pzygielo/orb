@@ -35,4 +35,4 @@ public class BatchEnvironmentTest {
 
         assertThat(BatchEnvironment.createClassPath(classPath, systemPath).toString().split(File.pathSeparator), arrayWithSize(4));
     }
- }
+}

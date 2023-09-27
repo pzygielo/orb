@@ -24,24 +24,25 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 // import com.sun.corba.ee.impl.io.FVDCodeBaseImpl;
 import javax.rmi.CORBA.*;
+
 import com.sun.org.omg.SendingContext.CodeBase;
 import rmic.OnlyRemoteServant;
 
 public class ServantInner implements SInner {
-    public ServantInner () throws RemoteException {
+    public ServantInner() throws RemoteException {
     }
-    
-    public SInner echo (SInner in) throws RemoteException {
+
+    public SInner echo(SInner in) throws RemoteException {
         return in;
     }
-    
+
     public CodeBase getCodeBase() throws RemoteException {
         javax.rmi.CORBA.ValueHandler vh = Util.createValueHandler();
         return (CodeBase) vh.getRunTimeCodeBase();
     }
-    
+
     public Remote getOnlyRemote() throws RemoteException {
         return new OnlyRemoteServant();
     }
-    
+
 }

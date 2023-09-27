@@ -25,45 +25,44 @@
 package corba.legacyorbclasses;
 
 import java.util.Properties;
+
 import corba.framework.Controller;
 import org.omg.CORBA.ORB;
 import org.omg.CosNaming.*;
 import org.omg.CosNaming.NamingContextPackage.*;
 import com.sun.corba.ee.spi.misc.ORBConstants;
 
-public class Client 
-{
+public class Client {
     public static final String baseMsg = Client.class.getName();
     public static final String main = baseMsg + ".main";
 
-    public static final String ORBClassKey = 
-        "org.omg.CORBA.ORBClass";
+    public static final String ORBClassKey =
+            "org.omg.CORBA.ORBClass";
     public static final String ORBSingletonClassKey =
-        "org.omg.CORBA.ORBSingletonClass";
+            "org.omg.CORBA.ORBSingletonClass";
 
-    public static void main(String av[])
-    {
+    public static void main(String av[]) {
         try {
             // ORBSingletons
             // Note: this negative test must come first, since you
             // can only create one singleton in a JVM.
-            createORB(false, false,  "x", null);
-            createORB(true,  false,
+            createORB(false, false, "x", null);
+            createORB(true, false,
                       "com.sun.corba.ee.internal.corba.ORBSingleton",
                       com.sun.corba.ee.internal.corba.ORBSingleton.class);
 
             // FULL ORBs
-            createORB(false, true,  "x", null);         
-            createORB(true,  true,  
+            createORB(false, true, "x", null);
+            createORB(true, true,
                       "com.sun.corba.ee.impl.orb.ORBImpl",
                       com.sun.corba.ee.impl.orb.ORBImpl.class);
-            createORB(true,  true,
+            createORB(true, true,
                       "com.sun.corba.ee.internal.Interceptors.PIORB",
                       com.sun.corba.ee.internal.Interceptors.PIORB.class);
-            createORB(true,  true,  
+            createORB(true, true,
                       "com.sun.corba.ee.internal.POA.POAORB",
                       com.sun.corba.ee.internal.POA.POAORB.class);
-            createORB(true,  true,  
+            createORB(true, true,
                       "com.sun.corba.ee.internal.iiop.ORB",
                       com.sun.corba.ee.internal.iiop.ORB.class);
 
@@ -77,28 +76,27 @@ public class Client
         System.exit(Controller.SUCCESS);
     }
 
-    private static void createORB(boolean shouldExist, 
+    private static void createORB(boolean shouldExist,
                                   boolean isFullORB,
                                   String className,
                                   Class clazz)
-        throws
-            Exception
-    {
+            throws
+            Exception {
         ORB orb = null;
         creating(className);
         try {
             if (isFullORB) {
                 System.getProperties()
-                    .setProperty(ORBClassKey, className);
+                        .setProperty(ORBClassKey, className);
                 // NOTE: without setting this explicitly it is getting
                 // the default and failing.  Not sure why this is needed
                 // in this test but not in others.
                 System.getProperties()
-                    .setProperty(ORBConstants.INITIAL_PORT_PROPERTY, "1049");
-                orb = ORB.init((String[])null, System.getProperties());
+                        .setProperty(ORBConstants.INITIAL_PORT_PROPERTY, "1049");
+                orb = ORB.init((String[]) null, System.getProperties());
             } else {
                 System.getProperties()
-                    .setProperty(ORBSingletonClassKey,className);
+                        .setProperty(ORBSingletonClassKey, className);
                 orb = ORB.init();
             }
 
@@ -110,8 +108,8 @@ public class Client
 
             if (isFullORB) {
                 NamingContext nameService =
-                    NamingContextHelper.narrow(
-                        orb.resolve_initial_references("NameService"));
+                        NamingContextHelper.narrow(
+                                orb.resolve_initial_references("NameService"));
                 NameComponent nc = new NameComponent("FOO", "");
                 NameComponent path[] = { nc };
                 nameService.rebind(path, nameService);
@@ -125,33 +123,29 @@ public class Client
         }
     }
 
-    public static void creating(String className)
-    {
+    public static void creating(String className) {
         System.out.println(baseMsg + ".createORB: creating: " + className);
     }
 
-    public static void created(ORB orb)
-    {
+    public static void created(ORB orb) {
         System.out.println(baseMsg + ".createORB: created: " + orb);
     }
 
     public static void checkShouldNotExist(boolean shouldExist,
                                            String className)
-        throws
-            Exception
-    {
-        if (! shouldExist) {
+            throws
+            Exception {
+        if (!shouldExist) {
             throw new Exception("should not exist: " + className);
         }
     }
 
     public static void checkType(Class clazz, ORB orb)
-        throws
-            Exception
-    {
+            throws
+            Exception {
         // If we get here we created an ORB as expected.
         // Be sure it is the one we wanted to create.
-        if (! clazz.isInstance(orb)) {
+        if (!clazz.isInstance(orb)) {
             throw new Exception("Expected: " + clazz + " got: " + orb);
         }
     }

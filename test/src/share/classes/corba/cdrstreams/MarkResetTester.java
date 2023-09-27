@@ -21,8 +21,7 @@ package corba.cdrstreams;
 
 import java.io.*;
 
-public class MarkResetTester implements Serializable
-{
+public class MarkResetTester implements Serializable {
     int fragmentSize;
     private static final long TESTVALUE = 275125891;
     private static final int FRAGMENT_SIZE_MULTIPLIER = 3;
@@ -32,19 +31,19 @@ public class MarkResetTester implements Serializable
     }
 
     private void writeObject(java.io.ObjectOutputStream out)
-        throws IOException
-    {
+            throws IOException {
         out.defaultWriteObject();
 
         // Write how many longs are going to be sent
-        int numLongs = (int)(FRAGMENT_SIZE_MULTIPLIER 
-                             * Math.floor(fragmentSize / 8.0));
+        int numLongs = (int) (FRAGMENT_SIZE_MULTIPLIER
+                * Math.floor(fragmentSize / 8.0));
         out.writeInt(numLongs);
 
         System.out.println("Writing " + numLongs + " longs");
 
-        for (int i = 0; i < numLongs; i++)
-            out.writeLong((long)i);
+        for (int i = 0; i < numLongs; i++) {
+            out.writeLong((long) i);
+        }
 
         // Do the same thing but with Longs
         out.writeInt(numLongs);
@@ -54,30 +53,32 @@ public class MarkResetTester implements Serializable
         // Intermix indirected and new instances with the same value
         Long indirectedLong = new Long(TESTVALUE);
         for (int i = 0; i < numLongs; i++) {
-            if (i % 3 == 0)
+            if (i % 3 == 0) {
                 out.writeObject(indirectedLong);
-            else
+            } else {
                 out.writeObject(new Long(TESTVALUE));
+            }
         }
 
         // Try arrays to test special chunking code
-        int arraySize = (int)(Math.ceil(fragmentSize / 2.0));
+        int arraySize = (int) (Math.ceil(fragmentSize / 2.0));
         int numArrays = 7;
-        
+
         System.out.println("Writing " + numArrays + " arrays of "
-                           + arraySize + " ints");
+                                   + arraySize + " ints");
 
         out.writeInt(numArrays);
         out.writeInt(arraySize);
 
         int indirectedArray[] = new int[arraySize];
-        for (int i = 0; i < indirectedArray.length; i++)
+        for (int i = 0; i < indirectedArray.length; i++) {
             indirectedArray[i] = i + 111;
+        }
 
         for (int i = 0; i < numArrays; i++) {
-            if (i % 4 == 0)
+            if (i % 4 == 0) {
                 out.writeObject(indirectedArray);
-            else {
+            } else {
                 int newArray[] = new int[arraySize];
                 System.arraycopy(indirectedArray, 0, newArray, 0, arraySize);
                 out.writeObject(newArray);
@@ -88,8 +89,7 @@ public class MarkResetTester implements Serializable
     }
 
     private void readObject(java.io.ObjectInputStream in)
-        throws IOException, ClassNotFoundException
-    {
+            throws IOException, ClassNotFoundException {
         in.defaultReadObject();
 
         // Read how many longs are going to follow
@@ -97,11 +97,12 @@ public class MarkResetTester implements Serializable
 
         System.out.println("Reading " + numLongs + " longs");
 
-        if (numLongs != (int)(FRAGMENT_SIZE_MULTIPLIER
-                              * Math.floor(fragmentSize / 8.0)))
+        if (numLongs != (int) (FRAGMENT_SIZE_MULTIPLIER
+                * Math.floor(fragmentSize / 8.0))) {
             throw new IOException("Incorrect number of longs: " + numLongs
-                                  + " expected " + (FRAGMENT_SIZE_MULTIPLIER
-                                                    * Math.floor(fragmentSize / 8.0)));
+                                          + " expected " + (FRAGMENT_SIZE_MULTIPLIER
+                    * Math.floor(fragmentSize / 8.0)));
+        }
 
         System.out.println("Testing all possible mark/resets");
         for (int markedLong = 0; markedLong < numLongs; markedLong++) {
@@ -112,16 +113,16 @@ public class MarkResetTester implements Serializable
                 in.mark(0);
 
                 System.out.println("Mark set for long " + markedLong
-                                   + " reading " + longsToRead + " longs");
+                                           + " reading " + longsToRead + " longs");
 
                 for (int i = 0; i < longsToRead; i++) {
 
                     long value = in.readLong();
                     if (value != expectedValue) {
                         throw new IOException("Expected " + expectedValue + " but read "
-                                              + value + " at markedLong=" + markedLong
-                                              + " longsToRead=" + longsToRead
-                                              + " i=" + i);
+                                                      + value + " at markedLong=" + markedLong
+                                                      + " longsToRead=" + longsToRead
+                                                      + " i=" + i);
                     }
 
                     expectedValue++;
@@ -161,27 +162,28 @@ public class MarkResetTester implements Serializable
             in.mark(100);
             Object obj1b = in.readObject();
             in.reset();
-            if (obj1a != obj1b)
+            if (obj1a != obj1b) {
                 throw new IOException("markSupported returned true, but violated contract");
+            }
         }
 
         System.out.println("Testing Longs...");
-        
+
         for (int markedLong = 0; markedLong < numLongs; markedLong++) {
             for (int longsToRead = 1; longsToRead <= numLongs - markedLong; longsToRead++) {
                 in.mark(0);
                 System.out.println("Mark set for Long " + markedLong
-                                   + " reading " + longsToRead + " Longs");
+                                           + " reading " + longsToRead + " Longs");
 
                 for (int i = 0; i < longsToRead; i++) {
 
                     Object objectRead = in.readObject();
-                    
+
                     if (!expectedLong.equals(objectRead)) {
                         throw new IOException("Object " + objectRead + " doesn't match expected "
-                                              + expectedLong + " at markedLong=" + markedLong
-                                              + " longsToRead=" + longsToRead
-                                              + " i=" + i);
+                                                      + expectedLong + " at markedLong=" + markedLong
+                                                      + " longsToRead=" + longsToRead
+                                                      + " i=" + i);
                     }
                 }
 
@@ -199,27 +201,28 @@ public class MarkResetTester implements Serializable
         System.out.println("Number of arrays: " + numArrays);
 
         int expectedArray[] = new int[arraySize];
-        for (int i = 0; i < expectedArray.length; i++)
+        for (int i = 0; i < expectedArray.length; i++) {
             expectedArray[i] = i + 111;
+        }
 
         for (int markedArray = 0; markedArray < numArrays; markedArray++) {
             for (int arraysToRead = 1; arraysToRead <= numArrays - markedArray; arraysToRead++) {
                 in.mark(0);
 
                 System.out.println("Mark set for array " + markedArray
-                                   + " reading " + arraysToRead + " arrays");
+                                           + " reading " + arraysToRead + " arrays");
 
                 for (int i = 0; i < arraysToRead; i++) {
                     Object objectRead = in.readObject();
 
                     try {
-                        int arrayRead[] = (int[])objectRead;
+                        int arrayRead[] = (int[]) objectRead;
 
                         for (int x = 0; x < arraySize; x++) {
                             if (arrayRead[x] != expectedArray[x]) {
                                 throw new IOException("Expected and read arrays differ at index "
-                                                      + x + ": " + arrayRead[x] + " != "
-                                                      + expectedArray[x]);
+                                                              + x + ": " + arrayRead[x] + " != "
+                                                              + expectedArray[x]);
                             }
                         }
                     } catch (ClassCastException cce) {

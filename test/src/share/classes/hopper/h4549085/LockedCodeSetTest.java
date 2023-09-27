@@ -21,23 +21,22 @@ package hopper.h4549085;
 
 import test.Test;
 import corba.framework.*;
+
 import java.util.*;
+
 import com.sun.corba.ee.spi.misc.ORBConstants;
 import org.omg.CORBA.*;
 
 /**
  * Simple tests in GIOP 1.1 and 1.2 of chars and wstrings.
  */
-public class LockedCodeSetTest extends CORBATest
-{
+public class LockedCodeSetTest extends CORBATest {
     public static final String[] idlFiles = { "Tester.idl" };
 
     public static final String[] javaFiles = { "Server.java",
-                                               "Client.java" };
+            "Client.java" };
 
-
-    protected void doTest() throws Throwable
-    {
+    protected void doTest() throws Throwable {
         Options.addIDLCompilerArgs("-fall");
         Options.setIDLFiles(idlFiles);
         Options.setJavaFiles(javaFiles);

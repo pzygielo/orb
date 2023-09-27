@@ -27,12 +27,11 @@ import org.omg.CORBA.TypeCode;
  * I can't find a Helper for the Java Codebase
  * tagged component.
  */
-public class CodeBaseHandler implements EncapsHandler
-{
+public class CodeBaseHandler implements EncapsHandler {
     public void display(byte[] data,
                         TextOutputHandler out,
                         Utility util)
-        throws DecodingException {
+            throws DecodingException {
 
         try {
 

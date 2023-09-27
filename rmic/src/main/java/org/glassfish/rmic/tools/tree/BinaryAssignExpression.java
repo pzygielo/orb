@@ -19,8 +19,8 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
-import org.glassfish.rmic.tools.asm.Assembler;
+import org.glassfish.rmic.tools.java.Environment;
+
 import java.util.Hashtable;
 
 /**
@@ -40,8 +40,9 @@ class BinaryAssignExpression extends BinaryExpression {
     }
 
     public Expression getImplementation() {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation;
+        }
         return this;
     }
 
@@ -50,7 +51,7 @@ class BinaryAssignExpression extends BinaryExpression {
      */
     public Expression order() {
         if (precedence() >= left.precedence()) {
-            UnaryExpression e = (UnaryExpression)left;
+            UnaryExpression e = (UnaryExpression) left;
             left = e.right;
             e.right = order();
             return e;
@@ -61,7 +62,7 @@ class BinaryAssignExpression extends BinaryExpression {
     /**
      * Check void expression
      */
-    public Vset check(Environment env, Context ctx, Vset vset, Hashtable<Object,Object> exp) {
+    public Vset check(Environment env, Context ctx, Vset vset, Hashtable<Object, Object> exp) {
         return checkValue(env, ctx, vset, exp);
     }
 
@@ -69,27 +70,32 @@ class BinaryAssignExpression extends BinaryExpression {
      * Inline
      */
     public Expression inline(Environment env, Context ctx) {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation.inline(env, ctx);
+        }
         return inlineValue(env, ctx);
     }
+
     public Expression inlineValue(Environment env, Context ctx) {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation.inlineValue(env, ctx);
+        }
         left = left.inlineLHS(env, ctx);
         right = right.inlineValue(env, ctx);
         return this;
     }
 
     public Expression copyInline(Context ctx) {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation.copyInline(ctx);
+        }
         return super.copyInline(ctx);
     }
 
     public int costInline(int thresh, Environment env, Context ctx) {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation.costInline(thresh, env, ctx);
+        }
         return super.costInline(thresh, env, ctx);
     }
 }

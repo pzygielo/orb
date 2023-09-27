@@ -27,13 +27,14 @@ package corba.purgecalls;
 import com.sun.corba.ee.spi.legacy.connection.Connection;
 import corba.framework.Controller;
 import corba.hcks.U;
+
 import java.net.Socket;
 import java.util.Properties;
+
 import org.omg.CORBA.COMM_FAILURE;
 import org.omg.CORBA.ORB;
 
-public class Client 
-{
+public class Client {
     public static final String baseMsg = Client.class.getName();
     public static final String main = baseMsg + ".main";
 
@@ -45,16 +46,14 @@ public class Client
 
     public static Throwable noExceptionExpected;
 
-    public static void main(String av[])
-    {
+    public static void main(String av[]) {
         try {
             Properties props = new Properties();
             props.put(U.ORBInitializerClass + "." + "corba.purgecalls.ClientORBInitializer", "ignored");
             orb = ORB.init(av, props);
 
-            
-            rServerSide =  
-                ServerSideHelper.narrow(U.resolve(Server.ServerSide, orb));
+            rServerSide =
+                    ServerSideHelper.narrow(U.resolve(Server.ServerSide, orb));
 
             runTests();
 
@@ -84,12 +83,11 @@ public class Client
     }
 
     public static void runTests()
-        throws
-            Exception
-    {
+            throws
+            Exception {
         CallThread CallThread = new CallThread();
         CallThread.start();
-    
+
         Thread.sleep(5000);
 
         Socket socket = requestConnection.getSocket();
@@ -101,13 +99,11 @@ public class Client
     }
 }
 
-class CallThread extends Thread
-{
-    CallThread ()
-    {
+class CallThread extends Thread {
+    CallThread() {
     }
-    public void run ()
-    {
+
+    public void run() {
         try {
             Client.rServerSide.neverReturns();
         } catch (COMM_FAILURE e) {

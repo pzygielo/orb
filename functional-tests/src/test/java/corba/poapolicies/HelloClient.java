@@ -37,7 +37,7 @@ public class HelloClient {
         System.out.println("Created object");
 
         Hello result = HelloHelper.narrow(obj);
-        
+
         System.out.println("narrowed it");
 
         return result;
@@ -52,9 +52,9 @@ public class HelloClient {
     static final void invoke(Hello h) {
         System.out.println(h.hi());
     }
-    
+
     public static void main(String[] args) {
-        
+
         try {
 
             System.out.println("Client starting");
@@ -63,13 +63,12 @@ public class HelloClient {
             Factory f = u.readFactory();
 
             System.out.println("readFactory");
-            
 
             System.out.println("invoke 1");
 
             Hello h1 =
-                createHello(CreationMethods.EXPLICIT_ACTIVATION_WITH_POA_ASSIGNED_OIDS,
-                            f);
+                    createHello(CreationMethods.EXPLICIT_ACTIVATION_WITH_POA_ASSIGNED_OIDS,
+                                f);
 
             System.out.println("created 1, now invoking");
 
@@ -78,22 +77,22 @@ public class HelloClient {
             System.out.println("invoke 2");
 
             Hello h2 =
-                createHello(CreationMethods.EXPLICIT_ACTIVATION_WITH_USER_ASSIGNED_OIDS,
-                            f);
+                    createHello(CreationMethods.EXPLICIT_ACTIVATION_WITH_USER_ASSIGNED_OIDS,
+                                f);
             invoke(h2);
 
             System.out.println("invoke 3");
 
             Hello h3 =
-                createHello(CreationMethods.CREATE_REFERENCE_BEFORE_ACTIVATION_WITH_POA_ASSIGNED_OIDS,
-                            f);
+                    createHello(CreationMethods.CREATE_REFERENCE_BEFORE_ACTIVATION_WITH_POA_ASSIGNED_OIDS,
+                                f);
             invoke(h3);
 
             System.out.println("invoke 4");
 
             Hello h4 =
-                createHello(CreationMethods.CREATE_REFERENCE_BEFORE_ACTIVATION_WITH_USER_ASSIGNED_OIDS,
-                            f);
+                    createHello(CreationMethods.CREATE_REFERENCE_BEFORE_ACTIVATION_WITH_USER_ASSIGNED_OIDS,
+                                f);
             invoke(h4);
 
             System.out.println("Calling overAndOut");
@@ -107,9 +106,10 @@ public class HelloClient {
             e.printStackTrace();
             try {
                 System.err.flush();
-            } catch (Exception ex) {}
+            } catch (Exception ex) {
+            }
             System.exit(1);
-        } 
+        }
     }
 }
 

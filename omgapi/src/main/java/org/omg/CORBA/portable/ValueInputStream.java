@@ -21,7 +21,7 @@ package org.omg.CORBA.portable;
 
 /**
  * Java to IDL ptc 02-01-12 1.5.1.4
- *
+ * <p>
  * ValueInputStream is used for implementing RMI-IIOP
  * stream format version 2.
  */

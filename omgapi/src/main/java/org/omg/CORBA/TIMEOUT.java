@@ -24,10 +24,10 @@ package org.omg.CORBA;
  * specified time-to-live period has been exceeded. It is a standard system
  * exception because time-to-live QoS can be applied to any invocation.
  *
- * @see <A href="../../../../guide/idl/jidlExceptions.html">documentation on
- *      Java&nbsp;IDL exceptions</A>
  * @version 1.0, 03/05/2004
- * @since   J2SE 1.5
+ * @see <A href="../../../../guide/idl/jidlExceptions.html">documentation on
+ * Java&nbsp;IDL exceptions</A>
+ * @since J2SE 1.5
  */
 
 public final class TIMEOUT extends SystemException {
@@ -41,9 +41,9 @@ public final class TIMEOUT extends SystemException {
     }
 
     /**
-     * Constructs an <code>TIMEOUT</code> exception with the 
+     * Constructs an <code>TIMEOUT</code> exception with the
      * specified message.
-     * 
+     *
      * @param detailMessage string containing a detailed message.
      */
     public TIMEOUT(String detailMessage) {
@@ -51,27 +51,27 @@ public final class TIMEOUT extends SystemException {
     }
 
     /**
-     * Constructs an <code>TIMEOUT</code> exception with the 
+     * Constructs an <code>TIMEOUT</code> exception with the
      * specified minor code and completion status.
-     * 
+     *
      * @param minorCode minor code.
      * @param completionStatus completion status.
      */
-    public TIMEOUT(int minorCode, 
+    public TIMEOUT(int minorCode,
                    CompletionStatus completionStatus) {
         this("", minorCode, completionStatus);
     }
 
     /**
-     * Constructs an <code>TIMEOUT</code> exception with the 
+     * Constructs an <code>TIMEOUT</code> exception with the
      * specified message, minor code, and completion status.
-     * 
+     *
      * @param detailMessage string containing a detailed message.
      * @param minorCode minor code.
      * @param completionStatus completion status.
      */
-    public TIMEOUT(String detailMessage, 
-                   int minorCode, 
+    public TIMEOUT(String detailMessage,
+                   int minorCode,
                    CompletionStatus completionStatus) {
         super(detailMessage, minorCode, completionStatus);
     }

@@ -21,17 +21,17 @@ package corba.codeset;
 
 import test.Test;
 import corba.framework.*;
+
 import java.util.*;
+
 import com.sun.corba.ee.spi.misc.ORBConstants;
 import org.omg.CORBA.*;
 
 /**
  * Simple tests in GIOP 1.1 and 1.2 of chars and wstrings.
  */
-public class CodeSetTest extends CORBATest
-{
-    protected void doTest() throws Throwable
-    {
+public class CodeSetTest extends CORBATest {
+    protected void doTest() throws Throwable {
         // Now GIOP 1.1.
         Controller orbd = createORBD();
 

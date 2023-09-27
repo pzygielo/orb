@@ -22,11 +22,12 @@ package org.omg.CORBA.TSIdentificationPackage;
 /**
  * This exception is thrown if OTS call-back interfaces
  * have already been registered with the ORB.
+ *
  * @see org.omg.CORBA.TSIdentification
  * @see NotAvailable
  */
 public final class AlreadyIdentified
-    extends org.omg.CORBA.UserException {
+        extends org.omg.CORBA.UserException {
     //  constructor
     public AlreadyIdentified() {
         super();

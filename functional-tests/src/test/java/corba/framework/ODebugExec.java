@@ -21,6 +21,7 @@ package corba.framework;
 
 import java.io.*;
 import java.util.*;
+
 import test.*;
 
 /**
@@ -29,8 +30,7 @@ import test.*;
  * has a static main method, etc.  Output is redirected appropriately by
  * using test.ProcessMonitor.
  */
-public class ODebugExec extends ExternalExec
-{
+public class ODebugExec extends ExternalExec {
     public void initialize(String className,
                            String processName,
                            Properties environment,
@@ -38,8 +38,7 @@ public class ODebugExec extends ExternalExec
                            String programArgs[],
                            OutputStream out,
                            OutputStream err,
-                           Hashtable extra) throws Exception
-    {
+                           Hashtable extra) throws Exception {
         super.initialize(className,
                          processName,
                          environment,
@@ -50,41 +49,39 @@ public class ODebugExec extends ExternalExec
                          extra);
     }
 
-    protected String[] getDebugVMArgs()
-    {
-        String sourcepath = System.getProperty( "com.sun.corba.ee.test.sourcepath" ) ;
-        String[] result = { "com.lambda.Debugger.Debugger", "sourcepath", 
-            sourcepath } ;
+    protected String[] getDebugVMArgs() {
+        String sourcepath = System.getProperty("com.sun.corba.ee.test.sourcepath");
+        String[] result = { "com.lambda.Debugger.Debugger", "sourcepath",
+                sourcepath };
 
-        return result ;
-    } ;
-
-    public int waitFor(long timeout) throws Exception
-    {
-        // We don't want to set a timeout while debugging
-        return waitFor() ;
+        return result;
     }
 
-    public void start() throws Exception
-    {
-        System.out.println( "Starting process " + processName + " in remote debug mode" ) ;
-        super.start() ;
-        Object waiter = new Object() ;
+    ;
+
+    public int waitFor(long timeout) throws Exception {
+        // We don't want to set a timeout while debugging
+        return waitFor();
+    }
+
+    public void start() throws Exception {
+        System.out.println("Starting process " + processName + " in remote debug mode");
+        super.start();
+        Object waiter = new Object();
         synchronized (waiter) {
-            waiter.wait( 5000 ) ;
+            waiter.wait(5000);
         }
     }
 
-    public void stop()
-    {
+    public void stop() {
         // we don't want to stop; just tell the user and let them
         // tell us when to stop
-        
+
         printDebugBreak();
 
         System.out.println("The framework wants to stop the "
-                           + processName + " process");
-        
+                                   + processName + " process");
+
         waitForEnter("Press enter to terminate the process");
 
         exitValue();

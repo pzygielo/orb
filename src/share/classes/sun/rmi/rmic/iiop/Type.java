@@ -24,13 +24,16 @@ import java.util.Vector;
 import java.util.Hashtable;
 import java.util.Enumeration;
 import java.io.IOException;
+
 import sun.tools.java.ClassDefinition;
 import sun.tools.java.ClassDeclaration;
 import sun.tools.java.Identifier;
 import sun.tools.java.ClassNotFound;
 import sun.tools.java.CompilerError;
 import sun.rmi.rmic.IndentingWriter;
+
 import java.util.HashSet;
+
 import com.sun.corba.ee.impl.util.RepositoryId;
 import sun.rmi.rmic.Names;
 
@@ -42,19 +45,19 @@ import sun.rmi.rmic.Names;
  * <pre>
  *
  *                                              +- RemoteType <-- AbstractType
- *                                              | 
- *                           +- InterfaceType <-+- SpecialInterfaceType                   
- *         +- PrimitiveType  |                  | 
+ *                                              |
+ *                           +- InterfaceType <-+- SpecialInterfaceType
+ *         +- PrimitiveType  |                  |
  *         |                 |                  +- NCInterfaceType
- *  Type <-+- CompoundType <-|                  
+ *  Type <-+- CompoundType <-|
  *         |                 |                  +- ValueType
- *         +- ArrayType      |                  |       
- *                           +- ClassType <-----+- ImplementationType 
+ *         +- ArrayType      |                  |
+ *                           +- ClassType <-----+- ImplementationType
  *                                              |
  *                                              +- SpecialClassType
  *                                              |
  *                                              +- NCClassType
- *                                              
+ *
  * </pre>
  * PrimitiveType represents a primitive or a void type.
  * <p>
@@ -67,7 +70,7 @@ import sun.rmi.rmic.Names;
  * RemoteType represents any non-special interface which inherits
  * from java.rmi.Remote.
  * <p>
- * AbstractType represents any non-special interface which does not 
+ * AbstractType represents any non-special interface which does not
  * inherit from java.rmi.Remote, for which all methods throw RemoteException.
  * <p>
  * SpecialInterfaceType represents any one of the following types:
@@ -106,8 +109,9 @@ import sun.rmi.rmic.Names;
  * method can be used to get the array dimension.
  * <p>
  * <i><strong>NOTE:<\strong> None of these types is multi-thread-safe<\i>
- * @version     1.0, 2/25/98
- * @author      Bryan Atsatt
+ *
+ * @author Bryan Atsatt
+ * @version 1.0, 2/25/98
  */
 public abstract class Type implements sun.rmi.rmic.iiop.Constants, ContextElement, Cloneable {
 
@@ -118,25 +122,25 @@ public abstract class Type implements sun.rmi.rmic.iiop.Constants, ContextElemen
     private String name;
     private String packageName;
     private String qualifiedName;
-    
+
     private String idlName;
     private String[] idlModuleNames;
     private String qualifiedIDLName;
-    
+
     private String repositoryID;
     private Class ourClass;
-    
+
     private int status = STATUS_PENDING;
-    
+
     protected BatchEnvironment env;     // Easy access for subclasses.
     protected ContextStack stack;       // Easy access for subclasses.
-    
+
     protected boolean destroyed = false;
 
     //_____________________________________________________________________
     // Public Interfaces
     //_____________________________________________________________________
-    
+
     /**
      * Return the unqualified name for this type (e.g. com.acme.Dynamite would
      * return "Dynamite").
@@ -144,7 +148,7 @@ public abstract class Type implements sun.rmi.rmic.iiop.Constants, ContextElemen
     public String getName() {
         return name;
     }
-    
+
     /**
      * Return the package of this type (e.g. com.acme.Dynamite would
      * return "com.acme"). Will return null if default package or
@@ -153,7 +157,7 @@ public abstract class Type implements sun.rmi.rmic.iiop.Constants, ContextElemen
     public String getPackageName() {
         return packageName;
     }
-    
+
     /**
      * Return the fully qualified name of this type  (e.g. com.acme.Dynamite
      * would return "com.acme.Dynamite")
@@ -161,13 +165,13 @@ public abstract class Type implements sun.rmi.rmic.iiop.Constants, ContextElemen
     public String getQualifiedName() {
         return qualifiedName;
     }
-    
+
     /**
      * Return signature for this type  (e.g. com.acme.Dynamite
      * would return "com.acme.Dynamite", byte = "B")
      */
     public abstract String getSignature();
-    
+
     /**
      * IDL_Naming
      * Return the unqualified IDL name of this type (e.g. com.acme.Dynamite would
@@ -176,7 +180,7 @@ public abstract class Type implements sun.rmi.rmic.iiop.Constants, ContextElemen
     public String getIDLName() {
         return idlName;
     }
-        
+
     /**
      * IDL_Naming
      * Return the IDL module name for this type (e.g. com.acme.Dynamite would return
@@ -191,6 +195,7 @@ public abstract class Type implements sun.rmi.rmic.iiop.Constants, ContextElemen
      * IDL_Naming
      * Return the fully qualified IDL name for this type (e.g. com.acme.Dynamite would
      * return "com::acme::Dynamite").
+     *
      * @param global If true, prepends "::".
      */
     public String getQualifiedIDLName(boolean global) {
@@ -200,28 +205,28 @@ public abstract class Type implements sun.rmi.rmic.iiop.Constants, ContextElemen
             return qualifiedIDLName;
         }
     }
-  
+
     /**
      * Return the identifier for this type. May be qualified.
      */
     public Identifier getIdentifier() {
         return id;
     }
-  
+
     /**
      * Return the repository ID for this type.
      */
     public String getRepositoryID() {
         return repositoryID;
     }
-    
+
     /**
      * Return the repository ID for this "boxed" type.
      */
     public String getBoxedRepositoryID() {
         return RepositoryId.createForJavaType(ourClass);
     }
-    
+
     /**
      * Return the Class for this type.
      */
@@ -231,42 +236,42 @@ public abstract class Type implements sun.rmi.rmic.iiop.Constants, ContextElemen
         }
         return ourClass;
     }
- 
+
     /**
      * Return the status of this type.
      */
     public int getStatus() {
         return status;
     }
-      
+
     /**
      * Set the status of this type.
      */
     public void setStatus(int status) {
         this.status = status;
     }
-      
+
     /**
      * Return the compiler environment for this type.
      */
     public BatchEnvironment getEnv() {
         return env;
     }
-    
+
     /**
      * Get type code, without modifiers. Type codes are defined in sun.rmi.rmic.iiop.Constants.
      */
     public int getTypeCode() {
         return typeCode;
     }
-    
+
     /**
      * Get type code, with modifiers. Type codes are defined in sun.rmi.rmic.iiop.Constants.
      */
     public int getFullTypeCode() {
         return fullTypeCode;
     }
-    
+
     /**
      * Get type code modifiers. Type codes are defined in sun.rmi.rmic.iiop.Constants.
      */
@@ -282,7 +287,7 @@ public abstract class Type implements sun.rmi.rmic.iiop.Constants, ContextElemen
     public boolean isType(int typeCodeMask) {
         return (fullTypeCode & typeCodeMask) == typeCodeMask;
     }
-    
+
     /**
      * Like isType(), but returns true if <em>any</em> of the bits in typeCodeMask are
      * present in the full type code of this object.
@@ -290,7 +295,6 @@ public abstract class Type implements sun.rmi.rmic.iiop.Constants, ContextElemen
     public boolean typeMatches(int typeCodeMask) {
         return (fullTypeCode & typeCodeMask) > 0;
     }
-
 
     /**
      * Return the fullTypeCode. If an array, returns the
@@ -303,7 +307,7 @@ public abstract class Type implements sun.rmi.rmic.iiop.Constants, ContextElemen
             return fullTypeCode;
         }
     }
-    
+
     /**
      * Return true if this type is-a InterfaceType.
      */
@@ -325,7 +329,6 @@ public abstract class Type implements sun.rmi.rmic.iiop.Constants, ContextElemen
         return (fullTypeCode & TM_INNER) == TM_INNER;
     }
 
-
     /**
      * Return true if this type is-a SpecialInterfaceType.
      */
@@ -339,28 +342,28 @@ public abstract class Type implements sun.rmi.rmic.iiop.Constants, ContextElemen
     public boolean isSpecialClass() {
         return (fullTypeCode & TM_SPECIAL_CLASS) == TM_SPECIAL_CLASS;
     }
-    
+
     /**
      * Return true if this type is-a CompoundType.
      */
     public boolean isCompound() {
         return (fullTypeCode & TM_COMPOUND) == TM_COMPOUND;
     }
-    
+
     /**
      * Return true if this type is-a PrimitiveType.
      */
     public boolean isPrimitive() {
         return (fullTypeCode & TM_PRIMITIVE) == TM_PRIMITIVE;
     }
-    
+
     /**
      * Return true if this type is-a ArrayType.
      */
     public boolean isArray() {
         return (fullTypeCode & TYPE_ARRAY) == TYPE_ARRAY;
     }
-    
+
     /**
      * Return true if this type is a conforming type.
      */
@@ -371,86 +374,89 @@ public abstract class Type implements sun.rmi.rmic.iiop.Constants, ContextElemen
     /**
      * Return a string representation of this type.
      */
-    public String toString () {         
+    public String toString() {
         return getQualifiedName();
     }
 
     /**
      * Get element type. Returns null if not an array.
      */
-    public Type getElementType () {
+    public Type getElementType() {
         return null;
     }
-        
+
     /**
      * Get array dimension. Returns zero if not an array.
      */
-    public int getArrayDimension () {
+    public int getArrayDimension() {
         return 0;
     }
-        
+
     /**
      * Get brackets string. Returns "" if not an array.
      */
-    public String getArrayBrackets () {
+    public String getArrayBrackets() {
         return "";
     }
-        
+
     /**
      * Equality check based on the string representation.
      */
     public boolean equals(Object obj) {
-        
+
         String us = toString();
-        String them = ((Type)obj).toString();
+        String them = ((Type) obj).toString();
         return us.equals(them);
     }
 
     /**
      * Collect all the matching types referenced directly or indirectly
      * by this type, including itself.
+     *
      * @param typeCodeFilter The typeCode to use as a filter.
      */
-    public Type[] collectMatching (int typeCodeFilter) {
-        return collectMatching(typeCodeFilter,new HashSet(env.allTypes.size()));
+    public Type[] collectMatching(int typeCodeFilter) {
+        return collectMatching(typeCodeFilter, new HashSet(env.allTypes.size()));
     }
 
     /**
      * Collect all the matching types referenced directly or indirectly
      * by this type, including itself.
+     *
      * @param typeCodeFilter The typeCode to use as a filter.
      * @param alreadyChecked Contains types which have previously been checked
      * and will be ignored. Updated during collection.
      */
-    public Type[] collectMatching (int typeCodeFilter, HashSet alreadyChecked) {
+    public Type[] collectMatching(int typeCodeFilter, HashSet alreadyChecked) {
         Vector matching = new Vector();
-        
+
         // Fill up the list...
-                
-        addTypes(typeCodeFilter,alreadyChecked,matching);
-                
+
+        addTypes(typeCodeFilter, alreadyChecked, matching);
+
         // Copy vector contents to array and return it...
-                
+
         Type[] result = new Type[matching.size()];
         matching.copyInto(result);
-        
+
         return result;
     }
 
     /**
      * Return a string describing this type.
      */
-    public abstract String getTypeDescription ();
-        
+    public abstract String getTypeDescription();
+
     /**
      * Return the name of this type. For arrays, will include "[]" if useIDLNames == false.
+     *
      * @param useQualifiedNames If true, print qualified names; otherwise, print unqualified names.
      * @param useIDLNames If true, print IDL names; otherwise, print java names.
      * @param globalIDLNames If true and useIDLNames true, prepends "::".
      */
-    public String getTypeName ( boolean useQualifiedNames,
-                                boolean useIDLNames,
-                                boolean globalIDLNames) {
+    public String getTypeName(boolean useQualifiedNames,
+                              boolean useIDLNames,
+                              boolean globalIDLNames) {
         if (useIDLNames) {
             if (useQualifiedNames) {
                 return getQualifiedIDLName(globalIDLNames);
@@ -469,111 +475,114 @@ public abstract class Type implements sun.rmi.rmic.iiop.Constants, ContextElemen
     /**
      * Print all types referenced directly or indirectly by this type which
      * match the filter.
+     *
      * @param writer The stream to print to.
      * @param typeCodeFilter The type codes to print.
      * @param useQualifiedNames If true, print qualified names; otherwise, print unqualified names.
      * @param useIDLNames If true, print IDL names; otherwise, print java names.
      * @param globalIDLNames If true and useIDLNames true, prepends "::".
      */
-    public void print ( IndentingWriter writer,
-                        int typeCodeFilter,
-                        boolean useQualifiedNames,
-                        boolean useIDLNames,
-                        boolean globalIDLNames) throws IOException {
-                
+    public void print(IndentingWriter writer,
+                      int typeCodeFilter,
+                      boolean useQualifiedNames,
+                      boolean useIDLNames,
+                      boolean globalIDLNames) throws IOException {
+
         Type[] theTypes = collectMatching(typeCodeFilter);
-        print(writer,theTypes,useQualifiedNames,useIDLNames,globalIDLNames);
+        print(writer, theTypes, useQualifiedNames, useIDLNames, globalIDLNames);
     }
-        
+
     /**
      * Print an array of types.
+     *
      * @param writer The stream to print to.
      * @param theTypes The types to print.
      * @param useQualifiedNames If true, print qualified names; otherwise, print unqualified names.
      * @param useIDLNames If true, print IDL names; otherwise, print java names.
      * @param globalIDLNames If true and useIDLNames true, prepends "::".
      */
-    public static void print (  IndentingWriter writer,
-                                Type[] theTypes,
-                                boolean useQualifiedNames,
-                                boolean useIDLNames,
-                                boolean globalIDLNames) throws IOException {
-                
+    public static void print(IndentingWriter writer,
+                             Type[] theTypes,
+                             boolean useQualifiedNames,
+                             boolean useIDLNames,
+                             boolean globalIDLNames) throws IOException {
+
         for (int i = 0; i < theTypes.length; i++) {
-            theTypes[i].println(writer,useQualifiedNames,useIDLNames,globalIDLNames);
+            theTypes[i].println(writer, useQualifiedNames, useIDLNames, globalIDLNames);
         }
     }
-        
-        
+
     /**
      * Print this type.
+     *
      * @param writer The stream to print to.
      * @param useQualifiedNames If true, print qualified names; otherwise, print unqualified names.
      * @param useIDLNames If true, print IDL names; otherwise, print java names.
      * @param globalIDLNames If true and useIDLNames true, prepends "::".
      */
-    public void print ( IndentingWriter writer,
+    public void print(IndentingWriter writer,
+                      boolean useQualifiedNames,
+                      boolean useIDLNames,
+                      boolean globalIDLNames) throws IOException {
+        printTypeName(writer, useQualifiedNames, useIDLNames, globalIDLNames);
+    }
+
+    /**
+     * Print this type, followed by a newline.
+     *
+     * @param writer The stream to print to.
+     * @param useQualifiedNames If true, print qualified names; otherwise, print unqualified names.
+     * @param useIDLNames If true, print IDL names; otherwise, print java names.
+     * @param globalIDLNames If true and useIDLNames true, prepends "::".
+     */
+    public void println(IndentingWriter writer,
                         boolean useQualifiedNames,
                         boolean useIDLNames,
                         boolean globalIDLNames) throws IOException {
-        printTypeName(writer,useQualifiedNames,useIDLNames,globalIDLNames);
-    }
-        
-    /**
-     * Print this type, followed by a newline.
-     * @param writer The stream to print to.
-     * @param useQualifiedNames If true, print qualified names; otherwise, print unqualified names.
-     * @param useIDLNames If true, print IDL names; otherwise, print java names.
-     * @param globalIDLNames If true and useIDLNames true, prepends "::".
-     */
-    public void println (       IndentingWriter writer,
-                                boolean useQualifiedNames,
-                                boolean useIDLNames,
-                                boolean globalIDLNames) throws IOException  {
-                
-        print(writer,useQualifiedNames,useIDLNames,globalIDLNames);
+
+        print(writer, useQualifiedNames, useIDLNames, globalIDLNames);
         writer.pln();
     }
-        
 
-        
     /**
      * Print the name of this type.
+     *
      * @param writer The stream to print to.
      * @param useQualifiedNames If true, print qualified names; otherwise, print unqualified names.
      * @param useIDLNames If true, print IDL names; otherwise, print java names.
      * @param globalIDLNames If true and useIDLNames true, prepends "::".
      */
-    public void printTypeName ( IndentingWriter writer,
-                                boolean useQualifiedNames,
-                                boolean useIDLNames,
-                                boolean globalIDLNames) throws IOException {
-                                                        
-        writer.p(getTypeName(useQualifiedNames,useIDLNames,globalIDLNames));
+    public void printTypeName(IndentingWriter writer,
+                              boolean useQualifiedNames,
+                              boolean useIDLNames,
+                              boolean globalIDLNames) throws IOException {
+
+        writer.p(getTypeName(useQualifiedNames, useIDLNames, globalIDLNames));
     }
 
     /**
      * Return context element name.
-     */         
+     */
     public String getElementName() {
-        return getQualifiedName();    
+        return getQualifiedName();
     }
-    
+
     //_____________________________________________________________________
     // Subclass Interfaces
     //_____________________________________________________________________
 
     /**
      * Print the "opening" of the package or module of this type.
+     *
      * @param writer The stream to print to.
      * @param useIDLNames If true, print IDL names; otherwise, print java names.
-     */         
-    protected void printPackageOpen (   IndentingWriter writer,
-                                        boolean useIDLNames) throws IOException {
-        
+     */
+    protected void printPackageOpen(IndentingWriter writer,
+                                    boolean useIDLNames) throws IOException {
+
         if (useIDLNames) {
             String[] moduleNames = getIDLModuleNames();
-            for (int i = 0; i < moduleNames.length; i++ ) {
+            for (int i = 0; i < moduleNames.length; i++) {
                 writer.plnI("module " + moduleNames[i] + " {");
             }
         } else {
@@ -583,113 +592,112 @@ public abstract class Type implements sun.rmi.rmic.iiop.Constants, ContextElemen
             }
         }
     }
- 
+
     /**
      * Get a type out of the table.
-     */         
-    protected static Type getType (sun.tools.java.Type key, ContextStack stack) {
-        return getType(key.toString(),stack);   
+     */
+    protected static Type getType(sun.tools.java.Type key, ContextStack stack) {
+        return getType(key.toString(), stack);
     }
-    
+
     /**
      * Get a type out of the table.
-     */         
-    protected static Type getType (String key, ContextStack stack) {
+     */
+    protected static Type getType(String key, ContextStack stack) {
         Type result = (Type) stack.getEnv().allTypes.get(key);
-            
+
         if (result != null) {
-            stack.traceExistingType(result);    
+            stack.traceExistingType(result);
         }
-            
-        return result;   
+
+        return result;
     }
-        
+
     /**
      * Remove a type from the table.
-     */         
-    protected static void removeType (String key, ContextStack stack) {
+     */
+    protected static void removeType(String key, ContextStack stack) {
         Type value = (Type) stack.getEnv().allTypes.remove(key);
-        stack.getEnv().invalidTypes.put(value,key);
+        stack.getEnv().invalidTypes.put(value, key);
     }
-    
+
     /**
      * Remove a type from the table.
-     */         
-    protected static void removeType (sun.tools.java.Type key, ContextStack stack) {
+     */
+    protected static void removeType(sun.tools.java.Type key, ContextStack stack) {
         String theKey = key.toString();
         Type old = (Type) stack.getEnv().allTypes.remove(theKey);
-        putInvalidType(old,theKey,stack);
+        putInvalidType(old, theKey, stack);
     }
-    
+
     /**
      * Put a type into the table.
-     */         
-    protected static void putType (sun.tools.java.Type key, Type value, ContextStack stack) {
-        stack.getEnv().allTypes.put(key.toString(),value);   
+     */
+    protected static void putType(sun.tools.java.Type key, Type value, ContextStack stack) {
+        stack.getEnv().allTypes.put(key.toString(), value);
     }
-    
+
     /**
      * Put a type into the table.
-     */         
-    protected static void putType (String key, Type value, ContextStack stack) {
-        stack.getEnv().allTypes.put(key,value);   
+     */
+    protected static void putType(String key, Type value, ContextStack stack) {
+        stack.getEnv().allTypes.put(key, value);
     }
-    
+
     /**
      * Put an invalid type into the.
-     */         
-    protected static void putInvalidType (Type key, String value, ContextStack stack) {
-        stack.getEnv().invalidTypes.put(key,value);   
+     */
+    protected static void putInvalidType(Type key, String value, ContextStack stack) {
+        stack.getEnv().invalidTypes.put(key, value);
     }
- 
-    
+
     /**
      * Remove all invalid types...
-     */         
-    public void removeInvalidTypes () {
+     */
+    public void removeInvalidTypes() {
         if (env.invalidTypes.size() > 0) {
             env.invalidTypes.clear();
         }
     }
-    
+
     /**
      * Walk all types and tell them to update invalid types...
-     */         
-    protected static void updateAllInvalidTypes (ContextStack stack) {
+     */
+    protected static void updateAllInvalidTypes(ContextStack stack) {
         BatchEnvironment env = stack.getEnv();
         if (env.invalidTypes.size() > 0) {
 
             // Walk all types and swap invalid...
-        
-            for (Enumeration e = env.allTypes.elements() ; e.hasMoreElements() ;) {
+
+            for (Enumeration e = env.allTypes.elements(); e.hasMoreElements(); ) {
                 Type it = (Type) e.nextElement();
                 it.swapInvalidTypes();
-            }       
-            
+            }
+
             // Delete all invalidTypes...
-            
+
             env.invalidTypes.clear();
         }
     }
- 
+
     /**
      * Return count of previously parsed types.
-     */         
-    protected int countTypes () {
+     */
+    protected int countTypes() {
         return env.allTypes.size();
     }
-        
+
     /**
      * Reset types removes all previously parsed types.
-     */         
-    void resetTypes () {
+     */
+    void resetTypes() {
         env.reset();
     }
- 
+
     /**
      * Release all resources.
-     */         
-    protected void destroy () {
+     */
+    protected void destroy() {
         if (!destroyed) {
             id = null;
             name = null;
@@ -708,19 +716,19 @@ public abstract class Type implements sun.rmi.rmic.iiop.Constants, ContextElemen
 
     /**
      * Convert all invalid types to valid ones.
-     */         
-    protected void swapInvalidTypes () {
+     */
+    protected void swapInvalidTypes() {
     }
-   
+
     /**
      * Convert an invalid type to a valid one.
-     */         
-    protected Type getValidType (Type invalidType) {
+     */
+    protected Type getValidType(Type invalidType) {
         if (invalidType.getStatus() == STATUS_VALID) {
             return invalidType;
         }
-            
-        String key = (String)env.invalidTypes.get(invalidType);
+
+        String key = (String) env.invalidTypes.get(invalidType);
         Type result = null;
         if (key != null) {
             result = (Type) env.allTypes.get(key);
@@ -734,22 +742,23 @@ public abstract class Type implements sun.rmi.rmic.iiop.Constants, ContextElemen
         //ContextStack.dumpCallStack();
         return result;
     }
-    
+
     /**
      * Print the "closing" of the package or module of this type.
+     *
      * @param writer The stream to print to.
      * @param useIDLNames If true, print IDL names; otherwise, print java names.
-     */         
-    protected void printPackageClose (  IndentingWriter writer,
-                                        boolean useIDLNames) throws IOException {
+     */
+    protected void printPackageClose(IndentingWriter writer,
+                                     boolean useIDLNames) throws IOException {
         if (useIDLNames) {
             String[] moduleNames = getIDLModuleNames();
-            for (int i = 0; i < moduleNames.length; i++ ) {
+            for (int i = 0; i < moduleNames.length; i++) {
                 writer.pOln("};");
             }
         }
     }
-   
+
     /**
      * Create a Type instance for the given type. Requires that
      * setName(Identifier) be called afterward.
@@ -760,7 +769,7 @@ public abstract class Type implements sun.rmi.rmic.iiop.Constants, ContextElemen
         this.fullTypeCode = fullTypeCode;
         typeCode = fullTypeCode & TYPE_MASK;
     }
-        
+
     /**
      * Set type codes. May only be called during initialization.
      */
@@ -768,64 +777,66 @@ public abstract class Type implements sun.rmi.rmic.iiop.Constants, ContextElemen
         this.fullTypeCode = fullTypeCode;
         typeCode = fullTypeCode & TYPE_MASK;
     }
-        
+
     /**
      * Set name and package. May only be called during initialization.
      */
     protected void setNames(Identifier id, String[] idlModuleNames, String idlName) {
-                
+
         this.id = id;
         name = Names.mangleClass(id).getName().toString();
         packageName = null;
-                
+
         if (id.isQualified()) {
             packageName = id.getQualifier().toString();
             qualifiedName = packageName + NAME_SEPARATOR + name;
         } else {
             qualifiedName = name;
-        }           
-            
-        setIDLNames(idlModuleNames,idlName);
+        }
+
+        setIDLNames(idlModuleNames, idlName);
     }
- 
- 
+
     /**
      * Set IDL name. May only be called during initialization.
      */
     protected void setIDLNames(String[] idlModuleNames, String idlName) {
         this.idlName = idlName;
-                
+
         if (idlModuleNames != null) {
             this.idlModuleNames = idlModuleNames;
         } else {
             this.idlModuleNames = new String[0];
         }
-        qualifiedIDLName = IDLNames.getQualifiedName(idlModuleNames,idlName);
+        qualifiedIDLName = IDLNames.getQualifiedName(idlModuleNames, idlName);
     }
-   
+
     /**
      * Report a ClassNotFoundException thru the compiler environment.
      */
     protected static void classNotFound(ContextStack stack,
                                         ClassNotFound e) {
-        classNotFound(false,stack,e);
+        classNotFound(false, stack, e);
     }
-    
+
     /**
      * Report a ClassNotFoundException thru the compiler environment.
      */
     protected static void classNotFound(boolean quiet,
                                         ContextStack stack,
                                         ClassNotFound e) {
-        if (!quiet) stack.getEnv().error(0, "rmic.class.not.found", e.name);
+        if (!quiet) {
+            stack.getEnv().error(0, "rmic.class.not.found", e.name);
+        }
         stack.traceCallStack();
     }
-    
+
     /**
      * Report a constraint failure thru the compiler environment.
+     *
      * @param constraintNum Used to generate a key of the form
-     "rmic.iiop.constraint.N", which must identify a message
-     in the "rmic.properties" file.
+     * "rmic.iiop.constraint.N", which must identify a message
+     * in the "rmic.properties" file.
      * @param quiet True if should not cause failure or message.
      * @param stack The context stack.
      * @param arg0 An object to substitute for {0} in the message.
@@ -840,23 +851,24 @@ public abstract class Type implements sun.rmi.rmic.iiop.Constants, ContextElemen
         String message = "rmic.iiop.constraint." + constraintNum;
 
         if (!quiet) {
-            stack.getEnv().error(0,message,
+            stack.getEnv().error(0, message,
                                  (arg0 != null ? arg0.toString() : null),
                                  (arg1 != null ? arg1.toString() : null),
                                  (arg2 != null ? arg2.toString() : null));
         } else {
-            String error = stack.getEnv().errorString(message,arg0,arg1,arg2);
+            String error = stack.getEnv().errorString(message, arg0, arg1, arg2);
             stack.traceln(error);
         }
-        
+
         return false;
     }
 
     /**
      * Report a constraint failure thru the compiler environment.
+     *
      * @param constraintNum Used to generate a key of the form
-     "rmic.iiop.constraint.N", which must identify a message
-     in the "rmic.properties" file.
+     * "rmic.iiop.constraint.N", which must identify a message
+     * in the "rmic.properties" file.
      * @param quiet True if should not cause failure or message.
      * @param stack The context stack.
      * @param arg0 An object to substitute for {0} in the message.
@@ -867,15 +879,15 @@ public abstract class Type implements sun.rmi.rmic.iiop.Constants, ContextElemen
                                               boolean quiet,
                                               ContextStack stack,
                                               Object arg0, Object arg1) {
-        return failedConstraint(constraintNum,quiet,stack,arg0,arg1,null);
+        return failedConstraint(constraintNum, quiet, stack, arg0, arg1, null);
     }
-
 
     /**
      * Report a constraint failure thru the compiler environment.
+     *
      * @param constraintNum Used to generate a key of the form
-     "rmic.iiop.constraint.N", which must identify a message
-     in the "rmic.properties" file.
+     * "rmic.iiop.constraint.N", which must identify a message
+     * in the "rmic.properties" file.
      * @param quiet True if should not cause failure or message.
      * @param stack The context stack.
      * @param arg0 An object to substitute for {0} in the message.
@@ -885,22 +897,23 @@ public abstract class Type implements sun.rmi.rmic.iiop.Constants, ContextElemen
                                               boolean quiet,
                                               ContextStack stack,
                                               Object arg0) {
-        return failedConstraint(constraintNum,quiet,stack,arg0,null,null);
+        return failedConstraint(constraintNum, quiet, stack, arg0, null, null);
     }
 
     /**
      * Report a constraint failure thru the compiler environment.
+     *
      * @param quiet True if should not cause failure or message.
      * @param stack The context stack.
      * @param constraintNum Used to generate a key of the form
-     "rmic.iiop.constraint.N", which must identify a message
-     in the "rmic.properties" file.
+     * "rmic.iiop.constraint.N", which must identify a message
+     * in the "rmic.properties" file.
      * @return false.
      */
     protected static boolean failedConstraint(int constraintNum,
                                               boolean quiet,
                                               ContextStack stack) {
-        return failedConstraint(constraintNum,quiet,stack,null,null,null);
+        return failedConstraint(constraintNum, quiet, stack, null, null, null);
     }
 
     /**
@@ -918,40 +931,40 @@ public abstract class Type implements sun.rmi.rmic.iiop.Constants, ContextElemen
      * Add matching types to list. Return true if this type has not
      * been previously checked, false otherwise.
      */
-    protected boolean addTypes (int typeCodeFilter,
-                                HashSet checked,
-                                Vector matching) {
-        
+    protected boolean addTypes(int typeCodeFilter,
+                               HashSet checked,
+                               Vector matching) {
+
         boolean result;
 
         // Have we already checked this type?
-            
+
         if (checked.contains(this)) {
-                    
+
             // Yes, so return false.
-                    
+
             result = false;
-                    
+
         } else {
 
             // Nope, so add it...
 
             checked.add(this);
-            
+
             // Do we match the filter?
- 
+
             if (typeMatches(typeCodeFilter)) {
 
                 // Yep. so add it and set result to true...
- 
+
                 matching.addElement(this);
             }
-                
+
             // Return true.
-                
+
             result = true;
         }
-                
+
         return result;
     }
 
@@ -964,7 +977,7 @@ public abstract class Type implements sun.rmi.rmic.iiop.Constants, ContextElemen
         if (ourClass == null) {
             ourClass = loadClass();
             if (ourClass == null) {
-                failedConstraint(27,false,stack,getQualifiedName());
+                failedConstraint(27, false, stack, getQualifiedName());
                 return false;
             }
         }
@@ -978,21 +991,21 @@ public abstract class Type implements sun.rmi.rmic.iiop.Constants, ContextElemen
     protected boolean setRepositoryID() {
 
         // First, load the class...
-                
+
         if (!initClass()) {
             return false;
         }
-                
+
         // Now make the repositoryID and return success...
-                
+
         repositoryID = RepositoryId.createForAnyType(ourClass);
         return true;
-    }   
-        
-        
+    }
+
     //_____________________________________________________________________
     // Internal Interfaces
     //_____________________________________________________________________
 
-    private Type () {} // Disallowed.
+    private Type() {
+    } // Disallowed.
 }

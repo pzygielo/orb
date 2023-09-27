@@ -9,6 +9,7 @@ import java.rmi.RemoteException;
 import java.rmi.UnexpectedException;
 import javax.rmi.CORBA.Stub;
 import javax.rmi.CORBA.Util;
+
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.SystemException;
 import org.omg.CORBA.portable.ApplicationException;
@@ -18,137 +19,137 @@ import org.omg.CORBA.portable.RemarshalException;
 import org.omg.CORBA.portable.ResponseHandler;
 import org.omg.CORBA.portable.ServantObject;
 
-
 public class _ExceptionSource_Stub extends Stub implements ExceptionSource {
-    
+
     private static final String[] _type_ids = {
-        "RMI:org.glassfish.rmic.classes.exceptiondetailsc.ExceptionSource:0000000000000000"
+            "RMI:org.glassfish.rmic.classes.exceptiondetailsc.ExceptionSource:0000000000000000"
     };
-    
-        public String[] _ids() { 
-            return (String[]) _type_ids.clone();
-        }
-        
-        public void raiseSystemException(String arg0) throws java.rmi.RemoteException {
-            if (!Util.isLocal(this)) {
+
+    public String[] _ids() {
+        return (String[]) _type_ids.clone();
+    }
+
+    public void raiseSystemException(String arg0) throws java.rmi.RemoteException {
+        if (!Util.isLocal(this)) {
+            try {
+                org.omg.CORBA_2_3.portable.InputStream in = null;
                 try {
-                    org.omg.CORBA_2_3.portable.InputStream in = null;
-                    try {
-                        org.omg.CORBA_2_3.portable.OutputStream out = 
+                    org.omg.CORBA_2_3.portable.OutputStream out =
                             (org.omg.CORBA_2_3.portable.OutputStream)
-                            _request("raiseSystemException", true);
-                        out.write_value(arg0,String.class);
-                        _invoke(out);
-                    } catch (ApplicationException ex) {
-                        in = (org.omg.CORBA_2_3.portable.InputStream) ex.getInputStream();
-                        String $_id = in.read_string();
-                        throw new UnexpectedException($_id);
-                    } catch (RemarshalException ex) {
-                        raiseSystemException(arg0);
-                    } finally {
-                        _releaseReply(in);
-                    }
-                } catch (SystemException ex) {
-                    throw Util.mapSystemException(ex);
-                }
-            } else {
-                ServantObject so = _servant_preinvoke("raiseSystemException",ExceptionSource.class);
-                if (so == null) {
+                                    _request("raiseSystemException", true);
+                    out.write_value(arg0, String.class);
+                    _invoke(out);
+                } catch (ApplicationException ex) {
+                    in = (org.omg.CORBA_2_3.portable.InputStream) ex.getInputStream();
+                    String $_id = in.read_string();
+                    throw new UnexpectedException($_id);
+                } catch (RemarshalException ex) {
                     raiseSystemException(arg0);
-                    return ;
-                }
-                try {
-                    ((ExceptionSource)so.servant).raiseSystemException(arg0);
-                } catch (Throwable ex) {
-                    Throwable exCopy = (Throwable)Util.copyObject(ex,_orb());
-                    throw Util.wrapException(exCopy);
                 } finally {
-                    _servant_postinvoke(so);
+                    _releaseReply(in);
                 }
+            } catch (SystemException ex) {
+                throw Util.mapSystemException(ex);
             }
-        }
-        
-        public void raiseUserException(String arg0) throws java.rmi.RemoteException, org.glassfish.rmic.classes.exceptiondetailsc.RmiIException {
-            if (!Util.isLocal(this)) {
-                try {
-                    org.omg.CORBA_2_3.portable.InputStream in = null;
-                    try {
-                        org.omg.CORBA_2_3.portable.OutputStream out = 
-                            (org.omg.CORBA_2_3.portable.OutputStream)
-                            _request("raiseUserException", true);
-                        out.write_value(arg0,String.class);
-                        _invoke(out);
-                    } catch (ApplicationException ex) {
-                        in = (org.omg.CORBA_2_3.portable.InputStream) ex.getInputStream();
-                        String $_id = in.read_string();
-                        if ($_id.equals("IDL:org/glassfish/rmic/classes/exceptiondetailsc/RmiIEx:1.0")) {
-                            throw (org.glassfish.rmic.classes.exceptiondetailsc.RmiIException) in.read_value(org.glassfish.rmic.classes.exceptiondetailsc.RmiIException.class);
-                        }
-                        throw new UnexpectedException($_id);
-                    } catch (RemarshalException ex) {
-                        raiseUserException(arg0);
-                    } finally {
-                        _releaseReply(in);
-                    }
-                } catch (SystemException ex) {
-                    throw Util.mapSystemException(ex);
-                }
-            } else {
-                ServantObject so = _servant_preinvoke("raiseUserException",ExceptionSource.class);
-                if (so == null) {
-                    raiseUserException(arg0);
-                    return ;
-                }
-                try {
-                    ((ExceptionSource)so.servant).raiseUserException(arg0);
-                } catch (Throwable ex) {
-                    Throwable exCopy = (Throwable)Util.copyObject(ex,_orb());
-                    if (exCopy instanceof org.glassfish.rmic.classes.exceptiondetailsc.RmiIException) {
-                        throw (org.glassfish.rmic.classes.exceptiondetailsc.RmiIException)exCopy;
-                    }
-                    throw Util.wrapException(exCopy);
-                } finally {
-                    _servant_postinvoke(so);
-                }
+        } else {
+            ServantObject so = _servant_preinvoke("raiseSystemException", ExceptionSource.class);
+            if (so == null) {
+                raiseSystemException(arg0);
+                return;
             }
-        }
-        
-        public void raiseRuntimeException(String arg0) throws java.rmi.RemoteException {
-            if (!Util.isLocal(this)) {
-                try {
-                    org.omg.CORBA_2_3.portable.InputStream in = null;
-                    try {
-                        org.omg.CORBA_2_3.portable.OutputStream out = 
-                            (org.omg.CORBA_2_3.portable.OutputStream)
-                            _request("raiseRuntimeException", true);
-                        out.write_value(arg0,String.class);
-                        _invoke(out);
-                    } catch (ApplicationException ex) {
-                        in = (org.omg.CORBA_2_3.portable.InputStream) ex.getInputStream();
-                        String $_id = in.read_string();
-                        throw new UnexpectedException($_id);
-                    } catch (RemarshalException ex) {
-                        raiseRuntimeException(arg0);
-                    } finally {
-                        _releaseReply(in);
-                    }
-                } catch (SystemException ex) {
-                    throw Util.mapSystemException(ex);
-                }
-            } else {
-                ServantObject so = _servant_preinvoke("raiseRuntimeException",ExceptionSource.class);
-                if (so == null) {
-                    raiseRuntimeException(arg0);
-                    return ;
-                }
-                try {
-                    ((ExceptionSource)so.servant).raiseRuntimeException(arg0);
-                } catch (Throwable ex) {
-                    Throwable exCopy = (Throwable)Util.copyObject(ex,_orb());
-                    throw Util.wrapException(exCopy);
-                } finally {
-                    _servant_postinvoke(so);
-                }
+            try {
+                ((ExceptionSource) so.servant).raiseSystemException(arg0);
+            } catch (Throwable ex) {
+                Throwable exCopy = (Throwable) Util.copyObject(ex, _orb());
+                throw Util.wrapException(exCopy);
+            } finally {
+                _servant_postinvoke(so);
             }
         }
     }
+
+    public void raiseUserException(String arg0) throws java.rmi.RemoteException, org.glassfish.rmic.classes.exceptiondetailsc.RmiIException {
+        if (!Util.isLocal(this)) {
+            try {
+                org.omg.CORBA_2_3.portable.InputStream in = null;
+                try {
+                    org.omg.CORBA_2_3.portable.OutputStream out =
+                            (org.omg.CORBA_2_3.portable.OutputStream)
+                                    _request("raiseUserException", true);
+                    out.write_value(arg0, String.class);
+                    _invoke(out);
+                } catch (ApplicationException ex) {
+                    in = (org.omg.CORBA_2_3.portable.InputStream) ex.getInputStream();
+                    String $_id = in.read_string();
+                    if ($_id.equals("IDL:org/glassfish/rmic/classes/exceptiondetailsc/RmiIEx:1.0")) {
+                        throw (org.glassfish.rmic.classes.exceptiondetailsc.RmiIException) in.read_value(
+                                org.glassfish.rmic.classes.exceptiondetailsc.RmiIException.class);
+                    }
+                    throw new UnexpectedException($_id);
+                } catch (RemarshalException ex) {
+                    raiseUserException(arg0);
+                } finally {
+                    _releaseReply(in);
+                }
+            } catch (SystemException ex) {
+                throw Util.mapSystemException(ex);
+            }
+        } else {
+            ServantObject so = _servant_preinvoke("raiseUserException", ExceptionSource.class);
+            if (so == null) {
+                raiseUserException(arg0);
+                return;
+            }
+            try {
+                ((ExceptionSource) so.servant).raiseUserException(arg0);
+            } catch (Throwable ex) {
+                Throwable exCopy = (Throwable) Util.copyObject(ex, _orb());
+                if (exCopy instanceof org.glassfish.rmic.classes.exceptiondetailsc.RmiIException) {
+                    throw (org.glassfish.rmic.classes.exceptiondetailsc.RmiIException) exCopy;
+                }
+                throw Util.wrapException(exCopy);
+            } finally {
+                _servant_postinvoke(so);
+            }
+        }
+    }
+
+    public void raiseRuntimeException(String arg0) throws java.rmi.RemoteException {
+        if (!Util.isLocal(this)) {
+            try {
+                org.omg.CORBA_2_3.portable.InputStream in = null;
+                try {
+                    org.omg.CORBA_2_3.portable.OutputStream out =
+                            (org.omg.CORBA_2_3.portable.OutputStream)
+                                    _request("raiseRuntimeException", true);
+                    out.write_value(arg0, String.class);
+                    _invoke(out);
+                } catch (ApplicationException ex) {
+                    in = (org.omg.CORBA_2_3.portable.InputStream) ex.getInputStream();
+                    String $_id = in.read_string();
+                    throw new UnexpectedException($_id);
+                } catch (RemarshalException ex) {
+                    raiseRuntimeException(arg0);
+                } finally {
+                    _releaseReply(in);
+                }
+            } catch (SystemException ex) {
+                throw Util.mapSystemException(ex);
+            }
+        } else {
+            ServantObject so = _servant_preinvoke("raiseRuntimeException", ExceptionSource.class);
+            if (so == null) {
+                raiseRuntimeException(arg0);
+                return;
+            }
+            try {
+                ((ExceptionSource) so.servant).raiseRuntimeException(arg0);
+            } catch (Throwable ex) {
+                Throwable exCopy = (Throwable) Util.copyObject(ex, _orb());
+                throw Util.wrapException(exCopy);
+            } finally {
+                _servant_postinvoke(so);
+            }
+        }
+    }
+}

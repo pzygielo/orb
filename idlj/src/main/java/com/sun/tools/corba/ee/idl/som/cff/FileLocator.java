@@ -20,34 +20,29 @@
 
 package com.sun.tools.corba.ee.idl.som.cff;
 
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.StringTokenizer;
-import java.util.zip.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
 /**
  * FileLocator is an abstract class (one that cannot be instantiated) that
  * provides class methods for finding files in the directories or zip
  * archives that make up the CLASSPATH.
  *
- * @author      Larry K. Raper
+ * @author Larry K. Raper
  */
 public abstract class FileLocator extends Object {
 
     /* Class variables */
 
-
-    static final Properties pp = System.getProperties ();
-    static final String classPath = pp.getProperty ("java.class.path", ".");
-    static final String pathSeparator = pp.getProperty ("path.separator", ";");
+    static final Properties pp = System.getProperties();
+    static final String classPath = pp.getProperty("java.class.path", ".");
+    static final String pathSeparator = pp.getProperty("path.separator", ";");
 
     /* Instance variables */
 
@@ -65,13 +60,13 @@ public abstract class FileLocator extends Object {
      *     java.io.DataInputStream
      * </pre>
      * @return a {@link NamedDataInputStream} of the file
-     * @exception java.io.FileNotFoundException The requested class file
+     * @throws java.io.FileNotFoundException The requested class file
      * could not be found.
-     * @exception java.io.IOException The requested class file
+     * @throws java.io.IOException The requested class file
      * could not be opened.
      */
-    public static DataInputStream locateClassFile (String classFileName)
-        throws FileNotFoundException, IOException {
+    public static DataInputStream locateClassFile(String classFileName)
+            throws FileNotFoundException, IOException {
 
         boolean notFound = true;
         StringTokenizer st;
@@ -80,24 +75,28 @@ public abstract class FileLocator extends Object {
         File cf = null;
         NamedDataInputStream result;
 
-        st = new StringTokenizer (classPath, pathSeparator, false);
-        pathNameForm = classFileName.replace ('.', File.separatorChar) +
-            ".class";
+        st = new StringTokenizer(classPath, pathSeparator, false);
+        pathNameForm = classFileName.replace('.', File.separatorChar) +
+                ".class";
 
-        while (st.hasMoreTokens () && notFound) {
+        while (st.hasMoreTokens() && notFound) {
 
-            try {path = st.nextToken ();}
-                catch (NoSuchElementException nse) {break;}
-            int pLen = path.length ();
-            String pathLast4 = pLen > 3 ? path.substring (pLen - 4) : "";
-            if (pathLast4.equalsIgnoreCase (".zip") ||
-                pathLast4.equalsIgnoreCase (".jar")) {
+            try {
+                path = st.nextToken();
+            } catch (NoSuchElementException nse) {
+                break;
+            }
+            int pLen = path.length();
+            String pathLast4 = pLen > 3 ? path.substring(pLen - 4) : "";
+            if (pathLast4.equalsIgnoreCase(".zip") ||
+                    pathLast4.equalsIgnoreCase(".jar")) {
 
                 try {
 
-                    result = locateInZipFile (path, classFileName, true, true);
-                    if (result == null)
+                    result = locateInZipFile(path, classFileName, true, true);
+                    if (result == null) {
                         continue;
+                    }
                     return (DataInputStream) result;
 
                 } catch (ZipException zfe) {
@@ -107,10 +106,14 @@ public abstract class FileLocator extends Object {
                 }
 
             } else {
-                try {cf = new File (path + File.separator + pathNameForm);
-                } catch (NullPointerException npe) { continue; }
-                if ((cf != null) && cf.exists ())
+                try {
+                    cf = new File(path + File.separator + pathNameForm);
+                } catch (NullPointerException npe) {
+                    continue;
+                }
+                if ((cf != null) && cf.exists()) {
                     notFound = false;
+                }
             }
         }
 
@@ -120,20 +123,20 @@ public abstract class FileLocator extends Object {
              * directory
              */
 
-            int lastdot = classFileName.lastIndexOf ('.');
+            int lastdot = classFileName.lastIndexOf('.');
             String simpleName =
-                (lastdot >= 0) ? classFileName.substring (lastdot+1) :
-                classFileName;
+                    (lastdot >= 0) ? classFileName.substring(lastdot + 1) :
+                            classFileName;
 
-            result = new NamedDataInputStream (new BufferedInputStream (
-               new FileInputStream (simpleName + ".class")),
-                   simpleName + ".class", false);
+            result = new NamedDataInputStream(new BufferedInputStream(
+                    new FileInputStream(simpleName + ".class")),
+                                              simpleName + ".class", false);
             return (DataInputStream) result;
         }
 
-        result = new NamedDataInputStream (new BufferedInputStream (
-            new FileInputStream (cf)), path + File.separator + pathNameForm,
-                false);
+        result = new NamedDataInputStream(new BufferedInputStream(
+                new FileInputStream(cf)), path + File.separator + pathNameForm,
+                                          false);
         return (DataInputStream) result;
 
     }
@@ -165,42 +168,46 @@ public abstract class FileLocator extends Object {
      *     before the next possible name is tried.
      * </pre>
      * @return a {@link NamedDataInputStream} of the file
-     * @exception java.io.FileNotFoundException The requested class file
+     * @throws java.io.FileNotFoundException The requested class file
      * could not be found.
-     * @exception java.io.IOException The requested class file
+     * @throws java.io.IOException The requested class file
      * could not be opened.
      */
-    public static DataInputStream locateLocaleSpecificFileInClassPath (
-        String fileName) throws FileNotFoundException, IOException {
+    public static DataInputStream locateLocaleSpecificFileInClassPath(
+            String fileName) throws FileNotFoundException, IOException {
 
-        String localeSuffix = "_" + Locale.getDefault ().toString ();
-        int lastSlash = fileName.lastIndexOf ('/');
-        int lastDot   = fileName.lastIndexOf ('.');
+        String localeSuffix = "_" + Locale.getDefault().toString();
+        int lastSlash = fileName.lastIndexOf('/');
+        int lastDot = fileName.lastIndexOf('.');
         String fnFront, fnEnd;
         DataInputStream result = null;
         boolean lastAttempt = false;
 
         if ((lastDot > 0) && (lastDot > lastSlash)) {
-            fnFront = fileName.substring (0, lastDot);
-            fnEnd   = fileName.substring (lastDot);
+            fnFront = fileName.substring(0, lastDot);
+            fnEnd = fileName.substring(lastDot);
         } else {
             fnFront = fileName;
-            fnEnd   = "";
+            fnEnd = "";
         }
 
         while (true) {
-            if (lastAttempt)
-                result = locateFileInClassPath (fileName);
-            else try {
-                result = locateFileInClassPath (fnFront + localeSuffix + fnEnd);
-            } catch (Exception e) { /* ignore */ }
-            if ((result != null) || lastAttempt)
+            if (lastAttempt) {
+                result = locateFileInClassPath(fileName);
+            } else {
+                try {
+                    result = locateFileInClassPath(fnFront + localeSuffix + fnEnd);
+                } catch (Exception e) { /* ignore */ }
+            }
+            if ((result != null) || lastAttempt) {
                 break;
-            int lastUnderbar = localeSuffix.lastIndexOf ('_');
-            if (lastUnderbar > 0)
-                localeSuffix = localeSuffix.substring (0, lastUnderbar);
-            else
+            }
+            int lastUnderbar = localeSuffix.lastIndexOf('_');
+            if (lastUnderbar > 0) {
+                localeSuffix = localeSuffix.substring(0, lastUnderbar);
+            } else {
                 lastAttempt = true;
+            }
         }
         return result;
 
@@ -216,13 +223,13 @@ public abstract class FileLocator extends Object {
      * system, in which case each directory or zip file in the CLASSPATH will
      * be used as a base for finding the fully-qualified file.
      * @return a {@link NamedDataInputStream} of the file
-     * @exception java.io.FileNotFoundException The requested class file
+     * @throws java.io.FileNotFoundException The requested class file
      * could not be found.
-     * @exception java.io.IOException The requested class file
+     * @throws java.io.IOException The requested class file
      * could not be opened.
      */
-    public static DataInputStream locateFileInClassPath (String fileName)
-        throws FileNotFoundException, IOException {
+    public static DataInputStream locateFileInClassPath(String fileName)
+            throws FileNotFoundException, IOException {
 
         boolean notFound = true;
         StringTokenizer st;
@@ -231,27 +238,31 @@ public abstract class FileLocator extends Object {
         NamedDataInputStream result;
 
         String zipEntryName = File.separatorChar == '/' ? fileName :
-            fileName.replace (File.separatorChar, '/');
+                fileName.replace(File.separatorChar, '/');
 
         String localFileName = File.separatorChar == '/' ? fileName :
-            fileName.replace ('/', File.separatorChar);
+                fileName.replace('/', File.separatorChar);
 
-        st = new StringTokenizer (classPath, pathSeparator, false);
+        st = new StringTokenizer(classPath, pathSeparator, false);
 
-        while (st.hasMoreTokens () && notFound) {
+        while (st.hasMoreTokens() && notFound) {
 
-            try {path = st.nextToken ();}
-                catch (NoSuchElementException nse) {break;}
-            int pLen = path.length ();
-            String pathLast4 = pLen > 3 ? path.substring (pLen - 4) : "";
-            if (pathLast4.equalsIgnoreCase (".zip") ||
-                pathLast4.equalsIgnoreCase (".jar")) {
+            try {
+                path = st.nextToken();
+            } catch (NoSuchElementException nse) {
+                break;
+            }
+            int pLen = path.length();
+            String pathLast4 = pLen > 3 ? path.substring(pLen - 4) : "";
+            if (pathLast4.equalsIgnoreCase(".zip") ||
+                    pathLast4.equalsIgnoreCase(".jar")) {
 
                 try {
 
-                    result = locateInZipFile (path, zipEntryName, false, false);
-                    if (result == null)
+                    result = locateInZipFile(path, zipEntryName, false, false);
+                    if (result == null) {
                         continue;
+                    }
                     return (DataInputStream) result;
 
                 } catch (ZipException zfe) {
@@ -261,10 +272,14 @@ public abstract class FileLocator extends Object {
                 }
 
             } else {
-                try {cf = new File (path + File.separator + localFileName);
-                } catch (NullPointerException npe) { continue; }
-                if ((cf != null) && cf.exists ())
+                try {
+                    cf = new File(path + File.separator + localFileName);
+                } catch (NullPointerException npe) {
+                    continue;
+                }
+                if ((cf != null) && cf.exists()) {
                     notFound = false;
+                }
             }
         }
 
@@ -274,19 +289,19 @@ public abstract class FileLocator extends Object {
              * directory
              */
 
-            int lastpart = localFileName.lastIndexOf (File.separator);
+            int lastpart = localFileName.lastIndexOf(File.separator);
             String simpleName =
-                (lastpart >= 0) ? localFileName.substring (lastpart+1) :
-                localFileName;
+                    (lastpart >= 0) ? localFileName.substring(lastpart + 1) :
+                            localFileName;
 
-            result = new NamedDataInputStream (new BufferedInputStream (
-               new FileInputStream (simpleName)), simpleName, false);
+            result = new NamedDataInputStream(new BufferedInputStream(
+                    new FileInputStream(simpleName)), simpleName, false);
             return (DataInputStream) result;
         }
 
-        result = new NamedDataInputStream (new BufferedInputStream (
-            new FileInputStream (cf)), path + File.separator + localFileName,
-                false);
+        result = new NamedDataInputStream(new BufferedInputStream(
+                new FileInputStream(cf)), path + File.separator + localFileName,
+                                          false);
         return (DataInputStream) result;
 
     }
@@ -296,13 +311,15 @@ public abstract class FileLocator extends Object {
      * DataInputStream <i>if the DataInputStream was created using one
      * of the static locate methods supplied with this class</i>, otherwise
      * returns a zero length string.
+     *
      * @param ds stream to get file name from
      * @return fully qualified file nae
      */
-    public static String getFileNameFromStream (DataInputStream ds) {
+    public static String getFileNameFromStream(DataInputStream ds) {
 
-        if (ds instanceof NamedDataInputStream)
+        if (ds instanceof NamedDataInputStream) {
             return ((NamedDataInputStream) ds).fullyQualifiedFileName;
+        }
         return "";
 
     }
@@ -312,30 +329,33 @@ public abstract class FileLocator extends Object {
      * associated with a member of a zip file <i>if the DataInputStream was
      * created using one of the static locate methods supplied with this
      * class</i>, otherwise returns false.
+     *
      * @param ds stream to check
      * @return if a zip file is associated with the stream
      */
-    public static boolean isZipFileAssociatedWithStream (DataInputStream ds) {
+    public static boolean isZipFileAssociatedWithStream(DataInputStream ds) {
 
-        if (ds instanceof NamedDataInputStream)
+        if (ds instanceof NamedDataInputStream) {
             return ((NamedDataInputStream) ds).inZipFile;
+        }
         return false;
 
     }
 
-    private static NamedDataInputStream locateInZipFile (String zipFileName,
-        String fileName, boolean wantClass, boolean buffered)
-        throws ZipException, IOException {
+    private static NamedDataInputStream locateInZipFile(String zipFileName,
+                                                        String fileName, boolean wantClass, boolean buffered)
+            throws ZipException, IOException {
 
         ZipFile zf;
         ZipEntry ze;
-        zf = new ZipFile (zipFileName);
+        zf = new ZipFile(zipFileName);
 
-        if (zf == null)
+        if (zf == null) {
             return null;
+        }
         String zeName = wantClass ?
-            fileName.replace ('.', '/') + ".class" :
-            fileName;
+                fileName.replace('.', '/') + ".class" :
+                fileName;
 
         //  This code works with JDK 1.0 level SUN zip classes
         //
@@ -350,17 +370,18 @@ public abstract class FileLocator extends Object {
         //  This code works with JDK 1.0.2 and JDK 1.1 level SUN zip classes
         //
 
-            ze = zf.getEntry (zeName);
-            if (ze == null) {
-                zf.close(); // D55355, D56419
-                zf = null;
-                return null;
-            }
-            InputStream istream = zf.getInputStream(ze);
-            if (buffered)
-                istream = new BufferedInputStream(istream);
-            return new NamedDataInputStream (istream,
-                    zipFileName + '(' + zeName + ')', true);
+        ze = zf.getEntry(zeName);
+        if (ze == null) {
+            zf.close(); // D55355, D56419
+            zf = null;
+            return null;
+        }
+        InputStream istream = zf.getInputStream(ze);
+        if (buffered) {
+            istream = new BufferedInputStream(istream);
+        }
+        return new NamedDataInputStream(istream,
+                                        zipFileName + '(' + zeName + ')', true);
 
     }
 
@@ -370,9 +391,8 @@ public abstract class FileLocator extends Object {
  * This class is used to associate a filename with a DataInputStream
  * The host platform's file naming conventions are assumed for the filename.
  *
+ * @author Larry K. Raper
  * @version 1.16, 07/27/07
- * @author      Larry K. Raper
- *
  */
 /* default access */ class NamedDataInputStream extends DataInputStream {
 
@@ -390,10 +410,10 @@ public abstract class FileLocator extends Object {
 
     /* Constructors */
 
-    protected NamedDataInputStream (InputStream in, String fullyQualifiedName,
-        boolean inZipFile) {
+    protected NamedDataInputStream(InputStream in, String fullyQualifiedName,
+                                   boolean inZipFile) {
 
-        super (in);
+        super(in);
         this.fullyQualifiedFileName = fullyQualifiedName;
         this.inZipFile = inZipFile;
 

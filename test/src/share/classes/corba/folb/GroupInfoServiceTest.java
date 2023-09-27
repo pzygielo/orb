@@ -26,29 +26,28 @@ package corba.folb;
 
 import java.util.List;
 
-import java.rmi.Remote; 
-import java.rmi.RemoteException; 
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 /**
  * @author Harold Carr
  */
 public interface GroupInfoServiceTest
-    extends Remote
-{
+        extends Remote {
     public boolean addInstance(String x)
-        throws RemoteException;
+            throws RemoteException;
 
     public boolean removeInstance(String x)
-        throws RemoteException;
+            throws RemoteException;
 
     public boolean addAcceptor(String x)
-        throws RemoteException;
+            throws RemoteException;
 
     public boolean removeAcceptorAndConnections(String x)
-        throws RemoteException;
+            throws RemoteException;
 
     public void doThreadDump()
-        throws RemoteException;
+            throws RemoteException;
 }
 
 // End of file.

@@ -30,19 +30,17 @@ import corba.hcks.U;
 import org.omg.CORBA.ORB;
 import org.omg.PortableServer.POA;
 
-public class Server 
-{
+public class Server {
     public static final String baseMsg = Server.class.getName();
     public static final String main = baseMsg + ".main";
 
     public static final String ServerSide = "ServerSide";
 
-    public static ORB        orb;
-    public static POA        rRootPOA;
+    public static ORB orb;
+    public static POA rRootPOA;
     public static ServerSide rServerSide;
 
-    public static void main(String[] av)
-    {
+    public static void main(String[] av) {
         try {
 
             U.sop(main + " starting");

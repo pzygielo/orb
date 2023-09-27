@@ -28,20 +28,18 @@ import java.util.Hashtable;
  * process as the test framework.  A class can implement this
  * and be used with the InternalExec strategy.
  */
-public interface InternalProcess
-{
+public interface InternalProcess {
     /**
      * Start the process.
      *
-     *@param environment  Environment settings (org.omg.ORBClass, etc)
-     *@param args         Command line arguments
-     *@param out          Standard output stream to use
-     *@param err          Standard error stream to use
-     *@param extra        Extra options, often used to provide
-     *                    a Controller for another process that
-     *                    this one needs to manipulate
-     *
-     *@exception  Exception  Any error that occurs when running
+     * @param environment Environment settings (org.omg.ORBClass, etc)
+     * @param args Command line arguments
+     * @param out Standard output stream to use
+     * @param err Standard error stream to use
+     * @param extra Extra options, often used to provide
+     * a Controller for another process that
+     * this one needs to manipulate
+     * @throws Exception Any error that occurs when running
      */
     public void run(Properties environment,
                     String args[],

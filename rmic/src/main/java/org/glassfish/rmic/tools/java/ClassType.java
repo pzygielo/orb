@@ -24,12 +24,12 @@ import org.glassfish.rmic.TypeCode;
 /**
  * This class represents an Java class type.
  * It overrides the relevant methods in class Type.
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
  *
- * @author      Arthur van Hoff
+ * @author Arthur van Hoff
  */
 public final
 class ClassType extends Type {
@@ -54,8 +54,8 @@ class ClassType extends Type {
 
     public String typeString(String id, boolean abbrev, boolean ret) {
         String s = (abbrev ? getClassName().getFlatName() :
-                                Identifier.lookup(getClassName().getQualifier(),
-                                                                  getClassName().getFlatName())).toString();
+                Identifier.lookup(getClassName().getQualifier(),
+                                  getClassName().getFlatName())).toString();
         return (id.length() > 0) ? s + " " + id : s;
     }
 

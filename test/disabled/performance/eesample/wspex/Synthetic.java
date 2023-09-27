@@ -17,7 +17,7 @@
  * Classpath-exception-2.0
  */
 
-package performance.eesample.wspex ;
+package performance.eesample.wspex;
 
 import java.io.Serializable;
 
@@ -29,11 +29,9 @@ public class Synthetic implements Serializable {
 
     /**
      * Gets the value of the str property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getStr() {
         return str;
@@ -41,11 +39,9 @@ public class Synthetic implements Serializable {
 
     /**
      * Sets the value of the str property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     * {@link String }
      */
     public void setStr(String value) {
         this.str = value;
@@ -53,11 +49,9 @@ public class Synthetic implements Serializable {
 
     /**
      * Gets the value of the s property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Struct }
-     *     
+     *
+     * @return possible object is
+     * {@link Struct }
      */
     public Struct getS() {
         return s;
@@ -65,11 +59,9 @@ public class Synthetic implements Serializable {
 
     /**
      * Sets the value of the s property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Struct }
-     *     
+     *
+     * @param value allowed object is
+     * {@link Struct }
      */
     public void setS(Struct value) {
         this.s = value;
@@ -77,10 +69,9 @@ public class Synthetic implements Serializable {
 
     /**
      * Gets the value of the bytes property.
-     * 
-     * @return
-     *     possible object is
-     *     byte[]
+     *
+     * @return possible object is
+     * byte[]
      */
     public byte[] getBytes() {
         return bytes;
@@ -88,10 +79,9 @@ public class Synthetic implements Serializable {
 
     /**
      * Sets the value of the bytes property.
-     * 
-     * @param value
-     *     allowed object is
-     *     byte[]
+     *
+     * @param value allowed object is
+     * byte[]
      */
     public void setBytes(byte[] value) {
         this.bytes = value;

@@ -19,12 +19,12 @@
 
 package org.omg.CORBA;
 
-import org.omg.CORBA.portable.Streamable;
 import org.omg.CORBA.portable.InputStream;
 import org.omg.CORBA.portable.OutputStream;
+import org.omg.CORBA.portable.Streamable;
 
 /**
- * The Holder for <tt>String</tt>.  For more information on 
+ * The Holder for <tt>String</tt>.  For more information on
  * Holder files, see <a href="doc-files/generatedfiles.html#holder">
  * "Generated Files: Holder Files"</a>.<p>
  * A Holder class for a <code>String</code>
@@ -41,8 +41,8 @@ import org.omg.CORBA.portable.OutputStream;
  * the value stored in its <code>value</code> field can be accessed with
  * <code>myStringHolder.value</code>.
  *
- * @version     1.14, 09/09/97
- * @since       JDK1.2
+ * @version 1.14, 09/09/97
+ * @since JDK1.2
  */
 public final class StringHolder implements Streamable {
 
@@ -63,9 +63,10 @@ public final class StringHolder implements Streamable {
      * Constructs a new <code>StringHolder</code> object with its
      * <code>value</code> field initialized to the given
      * <code>String</code>.
+     *
      * @param initial the <code>String</code> with which to initialize
-     *                the <code>value</code> field of the newly-created
-     *                <code>StringHolder</code> object
+     * the <code>value</code> field of the newly-created
+     * <code>StringHolder</code> object
      */
     public StringHolder(String initial) {
         value = initial;
@@ -95,8 +96,8 @@ public final class StringHolder implements Streamable {
      * Retrieves the <code>TypeCode</code> object that corresponds to
      * the value held in this <code>StringHolder</code> object.
      *
-     * @return    the type code of the value held in this <code>StringHolder</code>
-     *            object
+     * @return the type code of the value held in this <code>StringHolder</code>
+     * object
      */
     public org.omg.CORBA.TypeCode _type() {
         return ORB.init().get_primitive_tc(TCKind.tk_string);

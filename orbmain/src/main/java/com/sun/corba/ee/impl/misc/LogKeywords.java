@@ -18,6 +18,7 @@
  */
 
 package com.sun.corba.ee.impl.misc;
+
 /**
  * All the Keywords that will be used in Logging Messages for CORBA need to
  * be defined here. The LogKeywords will be useful for searching log messages
@@ -27,19 +28,19 @@ package com.sun.corba.ee.impl.misc;
  */
 public class LogKeywords {
 
-    /** 
-     ** Keywords for Lifecycle Loggers. 
-     ** _REVISIT_ After it is clearly defined in JSR 117
+    /**
+     * * Keywords for Lifecycle Loggers.
+     * * _REVISIT_ After it is clearly defined in JSR 117
      **/
-    public final static String LIFECYCLE_CREATE     = "<<LIFECYCLE CREATE>>";
+    public final static String LIFECYCLE_CREATE = "<<LIFECYCLE CREATE>>";
     public final static String LIFECYCLE_INITIALIZE = "<<LIFECYCLE INITIALIZE>>";
-    public final static String LIFECYCLE_SHUTDOWN   = "<<LIFECYCLE SHUTDOWN>>";
-    public final static String LIFECYCLE_DESTROY    = "<<LIFECYCLE DESTROY>>";
-    public final static String NAMING_RESOLVE       = "<<NAMING RESOLVE>>";
-    public final static String NAMING_LIST          = "<<NAMING LIST>>";
-    public final static String NAMING_BIND          = "<<NAMING BIND>>";
-    public final static String NAMING_UNBIND        = "<<NAMING UNBIND>>";
-    public final static String NAMING_REBIND        = "<<NAMING REBIND>>";
+    public final static String LIFECYCLE_SHUTDOWN = "<<LIFECYCLE SHUTDOWN>>";
+    public final static String LIFECYCLE_DESTROY = "<<LIFECYCLE DESTROY>>";
+    public final static String NAMING_RESOLVE = "<<NAMING RESOLVE>>";
+    public final static String NAMING_LIST = "<<NAMING LIST>>";
+    public final static String NAMING_BIND = "<<NAMING BIND>>";
+    public final static String NAMING_UNBIND = "<<NAMING UNBIND>>";
+    public final static String NAMING_REBIND = "<<NAMING REBIND>>";
 }
 
     

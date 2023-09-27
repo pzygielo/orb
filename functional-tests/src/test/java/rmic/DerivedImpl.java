@@ -19,6 +19,7 @@
  */
 
 package rmic;
+
 public class DerivedImpl extends BaseImpl implements Base {
     public DerivedImpl() throws java.rmi.RemoteException {
         super();

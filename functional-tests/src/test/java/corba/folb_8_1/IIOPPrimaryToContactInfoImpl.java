@@ -46,11 +46,11 @@ import com.sun.corba.ee.impl.misc.ORBUtility;
 
 /**
  * This is the "sticky manager" - based on the 7.1 EE concept.
+ *
  * @author Harold Carr
  */
-public class IIOPPrimaryToContactInfoImpl 
-    implements IIOPPrimaryToContactInfo
-{
+public class IIOPPrimaryToContactInfoImpl
+        implements IIOPPrimaryToContactInfo {
 
     // REVISIT - log messages must be internationalized.
     /*
@@ -69,18 +69,22 @@ public class IIOPPrimaryToContactInfoImpl
     Map map;
     private boolean debugChecked;
     private boolean debug;
-    public void setDebugChecked(boolean x) { debugChecked = x; }
-    public void setDebug       (boolean x) { debug        = x; }
 
-    public IIOPPrimaryToContactInfoImpl()
-    {
+    public void setDebugChecked(boolean x) {
+        debugChecked = x;
+    }
+
+    public void setDebug(boolean x) {
+        debug = x;
+    }
+
+    public IIOPPrimaryToContactInfoImpl() {
         map = new HashMap();
         debugChecked = false;
         debug = false;
     }
 
-    public synchronized void reset(ContactInfo primary)
-    {
+    public synchronized void reset(ContactInfo primary) {
         try {
             if (debug) {
                 dprint(".reset: " + getKey(primary));
@@ -91,7 +95,7 @@ public class IIOPPrimaryToContactInfoImpl
                         "Problem in " + baseMsg + ".reset",
                         t);
             RuntimeException rte =
-                new RuntimeException(baseMsg + ".reset error");
+                    new RuntimeException(baseMsg + ".reset error");
             rte.initCause(t);
             throw rte;
         }
@@ -99,20 +103,19 @@ public class IIOPPrimaryToContactInfoImpl
 
     public synchronized boolean hasNext(ContactInfo primary,
                                         ContactInfo previous,
-                                        List contactInfos)
-    {
+                                        List contactInfos) {
         try {
-            if (! debugChecked) {
+            if (!debugChecked) {
                 debugChecked = true;
-                debug = ((ORB)primary.getBroker()).transportDebugFlag 
+                debug = ((ORB) primary.getBroker()).transportDebugFlag
                         || _logger.isLoggable(Level.FINE);
             }
 
             if (debug) {
-                dprint(".hasNext->: " 
-                       + formatKeyPreviousList(getKey(primary),
-                                               previous,
-                                               contactInfos));
+                dprint(".hasNext->: "
+                               + formatKeyPreviousList(getKey(primary),
+                                                       previous,
+                                                       contactInfos));
             }
             boolean result;
             if (previous == null) {
@@ -121,8 +124,8 @@ public class IIOPPrimaryToContactInfoImpl
                 int previousIndex = contactInfos.indexOf(previous);
                 int contactInfosSize = contactInfos.size();
                 if (debug) {
-                    dprint(".hasNext: " 
-                           + previousIndex + " " + contactInfosSize);
+                    dprint(".hasNext: "
+                                   + previousIndex + " " + contactInfosSize);
                 }
                 if (previousIndex < 0) {
                     // This SHOULD not happen.
@@ -130,13 +133,12 @@ public class IIOPPrimaryToContactInfoImpl
                     // found in the current list of contactInfos.
                     RuntimeException rte = new RuntimeException(
 
+                            "Problem in " + baseMsg + ".hasNext: previousIndex: "
+                                    + previousIndex);
 
-                        "Problem in " + baseMsg + ".hasNext: previousIndex: "
-                        + previousIndex);
-
-                    _logger.log(Level.SEVERE, 
-                        "Problem in " + baseMsg + ".hasNext: previousIndex: "
-                        + previousIndex, rte);
+                    _logger.log(Level.SEVERE,
+                                "Problem in " + baseMsg + ".hasNext: previousIndex: "
+                                        + previousIndex, rte);
                     throw rte;
                 } else {
                     // Since this is a retry, ensure that there is a following
@@ -149,11 +151,11 @@ public class IIOPPrimaryToContactInfoImpl
             }
             return result;
         } catch (Throwable t) {
-            _logger.log(Level.WARNING, 
+            _logger.log(Level.WARNING,
                         "Problem in " + baseMsg + ".hasNext",
                         t);
             RuntimeException rte =
-                new RuntimeException(baseMsg + ".hasNext error");
+                    new RuntimeException(baseMsg + ".hasNext error");
             rte.initCause(t);
             throw rte;
         }
@@ -161,17 +163,16 @@ public class IIOPPrimaryToContactInfoImpl
 
     public synchronized ContactInfo next(ContactInfo primary,
                                          ContactInfo previous,
-                                         List contactInfos)
-    {
+                                         List contactInfos) {
         try {
             String debugMsg = null;
 
             if (debug) {
                 debugMsg = "";
-                dprint(".next->: " 
-                       + formatKeyPreviousList(getKey(primary),
-                                               previous,
-                                               contactInfos));
+                dprint(".next->: "
+                               + formatKeyPreviousList(getKey(primary),
+                                                       previous,
+                                                       contactInfos));
                 dprint(".next: map: " + formatMap(map));
             }
 
@@ -224,9 +225,9 @@ public class IIOPPrimaryToContactInfoImpl
                 _logger.log(Level.INFO, "IIOP failover to: " + result);
 
                 if (debug) {
-                    debugMsg = ".next<-: update map: " 
-                        + " " + contactInfos.indexOf(previous)
-                        + " " + contactInfos.size() + " ";
+                    debugMsg = ".next<-: update map: "
+                            + " " + contactInfos.indexOf(previous)
+                            + " " + contactInfos.size() + " ";
                 }
             }
             if (debug) {
@@ -238,32 +239,30 @@ public class IIOPPrimaryToContactInfoImpl
                         "Problem in " + baseMsg + ".next",
                         t);
             RuntimeException rte =
-                new RuntimeException(baseMsg + ".next error");
+                    new RuntimeException(baseMsg + ".next error");
             rte.initCause(t);
             throw rte;
         }
     }
 
-    private Object getKey(ContactInfo contactInfo)
-    {
-        if (((SocketInfo)contactInfo).getPort() == 0) {
+    private Object getKey(ContactInfo contactInfo) {
+        if (((SocketInfo) contactInfo).getPort() == 0) {
             // When CSIv2 is used the primary will have a zero port.
             // Therefore type/host/port will NOT be unique.
             // So use the entire IOR for the key in that case.
-            return ((ContactInfoList)contactInfo.getContactInfoList())
-                .getEffectiveTargetIOR();
+            return ((ContactInfoList) contactInfo.getContactInfoList())
+                    .getEffectiveTargetIOR();
         } else {
             return contactInfo;
         }
     }
 
     private String formatKeyPreviousList(Object key,
-                                         ContactInfo previous, List list)
-    {
+                                         ContactInfo previous, List list) {
         String result =
-              "\n  key     : " + key
-            + "\n  previous: " + previous
-            + "\n  list:";
+                "\n  key     : " + key
+                        + "\n  previous: " + previous
+                        + "\n  list:";
         Iterator i = list.iterator();
         int count = 1;
         while (i.hasNext()) {
@@ -272,52 +271,44 @@ public class IIOPPrimaryToContactInfoImpl
         return result;
     }
 
-    private String formatMap(Map map)
-    {
+    private String formatMap(Map map) {
         String result = "";
         synchronized (map) {
             Iterator i = map.entrySet().iterator();
-            if (! i.hasNext()) {
+            if (!i.hasNext()) {
                 return "empty";
             }
             while (i.hasNext()) {
                 Map.Entry entry = (Map.Entry) i.next();
-                result += 
-                      "\n    key  : " + entry.getKey()
-                    + "\n    value: " + entry.getValue()
-                    + "\n";
+                result +=
+                        "\n    key  : " + entry.getKey()
+                                + "\n    value: " + entry.getValue()
+                                + "\n";
             }
         }
         return result;
     }
 
-    private void dprint(String msg)
-    {
+    private void dprint(String msg) {
         _logger.log(Level.FINE, msg);
     }
 }
 
-
-class MyLogger
-{
-    void log(Level level, String msg)
-    {
+class MyLogger {
+    void log(Level level, String msg) {
         log(level, msg, null);
     }
 
-    void log(Level level, String msg, Throwable t)
-    {
+    void log(Level level, String msg, Throwable t) {
         ORBUtility.dprint("IIOPPrimaryToContactInfoImpl.MyLogger.log", msg);
         if (t != null) {
             t.printStackTrace(System.out);
         }
     }
 
-    boolean isLoggable(Level level)
-    {
+    boolean isLoggable(Level level) {
         return false;
     }
 }
-
 
 // End of file.

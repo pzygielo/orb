@@ -21,13 +21,12 @@ package corba.misc;
 
 import test.Test;
 import corba.framework.*;
+
 import java.util.*;
 
-public class MiscTest extends CORBATest
-{
-    protected void doTest() throws Throwable
-    {
-        Controller client = createClient( "corba.misc.Client" ) ;
+public class MiscTest extends CORBATest {
+    protected void doTest() throws Throwable {
+        Controller client = createClient("corba.misc.Client");
 
         client.start();
 

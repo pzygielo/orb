@@ -19,11 +19,13 @@
 
 package com.sun.corba.ee.spi.threadpool;
 
-import com.sun.corba.ee.impl.threadpool.Exceptions ;
+import com.sun.corba.ee.impl.threadpool.Exceptions;
+
 import java.util.ArrayList;
 import java.util.List;
 
-/** Interface to support thread state validation.  The basic idea is that
+/**
+ * Interface to support thread state validation.  The basic idea is that
  * one or more validators can be registered with an implementation of the
  * TSV.  The validators are executed whenever a thread is returned to the
  * threadpool,  For example, a validator may check for unreleased locks or uncleared
@@ -33,13 +35,15 @@ import java.util.List;
  * @author ken
  */
 public class ThreadStateValidator {
-    private static final Exceptions wrapper = Exceptions.self ;
+    private static final Exceptions wrapper = Exceptions.self;
 
-    private static final List<Runnable> validators = new ArrayList<Runnable>() ;
+    private static final List<Runnable> validators = new ArrayList<Runnable>();
 
-    private ThreadStateValidator() {}
+    private ThreadStateValidator() {
+    }
 
-    /** Register a thread validator (represented as a Runnable).
+    /**
+     * Register a thread validator (represented as a Runnable).
      * A validator may check for locks that should not be held, check
      * for threadlocals that should be cleared, or take any other action
      * to check for resources that should not be held once the thread is no
@@ -56,19 +60,20 @@ public class ThreadStateValidator {
      *
      * @param validator
      */
-    public static void registerValidator( Runnable validator ) {
-        validators.add( validator ) ;
+    public static void registerValidator(Runnable validator) {
+        validators.add(validator);
     }
 
-    /** Execute all of the validators.  Should only be called from the
+    /**
+     * Execute all of the validators.  Should only be called from the
      * threadpool implementation.
      */
     public static void checkValidators() {
         for (Runnable run : validators) {
             try {
-                run.run() ;
+                run.run();
             } catch (Throwable thr) {
-                wrapper.threadStateValidatorException( run, thr ) ;
+                wrapper.threadStateValidatorException(run, thr);
             }
         }
     }

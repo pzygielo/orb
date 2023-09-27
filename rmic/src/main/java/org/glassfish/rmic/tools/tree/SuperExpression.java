@@ -19,9 +19,10 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
-import org.glassfish.rmic.tools.asm.Assembler;
-import java.io.PrintStream;
+import org.glassfish.rmic.tools.java.ClassDeclaration;
+import org.glassfish.rmic.tools.java.Environment;
+import org.glassfish.rmic.tools.java.Type;
+
 import java.util.Hashtable;
 
 /**
@@ -73,7 +74,9 @@ class SuperExpression extends ThisExpression {
         return checkCommon(env, ctx, vset, exp);
     }
 
-    /** Common code for checkValue and checkAmbigName */
+    /**
+     * Common code for checkValue and checkAmbigName
+     */
     private Vset checkCommon(Environment env, Context ctx, Vset vset, Hashtable<Object, Object> exp) {
         ClassDeclaration superClass = ctx.field.getClassDefinition().getSuperClass();
         if (superClass == null) {

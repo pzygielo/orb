@@ -19,7 +19,8 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
+import org.glassfish.rmic.tools.java.Type;
+
 import java.io.PrintStream;
 
 /**
@@ -42,7 +43,7 @@ class IntExpression extends IntegerExpression {
      */
     public boolean equals(Object obj) {
         if ((obj != null) && (obj instanceof IntExpression)) {
-            return value == ((IntExpression)obj).value;
+            return value == ((IntExpression) obj).value;
         }
         return false;
     }

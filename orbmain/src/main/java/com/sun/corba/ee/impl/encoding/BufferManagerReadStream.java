@@ -19,21 +19,19 @@
 
 package com.sun.corba.ee.impl.encoding;
 
-import java.nio.ByteBuffer;
-
-import com.sun.corba.ee.spi.orb.ORBData;
-import com.sun.corba.ee.spi.transport.ByteBufferPool;
-import com.sun.corba.ee.spi.orb.ORB;
-import com.sun.corba.ee.spi.logging.ORBUtilSystemException;
 import com.sun.corba.ee.impl.protocol.RequestCanceledException;
 import com.sun.corba.ee.impl.protocol.giopmsgheaders.FragmentMessage;
 import com.sun.corba.ee.impl.protocol.giopmsgheaders.Message;
+import com.sun.corba.ee.spi.logging.ORBUtilSystemException;
+import com.sun.corba.ee.spi.orb.ORB;
+import com.sun.corba.ee.spi.orb.ORBData;
 import com.sun.corba.ee.spi.trace.Transport;
+import com.sun.corba.ee.spi.transport.ByteBufferPool;
+import org.glassfish.pfl.tf.spi.annotation.InfoMethod;
 
+import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
-
-import org.glassfish.pfl.tf.spi.annotation.InfoMethod;
 
 @Transport
 public class BufferManagerReadStream
@@ -67,7 +65,8 @@ public class BufferManagerReadStream
     }
 
     @InfoMethod
-    private void bufferMessage(String msg, int bbAddr, String tail) {}
+    private void bufferMessage(String msg, int bbAddr, String tail) {
+    }
 
     @Transport
     @Override

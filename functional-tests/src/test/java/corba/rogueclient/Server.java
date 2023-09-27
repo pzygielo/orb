@@ -22,6 +22,7 @@ package corba.rogueclient;
 import java.util.Properties;
 import javax.naming.InitialContext;
 import javax.rmi.PortableRemoteObject;
+
 import com.sun.corba.ee.spi.orb.ORB;
 import com.sun.corba.ee.spi.misc.ORBConstants;
 
@@ -36,23 +37,19 @@ import org.omg.PortableServer.POA;
 // Last Modified: 2004 May 3, 2004 by Charlie Hunt
 //
 
-public class Server
-{
+public class Server {
     private static ORB orb = null;
     private static InitialContext initialContext = null;
     private static boolean dprint = false;
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         Properties props = System.getProperties();
-        if (dprint)
-        {
+        if (dprint) {
             props.put(ORBConstants.DEBUG_PROPERTY, "transport,giop");
         }
 
-        try
-        {
-            orb = (ORB)org.omg.CORBA.ORB.init(args, props);
+        try {
+            orb = (ORB) org.omg.CORBA.ORB.init(args, props);
 
             Tester testerImpl = new TesterImpl();
 

@@ -19,23 +19,12 @@
 
 package org.glassfish.rmic.tools.binaryclass;
 
-import org.glassfish.rmic.tools.java.ClassDeclaration;
-import org.glassfish.rmic.tools.java.ClassDefinition;
-import org.glassfish.rmic.tools.java.ClassNotFound;
-import org.glassfish.rmic.tools.java.Constants;
-import org.glassfish.rmic.tools.java.Environment;
-import org.glassfish.rmic.tools.java.Identifier;
-import org.glassfish.rmic.tools.java.MemberDefinition;
-import org.glassfish.rmic.tools.java.Type;
+import org.glassfish.rmic.tools.java.*;
+import org.glassfish.rmic.tools.javac.BatchEnvironment;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.Iterator;
 import java.util.Vector;
-import org.glassfish.rmic.tools.javac.BatchEnvironment;
 
 /**
  * WARNING: The contents of this source file are not part of any
@@ -77,7 +66,9 @@ class BinaryClass extends ClassDefinition implements Constants {
      * for BinaryClasses.
      */
     protected void basicCheck(Environment env) throws ClassNotFound {
-        if (tracing) env.dtEnter("BinaryClass.basicCheck: " + getName());
+        if (tracing) {
+            env.dtEnter("BinaryClass.basicCheck: " + getName());
+        }
 
         // We need to guard against duplicate calls to basicCheck().  They
         // can lead to calling collectInheritedMethods() for this class
@@ -85,11 +76,15 @@ class BinaryClass extends ClassDefinition implements Constants {
         // this class.  That is not allowed.
         // (Part of fix for 4105911)
         if (basicChecking || basicCheckDone) {
-            if (tracing) env.dtExit("BinaryClass.basicCheck: OK " + getName());
+            if (tracing) {
+                env.dtExit("BinaryClass.basicCheck: OK " + getName());
+            }
             return;
         }
 
-        if (tracing) env.dtEvent("BinaryClass.basicCheck: CHECKING " + getName());
+        if (tracing) {
+            env.dtEvent("BinaryClass.basicCheck: CHECKING " + getName());
+        }
         basicChecking = true;
 
         super.basicCheck(env);
@@ -101,7 +96,9 @@ class BinaryClass extends ClassDefinition implements Constants {
 
         basicCheckDone = true;
         basicChecking = false;
-        if (tracing) env.dtExit("BinaryClass.basicCheck: " + getName());
+        if (tracing) {
+            env.dtExit("BinaryClass.basicCheck: " + getName());
+        }
     }
 
     public static BinaryClass load(Environment env,
@@ -115,17 +112,17 @@ class BinaryClass extends ClassDefinition implements Constants {
         int version = in.readUnsignedShort();        // JVM 4.1 ClassFile.major_version
         if (version < JAVA_MIN_SUPPORTED_VERSION) {
             throw new ClassFormatError(
-                           org.glassfish.rmic.tools.javac.Main.getText(
-                               "javac.err.version.too.old",
-                               String.valueOf(version)));
+                    org.glassfish.rmic.tools.javac.Main.getText(
+                            "javac.err.version.too.old",
+                            String.valueOf(version)));
         } else if ((version > getMaxSupportedClassVersion())
-                     || (version == getMaxSupportedClassVersion()
-                  && minor_version > JAVA_MAX_SUPPORTED_MINOR_VERSION)) {
+                || (version == getMaxSupportedClassVersion()
+                && minor_version > JAVA_MAX_SUPPORTED_MINOR_VERSION)) {
             throw new ClassFormatError(
-                           org.glassfish.rmic.tools.javac.Main.getText(
-                               "javac.err.version.too.recent",
-                               version+"."+minor_version,
-                               getMaxSupportedClassVersion() +"."+JAVA_MAX_SUPPORTED_MINOR_VERSION));
+                    org.glassfish.rmic.tools.javac.Main.getText(
+                            "javac.err.version.too.recent",
+                            version + "." + minor_version,
+                            getMaxSupportedClassVersion() + "." + JAVA_MAX_SUPPORTED_MINOR_VERSION));
         }
 
         // Read the constant pool
@@ -145,7 +142,7 @@ class BinaryClass extends ClassDefinition implements Constants {
 
         // Read the interface names - from JVM 4.1 ClassFile.interfaces_count
         ClassDeclaration[] interfaces = new ClassDeclaration[in.readUnsignedShort()];
-        for (int i = 0 ; i < interfaces.length ; i++) {
+        for (int i = 0; i < interfaces.length; i++) {
             // JVM 4.1 ClassFile.interfaces[]
             interfaces[i] = cpool.getDeclaration(env, in.readUnsignedShort());
         }
@@ -160,7 +157,7 @@ class BinaryClass extends ClassDefinition implements Constants {
 
         // Read the fields
         int nfields = in.readUnsignedShort();  // JVM 4.1 ClassFile.fields_count
-        for (int i = 0 ; i < nfields ; i++) {
+        for (int i = 0; i < nfields; i++) {
             // JVM 4.5 field_info.access_flags
             int fieldMod = in.readUnsignedShort() & ACCM_FIELD;
             // JVM 4.5 field_info.name_index
@@ -173,7 +170,7 @@ class BinaryClass extends ClassDefinition implements Constants {
 
         // Read the methods
         int nmethods = in.readUnsignedShort();  // JVM 4.1 ClassFile.methods_count
-        for (int i = 0 ; i < nmethods ; i++) {
+        for (int i = 0; i < nmethods; i++) {
             // JVM 4.6 method_info.access_flags
             int methMod = in.readUnsignedShort() & ACCM_METHOD;
             // JVM 4.6 method_info.name_index
@@ -234,7 +231,9 @@ class BinaryClass extends ClassDefinition implements Constants {
             // Duplicate calls most likely should not occur, but they do
             // in javap.  Be tolerant of them for the time being.
             // throw new CompilerError("multiple loadNested");
-            if (tracing) env.dtEvent("loadNested: DUPLICATE CALL SKIPPED");
+            if (tracing) {
+                env.dtEvent("loadNested: DUPLICATE CALL SKIPPED");
+            }
             return;
         }
         haveLoadedNested = true;
@@ -251,8 +250,9 @@ class BinaryClass extends ClassDefinition implements Constants {
             // We used to throw a CompilerError here (bug 4095108).
             env.error(0, "malformed.attribute", getClassDeclaration(),
                       idInnerClasses);
-            if (tracing)
+            if (tracing) {
                 env.dtEvent("loadNested: MALFORMED ATTRIBUTE (InnerClasses)");
+            }
         }
     }
 
@@ -339,10 +339,10 @@ class BinaryClass extends ClassDefinition implements Constants {
             // this accessibility test is an optimization, and it is safe to
             // err on the side of greater accessibility.
             boolean accessible =
-                (outer != null) &&
-                (!inner_nm.equals(idNull)) &&
-                ((mods & M_PRIVATE) == 0 ||
-                 (flags & ATT_ALLCLASSES) != 0);
+                    (outer != null) &&
+                            (!inner_nm.equals(idNull)) &&
+                            ((mods & M_PRIVATE) == 0 ||
+                                    (flags & ATT_ALLCLASSES) != 0);
 
             // The reader should note that there has been a significant change
             // in the way that the InnerClasses attribute is being handled.
@@ -358,7 +358,7 @@ class BinaryClass extends ClassDefinition implements Constants {
 
             if (accessible) {
                 Identifier nm =
-                    Identifier.lookupInner(outer.getName(), inner_nm);
+                        Identifier.lookupInner(outer.getName(), inner_nm);
 
                 // Tell the type module about the nesting relation:
                 Type.tClass(nm);
@@ -375,7 +375,7 @@ class BinaryClass extends ClassDefinition implements Constants {
                     // The outer class in the record is this class.
                     try {
                         ClassDefinition innerClass =
-                            inner.getClassDefinition(env);
+                                inner.getClassDefinition(env);
                         initOuter(innerClass, mods);
                     } catch (ClassNotFound e) {
                         // report the error elsewhere
@@ -386,16 +386,17 @@ class BinaryClass extends ClassDefinition implements Constants {
     }
 
     private void initInner(ClassDefinition outerClass, int mods) {
-        if (getOuterClass() != null)
+        if (getOuterClass() != null) {
             return;             // already done
+        }
         /******
-        // Maybe set static, protected, or private.
-        if ((modifiers & M_PUBLIC) != 0)
-            mods &= M_STATIC;
-        else
-            mods &= M_PRIVATE | M_PROTECTED | M_STATIC;
-        modifiers |= mods;
-        ******/
+         // Maybe set static, protected, or private.
+         if ((modifiers & M_PUBLIC) != 0)
+         mods &= M_STATIC;
+         else
+         mods &= M_PRIVATE | M_PROTECTED | M_STATIC;
+         modifiers |= mods;
+         ******/
         // For an inner class, the class access may have been weakened
         // from that originally declared the source.  We must take the
         // actual access permissions against which we check any source
@@ -435,8 +436,9 @@ class BinaryClass extends ClassDefinition implements Constants {
     }
 
     private void initOuter(ClassDefinition innerClass, int mods) {
-        if (innerClass instanceof BinaryClass)
-            ((BinaryClass)innerClass).initInner(this, mods);
+        if (innerClass instanceof BinaryClass) {
+            ((BinaryClass) innerClass).initInner(this, mods);
+        }
         addMember(new BinaryMember(innerClass));
     }
 
@@ -458,16 +460,21 @@ class BinaryClass extends ClassDefinition implements Constants {
         data.writeShort(getModifiers() & ACCM_CLASS);
         data.writeShort(cpool.indexObject(getClassDeclaration(), env));
         data.writeShort((getSuperClass() != null)
-                        ? cpool.indexObject(getSuperClass(), env) : 0);
+                                ? cpool.indexObject(getSuperClass(), env) : 0);
         data.writeShort(interfaces.length);
-        for (int i = 0 ; i < interfaces.length ; i++) {
+        for (int i = 0; i < interfaces.length; i++) {
             data.writeShort(cpool.indexObject(interfaces[i], env));
         }
 
         // count the fields and the methods
         int fieldCount = 0, methodCount = 0;
-        for (MemberDefinition f = firstMember; f != null; f = f.getNextMember())
-            if (f.isMethod()) methodCount++; else fieldCount++;
+        for (MemberDefinition f = firstMember; f != null; f = f.getNextMember()) {
+            if (f.isMethod()) {
+                methodCount++;
+            } else {
+                fieldCount++;
+            }
+        }
 
         // write out each the field count, and then each field
         data.writeShort(fieldCount);
@@ -478,7 +485,7 @@ class BinaryClass extends ClassDefinition implements Constants {
                 String signature = f.getType().getTypeSignature();
                 data.writeShort(cpool.indexString(name, env));
                 data.writeShort(cpool.indexString(signature, env));
-                BinaryAttribute.write(((BinaryMember)f).atts, data, cpool, env);
+                BinaryAttribute.write(((BinaryMember) f).atts, data, cpool, env);
             }
         }
 
@@ -491,7 +498,7 @@ class BinaryClass extends ClassDefinition implements Constants {
                 String signature = f.getType().getTypeSignature();
                 data.writeShort(cpool.indexString(name, env));
                 data.writeShort(cpool.indexString(signature, env));
-                BinaryAttribute.write(((BinaryMember)f).atts, data, cpool, env);
+                BinaryAttribute.write(((BinaryMember) f).atts, data, cpool, env);
             }
         }
 
@@ -525,7 +532,7 @@ class BinaryClass extends ClassDefinition implements Constants {
      * Get a class attribute
      */
     public byte getAttribute(Identifier name)[] {
-        for (BinaryAttribute att = atts ; att != null ; att = att.next) {
+        for (BinaryAttribute att = atts; att != null; att = att.next) {
             if (att.name.equals(name)) {
                 return att.data;
             }

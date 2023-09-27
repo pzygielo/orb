@@ -30,21 +30,20 @@ import Util.*;
 
 public class FactoryForRetainAndUseServantManager implements POAFactory {
 
-//    org.omg.CORBA.ORB Orb;
+    //    org.omg.CORBA.ORB Orb;
 
-//    public void setORB(org.omg.CORBA.ORB orb) {
-//        Orb = orb;
-//    }
+    //    public void setORB(org.omg.CORBA.ORB orb) {
+    //        Orb = orb;
+    //    }
 
     public POA createPOA(POA parent)
-        throws AdapterAlreadyExists, InvalidPolicy
-    {
+            throws AdapterAlreadyExists, InvalidPolicy {
         Policy[] policies = new Policy[2];
         policies[0] =
-            parent.create_servant_retention_policy(ServantRetentionPolicyValue.RETAIN);
+                parent.create_servant_retention_policy(ServantRetentionPolicyValue.RETAIN);
         policies[1] =
-            parent.create_request_processing_policy(RequestProcessingPolicyValue.USE_SERVANT_MANAGER);
-        
+                parent.create_request_processing_policy(RequestProcessingPolicyValue.USE_SERVANT_MANAGER);
+
         POA p = parent.create_POA("RetainAndUseServantManager",
                                   null,
                                   policies);

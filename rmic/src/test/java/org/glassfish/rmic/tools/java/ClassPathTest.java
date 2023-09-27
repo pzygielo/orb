@@ -19,9 +19,9 @@
 
 package org.glassfish.rmic.tools.java;
 
-import java.io.File;
-
 import org.junit.Test;
+
+import java.io.File;
 
 public class ClassPathTest {
 

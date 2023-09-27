@@ -30,17 +30,15 @@ import org.omg.CosNaming.NamingContextPackage.*;
 
 import java.util.Properties;
 
-public class Client 
-{
-    public static void main(String av[])
-    {
+public class Client {
+    public static void main(String av[]) {
         try {
             Properties props = new Properties();
             props.put("org.omg.PortableInterceptor.ORBInitializerClass."
-                      + "pi.serviceexample.AServiceORBInitializer",
+                              + "pi.serviceexample.AServiceORBInitializer",
                       "");
             props.put("org.omg.PortableInterceptor.ORBInitializerClass."
-                      + "pi.serviceexample.LoggingServiceClientORBInitializer",
+                              + "pi.serviceexample.LoggingServiceClientORBInitializer",
                       "");
             ORB orb = ORB.init(av, props);
 
@@ -50,22 +48,22 @@ public class Client
             // using interceptors.
             //
 
-            AService aService = 
-                AServiceHelper.narrow(
-                    orb.resolve_initial_references("AService"));
+            AService aService =
+                    AServiceHelper.narrow(
+                            orb.resolve_initial_references("AService"));
 
             //
             // The client obtains a reference to some object that
             // it will invoke.
             //
 
-            NamingContext nameService = 
-                NamingContextHelper.narrow(
-                    orb.resolve_initial_references("NameService"));
+            NamingContext nameService =
+                    NamingContextHelper.narrow(
+                            orb.resolve_initial_references("NameService"));
             NameComponent arbitraryObjectPath[] =
-                { new NameComponent("ArbitraryObject", "") };
+                    { new NameComponent("ArbitraryObject", "") };
             ArbitraryObject arbitraryObject =
-                ArbitraryObjectHelper.narrow(nameService.resolve(arbitraryObjectPath));
+                    ArbitraryObjectHelper.narrow(nameService.resolve(arbitraryObjectPath));
 
             //
             // The client begins the service so that invocations of
@@ -73,7 +71,7 @@ public class Client
             //
 
             aService.begin();
-            
+
             arbitraryObject.arbitraryOperation1("one");
             arbitraryObject.arbitraryOperation2(2);
 
@@ -87,7 +85,6 @@ public class Client
             // This invocation is not serviced by aService since
             // it is outside the begin/end.
             arbitraryObject.arbitraryOperation3("just return");
-
 
             aService.begin();
             try {

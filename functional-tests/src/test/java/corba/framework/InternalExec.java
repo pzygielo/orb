@@ -27,16 +27,13 @@ import java.io.*;
  * running something in the current thread and process -- it won't return
  * unless it does so on its own.  This assumes single threaded access.
  * For multi-threaded options, see ThreadExec.
- *
  */
-public class InternalExec extends ControllerAdapter
-{
-    private long startTime ;
-    private long duration ;
+public class InternalExec extends ControllerAdapter {
+    private long startTime;
+    private long duration;
 
-    public void start( ) throws Exception
-    {
-        startTime = System.currentTimeMillis() ;
+    public void start() throws Exception {
+        startTime = System.currentTimeMillis();
 
         try {
             Loader loader = new Loader();
@@ -46,45 +43,40 @@ public class InternalExec extends ControllerAdapter
 
             activateObject(obj);
         } finally {
-            duration = System.currentTimeMillis() - startTime ;
+            duration = System.currentTimeMillis() - startTime;
         }
     }
-   
+
     public long duration() {
-        return duration ;
+        return duration;
     }
 
-    public void stop()
-    {
+    public void stop() {
         // Can't be stopped
     }
 
-    public void kill()
-    {
+    public void kill() {
         // Can't be killed
     }
 
-    public int waitFor() throws Exception
-    {
+    public int waitFor() throws Exception {
         return exitValue;
     }
 
-    public int waitFor(long timeout) throws Exception
-    {
+    public int waitFor(long timeout) throws Exception {
         return exitValue;
     }
 
-    public int exitValue() throws IllegalThreadStateException
-    {
+    public int exitValue() throws IllegalThreadStateException {
         // Just in case a subclass wants to change finished
-        if (!finished())
+        if (!finished()) {
             throw new IllegalThreadStateException("not finished");
+        }
 
         return exitValue;
     }
 
-    public boolean finished() throws IllegalThreadStateException
-    {
+    public boolean finished() throws IllegalThreadStateException {
         return true;
     }
 
@@ -93,9 +85,8 @@ public class InternalExec extends ControllerAdapter
      * InternalProcess interface, and calling its
      * run method.
      */
-    protected void activateObject(Object obj)
-    {
-        InternalProcess process = (InternalProcess)obj;
+    protected void activateObject(Object obj) {
+        InternalProcess process = (InternalProcess) obj;
 
         PrintStream output = new PrintStream(out, true);
         PrintStream errors = new PrintStream(err, true);
@@ -107,7 +98,7 @@ public class InternalExec extends ControllerAdapter
             exitValue = 1;
         }
     }
-                 
+
     /**
      * Exit value of this process.
      */

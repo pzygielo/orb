@@ -37,38 +37,38 @@ import java.util.Properties;
  * message text .properties files needed by other frameworks or user
  * programs.
  *
+ * @author Larry K. Raper
  * @see Messages#msgLoad
- *
- * @author      Larry K. Raper
  */
 
 public abstract class Messages {
 
     /* Class variables */
 
-
     /* Metasymbol for leading or trailing blank */
     private static final String LTB = "%B";
     /* Metasymbol for line separator */
-    private static final char NL  = '\n';
+    private static final char NL = '\n';
 
     private static final String lineSeparator =
-        System.getProperty ("line.separator");
+            System.getProperty("line.separator");
 
-    private static final Properties m = new Properties ();
+    private static final Properties m = new Properties();
     private static boolean loadNeeded = true;
 
     /* Class methods for message loading and formatting */
 
-    private static final synchronized void loadDefaultProperties () {
+    private static final synchronized void loadDefaultProperties() {
 
-        if (!loadNeeded)
+        if (!loadNeeded) {
             return;
+        }
         try {
-            m.load (FileLocator.locateLocaleSpecificFileInClassPath(
+            m.load(FileLocator.locateLocaleSpecificFileInClassPath(
                     "com/sun/tools/corba/se/idl/som/cff/cff.properties"));
-        } catch (IOException ioe) { }
-        fixMessages (m);  /* #26964 Replace any metasymbols */
+        } catch (IOException ioe) {
+        }
+        fixMessages(m);  /* #26964 Replace any metasymbols */
         loadNeeded = false;
 
     }
@@ -81,7 +81,7 @@ public abstract class Messages {
      * and the next line was swallowed as a continuation.  To work
      * around the problem, we introduced our own metasymbol to represent
      * a trailing blank.  Hence:
-     *
+     * <p>
      * Performs substitution for any metasymbols in the message
      * templates.  So far only %B is needed.  This was introduced
      * to make it more convenient for .properties files to
@@ -91,34 +91,36 @@ public abstract class Messages {
      * wherever '\n' occurs in a message template, it is replaced
      * with the value of System.getProperty ("line.separator").
      */
-    private static final void fixMessages (Properties p) {
+    private static final void fixMessages(Properties p) {
 
-        Enumeration keys = p.keys ();
-        Enumeration elems = p.elements ();
-        while (keys.hasMoreElements ()) {
-            String key = (String) keys.nextElement ();
-            String elem = (String) elems.nextElement ();
-            int i = elem.indexOf (LTB);
+        Enumeration keys = p.keys();
+        Enumeration elems = p.elements();
+        while (keys.hasMoreElements()) {
+            String key = (String) keys.nextElement();
+            String elem = (String) elems.nextElement();
+            int i = elem.indexOf(LTB);
             boolean changed = false;
             while (i != -1) {
-                if (i == 0)
-                    elem = " " + elem.substring (2);
-                else
-                    elem = elem.substring (0, i) + " " + elem.substring (i+2);
+                if (i == 0) {
+                    elem = " " + elem.substring(2);
+                } else {
+                    elem = elem.substring(0, i) + " " + elem.substring(i + 2);
+                }
                 changed = true;
-                i = elem.indexOf (LTB);
+                i = elem.indexOf(LTB);
             }
-            int lsIncr = lineSeparator.length () - 1;
-            for (i=0; i<elem.length (); i++) {
-                if (elem.charAt (i) == NL) {
-                    elem = elem.substring (0, i) +
-                        lineSeparator + elem.substring (i+1);
+            int lsIncr = lineSeparator.length() - 1;
+            for (i = 0; i < elem.length(); i++) {
+                if (elem.charAt(i) == NL) {
+                    elem = elem.substring(0, i) +
+                            lineSeparator + elem.substring(i + 1);
                     i += lsIncr;
                     changed = true;
                 }
             }
-            if (changed)
-                p.put (key, elem);
+            if (changed) {
+                p.put(key, elem);
+            }
         }
 
     }
@@ -127,14 +129,15 @@ public abstract class Messages {
      * Loads additional message keys and text found in the passed
      * properties file.  The specified properties file is assumed to
      * reside in the CLASSPATH. An IOException is thrown if the loading fails.
+     *
      * @param propertyFileName file name of properties file to load
      */
-    public static final synchronized void msgLoad (String propertyFileName)
-        throws IOException {
+    public static final synchronized void msgLoad(String propertyFileName)
+            throws IOException {
 
-        m.load (FileLocator.locateLocaleSpecificFileInClassPath(
+        m.load(FileLocator.locateLocaleSpecificFileInClassPath(
                 propertyFileName));
-        fixMessages (m);   /* #26964 Replace any metasymbols */
+        fixMessages(m);   /* #26964 Replace any metasymbols */
         loadNeeded = false;
 
     }
@@ -143,14 +146,16 @@ public abstract class Messages {
      * Returns the message text corresponding to the passed msgkey
      * string.  If the msgkey cannot be found, its value is returned
      * as the output message text.
+     *
      * @param msgkey key of the message
      * @return resulting message text
      */
-    public static final String msg (String msgkey) {
+    public static final String msg(String msgkey) {
 
-        if (loadNeeded)
-            loadDefaultProperties ();
-        String msgtext = m.getProperty (msgkey, msgkey);
+        if (loadNeeded) {
+            loadDefaultProperties();
+        }
+        String msgtext = m.getProperty(msgkey, msgkey);
         return msgtext;
 
     }
@@ -165,23 +170,27 @@ public abstract class Messages {
      * <p>
      * If the msgkey cannot be found, its value is used as the
      * message text.
+     *
      * @param msgkey message key
      * @param parm parameter for the message
      * @return resulting message text
      */
-    public static final String msg (String msgkey, String parm) {
+    public static final String msg(String msgkey, String parm) {
 
-        if (loadNeeded)
-            loadDefaultProperties ();
-        String msgtext = m.getProperty (msgkey, msgkey);
-        int i = msgtext.indexOf ("%1");
+        if (loadNeeded) {
+            loadDefaultProperties();
+        }
+        String msgtext = m.getProperty(msgkey, msgkey);
+        int i = msgtext.indexOf("%1");
         if (i >= 0) {
             String ending = "";
-            if ((i+2) < msgtext.length ())
-                ending = msgtext.substring (i+2);
-            return msgtext.substring (0, i) + parm + ending;
-        } else
+            if ((i + 2) < msgtext.length()) {
+                ending = msgtext.substring(i + 2);
+            }
+            return msgtext.substring(0, i) + parm + ending;
+        } else {
             msgtext += " " + parm;
+        }
         return msgtext;
 
     }
@@ -197,9 +206,9 @@ public abstract class Messages {
      * If the msgkey cannot be found, its value is used as the
      * message text.
      */
-    public static final String msg (String msgkey, int parm) {
+    public static final String msg(String msgkey, int parm) {
 
-        return msg (msgkey, String.valueOf (parm));
+        return msg(msgkey, String.valueOf(parm));
 
     }
 
@@ -214,27 +223,32 @@ public abstract class Messages {
      * If the msgkey cannot be found, its value is used as the
      * message text.
      */
-    public static final String msg (String msgkey, String parm1, String parm2) {
+    public static final String msg(String msgkey, String parm1, String parm2) {
 
-        if (loadNeeded)
-            loadDefaultProperties ();
-        String result = m.getProperty (msgkey, msgkey);
+        if (loadNeeded) {
+            loadDefaultProperties();
+        }
+        String result = m.getProperty(msgkey, msgkey);
         String ending = "";
-        int i = result.indexOf ("%1");
+        int i = result.indexOf("%1");
         if (i >= 0) {
-            if ((i+2) < result.length ())
-                ending = result.substring (i+2);
-            result = result.substring (0, i) + parm1 + ending;
-        } else
+            if ((i + 2) < result.length()) {
+                ending = result.substring(i + 2);
+            }
+            result = result.substring(0, i) + parm1 + ending;
+        } else {
             result += " " + parm1;
-        i = result.indexOf ("%2");
+        }
+        i = result.indexOf("%2");
         if (i >= 0) {
             ending = "";
-            if ((i+2) < result.length ())
-                ending = result.substring (i+2);
-            result = result.substring (0, i) + parm2 + ending;
-        } else
+            if ((i + 2) < result.length()) {
+                ending = result.substring(i + 2);
+            }
+            result = result.substring(0, i) + parm2 + ending;
+        } else {
             result += " " + parm2;
+        }
         return result;
 
     }
@@ -250,26 +264,9 @@ public abstract class Messages {
      * If the msgkey cannot be found, its value is used as the
      * message text.
      */
-    public static final String msg (String msgkey, int parm1, String parm2) {
+    public static final String msg(String msgkey, int parm1, String parm2) {
 
-        return msg (msgkey, String.valueOf (parm1), parm2);
-
-    }
-
-    /**
-     * Returns the message text corresponding to the passed msgkey
-     * string.  The message text is assumed to require the insertion
-     * of two arguments, supplied by the "parm1" and "parm2" parameters.
-     * If the message text does not contain the meta characters "%1" and
-     * "%2" that indicate where to place the arguments, the passed arguments
-     * are appended at the end of the message text.
-     * <p>
-     * If the msgkey cannot be found, its value is used as the
-     * message text.
-     */
-    public static final String msg (String msgkey, String parm1, int parm2) {
-
-        return msg (msgkey, parm1, String.valueOf (parm2));
+        return msg(msgkey, String.valueOf(parm1), parm2);
 
     }
 
@@ -284,18 +281,34 @@ public abstract class Messages {
      * If the msgkey cannot be found, its value is used as the
      * message text.
      */
-    public static final String msg (String msgkey, int parm1, int parm2) {
+    public static final String msg(String msgkey, String parm1, int parm2) {
 
-        return msg (msgkey, String.valueOf (parm1), String.valueOf (parm2));
+        return msg(msgkey, parm1, String.valueOf(parm2));
 
     }
 
+    /**
+     * Returns the message text corresponding to the passed msgkey
+     * string.  The message text is assumed to require the insertion
+     * of two arguments, supplied by the "parm1" and "parm2" parameters.
+     * If the message text does not contain the meta characters "%1" and
+     * "%2" that indicate where to place the arguments, the passed arguments
+     * are appended at the end of the message text.
+     * <p>
+     * If the msgkey cannot be found, its value is used as the
+     * message text.
+     */
+    public static final String msg(String msgkey, int parm1, int parm2) {
+
+        return msg(msgkey, String.valueOf(parm1), String.valueOf(parm2));
+
+    }
 
     /**
      * Returns the message text corresponding to the passed msgkey
      * string.  The message text is assumed to require the insertion
      * of three arguments, supplied by the "parm1", "parm2" and "parm3"
-     *  parameters.
+     * parameters.
      * If the message text does not contain the meta characters "%1" and
      * "%2" that indicate where to place the arguments, the passed arguments
      * are appended at the end of the message text.
@@ -303,11 +316,12 @@ public abstract class Messages {
      * If the msgkey cannot be found, its value is used as the
      * message text.
      */
-    public static final String msg (String msgkey, String parm1,
-                            String parm2, String parm3) {
-        if (loadNeeded)
-            loadDefaultProperties ();
-        String result = m.getProperty (msgkey, msgkey);
+    public static final String msg(String msgkey, String parm1,
+                                   String parm2, String parm3) {
+        if (loadNeeded) {
+            loadDefaultProperties();
+        }
+        String result = m.getProperty(msgkey, msgkey);
         result = substituteString(result, 1, parm1);
         result = substituteString(result, 2, parm2);
         result = substituteString(result, 3, parm3);
@@ -324,21 +338,22 @@ public abstract class Messages {
      @subst: string for the substitution.
     */
     private static String substituteString(String orig, int paramNum,
-                     String subst){
+                                           String subst) {
         String result = orig;
-        String paramSubst = "%"+ paramNum;
+        String paramSubst = "%" + paramNum;
         int len = paramSubst.length();
-        int index = result.indexOf (paramSubst);
+        int index = result.indexOf(paramSubst);
         String ending = "";
         if (index >= 0) {
-            if ((index+len) < result.length ())
-                ending = result.substring (index+len);
-            result = result.substring (0, index) + subst + ending;
+            if ((index + len) < result.length()) {
+                ending = result.substring(index + len);
+            }
+            result = result.substring(0, index) + subst + ending;
+        } else {
+            result += " " + subst;
         }
-        else result += " " + subst;
 
-         return result;
+        return result;
     }
-
 
 }

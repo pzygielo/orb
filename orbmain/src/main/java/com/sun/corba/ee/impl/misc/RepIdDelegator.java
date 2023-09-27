@@ -19,17 +19,11 @@
 
 package com.sun.corba.ee.impl.misc;
 
-
-import java.io.Serializable;
-
-
-import java.net.MalformedURLException;
-
 import com.sun.corba.ee.impl.io.TypeMismatchException;
-
 import com.sun.corba.ee.impl.util.RepositoryId;
 
-import com.sun.corba.ee.impl.misc.ClassInfoCache ;
+import java.io.Serializable;
+import java.net.MalformedURLException;
 
 /**
  * Delegates to the current RepositoryId implementation in
@@ -38,36 +32,32 @@ import com.sun.corba.ee.impl.misc.ClassInfoCache ;
  * are static.
  */
 public final class RepIdDelegator
-    implements RepositoryIdStrings, 
-               RepositoryIdUtility,
-               RepositoryIdInterface
-{
+        implements RepositoryIdStrings,
+        RepositoryIdUtility,
+        RepositoryIdInterface {
     // RepositoryIdFactory methods
 
     public String createForAnyType(Class type) {
         return RepositoryId.createForAnyType(type);
     }
 
-    public String createForAnyType(Class type, ClassInfoCache.ClassInfo cinfo ) {
+    public String createForAnyType(Class type, ClassInfoCache.ClassInfo cinfo) {
         return RepositoryId.createForAnyType(type, cinfo);
     }
 
     public String createForJavaType(Serializable ser)
-        throws TypeMismatchException
-    {
+            throws TypeMismatchException {
         return RepositoryId.createForJavaType(ser);
     }
-               
+
     public String createForJavaType(Class clz)
-        throws TypeMismatchException
-    {
+            throws TypeMismatchException {
         return RepositoryId.createForJavaType(clz);
     }
 
-    public String createForJavaType(Class clz, ClassInfoCache.ClassInfo cinfo )
-        throws TypeMismatchException
-    {
-        return RepositoryId.createForJavaType(clz,cinfo);
+    public String createForJavaType(Class clz, ClassInfoCache.ClassInfo cinfo)
+            throws TypeMismatchException {
+        return RepositoryId.createForJavaType(clz, cinfo);
     }
 
     public String createSequenceRepID(java.lang.Object ser) {
@@ -83,7 +73,7 @@ public final class RepIdDelegator
     }
 
     // RepositoryIdUtility methods
-    
+
     public boolean isChunkedEncoding(int valueTag) {
         return RepositoryId.isChunkedEncoding(valueTag);
     }
@@ -142,16 +132,14 @@ public final class RepIdDelegator
         return delegate.getClassFromType();
     }
 
-    public Class getClassFromType(String codebaseURL) 
-        throws ClassNotFoundException, MalformedURLException
-    {
+    public Class getClassFromType(String codebaseURL)
+            throws ClassNotFoundException, MalformedURLException {
         return delegate.getClassFromType(codebaseURL);
     }
 
     public Class getClassFromType(Class expectedType,
-                                  String codebaseURL) 
-        throws ClassNotFoundException, MalformedURLException
-    {
+                                  String codebaseURL)
+            throws ClassNotFoundException, MalformedURLException {
         return delegate.getClassFromType(expectedType, codebaseURL);
     }
 
@@ -160,7 +148,8 @@ public final class RepIdDelegator
     }
 
     // Constructor used for factory/utility cases
-    public RepIdDelegator() {}
+    public RepIdDelegator() {
+    }
 
     // Constructor used by getIdFromString.  All non-static
     // RepositoryId methods will use the provided delegate.
@@ -171,20 +160,22 @@ public final class RepIdDelegator
     private RepositoryId delegate;
 
     public String toString() {
-        if (delegate != null)
+        if (delegate != null) {
             return delegate.toString();
-        else
+        } else {
             return this.getClass().getName();
+        }
     }
 
     public boolean equals(Object obj) {
-        if (delegate != null)
+        if (delegate != null) {
             return delegate.equals(obj);
-        else
+        } else {
             return super.equals(obj);
+        }
     }
 
     public int hashCode() {
-        return delegate.hashCode() ;
+        return delegate.hashCode();
     }
 }

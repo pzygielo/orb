@@ -24,13 +24,13 @@
 
 package com.sun.corba.ee.impl.folb;
 
-import java.util.List;
-import org.omg.IOP.TaggedComponent;
-import org.omg.PortableInterceptor.IORInfo;
-import com.sun.corba.ee.spi.folb.ClusterInstanceInfo;
 import com.sun.corba.ee.spi.folb.ClusterInstanceInfo;
 import com.sun.corba.ee.spi.ior.IOR;
 import com.sun.corba.ee.spi.transport.SocketInfo;
+import org.omg.IOP.TaggedComponent;
+import org.omg.PortableInterceptor.IORInfo;
+
+import java.util.List;
 
 /**
  * An implementation of this interface <code>org.omg.CORBA.LocalObject</code>.
@@ -39,31 +39,32 @@ import com.sun.corba.ee.spi.transport.SocketInfo;
  *
  * @author Harold Carr
  */
-public interface CSIv2SSLTaggedComponentHandler
-{
+public interface CSIv2SSLTaggedComponentHandler {
     /**
      * @param iorInfo - from IORInterceptor.establish_components.
      * @param clusterInstanceInfo On the server-side, the FOLB system will pass all ClusterInstanceInfo
-     * to the CSIv2/SSL system.  
+     * to the CSIv2/SSL system.
      * @return null or org.omg.IOP.TaggedComponent.
      * The CSIv2SSL system returns <code>null</code> if no security
      * information is to be added to IORs.  Otherwise it returns the
      * CSIv2SSL <code>org.omg.IOP.TaggedComponent</code> that will be
      * added to IORs.
      */
-    public TaggedComponent insert(IORInfo iorInfo, 
+    public TaggedComponent insert(IORInfo iorInfo,
                                   List<ClusterInstanceInfo> clusterInstanceInfo);
 
-    /** Extract is called on each invocation of the IOR, so that the security code can
+    /**
+     * Extract is called on each invocation of the IOR, so that the security code can
      * run properly.
      * If the given IOR contains CSIv2SSL host/port
      * info that should be used for this invocation then
-     * extract should return a List of SocketInfo. 
+     * extract should return a List of SocketInfo.
      * Otherwise it should return null.
+     *
      * @param ior The target ior of the current invocation.
      * @return List of all SocketInfos found in the IOR.
      */
-    public List<SocketInfo> extract(IOR ior); 
+    public List<SocketInfo> extract(IOR ior);
 }
 
 // End of file.

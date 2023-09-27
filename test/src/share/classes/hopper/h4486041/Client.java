@@ -20,20 +20,19 @@
 package hopper.h4486041;
 
 import org.omg.CORBA.ORB;
+
 import java.util.Properties;
 
-public class Client
-{
+public class Client {
     public static final String ORBClassKey =
-        "org.omg.CORBA.ORBClass";
+            "org.omg.CORBA.ORBClass";
 
     public static final String ORBSingletonClassKey =
-        "org.omg.CORBA.ORBSingletonClass";
+            "org.omg.CORBA.ORBSingletonClass";
 
     public static int numberOfErrors = 0;
 
-    public static void main(String[] av)
-    {
+    public static void main(String[] av) {
         try {
 
             Properties properties = new Properties();
@@ -57,7 +56,7 @@ public class Client
 
             // --------------------------------------
 
-            System.getProperties().put(ORBSingletonClassKey, 
+            System.getProperties().put(ORBSingletonClassKey,
                                        "hopper.h4486041.TestORB");
             expectNormal("TestORB Singleton Good", null, null, true);
 
@@ -91,10 +90,9 @@ public class Client
     public static void expectException(String message,
                                        String[] av,
                                        Properties properties,
-                                       Class expectedException, 
+                                       Class expectedException,
                                        boolean isSetParameters,
-                                       boolean isSingleton)
-    {
+                                       boolean isSingleton) {
         System.out.println();
         System.out.println("------------------------------------------------");
         System.out.println("Begin expectException: " + message);
@@ -117,24 +115,22 @@ public class Client
             System.out.println("\tExpected cause: " + expectedException);
             System.out.println("\tCause: " + cause);
             if (cause == null ||
-                (! cause.getClass().equals(expectedException)))
-            {
+                    (!cause.getClass().equals(expectedException))) {
                 numberOfErrors++;
                 System.out.println("\tERROR: Wrong cause.");
             } else {
                 System.out.println("\tOK");
             }
-            
+
         }
         System.out.println("End expectException: " + message);
         System.out.println("------------------------------------------------");
     }
 
-    public static void expectNormal(String message, 
+    public static void expectNormal(String message,
                                     String[] av,
                                     Properties properties,
-                                    boolean isSingleton)
-    {
+                                    boolean isSingleton) {
         System.out.println();
         System.out.println("------------------------------------------------");
         System.out.println("Begin expectNormal: " + message);
@@ -148,11 +144,11 @@ public class Client
         } catch (Throwable t) {
             numberOfErrors++;
             System.out.println("\tERROR: Should not see this");
-            System.out.println("\t\tUnexpected exception: "+ t);
+            System.out.println("\t\tUnexpected exception: " + t);
         }
         System.out.println("End expectNormal: " + message);
         System.out.println("------------------------------------------------");
     }
 }
-                
+
 // End of file.

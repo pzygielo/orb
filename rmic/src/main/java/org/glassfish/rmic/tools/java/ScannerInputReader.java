@@ -19,11 +19,7 @@
 
 package org.glassfish.rmic.tools.java;
 
-import java.io.FilterReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 
 /**
  * An input stream for java programs. The stream treats either "\n", "\r"
@@ -31,12 +27,12 @@ import java.io.UnsupportedEncodingException;
  * UNICODE characters expressed as \uffff. However, if it sees "\\", the
  * second slash cannot begin a unicode sequence. It keeps track of the current
  * position in the input stream.
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
  *
- * @author      Arthur van Hoff
+ * @author Arthur van Hoff
  */
 
 public
@@ -57,14 +53,13 @@ class ScannerInputReader extends FilterReader implements Constants {
     private int pushBack = -1;
 
     public ScannerInputReader(Environment env, InputStream in)
-        throws UnsupportedEncodingException
-    {
+            throws UnsupportedEncodingException {
         // ScannerInputStream has been modified to no longer use
         // BufferedReader.  It now does its own buffering for
         // performance.
         super(env.getCharacterEncoding() != null ?
-              new InputStreamReader(in, env.getCharacterEncoding()) :
-              new InputStreamReader(in));
+                      new InputStreamReader(in, env.getCharacterEncoding()) :
+                      new InputStreamReader(in));
 
         // Start out the buffer empty.
         currentIndex = 0;
@@ -116,7 +111,7 @@ class ScannerInputReader extends FilterReader implements Constants {
 
     public int read(char[] buffer, int off, int len) {
         throw new CompilerError(
-                   "ScannerInputReader is not a fully implemented reader.");
+                "ScannerInputReader is not a fully implemented reader.");
     }
 
     public int read() throws IOException {
@@ -125,7 +120,8 @@ class ScannerInputReader extends FilterReader implements Constants {
 
         int c = pushBack;
         if (c == -1) {
-        getchar: try {
+            getchar:
+            try {
                 // Here the call...
                 //     c = getNextChar();
                 // has been inlined by hand for performance.
@@ -154,12 +150,12 @@ class ScannerInputReader extends FilterReader implements Constants {
 
         // parse special characters
         switch (c) {
-          case -2:
+        case -2:
             // -2 is a special code indicating a pushback of a backslash that
             // definitely isn't the start of a unicode sequence.
             return '\\';
 
-          case '\\':
+        case '\\':
             if ((c = getNextChar()) != 'u') {
                 pushBack = (c == '\\' ? -2 : c);
                 return '\\';
@@ -172,22 +168,40 @@ class ScannerInputReader extends FilterReader implements Constants {
 
             // unicode escape sequence
             int d = 0;
-            for (int i = 0 ; i < 4 ; i++, chpos += Scanner.OFFSETINC, c = getNextChar()) {
+            for (int i = 0; i < 4; i++, chpos += Scanner.OFFSETINC, c = getNextChar()) {
                 switch (c) {
-                  case '0': case '1': case '2': case '3': case '4':
-                  case '5': case '6': case '7': case '8': case '9':
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
                     d = (d << 4) + c - '0';
                     break;
 
-                  case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':
+                case 'a':
+                case 'b':
+                case 'c':
+                case 'd':
+                case 'e':
+                case 'f':
                     d = (d << 4) + 10 + c - 'a';
                     break;
 
-                  case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
+                case 'A':
+                case 'B':
+                case 'C':
+                case 'D':
+                case 'E':
+                case 'F':
                     d = (d << 4) + 10 + c - 'A';
                     break;
 
-                  default:
+                default:
                     env.error(pos, "invalid.escape.char");
                     pushBack = c;
                     return d;
@@ -200,26 +214,26 @@ class ScannerInputReader extends FilterReader implements Constants {
             // line terminators as per JLS 3.4, even though they are encoded
             // (this properly respects the order given in JLS 3.2).
             switch (d) {
-                case '\n':
-                   chpos += Scanner.LINEINC;
-                    return '\n';
-                case '\r':
-                    if ((c = getNextChar()) != '\n') {
-                        pushBack = c;
-                    } else {
-                        chpos += Scanner.OFFSETINC;
-                    }
-                    chpos += Scanner.LINEINC;
-                    return '\n';
-                default:
-                    return d;
+            case '\n':
+                chpos += Scanner.LINEINC;
+                return '\n';
+            case '\r':
+                if ((c = getNextChar()) != '\n') {
+                    pushBack = c;
+                } else {
+                    chpos += Scanner.OFFSETINC;
+                }
+                chpos += Scanner.LINEINC;
+                return '\n';
+            default:
+                return d;
             }
 
-          case '\n':
+        case '\n':
             chpos += Scanner.LINEINC;
             return '\n';
 
-          case '\r':
+        case '\r':
             if ((c = getNextChar()) != '\n') {
                 pushBack = c;
             } else {
@@ -228,7 +242,7 @@ class ScannerInputReader extends FilterReader implements Constants {
             chpos += Scanner.LINEINC;
             return '\n';
 
-          default:
+        default:
             return c;
         }
     }

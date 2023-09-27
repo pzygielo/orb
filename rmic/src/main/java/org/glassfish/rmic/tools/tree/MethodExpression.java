@@ -19,8 +19,9 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
+import org.glassfish.rmic.tools.java.*;
+
 import java.io.PrintStream;
 import java.util.Hashtable;
 
@@ -45,6 +46,7 @@ class MethodExpression extends NaryExpression {
         super(METHOD, where, Type.tError, right, args);
         this.id = id;
     }
+
     public MethodExpression(long where, Expression right, MemberDefinition field, Expression args[]) {
         super(METHOD, where, field.getType().getReturnType(), right, args);
         this.id = field.getName();
@@ -64,8 +66,9 @@ class MethodExpression extends NaryExpression {
     }
 
     public Expression getImplementation() {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation;
+        }
         return this;
     }
 
@@ -85,20 +88,20 @@ class MethodExpression extends NaryExpression {
         // When calling a constructor, we may need to add an
         // additional argument to transmit the outer instance link.
         Expression args[] = this.args;
-        if (id.equals(idInit)){
+        if (id.equals(idInit)) {
             ClassDefinition conCls = ctxClass;
             try {
                 Expression conOuter = null;
                 if (right instanceof SuperExpression) {
                     // outer.super(...)
                     conCls = conCls.getSuperClass().getClassDefinition(env);
-                    conOuter = ((SuperExpression)right).outerArg;
+                    conOuter = ((SuperExpression) right).outerArg;
                 } else if (right instanceof ThisExpression) {
                     // outer.this(...)
-                    conOuter = ((ThisExpression)right).outerArg;
+                    conOuter = ((ThisExpression) right).outerArg;
                 }
                 args = NewInstanceExpression.
-                    insertOuterLink(env, ctx, where, conCls, conOuter, args);
+                        insertOuterLink(env, ctx, where, conCls, conOuter, args);
             } catch (ClassNotFound ee) {
                 // the same error is handled elsewhere
             }
@@ -227,12 +230,12 @@ class MethodExpression extends NaryExpression {
                 // the same manner, as error diagnostics will be affected.
                 // QUERY: Are there subtle unexplored language issues here?
                 if (right instanceof FieldExpression) {
-                    Identifier id = ((FieldExpression)right).id;
+                    Identifier id = ((FieldExpression) right).id;
                     if (id == idThis) {
-                        sourceClass = ((FieldExpression)right).clazz;
+                        sourceClass = ((FieldExpression) right).clazz;
                     } else if (id == idSuper) {
                         isSuper = true;
-                        sourceClass = ((FieldExpression)right).clazz;
+                        sourceClass = ((FieldExpression) right).clazz;
                     }
                 } else if (right instanceof SuperExpression) {
                     isSuper = true;
@@ -252,7 +255,7 @@ class MethodExpression extends NaryExpression {
                                                           right.type,
                                                           sourceClass)) {
                         ClassDeclaration cdecl =
-                            sourceClass.getClassDeclaration();
+                                sourceClass.getClassDeclaration();
                         if (staticRef) {
                             env.error(where, "no.type.access",
                                       id, right.type.toString(), cdecl);
@@ -272,7 +275,7 @@ class MethodExpression extends NaryExpression {
                 vset = vset.clearVar(ctx.getThisNumber());
             }
 
-            for (int i = 0 ; i < args.length ; i++) {
+            for (int i = 0; i < args.length; i++) {
                 vset = args[i].checkValue(env, ctx, vset, exp);
                 argTypes[i] = args[i].type;
                 hasErrors = hasErrors || argTypes[i].isType(TC_ERROR);
@@ -297,8 +300,9 @@ class MethodExpression extends NaryExpression {
 
                 if (field == null) {
                     if (id.equals(idInit)) {
-                        if (diagnoseMismatch(env, args, argTypes))
+                        if (diagnoseMismatch(env, args, argTypes)) {
                             return vset;
+                        }
                         String sig = clazz.getName().getName().toString();
                         sig = Type.tMethod(Type.tError, argTypes).typeString(sig, false, false);
                         env.error(where, "unmatched.constr", sig, c);
@@ -331,12 +335,12 @@ class MethodExpression extends NaryExpression {
             }
 
             if (field.isProtected()
-                && !(right == null)
-                && !(right instanceof SuperExpression
-                     // Extension of JLS 6.6.2 for qualified 'super'.
-                     || (right instanceof FieldExpression &&
-                         ((FieldExpression)right).id == idSuper))
-                && !sourceClass.protectedAccess(env, field, right.type)) {
+                    && !(right == null)
+                    && !(right instanceof SuperExpression
+                    // Extension of JLS 6.6.2 for qualified 'super'.
+                    || (right instanceof FieldExpression &&
+                    ((FieldExpression) right).id == idSuper))
+                    && !sourceClass.protectedAccess(env, field, right.type)) {
                 env.error(where, "invalid.protected.method.use",
                           field.getName(), field.getClassDeclaration(),
                           right.type);
@@ -349,7 +353,7 @@ class MethodExpression extends NaryExpression {
             // An 'invokespecial' must be performed from within (a subclass of)
             // the class in which the target method is located.
             if (right instanceof FieldExpression &&
-                ((FieldExpression)right).id == idSuper) {
+                    ((FieldExpression) right).id == idSuper) {
                 if (!field.isPrivate()) {
                     // The private case is handled below.
                     // Use an access method unless the effective accessing class
@@ -404,9 +408,9 @@ class MethodExpression extends NaryExpression {
             if (sourceClass == ctxClass) {
                 ClassDefinition declarer = field.getClassDefinition();
                 if (!field.isConstructor() &&
-                    declarer.isPackagePrivate() &&
-                    !declarer.getName().getQualifier()
-                    .equals(sourceClass.getName().getQualifier())) {
+                        declarer.isPackagePrivate() &&
+                        !declarer.getName().getQualifier()
+                                .equals(sourceClass.getName().getQualifier())) {
 
                     //System.out.println("The access of member " +
                     //             field + " declared in class " +
@@ -420,7 +424,7 @@ class MethodExpression extends NaryExpression {
                     // Construct a member which will stand for this
                     // method in clazz and set `field' to refer to it.
                     field =
-                        MemberDefinition.makeProxyMember(field, clazz, env);
+                            MemberDefinition.makeProxyMember(field, clazz, env);
                 }
             }
 
@@ -446,7 +450,7 @@ class MethodExpression extends NaryExpression {
 
         // Cast arguments
         argTypes = field.getType().getArgumentTypes();
-        for (int i = 0 ; i < args.length ; i++) {
+        for (int i = 0; i < args.length; i++) {
             args[i] = convert(env, ctx, argTypes[i], args[i]);
         }
 
@@ -463,7 +467,7 @@ class MethodExpression extends NaryExpression {
                 Expression rightI;
                 if (right instanceof SuperExpression) {
                     rightI = new SuperExpression(right.where, ctx);
-                    ((SuperExpression)right).outerArg = args[0];
+                    ((SuperExpression) right).outerArg = args[0];
                 } else if (right instanceof ThisExpression) {
                     rightI = new ThisExpression(right.where, ctx);
                 } else {
@@ -474,18 +478,18 @@ class MethodExpression extends NaryExpression {
                     // Dummy argument follows outer instance link.
                     // Leave 'this.args' equal to 'newargs' but
                     // without the outer instance link.
-                    newargs = new Expression[nargs+1];
+                    newargs = new Expression[nargs + 1];
                     this.args = new Expression[nargs];
                     newargs[0] = args[0]; // outer instance
                     this.args[0] = newargs[1] = new NullExpression(where); // dummy argument
-                    for (int i = 1 ; i < nargs ; i++) {
-                        this.args[i] = newargs[i+1] = args[i];
+                    for (int i = 1; i < nargs; i++) {
+                        this.args[i] = newargs[i + 1] = args[i];
                     }
                 } else {
                     // Strip outer instance link from 'this.args'.
                     // ASSERT(this.arg.length == nargs-1);
-                    for (int i = 1 ; i < nargs ; i++) {
-                        this.args[i-1] = args[i];
+                    for (int i = 1; i < nargs; i++) {
+                        this.args[i - 1] = args[i];
                     }
                 }
                 implementation = new MethodExpression(where, rightI, m, newargs);
@@ -495,10 +499,10 @@ class MethodExpression extends NaryExpression {
                 if (implMethod != null) {
                     // Need dummy argument for access method.
                     // Dummy argument is first, as there is no outer instance link.
-                    newargs = new Expression[nargs+1];
+                    newargs = new Expression[nargs + 1];
                     newargs[0] = new NullExpression(where);
-                    for (int i = 0 ; i < nargs ; i++) {
-                        newargs[i+1] = args[i];
+                    for (int i = 0; i < nargs; i++) {
+                        newargs[i + 1] = args[i];
                     }
                 }
                 implementation = new MethodExpression(where, right, m, newargs);
@@ -518,10 +522,10 @@ class MethodExpression extends NaryExpression {
                 } else {
                     // Access method needs an explicit 'this' pointer.
                     int nargs = oldargs.length;
-                    Expression newargs[] = new Expression[nargs+1];
+                    Expression newargs[] = new Expression[nargs + 1];
                     newargs[0] = right;
                     for (int i = 0; i < nargs; i++) {
-                        newargs[i+1] = oldargs[i];
+                        newargs[i + 1] = oldargs[i];
                     }
                     implementation = new MethodExpression(where, null, implMethod, newargs);
                 }
@@ -530,11 +534,12 @@ class MethodExpression extends NaryExpression {
 
         // Follow super() by variable initializations
         if (ctx.field.isConstructor() &&
-            field.isConstructor() && (right != null) && (right.op == SUPER)) {
+                field.isConstructor() && (right != null) && (right.op == SUPER)) {
             Expression e = makeVarInits(env, ctx);
             if (e != null) {
-                if (implementation == null)
-                    implementation = (Expression)this.clone();
+                if (implementation == null) {
+                    implementation = (Expression) this.clone();
+                }
                 implementation = new CommaExpression(where, implementation, e);
             }
         }
@@ -542,7 +547,7 @@ class MethodExpression extends NaryExpression {
         // Throw the declared exceptions.
         ClassDeclaration exceptions[] = field.getExceptions(env);
         if (isArray && (field.getName() == idClone) &&
-               (field.getType().getArgumentTypes().length == 0)) {
+                (field.getType().getArgumentTypes().length == 0)) {
             /* Arrays pretend that they have "public Object clone()" that doesn't
              * throw anything, according to the language spec.
              */
@@ -554,7 +559,7 @@ class MethodExpression extends NaryExpression {
                 }
             }
         }
-        for (int i = 0 ; i < exceptions.length ; i++) {
+        for (int i = 0; i < exceptions.length; i++) {
             if (exp.get(exceptions[i]) == null) {
                 exp.put(exceptions[i], this);
             }
@@ -564,9 +569,9 @@ class MethodExpression extends NaryExpression {
         // Correctness follows inductively from the requirement that all blank finals
         // be definitely assigned at the completion of every constructor.
         if (ctx.field.isConstructor() &&
-            field.isConstructor() && (right != null) && (right.op == THIS)) {
+                field.isConstructor() && (right != null) && (right.op == THIS)) {
             ClassDefinition cls = field.getClassDefinition();
-            for (MemberDefinition f = cls.getFirstMember() ; f != null ; f = f.getNextMember()) {
+            for (MemberDefinition f = cls.getFirstMember(); f != null; f = f.getNextMember()) {
                 if (f.isVariable() && f.isBlankFinal() && !f.isStatic()) {
                     // Static variables should also be considered defined as well, but this
                     // is handled in 'SourceClass.checkMembers', and we should not interfere.
@@ -607,7 +612,9 @@ class MethodExpression extends NaryExpression {
                 env.error(where, "wrong.number.args", opName);
                 saidSomething = true;
             }
-            if (code < 0)  break;
+            if (code < 0) {
+                break;
+            }
             int i = code >> 2;
             boolean castOK = (code & 2) != 0;
             boolean ambig = (code & 1) != 0;
@@ -615,18 +622,19 @@ class MethodExpression extends NaryExpression {
 
             // At least one argument is offensive to all overloadings.
             // targetType is one of the argument types it does not match.
-            String ttype = ""+targetType;
+            String ttype = "" + targetType;
 
             // The message might be slightly misleading, if there are other
             // argument types that also would match.  Hint at this:
             //if (ambig)  ttype = "{"+ttype+";...}";
 
-            if (castOK)
+            if (castOK) {
                 env.error(args[i].where, "explicit.cast.needed", opName, argTypes[i], ttype);
-            else
+            } else {
                 env.error(args[i].where, "incompatible.type", opName, argTypes[i], ttype);
+            }
             saidSomething = true;
-            start = i+1;        // look for other bad arguments, too
+            start = i + 1;        // look for other bad arguments, too
         }
         return saidSomething;
     }
@@ -636,8 +644,7 @@ class MethodExpression extends NaryExpression {
      */
     static final int MAXINLINECOST = Statement.MAXINLINECOST;
 
-    private
-    Expression inlineMethod(Environment env, Context ctx, Statement s, boolean valNeeded) {
+    private Expression inlineMethod(Environment env, Context ctx, Statement s, boolean valNeeded) {
         if (env.dump()) {
             System.out.println("INLINE METHOD " + field + " in " + ctx.field);
         }
@@ -653,7 +660,7 @@ class MethodExpression extends NaryExpression {
             }
             body[0] = new VarDeclarationStatement(where, v[n++], right);
         }
-        for (int i = 0 ; i < args.length ; i++) {
+        for (int i = 0; i < args.length; i++) {
             body[i + 1] = new VarDeclarationStatement(where, v[n++], args[i]);
         }
         //System.out.print("BEFORE:"); s.print(System.out); System.out.println();
@@ -670,13 +677,14 @@ class MethodExpression extends NaryExpression {
     }
 
     public Expression inline(Environment env, Context ctx) {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation.inline(env, ctx);
+        }
         try {
             if (right != null) {
                 right = field.isStatic() ? right.inline(env, ctx) : right.inlineValue(env, ctx);
             }
-            for (int i = 0 ; i < args.length ; i++) {
+            for (int i = 0; i < args.length; i++) {
                 args[i] = args[i].inlineValue(env, ctx);
             }
 
@@ -686,24 +694,24 @@ class MethodExpression extends NaryExpression {
             Expression e = this;
             if (env.opt() && field.isInlineable(env, clazz.isFinal()) &&
 
-                // Don't inline if a qualified non-static method: the call
-                // itself might throw NullPointerException as a side effect
-                ((right == null) || (right.op==THIS) || field.isStatic()) &&
+                    // Don't inline if a qualified non-static method: the call
+                    // itself might throw NullPointerException as a side effect
+                    ((right == null) || (right.op == THIS) || field.isStatic()) &&
 
-                // We only allow the inlining if the current class can access
-                // the field, the field's class, and right's declared type.
-                ctxClass.permitInlinedAccess(env,
-                              field.getClassDeclaration()) &&
-                ctxClass.permitInlinedAccess(env, field) &&
-                (right==null || ctxClass.permitInlinedAccess(env,
-                              env.getClassDeclaration(right.type)))  &&
+                    // We only allow the inlining if the current class can access
+                    // the field, the field's class, and right's declared type.
+                    ctxClass.permitInlinedAccess(env,
+                                                 field.getClassDeclaration()) &&
+                    ctxClass.permitInlinedAccess(env, field) &&
+                    (right == null || ctxClass.permitInlinedAccess(env,
+                                                                   env.getClassDeclaration(right.type))) &&
 
-                ((id == null) || !id.equals(idInit)) &&
-                (!ctx.field.isInitializer()) && ctx.field.isMethod() &&
-                (ctx.getInlineMemberContext(field) == null)) {
-                Statement s = (Statement)field.getValue(env);
+                    ((id == null) || !id.equals(idInit)) &&
+                    (!ctx.field.isInitializer()) && ctx.field.isMethod() &&
+                    (ctx.getInlineMemberContext(field) == null)) {
+                Statement s = (Statement) field.getValue(env);
                 if ((s == null) ||
-                    (s.costInline(MAXINLINECOST, env, ctx) < MAXINLINECOST))  {
+                        (s.costInline(MAXINLINECOST, env, ctx) < MAXINLINECOST)) {
                     e = inlineMethod(env, ctx, s, false);
                 }
             }
@@ -715,8 +723,9 @@ class MethodExpression extends NaryExpression {
     }
 
     public Expression inlineValue(Environment env, Context ctx) {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation.inlineValue(env, ctx);
+        }
         try {
             if (right != null) {
                 right = field.isStatic() ? right.inline(env, ctx) : right.inlineValue(env, ctx);
@@ -728,7 +737,7 @@ class MethodExpression extends NaryExpression {
                     r.willCodeArguments(env, ctx);
                 }
             }
-            for (int i = 0 ; i < args.length ; i++) {
+            for (int i = 0; i < args.length; i++) {
                 args[i] = args[i].inlineValue(env, ctx);
             }
 
@@ -737,23 +746,23 @@ class MethodExpression extends NaryExpression {
 
             if (env.opt() && field.isInlineable(env, clazz.isFinal()) &&
 
-                // Don't inline if a qualified non-static method: the call
-                // itself might throw NullPointerException as a side effect
-                ((right == null) || (right.op==THIS) || field.isStatic()) &&
+                    // Don't inline if a qualified non-static method: the call
+                    // itself might throw NullPointerException as a side effect
+                    ((right == null) || (right.op == THIS) || field.isStatic()) &&
 
-                // We only allow the inlining if the current class can access
-                // the field, the field's class, and right's declared type.
-                ctxClass.permitInlinedAccess(env,
-                              field.getClassDeclaration()) &&
-                ctxClass.permitInlinedAccess(env, field) &&
-                (right==null || ctxClass.permitInlinedAccess(env,
-                              env.getClassDeclaration(right.type)))  &&
+                    // We only allow the inlining if the current class can access
+                    // the field, the field's class, and right's declared type.
+                    ctxClass.permitInlinedAccess(env,
+                                                 field.getClassDeclaration()) &&
+                    ctxClass.permitInlinedAccess(env, field) &&
+                    (right == null || ctxClass.permitInlinedAccess(env,
+                                                                   env.getClassDeclaration(right.type))) &&
 
-                (!ctx.field.isInitializer()) && ctx.field.isMethod() &&
-                (ctx.getInlineMemberContext(field) == null)) {
-                Statement s = (Statement)field.getValue(env);
+                    (!ctx.field.isInitializer()) && ctx.field.isMethod() &&
+                    (ctx.getInlineMemberContext(field) == null)) {
+                Statement s = (Statement) field.getValue(env);
                 if ((s == null) ||
-                    (s.costInline(MAXINLINECOST, env, ctx) < MAXINLINECOST))  {
+                        (s.costInline(MAXINLINECOST, env, ctx) < MAXINLINECOST)) {
                     return inlineMethod(env, ctx, s, true);
                 }
             }
@@ -764,14 +773,16 @@ class MethodExpression extends NaryExpression {
     }
 
     public Expression copyInline(Context ctx) {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation.copyInline(ctx);
+        }
         return super.copyInline(ctx);
     }
 
     public int costInline(int thresh, Environment env, Context ctx) {
-        if (implementation != null)
+        if (implementation != null) {
             return implementation.costInline(thresh, env, ctx);
+        }
 
         // for now, don't allow calls to super() to be inlined.  We may fix
         // this later
@@ -791,7 +802,7 @@ class MethodExpression extends NaryExpression {
         // insert instance initializers
         ClassDefinition clazz = ctx.field.getClassDefinition();
         Expression e = null;
-        for (MemberDefinition f = clazz.getFirstMember() ; f != null ; f = f.getNextMember()) {
+        for (MemberDefinition f = clazz.getFirstMember(); f != null; f = f.getNextMember()) {
             if ((f.isVariable() || f.isInitializer()) && !f.isStatic()) {
                 try {
                     f.check(env);
@@ -806,16 +817,16 @@ class MethodExpression extends NaryExpression {
                         continue;
                     }
                     IdentifierExpression arg =
-                        new IdentifierExpression(where, f.getName());
+                            new IdentifierExpression(where, f.getName());
                     if (!arg.bind(env, ctx)) {
-                        throw new CompilerError("bind "+arg.id);
+                        throw new CompilerError("bind " + arg.id);
                     }
                     val = arg;
                 } else if (f.isInitializer()) {
-                    Statement s = (Statement)f.getValue();
+                    Statement s = (Statement) f.getValue();
                     val = new InlineMethodExpression(where, Type.tVoid, f, s);
                 } else {
-                    val = (Expression)f.getValue();
+                    val = (Expression) f.getValue();
                 }
                 // append all initializers to "e":
                 // This section used to check for variables which were
@@ -829,8 +840,8 @@ class MethodExpression extends NaryExpression {
                     Expression init = val;
                     if (f.isVariable()) {
                         Expression v = new ThisExpression(p, ctx);
-                    v = new FieldExpression(p, v, f);
-                    init = new AssignExpression(p, v, val);
+                        v = new FieldExpression(p, v, f);
+                        init = new AssignExpression(p, v, val);
                     }
                     e = (e == null) ? init : new CommaExpression(p, e, init);
                 }
@@ -843,8 +854,9 @@ class MethodExpression extends NaryExpression {
      * Code
      */
     public void codeValue(Environment env, Context ctx, Assembler asm) {
-        if (implementation != null)
+        if (implementation != null) {
             throw new CompilerError("codeValue");
+        }
         int i = 0;              // argument index
         if (field.isStatic()) {
             if (right != null) {
@@ -855,8 +867,8 @@ class MethodExpression extends NaryExpression {
         } else if (right.op == SUPER) {
             // 'super.<method>(...)', 'super(...)', or '<expr>.super(...)'
             /*****
-            isSuper = true;
-            *****/
+             isSuper = true;
+             *****/
             right.codeValue(env, ctx, asm);
             if (idInit.equals(id)) {
                 // 'super(...)' or '<expr>.super(...)' only
@@ -875,15 +887,15 @@ class MethodExpression extends NaryExpression {
         } else {
             right.codeValue(env, ctx, asm);
             /*****
-            if (right.op == FIELD &&
-                ((FieldExpression)right).id == idSuper) {
-                // '<class>.super.<method>(...)'
-                isSuper = true;
-            }
-            *****/
+             if (right.op == FIELD &&
+             ((FieldExpression)right).id == idSuper) {
+             // '<class>.super.<method>(...)'
+             isSuper = true;
+             }
+             *****/
         }
 
-        for ( ; i < args.length ; i++) {
+        for (; i < args.length; i++) {
             args[i].codeValue(env, ctx, asm);
         }
 
@@ -926,7 +938,7 @@ class MethodExpression extends NaryExpression {
             right.print(out);
         }
         out.print(" " + ((id == null) ? idInit : id));
-        for (int i = 0 ; i < args.length ; i++) {
+        for (int i = 0; i < args.length; i++) {
             out.print(" ");
             if (args[i] != null) {
                 args[i].print(out);

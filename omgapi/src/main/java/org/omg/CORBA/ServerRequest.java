@@ -24,20 +24,20 @@ package org.omg.CORBA;
  * for the Dynamic Skeleton Interface (DSI).  This class, the
  * cornerstone of the DSI, is analogous to the <code>Request</code>
  * object in the DII.
- * <P>
+ * <p>
  * The ORB is responsible for creating this embodiment of a request,
  * and delivering it to a Dynamic Implementation Routine (DIR).
  * A dynamic servant (a DIR) is created by implementing the
  * <code>DynamicImplementation</code> class,
  * which has a single <code>invoke</code> method.  This method accepts a
  * <code>ServerRequest</code> object.
- *
+ * <p>
  * The abstract class <code>ServerRequest</code> defines
  * methods for accessing the
  * method name, the arguments and the context of the request, as
  * well as methods for setting the result of the request either as a
  * return value or an exception. <p>
- *
+ * <p>
  * A subtlety with accessing the arguments of the request is that the
  * DIR needs to provide type information about the
  * expected arguments, since there is no compiled information about
@@ -47,17 +47,16 @@ package org.omg.CORBA;
  * contains an <code>Any</code> object, which in turn
  * has a <code>TypeCode</code> object representing the type
  * of the argument. <p>
- *
+ * <p>
  * Similarly, type information needs to be provided for the response,
  * for either the expected result or for an exception, so the methods
  * <code>result</code> and <code>except</code> take an <code>Any</code>
  * object as a parameter. <p>
  *
+ * @version 1.15 09/09/97
  * @see org.omg.CORBA.DynamicImplementation
  * @see org.omg.CORBA.NVList
  * @see org.omg.CORBA.NamedValue
- *
- * @version 1.15 09/09/97
  */
 
 public abstract class ServerRequest {
@@ -71,18 +70,16 @@ public abstract class ServerRequest {
      * and <code>_set_&lt;attribute_name&gt;</code>,
      * respectively.
      *
-     * @return     the name of the operation to be invoked
+     * @return the name of the operation to be invoked
      * @deprecated use operation()
      */
-    public String op_name()
-    {
+    public String op_name() {
         return operation();
     }
 
-
     /**
      * Throws an <code>org.omg.CORBA.NO_IMPLEMENT</code> exception.
-     * <P>
+     * <p>
      * Retrieves the name of the operation being
      * invoked. According to OMG IDL's rules, these names must be unique
      * among all operations supported by this object's "most-derived"
@@ -91,29 +88,27 @@ public abstract class ServerRequest {
      * and <code>_set_&lt;attribute_name&gt;</code>,
      * respectively.
      *
-     * @return     the name of the operation to be invoked
+     * @return the name of the operation to be invoked
      * @see <a href="package-summary.html#unimpl"><code>CORBA</code>
-     *      package comments for unimplemented features</a>
+     * package comments for unimplemented features</a>
      */
-    public String operation()
-    {
+    public String operation() {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
-
 
     /**
      * Specifies method parameter types and retrieves "in" and "inout"
      * argument values.
-     * <P>
+     * <p>
      * Note that this method is deprecated; use the method
      * <code>arguments</code> in its place.
-     * <P>
+     * <p>
      * Unless it calls the method <code>set_exception</code>,
      * the DIR must call this method exactly once, even if the
      * method signature contains no parameters. Once the method <code>
      * arguments</code> or <code>set_exception</code>
      * has been called, calling <code>arguments</code> on the same
-     * <code>ServerRequest</code> object 
+     * <code>ServerRequest</code> object
      * will result in a <code>BAD_INV_ORDER</code> system exception.
      * The DIR must pass in to the method <code>arguments</code>
      * an NVList initialized with TypeCodes and Flags
@@ -127,12 +122,11 @@ public abstract class ServerRequest {
      * values for any "out" arguments before returning, and may also change
      * the return values for any "inout" arguments.
      *
-     * @param params            the arguments of the method, in the
-     *                          form of an <code>NVList</code> object
+     * @param params the arguments of the method, in the
+     * form of an <code>NVList</code> object
      * @deprecated use the method <code>arguments</code>
      */
-    public void params(NVList params)
-    {
+    public void params(NVList params) {
         arguments(params);
     }
 
@@ -144,7 +138,7 @@ public abstract class ServerRequest {
      * method signature contains no parameters. Once the method <code>
      * arguments</code> or <code>set_exception</code>
      * has been called, calling <code>arguments</code> on the same
-     * <code>ServerRequest</code> object 
+     * <code>ServerRequest</code> object
      * will result in a <code>BAD_INV_ORDER</code> system exception.
      * The DIR must pass in to the method <code>arguments</code>
      * an NVList initialized with TypeCodes and Flags
@@ -158,30 +152,28 @@ public abstract class ServerRequest {
      * values for any "out" arguments before returning, and it may also change
      * the return values for any "inout" arguments.
      *
-     * @param args              the arguments of the method, in the
-     *                            form of an NVList
+     * @param args the arguments of the method, in the
+     * form of an NVList
      * @see <a href="package-summary.html#unimpl"><code>CORBA</code>
-     *      package comments for unimplemented features</a>
+     * package comments for unimplemented features</a>
      */
     public void arguments(org.omg.CORBA.NVList args) {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
-
-
     /**
-     * Specifies any return value for the call. 
-     * <P>
+     * Specifies any return value for the call.
+     * <p>
      * Note that this method is deprecated; use the method
      * <code>set_result</code> in its place.
-     * <P>
-     * Unless the method 
+     * <p>
+     * Unless the method
      * <code>set_exception</code> is called, if the invoked method
      * has a non-void result type, the method <code>set_result</code>
      * must be called exactly once before the DIR returns.
-     * If the operation has a void result type, the method 
+     * If the operation has a void result type, the method
      * <code>set_result</code> may optionally be
-     * called once with an <code>Any</code> object whose type is 
+     * called once with an <code>Any</code> object whose type is
      * <code>tk_void</code>. Calling the method <code>set_result</code> before
      * the method <code>arguments</code> has been called or after
      * the method <code>set_result</code> or <code>set_exception</code> has been
@@ -195,22 +187,20 @@ public abstract class ServerRequest {
      * @param any an <code>Any</code> object containing the return value to be set
      * @deprecated use the method <code>set_result</code>
      */
-    public void result(Any any)
-    {
+    public void result(Any any) {
         set_result(any);
     }
 
-
     /**
      * Throws an <code>org.omg.CORBA.NO_IMPLEMENT</code> exception.
-     * <P>
-     * Specifies any return value for the call. Unless the method 
+     * <p>
+     * Specifies any return value for the call. Unless the method
      * <code>set_exception</code> is called, if the invoked method
      * has a non-void result type, the method <code>set_result</code>
      * must be called exactly once before the DIR returns.
-     * If the operation has a void result type, the method 
+     * If the operation has a void result type, the method
      * <code>set_result</code> may optionally be
-     * called once with an <code>Any</code> object whose type is 
+     * called once with an <code>Any</code> object whose type is
      * <code>tk_void</code>. Calling the method <code>set_result</code> before
      * the method <code>arguments</code> has been called or after
      * the method <code>set_result</code> or <code>set_exception</code> has been
@@ -223,13 +213,11 @@ public abstract class ServerRequest {
      *
      * @param any an <code>Any</code> object containing the return value to be set
      * @see <a href="package-summary.html#unimpl"><code>CORBA</code>
-     *      package comments for unimplemented features</a>
+     * package comments for unimplemented features</a>
      */
-    public void set_result(org.omg.CORBA.Any any)
-    {
+    public void set_result(org.omg.CORBA.Any any) {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
-
 
     /**
      * The DIR may call set_exception at any time to return an exception to the
@@ -242,41 +230,39 @@ public abstract class ServerRequest {
      * BAD_PARAM system exception or in the client receiving an
      * UNKNOWN_EXCEPTION system exception.
      *
-     * @param any       the <code>Any</code> object containing the exception
+     * @param any the <code>Any</code> object containing the exception
      * @deprecated use set_exception()
      */
-    public void except(Any any)
-    {
+    public void except(Any any) {
         set_exception(any);
     }
 
     /**
      * Throws an <code>org.omg.CORBA.NO_IMPLEMENT</code> exception.
-     * <P>
-     * Returns the given exception to the client.  This method 
+     * <p>
+     * Returns the given exception to the client.  This method
      * is invoked by the DIR, which may call it at any time.
      * The <code>Any</code> object  passed to this method must
      * contain either a system
-     * exception or one of the user exceptions specified in the 
+     * exception or one of the user exceptions specified in the
      * invoked operation's IDL definition. Passing in an
-     * <code>Any</code> object that does not contain an exception 
+     * <code>Any</code> object that does not contain an exception
      * will cause a BAD_PARAM system exception to be thrown. Passing
      * in an unlisted user exception will result in either the DIR receiving a
      * BAD_PARAM system exception or in the client receiving an
      * UNKNOWN_EXCEPTION system exception.
      *
-     * @param any       the <code>Any</code> object containing the exception
-     * @exception BAD_PARAM if the given <code>Any</code> object does not
-     *                      contain an exception or the exception is an
-     *                      unlisted user exception
-     * @exception org.omg.CORBA.portable.UnknownException if the given exception is an unlisted
-     *                              user exception and the DIR did not
-     *                              receive a BAD_PARAM exception
+     * @param any the <code>Any</code> object containing the exception
+     * @throws BAD_PARAM if the given <code>Any</code> object does not
+     * contain an exception or the exception is an
+     * unlisted user exception
+     * @throws org.omg.CORBA.portable.UnknownException if the given exception is an unlisted
+     * user exception and the DIR did not
+     * receive a BAD_PARAM exception
      * @see <a href="package-summary.html#unimpl"><code>CORBA</code>
-     *      package comments for unimplemented features</a>
+     * package comments for unimplemented features</a>
      */
-    public void set_exception(Any any)
-    {
+    public void set_exception(Any any) {
         throw new org.omg.CORBA.NO_IMPLEMENT();
     }
 
@@ -291,14 +277,14 @@ public abstract class ServerRequest {
      * has been called will result in a
      * BAD_INV_ORDER system exception.
      *
-     * @return                  the context object that is to be used
-     *                          to resolve any context strings whose
-     *                          values need to be sent with the invocation.
-     * @exception BAD_INV_ORDER if (1) the method <code>ctx</code> is called
-     *                          before the method <code>arguments</code> or
-     *                          (2) the method <code>ctx</code> is called
-     *                          after calling <code>set_result</code> or
-     *                          <code>set_exception</code>
+     * @return the context object that is to be used
+     * to resolve any context strings whose
+     * values need to be sent with the invocation.
+     * @throws BAD_INV_ORDER if (1) the method <code>ctx</code> is called
+     * before the method <code>arguments</code> or
+     * (2) the method <code>ctx</code> is called
+     * after calling <code>set_result</code> or
+     * <code>set_exception</code>
      */
     public abstract Context ctx();
 

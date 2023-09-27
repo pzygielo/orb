@@ -30,34 +30,31 @@ import org.omg.PortableInterceptor.Current;
 import org.omg.PortableInterceptor.CurrentHelper;
 import org.omg.PortableInterceptor.ORBInitInfo;
 
-public class LoggingServiceClientORBInitializer 
-    extends org.omg.CORBA.LocalObject
-    implements org.omg.PortableInterceptor.ORBInitializer
-{
-    public void pre_init(ORBInitInfo info)
-    {
+public class LoggingServiceClientORBInitializer
+        extends org.omg.CORBA.LocalObject
+        implements org.omg.PortableInterceptor.ORBInitializer {
+    public void pre_init(ORBInitInfo info) {
     }
 
-    public void post_init(ORBInitInfo info)
-    {
+    public void post_init(ORBInitInfo info) {
         try {
 
             // Get a reference to the LoggingService object.
 
-            NamingContext nameService = 
-                NamingContextHelper.narrow(
-                    info.resolve_initial_references("NameService"));
+            NamingContext nameService =
+                    NamingContextHelper.narrow(
+                            info.resolve_initial_references("NameService"));
 
             NameComponent path[] =
-                { new NameComponent("LoggingService", "") };
-            LoggingService loggingService = 
-                LoggingServiceHelper.narrow(nameService.resolve(path));
+                    { new NameComponent("LoggingService", "") };
+            LoggingService loggingService =
+                    LoggingServiceHelper.narrow(nameService.resolve(path));
 
             // Get a reference to TSC PICurrent.
 
             Current piCurrent =
-                CurrentHelper.narrow(
-                    info.resolve_initial_references("PICurrent"));
+                    CurrentHelper.narrow(
+                            info.resolve_initial_references("PICurrent"));
 
             // Allocate a slot id to use for the interceptor to indicate
             // that it is making an outcall.  This is used to avoid
@@ -69,9 +66,9 @@ public class LoggingServiceClientORBInitializer
             // side interceptor.
 
             LoggingServiceClientInterceptor interceptor =
-                new LoggingServiceClientInterceptor(loggingService, 
-                                                    piCurrent,
-                                                    outCallIndicatorSlotId);
+                    new LoggingServiceClientInterceptor(loggingService,
+                                                        piCurrent,
+                                                        outCallIndicatorSlotId);
 
             info.add_client_request_interceptor(interceptor);
         } catch (Throwable t) {
@@ -79,5 +76,5 @@ public class LoggingServiceClientORBInitializer
         }
     }
 }
- 
+
 // End of file.

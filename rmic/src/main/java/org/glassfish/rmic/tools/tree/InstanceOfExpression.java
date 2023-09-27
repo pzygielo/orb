@@ -19,9 +19,13 @@
 
 package org.glassfish.rmic.tools.tree;
 
-import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.asm.Assembler;
 import org.glassfish.rmic.tools.asm.Label;
+import org.glassfish.rmic.tools.java.ClassDefinition;
+import org.glassfish.rmic.tools.java.ClassNotFound;
+import org.glassfish.rmic.tools.java.Environment;
+import org.glassfish.rmic.tools.java.Type;
+
 import java.io.PrintStream;
 import java.util.Hashtable;
 
@@ -51,7 +55,7 @@ class InstanceOfExpression extends BinaryExpression {
             return vset;
         }
 
-        if (!right.type.inMask(TM_CLASS|TM_ARRAY)) {
+        if (!right.type.inMask(TM_CLASS | TM_ARRAY)) {
             env.error(right.where, "invalid.arg.type", right.type, opNames[op]);
             return vset;
         }
@@ -71,6 +75,7 @@ class InstanceOfExpression extends BinaryExpression {
     public Expression inline(Environment env, Context ctx) {
         return left.inline(env, ctx);
     }
+
     public Expression inlineValue(Environment env, Context ctx) {
         left = left.inlineValue(env, ctx);
         return this;
@@ -86,15 +91,13 @@ class InstanceOfExpression extends BinaryExpression {
             // We only allow the inlining if the current class can access
             // the "instance of" class
             if (right.type.isType(TC_ARRAY) ||
-                 sourceClass.permitInlinedAccess(env, env.getClassDeclaration(right.type)))
+                    sourceClass.permitInlinedAccess(env, env.getClassDeclaration(right.type))) {
                 return 1 + left.costInline(thresh, env, ctx);
+            }
         } catch (ClassNotFound e) {
         }
         return thresh;
     }
-
-
-
 
     /**
      * Code
@@ -107,10 +110,12 @@ class InstanceOfExpression extends BinaryExpression {
             asm.add(where, opc_instanceof, right.type);
         }
     }
+
     void codeBranch(Environment env, Context ctx, Assembler asm, Label lbl, boolean whenTrue) {
         codeValue(env, ctx, asm);
         asm.add(where, whenTrue ? opc_ifne : opc_ifeq, lbl, whenTrue);
     }
+
     public void code(Environment env, Context ctx, Assembler asm) {
         left.code(env, ctx, asm);
     }

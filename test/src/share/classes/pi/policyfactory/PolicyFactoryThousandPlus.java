@@ -21,19 +21,20 @@ package pi.policyfactory;
 
 import java.util.*;
 import java.io.*;
+
 import org.omg.CORBA.*;
 
-/** This the PolicyFactory to create PolicyThousandPlus policy object.
+/**
+ * This the PolicyFactory to create PolicyThousandPlus policy object.
  */
 public class PolicyFactoryThousandPlus extends LocalObject
-    implements org.omg.PortableInterceptor.PolicyFactory
-{
-    public Policy  create_policy( int type, Any val ) {
-        System.out.println( "PolicyFactoryOne.create_policy called..." );
+        implements org.omg.PortableInterceptor.PolicyFactory {
+    public Policy create_policy(int type, Any val) {
+        System.out.println("PolicyFactoryOne.create_policy called...");
         System.out.flush();
-        if( type == 1000 ) {
+        if (type == 1000) {
             return new PolicyThousand();
-        } else if( type == 10000 ) {
+        } else if (type == 10000) {
             return new PolicyTenThousand();
         }
         return null;

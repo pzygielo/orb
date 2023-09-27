@@ -30,7 +30,6 @@ import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Iterator;
 
 /**
  * BatchEnvironment for iiop extends rmic's version to add
@@ -93,27 +92,27 @@ public class BatchEnvironment extends org.glassfish.rmic.BatchEnvironment implem
 
         try {
             defRemote =
-                getClassDeclaration(idRemote).getClassDefinition(this);
+                    getClassDeclaration(idRemote).getClassDefinition(this);
             defError =
-                getClassDeclaration(idJavaLangError).getClassDefinition(this);
+                    getClassDeclaration(idJavaLangError).getClassDefinition(this);
             defException =
-                getClassDeclaration(idJavaLangException).getClassDefinition(this);
+                    getClassDeclaration(idJavaLangException).getClassDefinition(this);
             defRemoteException =
-                getClassDeclaration(idRemoteException).getClassDefinition(this);
+                    getClassDeclaration(idRemoteException).getClassDefinition(this);
             defCorbaObject =
-                getClassDeclaration(idCorbaObject).getClassDefinition(this);
+                    getClassDeclaration(idCorbaObject).getClassDefinition(this);
             defSerializable =
-                getClassDeclaration(idJavaIoSerializable).getClassDefinition(this);
+                    getClassDeclaration(idJavaIoSerializable).getClassDefinition(this);
             defRuntimeException =
-                getClassDeclaration(idJavaLangRuntimeException).getClassDefinition(this);
+                    getClassDeclaration(idJavaLangRuntimeException).getClassDefinition(this);
             defExternalizable =
-                getClassDeclaration(idJavaIoExternalizable).getClassDefinition(this);
-            defThrowable=
-                getClassDeclaration(idJavaLangThrowable).getClassDefinition(this);
-            defIDLEntity=
-                getClassDeclaration(idIDLEntity).getClassDefinition(this);
-            defValueBase=
-                getClassDeclaration(idValueBase).getClassDefinition(this);
+                    getClassDeclaration(idJavaIoExternalizable).getClassDefinition(this);
+            defThrowable =
+                    getClassDeclaration(idJavaLangThrowable).getClassDefinition(this);
+            defIDLEntity =
+                    getClassDeclaration(idIDLEntity).getClassDefinition(this);
+            defValueBase =
+                    getClassDeclaration(idValueBase).getClassDefinition(this);
             typeRemoteException = defRemoteException.getClassDeclaration().getType();
             typeException = defException.getClassDeclaration().getType();
             typeIOException = getClassDeclaration(idJavaIoIOException).getType();
@@ -130,14 +129,14 @@ public class BatchEnvironment extends org.glassfish.rmic.BatchEnvironment implem
     /**
      * Return whether or not to parse non-conforming types.
      */
-    public boolean getParseNonConforming () {
+    public boolean getParseNonConforming() {
         return parseNonConforming;
     }
 
     /**
      * Set whether or not to parse non-conforming types.
      */
-    public void setParseNonConforming (boolean parseEm) {
+    public void setParseNonConforming(boolean parseEm) {
 
         // If we are transitioning from not parsing to
         // parsing, we need to throw out any previously
@@ -162,17 +161,17 @@ public class BatchEnvironment extends org.glassfish.rmic.BatchEnvironment implem
      * Clear out any data from previous executions.
      */
     @Override
-    public void reset () {
+    public void reset() {
 
         // First, find all Type instances and call destroy()
         // on them...
 
-        for (Enumeration<Type> e = allTypes.elements() ; e.hasMoreElements() ;) {
+        for (Enumeration<Type> e = allTypes.elements(); e.hasMoreElements(); ) {
             Type type = e.nextElement();
             type.destroy();
         }
 
-        for (Enumeration<Type> e = invalidTypes.keys() ; e.hasMoreElements() ;) {
+        for (Enumeration<Type> e = invalidTypes.keys(); e.hasMoreElements(); ) {
             Type type = e.nextElement();
             type.destroy();
         }
@@ -181,13 +180,15 @@ public class BatchEnvironment extends org.glassfish.rmic.BatchEnvironment implem
             type.destroy();
         }
 
-        if (contextStack != null) contextStack.clear();
+        if (contextStack != null) {
+            contextStack.clear();
+        }
 
         // Remove and clear all NameContexts in the
         // nameContexts cache...
 
         if (nameContexts != null) {
-            for (Enumeration<NameContext> e = nameContexts.elements() ; e.hasMoreElements() ;) {
+            for (Enumeration<NameContext> e = nameContexts.elements(); e.hasMoreElements(); ) {
                 NameContext context = e.nextElement();
                 context.clear();
             }

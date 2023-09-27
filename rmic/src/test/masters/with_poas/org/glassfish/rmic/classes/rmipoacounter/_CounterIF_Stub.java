@@ -9,6 +9,7 @@ import java.rmi.RemoteException;
 import java.rmi.UnexpectedException;
 import javax.rmi.CORBA.Stub;
 import javax.rmi.CORBA.Util;
+
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.SystemException;
 import org.omg.CORBA.portable.ApplicationException;
@@ -18,51 +19,50 @@ import org.omg.CORBA.portable.RemarshalException;
 import org.omg.CORBA.portable.ResponseHandler;
 import org.omg.CORBA.portable.ServantObject;
 
-
 public class _CounterIF_Stub extends Stub implements CounterIF {
-    
+
     private static final String[] _type_ids = {
-        "RMI:org.glassfish.rmic.classes.rmipoacounter.CounterIF:0000000000000000"
+            "RMI:org.glassfish.rmic.classes.rmipoacounter.CounterIF:0000000000000000"
     };
-    
-        public String[] _ids() { 
-            return (String[]) _type_ids.clone();
-        }
-        
-        public long increment(long arg0) throws java.rmi.RemoteException {
-            if (!Util.isLocal(this)) {
+
+    public String[] _ids() {
+        return (String[]) _type_ids.clone();
+    }
+
+    public long increment(long arg0) throws java.rmi.RemoteException {
+        if (!Util.isLocal(this)) {
+            try {
+                org.omg.CORBA.portable.InputStream in = null;
                 try {
-                    org.omg.CORBA.portable.InputStream in = null;
-                    try {
-                        OutputStream out = _request("increment", true);
-                        out.write_longlong(arg0);
-                        in = _invoke(out);
-                        return in.read_longlong();
-                    } catch (ApplicationException ex) {
-                        in = ex.getInputStream();
-                        String $_id = in.read_string();
-                        throw new UnexpectedException($_id);
-                    } catch (RemarshalException ex) {
-                        return increment(arg0);
-                    } finally {
-                        _releaseReply(in);
-                    }
-                } catch (SystemException ex) {
-                    throw Util.mapSystemException(ex);
-                }
-            } else {
-                ServantObject so = _servant_preinvoke("increment",CounterIF.class);
-                if (so == null) {
+                    OutputStream out = _request("increment", true);
+                    out.write_longlong(arg0);
+                    in = _invoke(out);
+                    return in.read_longlong();
+                } catch (ApplicationException ex) {
+                    in = ex.getInputStream();
+                    String $_id = in.read_string();
+                    throw new UnexpectedException($_id);
+                } catch (RemarshalException ex) {
                     return increment(arg0);
-                }
-                try {
-                    return ((CounterIF)so.servant).increment(arg0);
-                } catch (Throwable ex) {
-                    Throwable exCopy = (Throwable)Util.copyObject(ex,_orb());
-                    throw Util.wrapException(exCopy);
                 } finally {
-                    _servant_postinvoke(so);
+                    _releaseReply(in);
                 }
+            } catch (SystemException ex) {
+                throw Util.mapSystemException(ex);
+            }
+        } else {
+            ServantObject so = _servant_preinvoke("increment", CounterIF.class);
+            if (so == null) {
+                return increment(arg0);
+            }
+            try {
+                return ((CounterIF) so.servant).increment(arg0);
+            } catch (Throwable ex) {
+                Throwable exCopy = (Throwable) Util.copyObject(ex, _orb());
+                throw Util.wrapException(exCopy);
+            } finally {
+                _servant_postinvoke(so);
             }
         }
     }
+}

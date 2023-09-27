@@ -23,6 +23,7 @@ package omega;
 public interface Thrower extends java.rmi.Remote {
 
     void doThrowFruitbat() throws FruitbatException, java.rmi.RemoteException;
+
     FruitbatException getLastException() throws java.rmi.RemoteException;
 
     void doThrowClimax() throws Climax, java.rmi.RemoteException;

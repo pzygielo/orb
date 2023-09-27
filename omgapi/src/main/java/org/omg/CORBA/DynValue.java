@@ -21,7 +21,8 @@ package org.omg.CORBA;
 
 /**
  * The representation of a <code>DynAny</code> object that is associated
- *  with an IDL value type.
+ * with an IDL value type.
+ *
  * @deprecated Use the new <a href="../DynamicAny/DynValue.html">DynValue</a> instead
  */
 public interface DynValue extends org.omg.CORBA.Object, org.omg.CORBA.DynAny {
@@ -47,20 +48,19 @@ public interface DynValue extends org.omg.CORBA.Object, org.omg.CORBA.DynAny {
      * stored in this <code>DynValue</code>.
      *
      * @return an array of name-value pairs.
-         * @see #set_members
+     * @see #set_members
      */
     org.omg.CORBA.NameValuePair[] get_members();
 
     /**
      * Sets the members of the value object this <code>DynValue</code>
      * object represents to the given array of <code>NameValuePair</code>
-         * objects.
+     * objects.
      *
      * @param value the array of name-value pairs to be set
-     * @throws org.omg.CORBA.DynAnyPackage.InvalidSeq
-     *         if an inconsistent value is part of the given array
-         * @see #get_members
+     * @throws org.omg.CORBA.DynAnyPackage.InvalidSeq if an inconsistent value is part of the given array
+     * @see #get_members
      */
     void set_members(NameValuePair[] value)
-        throws org.omg.CORBA.DynAnyPackage.InvalidSeq;
+            throws org.omg.CORBA.DynAnyPackage.InvalidSeq;
 }

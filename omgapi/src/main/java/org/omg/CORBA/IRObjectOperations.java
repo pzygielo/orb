@@ -19,12 +19,11 @@
 
 package org.omg.CORBA;
 
-
 /**
-* The interface for <tt>IRObject</tt>.  For more information on 
-* Operations interfaces, see <a href="doc-files/generatedfiles.html#operations">
-* "Generated Files: Operations files"</a>.
-*/
+ * The interface for <tt>IRObject</tt>.  For more information on
+ * Operations interfaces, see <a href="doc-files/generatedfiles.html#operations">
+ * "Generated Files: Operations files"</a>.
+ */
 
 /*
  tempout/org/omg/CORBA/IRObjectOperations.java
@@ -49,17 +48,18 @@ package org.omg.CORBA;
  * @see IDLType
  * @see IRObject
  */
-public interface IRObjectOperations 
-{
+public interface IRObjectOperations {
 
     // read interface
+
     /**
      * Returns the <code>DefinitionKind</code> corresponding to this Interface Repository object.
      * @return the <code>DefinitionKind</code> corresponding to this Interface Repository object.
      */
-    org.omg.CORBA.DefinitionKind def_kind ();
+    org.omg.CORBA.DefinitionKind def_kind();
 
     // write interface
+
     /**
      * Destroys this object. If the object is a Container,
      * this method is applied to all its contents. If the object contains an IDLType
@@ -74,5 +74,5 @@ public interface IRObjectOperations
      *            <code>PrimitiveDef</code>, or if an attempt to destroy an
      *            object would leave the repository in an incoherent state
      */
-    void destroy ();
+    void destroy();
 } // interface IRObjectOperations

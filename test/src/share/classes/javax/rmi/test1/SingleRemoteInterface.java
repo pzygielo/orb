@@ -20,7 +20,7 @@
 
 package javax.rmi.test1;
 
-public  interface SingleRemoteInterface
-    extends java.rmi.Remote {
+public interface SingleRemoteInterface
+        extends java.rmi.Remote {
     public String EchoSingleRemoteInterface() throws java.rmi.RemoteException;
 }

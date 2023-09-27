@@ -17,8 +17,9 @@
  * Classpath-exception-2.0
  */
 
-public class TestClass implements java.io.Serializable
-{
-    public String methodA() { return null; }
+public class TestClass implements java.io.Serializable {
+    public String methodA() {
+        return null;
+    }
 }
 

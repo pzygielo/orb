@@ -19,14 +19,7 @@
 
 package org.glassfish.rmic.tools.binaryclass;
 
-import org.glassfish.rmic.tools.java.ClassDeclaration;
-import org.glassfish.rmic.tools.java.ClassDefinition;
-import org.glassfish.rmic.tools.java.ClassNotFound;
-import org.glassfish.rmic.tools.java.CompilerError;
-import org.glassfish.rmic.tools.java.Environment;
-import org.glassfish.rmic.tools.java.Identifier;
-import org.glassfish.rmic.tools.java.MemberDefinition;
-import org.glassfish.rmic.tools.java.Type;
+import org.glassfish.rmic.tools.java.*;
 import org.glassfish.rmic.tools.tree.*;
 
 import java.io.ByteArrayInputStream;
@@ -36,7 +29,7 @@ import java.util.Vector;
 
 /**
  * This class represents a binary member
- *
+ * <p>
  * WARNING: The contents of this source file are not part of any
  * supported API.  Code that depends on them does so at its own risk:
  * they are subject to change or removal without notice.
@@ -88,7 +81,7 @@ class BinaryMember extends MemberDefinition {
         if (isConstructor() && (getClassDefinition().getSuperClass() == null)) {
             Vector<MemberDefinition> v = new Vector<>();
             v.addElement(new LocalMember(0, getClassDefinition(), 0,
-                                        getClassDefinition().getType(), idThis));
+                                         getClassDefinition().getType(), idThis));
             return v;
         }
         return null;
@@ -107,12 +100,12 @@ class BinaryMember extends MemberDefinition {
         }
 
         try {
-            BinaryConstantPool cpool = ((BinaryClass)getClassDefinition()).getConstants();
+            BinaryConstantPool cpool = ((BinaryClass) getClassDefinition()).getConstants();
             DataInputStream in = new DataInputStream(new ByteArrayInputStream(data));
             // JVM 4.7.5 Exceptions_attribute.number_of_exceptions
             int n = in.readUnsignedShort();
             exp = new ClassDeclaration[n];
-            for (int i = 0 ; i < n ; i++) {
+            for (int i = 0; i < n; i++) {
                 // JVM 4.7.5 Exceptions_attribute.exception_index_table[]
                 exp[i] = cpool.getDeclaration(env, in.readUnsignedShort());
             }
@@ -147,11 +140,12 @@ class BinaryMember extends MemberDefinition {
      */
     private boolean isConstantCache = false;
     private boolean isConstantCached = false;
+
     public boolean isConstant() {
         if (!isConstantCached) {
             isConstantCache = isFinal()
-                              && isVariable()
-                              && getAttribute(idConstantValue) != null;
+                    && isVariable()
+                    && getAttribute(idConstantValue) != null;
             isConstantCached = true;
         }
         return isConstantCache;
@@ -174,15 +168,14 @@ class BinaryMember extends MemberDefinition {
             // which is shared among tools, to return the right string
             // in case the type is char, so we treat it special here.
             if (getType().getTypeCode() == TC_CHAR) {
-                Integer intValue = (Integer)((IntegerExpression)node).getValue();
-                value = "L'" + String.valueOf((char)intValue.intValue()) + "'";
+                Integer intValue = (Integer) ((IntegerExpression) node).getValue();
+                value = "L'" + String.valueOf((char) intValue.intValue()) + "'";
             } else {
                 value = node.toString();
             }
         }
         return value;
     }
-
 
     /**
      * Get the value
@@ -195,7 +188,7 @@ class BinaryMember extends MemberDefinition {
             return null;
         }
         if (getValue() != null) {
-            return (Expression)getValue();
+            return (Expression) getValue();
         }
         byte data[] = getAttribute(idConstantValue);
         if (data == null) {
@@ -203,33 +196,33 @@ class BinaryMember extends MemberDefinition {
         }
 
         try {
-            BinaryConstantPool cpool = ((BinaryClass)getClassDefinition()).getConstants();
+            BinaryConstantPool cpool = ((BinaryClass) getClassDefinition()).getConstants();
             // JVM 4.7.3 ConstantValue.constantvalue_index
             Object obj = cpool.getValue(new DataInputStream(new ByteArrayInputStream(data)).readUnsignedShort());
             switch (getType().getTypeCode()) {
-              case TC_BOOLEAN:
-                setValue(new BooleanExpression(0, ((Number)obj).intValue() != 0));
+            case TC_BOOLEAN:
+                setValue(new BooleanExpression(0, ((Number) obj).intValue() != 0));
                 break;
-              case TC_BYTE:
-              case TC_SHORT:
-              case TC_CHAR:
-              case TC_INT:
-                setValue(new IntExpression(0, ((Number)obj).intValue()));
+            case TC_BYTE:
+            case TC_SHORT:
+            case TC_CHAR:
+            case TC_INT:
+                setValue(new IntExpression(0, ((Number) obj).intValue()));
                 break;
-              case TC_LONG:
-                setValue(new LongExpression(0, ((Number)obj).longValue()));
+            case TC_LONG:
+                setValue(new LongExpression(0, ((Number) obj).longValue()));
                 break;
-              case TC_FLOAT:
-                setValue(new FloatExpression(0, ((Number)obj).floatValue()));
+            case TC_FLOAT:
+                setValue(new FloatExpression(0, ((Number) obj).floatValue()));
                 break;
-              case TC_DOUBLE:
-                setValue(new DoubleExpression(0, ((Number)obj).doubleValue()));
+            case TC_DOUBLE:
+                setValue(new DoubleExpression(0, ((Number) obj).doubleValue()));
                 break;
-              case TC_CLASS:
-                setValue(new StringExpression(0, (String)cpool.getValue(((Number)obj).intValue())));
+            case TC_CLASS:
+                setValue(new StringExpression(0, (String) cpool.getValue(((Number) obj).intValue())));
                 break;
             }
-            return (Expression)getValue();
+            return (Expression) getValue();
         } catch (IOException e) {
             throw new CompilerError(e);
         }
@@ -239,7 +232,7 @@ class BinaryMember extends MemberDefinition {
      * Get a field attribute
      */
     public byte[] getAttribute(Identifier name) {
-        for (BinaryAttribute att = atts ; att != null ; att = att.next) {
+        for (BinaryAttribute att = atts; att != null; att = att.next) {
             if (att.name.equals(name)) {
                 return att.data;
             }
@@ -275,15 +268,13 @@ class BinaryMember extends MemberDefinition {
         return succeed;
     }
 
-
-
     /*
      * Add an attribute to a field
      */
     public void addAttribute(Identifier name, byte data[], Environment env) {
         this.atts = new BinaryAttribute(name, data, this.atts);
         // Make sure that the new attribute is in the constant pool
-        ((BinaryClass)(this.clazz)).cpool.indexString(name.toString(), env);
+        ((BinaryClass) (this.clazz)).cpool.indexString(name.toString(), env);
     }
 
 }

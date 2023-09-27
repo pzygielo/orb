@@ -27,27 +27,29 @@ import java.io.FileInputStream;
 /**
  * DirectoryLoader is a simple ClassLoader which loads from a specified
  * file system directory.
+ *
  * @author Bryan Atsatt
  * @version 1.0
  */
 
 public class DirectoryLoader extends ClassLoader {
-    
+
     private Hashtable cache;
     private File root;
 
     /**
      * Constructor.
      */
-    public DirectoryLoader (File rootDir) {
+    public DirectoryLoader(File rootDir) {
         cache = new Hashtable();
         if (rootDir == null || !rootDir.isDirectory()) {
             throw new IllegalArgumentException();
         }
         root = rootDir;
     }
-        
-    private DirectoryLoader () {}
+
+    private DirectoryLoader() {
+    }
 
     /**
      * Convenience version of loadClass which sets 'resolve' == true.
@@ -62,24 +64,24 @@ public class DirectoryLoader extends ClassLoader {
      * FindClassFromClass.
      */
     public synchronized Class loadClass(String className, boolean resolve)
-        throws ClassNotFoundException {
+            throws ClassNotFoundException {
         Class result;
-        byte  classData[];
+        byte classData[];
 
         // Do we already have it in the cache?
 
         result = (Class) cache.get(className);
 
         if (result == null) {
-            
+
             // Nope, can we get if from the system class loader?
 
             try {
-                    
+
                 result = super.findSystemClass(className);
-                    
+
             } catch (ClassNotFoundException e) {
-                    
+
                 // No, so try loading it...
 
                 classData = getClassFileData(className);
@@ -98,7 +100,9 @@ public class DirectoryLoader extends ClassLoader {
 
                 // Resolve it...
 
-                if (resolve) resolveClass(result);
+                if (resolve) {
+                    resolveClass(result);
+                }
 
                 // Add to cache...
 
@@ -113,14 +117,14 @@ public class DirectoryLoader extends ClassLoader {
      * Reurn a byte array containing the contents of the class file.  Returns null
      * if an exception occurs.
      */
-    private byte[] getClassFileData (String className) {
-        
+    private byte[] getClassFileData(String className) {
+
         byte result[] = null;
         FileInputStream stream = null;
 
         // Get the file...
 
-        File classFile = new File(root,className.replace('.',File.separatorChar) + ".class");
+        File classFile = new File(root, className.replace('.', File.separatorChar) + ".class");
 
         // Now get the bits...
 
@@ -128,16 +132,14 @@ public class DirectoryLoader extends ClassLoader {
             stream = new FileInputStream(classFile);
             result = new byte[stream.available()];
             stream.read(result);
-        } catch(ThreadDeath death) {
+        } catch (ThreadDeath death) {
             throw death;
         } catch (Throwable e) {
-        }
-
-        finally {
+        } finally {
             if (stream != null) {
                 try {
                     stream.close();
-                } catch(ThreadDeath death) {
+                } catch (ThreadDeath death) {
                     throw death;
                 } catch (Throwable e) {
                 }

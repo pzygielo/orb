@@ -24,6 +24,7 @@ import java.rmi.RemoteException;
 
 class PackageInterface implements Remote {
 
-    void doItThere() throws RemoteException {}
+    void doItThere() throws RemoteException {
+    }
 
 }

@@ -27,11 +27,7 @@ import org.glassfish.rmic.tools.java.ClassFile;
 import org.glassfish.rmic.tools.java.ClassPath;
 import org.glassfish.rmic.tools.java.Identifier;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.util.HashSet;
 
 /**
@@ -51,10 +47,11 @@ import java.util.HashSet;
  *                              HashSet alreadyChecked,
  *                                                              IndentingWriter writer) throws IOException;
  * </pre>
- * @author      Bryan Atsatt
+ *
+ * @author Bryan Atsatt
  */
-public abstract class Generator implements      org.glassfish.rmic.Generator,
-                                                org.glassfish.rmic.iiop.Constants {
+public abstract class Generator implements org.glassfish.rmic.Generator,
+        org.glassfish.rmic.iiop.Constants {
 
     private boolean alwaysGenerate = false;
     private BatchEnvironment env = null;
@@ -62,6 +59,7 @@ public abstract class Generator implements      org.glassfish.rmic.Generator,
 
     /**
      * Examine and consume command line arguments.
+     *
      * @param argv The command line arguments. Ignore null
      * and unknown arguments. Set each consumed argument to null.
      * @param main Report any errors using the main.error() methods.
@@ -71,7 +69,7 @@ public abstract class Generator implements      org.glassfish.rmic.Generator,
         for (int i = 0; i < argv.length; i++) {
             if (argv[i] != null) {
                 if (argv[i].equalsIgnoreCase("-always") ||
-                    argv[i].equalsIgnoreCase("-alwaysGenerate")) {
+                        argv[i].equalsIgnoreCase("-alwaysGenerate")) {
                     alwaysGenerate = true;
                     argv[i] = null;
                 } else if (argv[i].equalsIgnoreCase("-xtrace")) {
@@ -85,12 +83,14 @@ public abstract class Generator implements      org.glassfish.rmic.Generator,
 
     /**
      * Return true if non-conforming types should be parsed.
+     *
      * @param stack The context stack.
      */
     protected abstract boolean parseNonConforming(ContextStack stack);
 
     /**
      * Create and return a top-level type.
+     *
      * @param cdef The top-level class definition.
      * @param stack The context stack.
      * @return The compound type or null if is non-conforming.
@@ -101,9 +101,10 @@ public abstract class Generator implements      org.glassfish.rmic.Generator,
      * Return an array containing all the file names and types that need to be
      * generated for the given top-level type.  The file names must NOT have an
      * extension (e.g. ".java").
+     *
      * @param topType The type returned by getTopType().
      * @param alreadyChecked A set of Types which have already been checked.
-     *  Intended to be passed to Type.collectMatching(filter,alreadyChecked).
+     * Intended to be passed to Type.collectMatching(filter,alreadyChecked).
      */
     protected abstract OutputType[] getOutputTypesFor(CompoundType topType,
                                                       HashSet<Type> alreadyChecked);
@@ -113,20 +114,22 @@ public abstract class Generator implements      org.glassfish.rmic.Generator,
      * All files generated with the ".java" extension will be compiled. To
      * change this behavior for ".java" files, override the compileJavaSourceFile
      * method to return false.
+     *
      * @param outputType One of the items returned by getOutputTypesFor(...)
      */
     protected abstract String getFileNameExtensionFor(OutputType outputType);
 
     /**
      * Write the output for the given OutputFileName into the output stream.
+     *
      * @param outputType One of the items returned by getOutputTypesFor(...)
      * @param alreadyChecked A set of Types which have already been checked.
-     *  Intended to be passed to Type.collectMatching(filter,alreadyChecked).
+     * Intended to be passed to Type.collectMatching(filter,alreadyChecked).
      * @param writer The output stream.
      */
     protected abstract void writeOutputFor(OutputType outputType,
-                                                HashSet<Type> alreadyChecked,
-                                                IndentingWriter writer) throws IOException;
+                                           HashSet<Type> alreadyChecked,
+                                           IndentingWriter writer) throws IOException;
 
     /**
      * Return true if a new instance should be created for each
@@ -151,7 +154,7 @@ public abstract class Generator implements      org.glassfish.rmic.Generator,
 
             ClassFile baseFile;
             ClassPath path = env.getClassPath();
-            String className = theType.getQualifiedName().replace('.',File.separatorChar);
+            String className = theType.getQualifiedName().replace('.', File.separatorChar);
 
             // First try the source file...
 
@@ -176,9 +179,9 @@ public abstract class Generator implements      org.glassfish.rmic.Generator,
                 // file, create a class file instead since the source file
                 // will frequently be deleted...
 
-                String targetName = IDLNames.replace(target.getName(),".java",".class");
+                String targetName = IDLNames.replace(target.getName(), ".java", ".class");
                 String parentPath = target.getParent();
-                File targetFile = new File(parentPath,targetName);
+                File targetFile = new File(parentPath, targetName);
 
                 // Does the target file exist?
 
@@ -218,8 +221,8 @@ public abstract class Generator implements      org.glassfish.rmic.Generator,
         Generator result = null;
         try {
             result = getClass().newInstance();
-        }
-        catch (Exception ignored){} // Should ALWAYS work!
+        } catch (Exception ignored) {
+        } // Should ALWAYS work!
 
         return result;
     }
@@ -234,10 +237,11 @@ public abstract class Generator implements      org.glassfish.rmic.Generator,
      * Generate output. Any source files created which need compilation should
      * be added to the compiler environment using the addGeneratedFile(File)
      * method.
-     *  @param env       The compiler environment
-     * @param destDir   The directory for the root of the package hierarchy
-     * @param cdef      The definition for the implementation class or interface from
- *              which to generate output
+     *
+     * @param env The compiler environment
+     * @param destDir The directory for the root of the package hierarchy
+     * @param cdef The definition for the implementation class or interface from
+     * which to generate output
      */
     public void generate(org.glassfish.rmic.BatchEnvironment env, File destDir, ClassDefinition cdef) {
 
@@ -262,8 +266,8 @@ public abstract class Generator implements      org.glassfish.rmic.Generator,
 
             if (requireNewInstance()) {
 
-                                // Yes, so make one.  'this' instance is the one instantiated by Main
-                                // and which knows any needed command line args...
+                // Yes, so make one.  'this' instance is the one instantiated by Main
+                // and which knows any needed command line args...
 
                 generator = newInstance();
             }
@@ -289,7 +293,7 @@ public abstract class Generator implements      org.glassfish.rmic.Generator,
 
         // Ask subclass for a list of output types...
 
-        OutputType[] types = getOutputTypesFor(topType,alreadyChecked);
+        OutputType[] types = getOutputTypesFor(topType, alreadyChecked);
 
         // Process each file...
 
@@ -297,7 +301,9 @@ public abstract class Generator implements      org.glassfish.rmic.Generator,
             File file = getFileFor(type, destDir);
 
             if (!requiresGeneration(file, type.getType())) {
-                if (env.verbose()) env.output(Main.getText("rmic.previously.generated", file.getPath()));
+                if (env.verbose()) {
+                    env.output(Main.getText("rmic.previously.generated", file.getPath()));
+                }
             } else {
                 // Now create an output stream and ask subclass to fill it up...
 
@@ -322,11 +328,13 @@ public abstract class Generator implements      org.glassfish.rmic.Generator,
         }
     }
 
-    protected void postProcessFile(BatchEnvironment env, File file) throws FileNotFoundException {}
+    protected void postProcessFile(BatchEnvironment env, File file) throws FileNotFoundException {
+    }
 
     /**
      * Return the File object that should be used as the output file
      * for the given OutputType.
+     *
      * @param outputType The type to create a file for.
      * @param destinationDir The directory to use as the root of the
      * package heirarchy.  May be null, in which case the current
@@ -346,13 +354,13 @@ public abstract class Generator implements      org.glassfish.rmic.Generator,
 
     protected abstract File getOutputDirectory(File destinationDir, Identifier id, BatchEnvironment environment);
 
-
     /**
      * Return an identifier to use for output.
+     *
      * @param outputType the type for which output is to be generated.
      * @return the new identifier. This implementation returns the input parameter.
      */
-    protected Identifier getOutputId (OutputType outputType) {
+    protected Identifier getOutputId(OutputType outputType) {
         return outputType.getType().getIdentifier();
     }
 

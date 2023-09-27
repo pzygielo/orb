@@ -17,9 +17,9 @@
  * Classpath-exception-2.0
  */
 
-package argparser ;
+package argparser;
 
-public interface UnaryFunction<T,R> {
-    R evaluate( T arg ) ;
+public interface UnaryFunction<T, R> {
+    R evaluate(T arg);
 }
 

@@ -22,11 +22,8 @@ package corba.orbconfig;
 import test.Test;
 import corba.framework.*;
 
-
-public class NewORBTests extends CORBATest
-{
-    protected void doTest() throws Throwable
-    {
+public class NewORBTests extends CORBATest {
+    protected void doTest() throws Throwable {
         // Create client controller using the given
         // class.  You can also specify names for these (for instance,
         // you may want to distinguish between many clients) by using

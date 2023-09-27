@@ -19,25 +19,26 @@
 
 package com.sun.corba.ee.spi.transport.connection;
 
-import java.util.Collection ;
+import java.io.IOException;
+import java.util.Collection;
 
-import java.io.IOException ;
-
-/** An instance of a ConnectionFinder may be supplied to the
+/**
+ * An instance of a ConnectionFinder may be supplied to the
  * OutboundConnectionCache.get method.
  */
 public interface ConnectionFinder<C extends Connection> {
-    /** Method that searches idleConnections and busyConnections for 
+    /**
+     * Method that searches idleConnections and busyConnections for
      * the best connection.  May return null if no best connection
      * exists.  May create a new connection and return it.
-     * 
+     *
      * @param cinfo info to match in the search
      * @param idleConnections idle connections to search
      * @param busyConnections busy connections to search
-     * @throws IOException if an error occurred
      * @return the best connection
+     * @throws IOException if an error occurred
      */
-    C find( ContactInfo<C> cinfo, Collection<C> idleConnections, 
-        Collection<C> busyConnections ) throws IOException ;
+    C find(ContactInfo<C> cinfo, Collection<C> idleConnections,
+           Collection<C> busyConnections) throws IOException;
 }
 
