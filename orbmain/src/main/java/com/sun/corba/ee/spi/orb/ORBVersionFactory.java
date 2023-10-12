@@ -17,62 +17,56 @@
  * Classpath-exception-2.0
  */
 
-package com.sun.corba.ee.spi.orb ;
+package com.sun.corba.ee.spi.orb;
 
-import com.sun.corba.ee.spi.orb.ORBVersion ;
-import com.sun.corba.ee.impl.orb.ORBVersionImpl ;
-import org.omg.CORBA.portable.InputStream ;
-import org.omg.CORBA.INTERNAL ;
+import com.sun.corba.ee.impl.orb.ORBVersionImpl;
+import org.omg.CORBA.portable.InputStream;
 
 public class ORBVersionFactory {
-    private ORBVersionFactory() {} ;
-
-    public static ORBVersion getFOREIGN() 
-    {
-        return ORBVersionImpl.FOREIGN ;
+    private ORBVersionFactory() {
     }
 
-    public static ORBVersion getOLD() 
-    {
-        return ORBVersionImpl.OLD ;
+    ;
+
+    public static ORBVersion getFOREIGN() {
+        return ORBVersionImpl.FOREIGN;
     }
 
-    public static ORBVersion getNEW() 
-    {
-        return ORBVersionImpl.NEW ;
+    public static ORBVersion getOLD() {
+        return ORBVersionImpl.OLD;
     }
 
-    public static ORBVersion getJDK1_3_1_01() 
-    {
-        return ORBVersionImpl.JDK1_3_1_01 ;
+    public static ORBVersion getNEW() {
+        return ORBVersionImpl.NEW;
     }
 
-    public static ORBVersion getNEWER() 
-    {
-        return ORBVersionImpl.NEWER ;
+    public static ORBVersion getJDK1_3_1_01() {
+        return ORBVersionImpl.JDK1_3_1_01;
     }
 
-    public static ORBVersion getPEORB() 
-    {
-        return ORBVersionImpl.PEORB ;
+    public static ORBVersion getNEWER() {
+        return ORBVersionImpl.NEWER;
     }
 
-    /** Return the current version of this ORB
+    public static ORBVersion getPEORB() {
+        return ORBVersionImpl.PEORB;
+    }
+
+    /**
+     * Return the current version of this ORB
+     *
      * @return ORB version
      */
-    public static ORBVersion getORBVersion()
-    {
-        return ORBVersionImpl.PEORB ;
+    public static ORBVersion getORBVersion() {
+        return ORBVersionImpl.PEORB;
     }
 
-    public static ORBVersion create( InputStream is ) 
-    {
-        byte value = is.read_octet() ;
-        return byteToVersion( value ) ;
+    public static ORBVersion create(InputStream is) {
+        byte value = is.read_octet();
+        return byteToVersion(value);
     }
 
-    private static ORBVersion byteToVersion( byte value ) 
-    {
+    private static ORBVersion byteToVersion(byte value) {
         /* Throwing an exception here would cause this version to be 
         * incompatible with future versions of the ORB, to the point 
         * that this version could
@@ -96,13 +90,20 @@ public class ORBVersionFactory {
          */
 
         switch (value) {
-            case ORBVersion.FOREIGN : return ORBVersionImpl.FOREIGN ;
-            case ORBVersion.OLD : return ORBVersionImpl.OLD ;
-            case ORBVersion.NEW : return ORBVersionImpl.NEW ;
-            case ORBVersion.JDK1_3_1_01: return ORBVersionImpl.JDK1_3_1_01 ;
-            case ORBVersion.NEWER : return ORBVersionImpl.NEWER ;
-            case ORBVersion.PEORB : return ORBVersionImpl.PEORB ;
-            default : return new ORBVersionImpl(value); 
+        case ORBVersion.FOREIGN:
+            return ORBVersionImpl.FOREIGN;
+        case ORBVersion.OLD:
+            return ORBVersionImpl.OLD;
+        case ORBVersion.NEW:
+            return ORBVersionImpl.NEW;
+        case ORBVersion.JDK1_3_1_01:
+            return ORBVersionImpl.JDK1_3_1_01;
+        case ORBVersion.NEWER:
+            return ORBVersionImpl.NEWER;
+        case ORBVersion.PEORB:
+            return ORBVersionImpl.PEORB;
+        default:
+            return new ORBVersionImpl(value);
         }
     }
 }

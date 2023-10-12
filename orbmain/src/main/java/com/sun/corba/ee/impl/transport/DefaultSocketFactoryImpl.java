@@ -19,36 +19,31 @@
 
 package com.sun.corba.ee.impl.transport;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.SocketException;
-import java.net.ServerSocket;
-import java.nio.channels.SocketChannel;
-import java.nio.channels.ServerSocketChannel;
-
-import com.sun.corba.ee.spi.transport.Acceptor;
-
+import com.sun.corba.ee.impl.misc.ORBUtility;
+import com.sun.corba.ee.spi.misc.ORBConstants;
 import com.sun.corba.ee.spi.orb.ORB;
+import com.sun.corba.ee.spi.transport.Acceptor;
 import com.sun.corba.ee.spi.transport.ORBSocketFactory;
 
-import com.sun.corba.ee.spi.misc.ORBConstants;
-import com.sun.corba.ee.impl.misc.ORBUtility;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketException;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 
 public class DefaultSocketFactoryImpl
-    implements ORBSocketFactory
-{
+        implements ORBSocketFactory {
     private ORB orb;
 
-    public void setORB(ORB orb)
-    {
+    public void setORB(ORB orb) {
         this.orb = orb;
     }
 
-    public ServerSocket createServerSocket(String type, 
+    public ServerSocket createServerSocket(String type,
                                            InetSocketAddress inetSocketAddress)
-        throws IOException
-    {
+            throws IOException {
         ServerSocketChannel serverSocketChannel = null;
         ServerSocket serverSocket = null;
 
@@ -62,10 +57,9 @@ public class DefaultSocketFactoryImpl
         return serverSocket;
     }
 
-    public Socket createSocket(String type, 
+    public Socket createSocket(String type,
                                InetSocketAddress inetSocketAddress)
-        throws IOException
-    {
+            throws IOException {
         SocketChannel socketChannel = null;
         Socket socket = null;
 
@@ -86,8 +80,7 @@ public class DefaultSocketFactoryImpl
     public void setAcceptedSocketOptions(Acceptor acceptor,
                                          ServerSocket serverSocket,
                                          Socket socket)
-        throws SocketException
-    {
+            throws SocketException {
         // Disable Nagle's algorithm (i.e., always send immediately).
         socket.setTcpNoDelay(true);
     }

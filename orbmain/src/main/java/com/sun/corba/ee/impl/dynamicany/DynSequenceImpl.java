@@ -19,24 +19,23 @@
 
 package com.sun.corba.ee.impl.dynamicany;
 
-import org.omg.CORBA.TypeCode;
+import com.sun.corba.ee.spi.orb.ORB;
 import org.omg.CORBA.Any;
 import org.omg.CORBA.BAD_OPERATION;
+import org.omg.CORBA.TypeCode;
 import org.omg.CORBA.portable.InputStream;
 import org.omg.CORBA.portable.OutputStream;
-import org.omg.DynamicAny.DynAnyPackage.InvalidValue;
-import org.omg.DynamicAny.DynAnyFactoryPackage.InconsistentTypeCode;
-
-import com.sun.corba.ee.spi.orb.ORB ;
 import org.omg.DynamicAny.DynAny;
+import org.omg.DynamicAny.DynAnyFactoryPackage.InconsistentTypeCode;
+import org.omg.DynamicAny.DynAnyPackage.InvalidValue;
 import org.omg.DynamicAny.DynSequence;
 
 // _REVIST_ Could make this a subclass of DynArrayImpl
 // But that would mean that an object that implements DynSequence also implements DynArray
 // which the spec doesn't mention (it also doesn't forbid it).
-public class DynSequenceImpl extends DynAnyCollectionImpl implements DynSequence
-{
+public class DynSequenceImpl extends DynAnyCollectionImpl implements DynSequence {
     private static final long serialVersionUID = 5355861023015151151L;
+
     //
     // Constructors
     //
@@ -67,7 +66,7 @@ public class DynSequenceImpl extends DynAnyCollectionImpl implements DynSequence
         components = new DynAny[length];
         anys = new Any[length];
 
-        for (int i=0; i<length; i++) {
+        for (int i = 0; i < length; i++) {
             // _REVISIT_ Could use read_xxx_array() methods on InputStream for efficiency
             // but only for primitive types
             anys[i] = DynAnyUtil.extractAnyFromStream(contentType, input, orb);
@@ -94,9 +93,9 @@ public class DynSequenceImpl extends DynAnyCollectionImpl implements DynSequence
         OutputStream out = any.create_output_stream();
         // Writing the length first is the only difference to supers implementation
         out.write_long(components.length);
-        for (int i=0; i<components.length; i++) {
+        for (int i = 0; i < components.length; i++) {
             if (components[i] instanceof DynAnyImpl) {
-                ((DynAnyImpl)components[i]).writeAny(out);
+                ((DynAnyImpl) components[i]).writeAny(out);
             } else {
                 // Not our implementation. Nothing we can do to prevent copying.
                 components[i].to_any().write_value(out);
@@ -106,7 +105,6 @@ public class DynSequenceImpl extends DynAnyCollectionImpl implements DynSequence
         return true;
     }
 
-
     //
     // DynSequence interface methods
     //
@@ -114,7 +112,7 @@ public class DynSequenceImpl extends DynAnyCollectionImpl implements DynSequence
     // Returns the current length of the sequence
     public int get_length() {
         if (status == STATUS_DESTROYED) {
-            throw wrapper.dynAnyDestroyed() ;
+            throw wrapper.dynAnyDestroyed();
         }
         return (checkInitComponents() ? components.length : 0);
     }
@@ -142,10 +140,9 @@ public class DynSequenceImpl extends DynAnyCollectionImpl implements DynSequence
     // ?f the current position indicates a valid element and that element is removed, the
     // current position is set to -1.
     public void set_length(int len)
-        throws org.omg.DynamicAny.DynAnyPackage.InvalidValue
-    {
+            throws org.omg.DynamicAny.DynAnyPackage.InvalidValue {
         if (status == STATUS_DESTROYED) {
-            throw wrapper.dynAnyDestroyed() ;
+            throw wrapper.dynAnyDestroyed();
         }
         int bound = getBound();
         if (bound > 0 && len > bound) {
@@ -166,7 +163,7 @@ public class DynSequenceImpl extends DynAnyCollectionImpl implements DynSequence
 
             // Newly added elements are default-initialized
             TypeCode contentType = getContentType();
-            for (int i=oldLength; i<len; i++) {
+            for (int i = oldLength; i < len; i++) {
                 createDefaultComponentAt(i, contentType);
             }
 
@@ -227,8 +224,7 @@ public class DynSequenceImpl extends DynAnyCollectionImpl implements DynSequence
     //
 
     protected void checkValue(Object[] value)
-        throws org.omg.DynamicAny.DynAnyPackage.InvalidValue
-    {
+            throws org.omg.DynamicAny.DynAnyPackage.InvalidValue {
         if (value == null || value.length == 0) {
             clearData();
             index = NO_INDEX;

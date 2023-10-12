@@ -21,44 +21,34 @@ package com.sun.corba.ee.impl.transport;
 
 import com.sun.corba.ee.impl.encoding.CDROutputObject;
 import com.sun.corba.ee.impl.encoding.OutputStreamFactory;
-import com.sun.corba.ee.spi.logging.ORBUtilSystemException;
 import com.sun.corba.ee.impl.oa.poa.Policies;
+import com.sun.corba.ee.spi.extension.LoadBalancingPolicy;
 import com.sun.corba.ee.spi.extension.RequestPartitioningPolicy;
 import com.sun.corba.ee.spi.ior.IORTemplate;
 import com.sun.corba.ee.spi.ior.TaggedProfileTemplate;
-import com.sun.corba.ee.spi.ior.iiop.AlternateIIOPAddressComponent;
-import com.sun.corba.ee.spi.ior.iiop.GIOPVersion;
-import com.sun.corba.ee.spi.ior.iiop.IIOPAddress;
-import com.sun.corba.ee.spi.ior.iiop.IIOPFactories;
-import com.sun.corba.ee.spi.ior.iiop.IIOPProfileTemplate;
+import com.sun.corba.ee.spi.ior.iiop.*;
 import com.sun.corba.ee.spi.legacy.connection.LegacyServerSocketEndPointInfo;
-import com.sun.corba.ee.spi.orb.ORB;
+import com.sun.corba.ee.spi.logging.ORBUtilSystemException;
 import com.sun.corba.ee.spi.misc.ORBConstants;
-import com.sun.corba.ee.spi.threadpool.Work;
+import com.sun.corba.ee.spi.orb.ORB;
 import com.sun.corba.ee.spi.protocol.MessageMediator;
-import com.sun.corba.ee.spi.transport.EventHandler;
-import com.sun.corba.ee.spi.transport.Acceptor;
-import com.sun.corba.ee.spi.transport.Connection;
-import com.sun.corba.ee.spi.transport.SocketInfo;
-import com.sun.corba.ee.spi.transport.Selector;
-import com.sun.corba.ee.spi.transport.InboundConnectionCache;
-import com.sun.corba.ee.spi.transport.TransportManager;
-import com.sun.corba.ee.spi.extension.LoadBalancingPolicy;
+import com.sun.corba.ee.spi.threadpool.Work;
 import com.sun.corba.ee.spi.trace.Transport;
-import java.nio.channels.SelectionKey;
-import java.util.Iterator;
-import java.net.Socket ;
+import com.sun.corba.ee.spi.transport.*;
 import org.omg.IOP.TAG_INTERNET_IOP;
 
+import java.net.Socket;
+import java.nio.channels.SelectionKey;
+import java.util.Iterator;
+
 /**
- *
  * @author ken
  */
 @Transport
 public abstract class AcceptorBase
-    extends
+        extends
         EventHandlerBase
-    implements
+        implements
         Acceptor,
         Work,
         // BEGIN Legacy
@@ -67,23 +57,23 @@ public abstract class AcceptorBase
         // END Legacy
 {
     protected ORBUtilSystemException wrapper =
-        ORBUtilSystemException.self ;
+            ORBUtilSystemException.self;
 
-    protected int port ;
+    protected int port;
     protected long enqueueTime;
-    protected boolean initialized = false ;
+    protected boolean initialized = false;
 
     // BEGIN legacy
     protected String type = "";
     protected String name = "";
-    protected String hostname ;
+    protected String hostname;
     protected int locatorPort;
     // END legacy
 
     protected InboundConnectionCache connectionCache;
 
     public int getPort() {
-        return port ;
+        return port;
     }
 
     public String getInterfaceName() {
@@ -93,20 +83,19 @@ public abstract class AcceptorBase
 
     // Need this for the work interface.
     public String getName() {
-        return getInterfaceName() ;
+        return getInterfaceName();
     }
-    
+
     public String getType() {
-        return type ;
+        return type;
     }
 
     public boolean isLazy() {
-        return false ;
+        return false;
     }
 
     public AcceptorBase(ORB orb, int port,
-                                       String name, String type)
-    {
+                        String name, String type) {
         this.orb = orb;
 
         setWork(this);
@@ -123,9 +112,9 @@ public abstract class AcceptorBase
     }
 
     @Transport
-    public void processSocket( Socket socket ) {
+    public void processSocket(Socket socket) {
         Connection connection =
-            new ConnectionImpl(orb, this, socket);
+                new ConnectionImpl(orb, this, socket);
 
         // NOTE: The connection MUST be put in the cache BEFORE being
         // registered with the selector.  Otherwise if the bytes
@@ -147,13 +136,13 @@ public abstract class AcceptorBase
         String hname = orb.getORBData().getORBServerHost();
         if (iterator.hasNext()) {
             // NEVER create an AlternateIIOPAddress for an SSL acceptor!
-            if (!type.startsWith( SocketInfo.SSL_PREFIX )) {
+            if (!type.startsWith(SocketInfo.SSL_PREFIX)) {
                 IIOPAddress iiopAddress = IIOPFactories.makeIIOPAddress(hname, port);
-                AlternateIIOPAddressComponent iiopAddressComponent = 
-                    IIOPFactories.makeAlternateIIOPAddressComponent(iiopAddress);
+                AlternateIIOPAddressComponent iiopAddressComponent =
+                        IIOPFactories.makeAlternateIIOPAddressComponent(iiopAddress);
                 while (iterator.hasNext()) {
-                    TaggedProfileTemplate taggedProfileTemplate = 
-                        (TaggedProfileTemplate)iterator.next();
+                    TaggedProfileTemplate taggedProfileTemplate =
+                            (TaggedProfileTemplate) iterator.next();
                     taggedProfileTemplate.add(iiopAddressComponent);
                 }
             }
@@ -173,41 +162,41 @@ public abstract class AcceptorBase
             templatePort = port;
         } else {
             templatePort = orb.getLegacyServerSocketManager()
-                .legacyGetPersistentServerPort(SocketInfo.IIOP_CLEAR_TEXT);
+                    .legacyGetPersistentServerPort(SocketInfo.IIOP_CLEAR_TEXT);
         }
-        IIOPAddress addr = IIOPFactories.makeIIOPAddress(hostname, 
-            templatePort);
-        IIOPProfileTemplate iiopProfile = IIOPFactories.makeIIOPProfileTemplate(orb, 
-            version, addr);
+        IIOPAddress addr = IIOPFactories.makeIIOPAddress(hostname,
+                                                         templatePort);
+        IIOPProfileTemplate iiopProfile = IIOPFactories.makeIIOPProfileTemplate(orb,
+                                                                                version, addr);
 
         if (version.supportsIORIIOPProfileComponents()) {
             iiopProfile.add(IIOPFactories.makeCodeSetsComponent(orb));
             iiopProfile.add(IIOPFactories.makeMaxStreamFormatVersionComponent());
-            RequestPartitioningPolicy rpPolicy = 
-                (RequestPartitioningPolicy) policies.get_effective_policy(
-                ORBConstants.REQUEST_PARTITIONING_POLICY);
+            RequestPartitioningPolicy rpPolicy =
+                    (RequestPartitioningPolicy) policies.get_effective_policy(
+                            ORBConstants.REQUEST_PARTITIONING_POLICY);
 
             if (rpPolicy != null) {
                 iiopProfile.add(
-                    IIOPFactories.makeRequestPartitioningComponent(rpPolicy.getValue()));
+                        IIOPFactories.makeRequestPartitioningComponent(rpPolicy.getValue()));
             }
 
             LoadBalancingPolicy lbPolicy = (LoadBalancingPolicy)
-                policies.get_effective_policy(
-                                  ORBConstants.LOAD_BALANCING_POLICY);
+                    policies.get_effective_policy(
+                            ORBConstants.LOAD_BALANCING_POLICY);
             if (lbPolicy != null) {
                 iiopProfile.add(
-                     IIOPFactories.makeLoadBalancingComponent(
-                         lbPolicy.getValue()));
+                        IIOPFactories.makeLoadBalancingComponent(
+                                lbPolicy.getValue()));
             }
 
             if (codebase != null && !codebase.equals("")) {
                 iiopProfile.add(
-                    IIOPFactories.makeJavaCodebaseComponent(codebase));
+                        IIOPFactories.makeJavaCodebaseComponent(codebase));
             }
             if (orb.getORBData().isJavaSerializationEnabled()) {
                 iiopProfile.add(
-                    IIOPFactories.makeJavaSerializationComponent());
+                        IIOPFactories.makeJavaSerializationComponent());
             }
         }
         return iiopProfile;
@@ -280,7 +269,7 @@ public abstract class AcceptorBase
 
     public CDROutputObject createOutputObject(ORB broker, MessageMediator messageMediator) {
         return OutputStreamFactory.newCDROutputObject(broker, messageMediator,
-            messageMediator.getReplyHeader(), messageMediator.getStreamFormatVersion());
+                                                      messageMediator.getReplyHeader(), messageMediator.getStreamFormatVersion());
     }
 
     public boolean shouldRegisterAcceptEvent() {

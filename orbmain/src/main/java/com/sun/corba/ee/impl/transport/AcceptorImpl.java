@@ -19,6 +19,12 @@
 
 package com.sun.corba.ee.impl.transport;
 
+import com.sun.corba.ee.impl.misc.ORBUtility;
+import com.sun.corba.ee.spi.orb.ORB;
+import com.sun.corba.ee.spi.trace.Transport;
+import com.sun.corba.ee.spi.transport.Selector;
+import org.glassfish.pfl.tf.spi.annotation.InfoMethod;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -29,28 +35,18 @@ import java.nio.channels.SocketChannel;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-
-import com.sun.corba.ee.spi.transport.Selector;
-
-import com.sun.corba.ee.spi.orb.ORB;
-
-import com.sun.corba.ee.impl.misc.ORBUtility;
-import com.sun.corba.ee.spi.trace.Transport;
-import org.glassfish.pfl.tf.spi.annotation.InfoMethod;
-
 /**
  * @author Harold Carr
  */
 @Transport public class AcceptorImpl extends AcceptorBase {
     protected ServerSocketChannel serverSocketChannel;
     protected ServerSocket serverSocket;
-    
-    private Class<?> lastExceptionClassSeen = null ;
+
+    private Class<?> lastExceptionClassSeen = null;
 
     public AcceptorImpl(ORB orb, int port,
-                                       String name, String type)
-    {
-        super( orb, port, name, type ) ;
+                        String name, String type) {
+        super(orb, port, name, type);
     }
 
     @Transport
@@ -68,7 +64,7 @@ import org.glassfish.pfl.tf.spi.annotation.InfoMethod;
                 inetSocketAddress = new InetSocketAddress(host, port);
             }
             serverSocket = orb.getORBData().getSocketFactory()
-                .createServerSocket(type, inetSocketAddress);
+                    .createServerSocket(type, inetSocketAddress);
             internalInitialize();
             if (orb.getORBData().showInfoMessages()) {
                 wrapper.infoCreateListenerSucceeded(host, Integer.toString(port));
@@ -81,8 +77,7 @@ import org.glassfish.pfl.tf.spi.annotation.InfoMethod;
     }
 
     protected void internalInitialize()
-        throws Exception
-    {
+            throws Exception {
         // Determine the listening port (for the IOR).
         // This is important when using emphemeral ports (i.e.,
         // when the port value to the constructor is 0).
@@ -99,23 +94,25 @@ import org.glassfish.pfl.tf.spi.annotation.InfoMethod;
 
         if (serverSocketChannel != null) {
             setUseSelectThreadToWait(
-                orb.getORBData().acceptorSocketUseSelectThreadToWait());
+                    orb.getORBData().acceptorSocketUseSelectThreadToWait());
             serverSocketChannel.configureBlocking(
-                ! orb.getORBData().acceptorSocketUseSelectThreadToWait());
+                    !orb.getORBData().acceptorSocketUseSelectThreadToWait());
         } else {
             // Configure to use listener and reader threads.
             setUseSelectThreadToWait(false);
         }
         setUseWorkerThreadForEvent(
-            orb.getORBData().acceptorSocketUseWorkerThreadForEvent());
+                orb.getORBData().acceptorSocketUseWorkerThreadForEvent());
 
     }
 
     @InfoMethod
-    private void usingServerSocket( ServerSocket ss ) { }
+    private void usingServerSocket(ServerSocket ss) {
+    }
 
     @InfoMethod
-    private void usingServerSocketChannel( ServerSocketChannel ssc ) { }
+    private void usingServerSocketChannel(ServerSocketChannel ssc) {
+    }
 
     @Transport
     public Socket getAcceptedSocket() {
@@ -125,7 +122,7 @@ import org.glassfish.pfl.tf.spi.annotation.InfoMethod;
         try {
             if (serverSocketChannel == null) {
                 socket = serverSocket.accept();
-                usingServerSocket( serverSocket ) ;
+                usingServerSocket(serverSocket);
             } else {
                 socketChannel = serverSocketChannel.accept();
                 socket = socketChannel.socket();
@@ -133,11 +130,11 @@ import org.glassfish.pfl.tf.spi.annotation.InfoMethod;
             }
 
             orb.getORBData().getSocketFactory()
-                .setAcceptedSocketOptions(this, serverSocket, socket);
+                    .setAcceptedSocketOptions(this, serverSocket, socket);
 
             // Clear the last exception after a successful accept, in case
             // we get sporadic bursts of related failures.
-            lastExceptionClassSeen = null ;
+            lastExceptionClassSeen = null;
         } catch (IOException e) {
             // Log the exception at WARNING level, unless the same exception
             // occurs repeatedly.  In that case, only log the first exception
@@ -149,7 +146,7 @@ import org.glassfish.pfl.tf.spi.annotation.InfoMethod;
             if (e.getClass() == lastExceptionClassSeen) {
                 wrapper.ioexceptionInAcceptFine(e);
             } else {
-                lastExceptionClassSeen = e.getClass() ;
+                lastExceptionClassSeen = e.getClass();
                 wrapper.ioexceptionInAccept(e);
             }
 
@@ -161,14 +158,15 @@ import org.glassfish.pfl.tf.spi.annotation.InfoMethod;
             // a growing log file to alert admin of problem.
         }
 
-        return socket ;
+        return socket;
     }
 
     @InfoMethod
-    private void closeException( IOException exc ) { }
+    private void closeException(IOException exc) {
+    }
 
     @Transport
-    public void close () {
+    public void close() {
         try {
             Selector selector = orb.getTransportManager().getSelector(0);
             selector.unregisterForEvent(this);
@@ -197,7 +195,7 @@ import org.glassfish.pfl.tf.spi.annotation.InfoMethod;
     //
 
     protected void accept() {
-        processSocket( getAcceptedSocket() ) ;
+        processSocket(getAcceptedSocket());
     }
 
     @Transport
@@ -205,25 +203,25 @@ import org.glassfish.pfl.tf.spi.annotation.InfoMethod;
         try {
             if (selectionKey.isAcceptable()) {
                 AccessController.doPrivileged(
-                    new PrivilegedAction<Object>() {
-                        public java.lang.Object run() {
-                            accept() ;
-                            return null;
+                        new PrivilegedAction<Object>() {
+                            public java.lang.Object run() {
+                                accept();
+                                return null;
+                            }
                         }
-                    }
                 );
             } else {
-                selectionKeyNotAcceptable() ;
+                selectionKeyNotAcceptable();
             }
         } catch (SecurityException se) {
-            securityException( se ) ;
+            securityException(se);
             String permissionStr = ORBUtility.getClassSecurityInfo(getClass());
             wrapper.securityExceptionInAccept(se, permissionStr);
         } catch (Exception ex) {
-            otherException( ex ) ;
-            wrapper.exceptionInAccept(ex, ex.toString() );
+            otherException(ex);
+            wrapper.exceptionInAccept(ex, ex.toString());
         } catch (Throwable t) {
-            otherException( t ) ;
+            otherException(t);
         } finally {
 
             // IMPORTANT: To avoid bug (4953599), we force the
@@ -251,19 +249,21 @@ import org.glassfish.pfl.tf.spi.annotation.InfoMethod;
     // SocketOrChannelAcceptor
     //
 
-    public ServerSocket getServerSocket()
-    {
+    public ServerSocket getServerSocket() {
         return serverSocket;
     }
 
     @InfoMethod
-    private void selectionKeyNotAcceptable() { }
+    private void selectionKeyNotAcceptable() {
+    }
 
     @InfoMethod
-    private void securityException(SecurityException se) { }
+    private void securityException(SecurityException se) {
+    }
 
     @InfoMethod
-    private void otherException(Throwable t) { }
+    private void otherException(Throwable t) {
+    }
     // END Legacy support
 }
 

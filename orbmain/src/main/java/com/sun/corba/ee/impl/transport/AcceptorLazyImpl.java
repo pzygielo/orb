@@ -21,34 +21,36 @@ package com.sun.corba.ee.impl.transport;
 
 import com.sun.corba.ee.spi.orb.ORB;
 import com.sun.corba.ee.spi.trace.Transport;
+
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.channels.SelectableChannel;
 
-/** A version of an Acceptor that does not own the ServerSocket.
+/**
+ * A version of an Acceptor that does not own the ServerSocket.
  * Instead, SelectableChannels obtained from the ServerSocket are
- * given to the processSocket method 
+ * given to the processSocket method
  *
  * @author ken
  */
 @Transport
 public class AcceptorLazyImpl extends AcceptorBase {
 
-    public AcceptorLazyImpl( ORB orb, int port, String name, String type ) {
-        super( orb, port, name, type ) ;
+    public AcceptorLazyImpl(ORB orb, int port, String name, String type) {
+        super(orb, port, name, type);
     }
 
     @Override
     public boolean isLazy() {
-        return true ;
+        return true;
     }
 
     public Socket getAcceptedSocket() {
-        throw wrapper.notSupportedOnLazyAcceptor() ;
+        throw wrapper.notSupportedOnLazyAcceptor();
     }
 
     public SelectableChannel getChannel() {
-        throw wrapper.notSupportedOnLazyAcceptor() ;
+        throw wrapper.notSupportedOnLazyAcceptor();
     }
 
     @Transport
@@ -59,9 +61,9 @@ public class AcceptorLazyImpl extends AcceptorBase {
 
         orb.getCorbaTransportManager().getInboundConnectionCache(this);
 
-        initialized = true ;
+        initialized = true;
 
-        return true ;
+        return true;
     }
 
     public void close() {
@@ -69,11 +71,11 @@ public class AcceptorLazyImpl extends AcceptorBase {
     }
 
     public ServerSocket getServerSocket() {
-        throw wrapper.notSupportedOnLazyAcceptor() ;
+        throw wrapper.notSupportedOnLazyAcceptor();
     }
 
     public void doWork() {
-        throw wrapper.notSupportedOnLazyAcceptor() ;
+        throw wrapper.notSupportedOnLazyAcceptor();
     }
 
     @Override

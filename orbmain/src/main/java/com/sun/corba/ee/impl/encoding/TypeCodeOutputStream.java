@@ -19,23 +19,21 @@
 
 package com.sun.corba.ee.impl.encoding;
 
-
 import com.sun.corba.ee.spi.ior.iiop.GIOPVersion;
+import com.sun.corba.ee.spi.orb.ORB;
 import org.omg.CORBA_2_3.portable.OutputStream;
 
-import com.sun.corba.ee.spi.orb.ORB;
-
+import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.Map;
-import java.nio.ByteBuffer;
 
 public final class TypeCodeOutputStream extends EncapsOutputStream {
 
     private static final InputObjectFactory TYPE_CODE_INPUT_OBJECT_FACTORY = new TypeCodeInputStreamFactory();
 
     private OutputStream enclosure = null;
-    private Map<String,Integer> typeMap = null;
+    private Map<String, Integer> typeMap = null;
     private boolean isEncapsulation = false;
 
     public TypeCodeOutputStream(ORB orb) {
@@ -59,17 +57,19 @@ public final class TypeCodeOutputStream extends EncapsOutputStream {
     }
 
     public TypeCodeOutputStream getTopLevelStream() {
-        if (enclosure == null)
+        if (enclosure == null) {
             return this;
-        if (enclosure instanceof TypeCodeOutputStream)
-            return ((TypeCodeOutputStream)enclosure).getTopLevelStream();
+        }
+        if (enclosure instanceof TypeCodeOutputStream) {
+            return ((TypeCodeOutputStream) enclosure).getTopLevelStream();
+        }
         return this;
     }
 
     public int getTopLevelPosition() {
         if (enclosure != null && enclosure instanceof TypeCodeOutputStream) {
-            int pos = ((TypeCodeOutputStream)enclosure).getTopLevelPosition()
-                + getPosition();
+            int pos = ((TypeCodeOutputStream) enclosure).getTopLevelPosition()
+                    + getPosition();
             // Add four bytes for the encaps length, not another 4 for the 
             // byte order which is included in getPosition().
             if (isEncapsulation) {
@@ -82,20 +82,22 @@ public final class TypeCodeOutputStream extends EncapsOutputStream {
     }
 
     public void addIDAtPosition(String id, int position) {
-        if (typeMap == null)
-            typeMap = new HashMap<String,Integer>(16);
+        if (typeMap == null) {
+            typeMap = new HashMap<String, Integer>(16);
+        }
         typeMap.put(id, position);
     }
 
     public int getPositionForID(String id) {
-        if (typeMap == null)
-            throw wrapper.refTypeIndirType() ;
+        if (typeMap == null) {
+            throw wrapper.refTypeIndirType();
+        }
         return
-            typeMap.get(id) ;
+                typeMap.get(id);
     }
 
     public TypeCodeOutputStream createEncapsulation(org.omg.CORBA.ORB _orb) {
-        TypeCodeOutputStream encap = OutputStreamFactory.newTypeCodeOutputStream((ORB)_orb);
+        TypeCodeOutputStream encap = OutputStreamFactory.newTypeCodeOutputStream((ORB) _orb);
         encap.setEnclosingOutputStream(this);
         encap.makeEncapsulation();
         return encap;
@@ -108,7 +110,7 @@ public final class TypeCodeOutputStream extends EncapsOutputStream {
     }
 
     public static TypeCodeOutputStream wrapOutputStream(OutputStream os) {
-        TypeCodeOutputStream tos = OutputStreamFactory.newTypeCodeOutputStream((ORB)os.orb());
+        TypeCodeOutputStream tos = OutputStreamFactory.newTypeCodeOutputStream((ORB) os.orb());
         tos.setEnclosingOutputStream(os);
         return tos;
     }

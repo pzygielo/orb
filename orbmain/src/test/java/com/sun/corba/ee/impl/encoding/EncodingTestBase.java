@@ -19,12 +19,6 @@
 
 package com.sun.corba.ee.impl.encoding;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.meterware.simplestub.Stub;
 import com.sun.corba.ee.impl.orb.ORBImpl;
 import com.sun.corba.ee.impl.protocol.giopmsgheaders.FragmentMessage;
@@ -41,24 +35,26 @@ import com.sun.corba.ee.spi.transport.ByteBufferPool;
 import com.sun.corba.ee.spi.transport.Connection;
 import com.sun.corba.ee.spi.transport.MessageTraceManager;
 import com.sun.corba.ee.spi.transport.TransportManager;
+import com.sun.org.omg.CORBA.ValueDefPackage.FullValueDescription;
 import com.sun.org.omg.SendingContext.CodeBase;
 import org.glassfish.corba.testutils.HexBuffer;
-import com.sun.org.omg.CORBA.ValueDefPackage.FullValueDescription;
 import org.junit.Before;
 import org.omg.CORBA.portable.OutputStream;
 import org.omg.CORBA.portable.ValueFactory;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.meterware.simplestub.Stub.createStrictStub;
 import static com.sun.corba.ee.impl.encoding.EncodingTestBase.Endian.big_endian;
 import static com.sun.corba.ee.impl.encoding.EncodingTestBase.Endian.little_endian;
 import static com.sun.corba.ee.impl.encoding.EncodingTestBase.Fragments.more_fragments;
 import static com.sun.corba.ee.impl.encoding.EncodingTestBase.Fragments.no_more_fragments;
-import static com.sun.corba.ee.spi.ior.iiop.GIOPVersion.V1_0;
-import static com.sun.corba.ee.spi.ior.iiop.GIOPVersion.V1_1;
-import static com.sun.corba.ee.spi.ior.iiop.GIOPVersion.V1_2;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static com.sun.corba.ee.spi.ior.iiop.GIOPVersion.*;
+import static org.junit.Assert.*;
 
 public class EncodingTestBase {
     protected static final byte REQUEST = 0;
@@ -86,8 +82,12 @@ public class EncodingTestBase {
 
     static byte flags(Endian endian, Fragments fragments) {
         byte result = 0;
-        if (endian == little_endian) result |= 0x01;
-        if (fragments == more_fragments) result |= 0x02;
+        if (endian == little_endian) {
+            result |= 0x01;
+        }
+        if (fragments == more_fragments) {
+            result |= 0x02;
+        }
         return result;
     }
 
@@ -95,7 +95,9 @@ public class EncodingTestBase {
         return formatVersion;
     }
 
-    /** Returns a random value to ensure that the test never reads it. **/
+    /**
+     * Returns a random value to ensure that the test never reads it.
+     **/
     static byte pad() {
         return (byte) ((int) (Math.random() * 256));
     }
@@ -148,8 +150,9 @@ public class EncodingTestBase {
 
     protected final EncapsInputStream createEncapsulatedInputStream(int... contents) {
         byte[] bytes = new byte[contents.length];
-        for (int i = 0; i < contents.length; i++)
+        for (int i = 0; i < contents.length; i++) {
             bytes[i] = (byte) contents[i];
+        }
         return new EncapsInputStream(orb, bytes, bytes.length, getByteOrder(), message.giopVersion);
     }
 
@@ -158,8 +161,9 @@ public class EncodingTestBase {
     }
 
     protected final CDRInputObject getInputObject() {
-        if (inputObject == null)
+        if (inputObject == null) {
             inputObject = createInputObject();
+        }
         return inputObject;
     }
 
@@ -195,8 +199,9 @@ public class EncodingTestBase {
 
     protected final void addFragment(int... values) {
         fragment.body = new byte[values.length];
-        for (int i = 0; i < values.length; i++)
+        for (int i = 0; i < values.length; i++) {
             fragment.body[i] = (byte) (values[i]);
+        }
         getInputObject().addFragment(fragment, ByteBuffer.wrap(fragment.getMessageData()));
     }
 
@@ -217,8 +222,9 @@ public class EncodingTestBase {
 
     protected final void setMessageBody(int... values) {
         message.body = new byte[values.length];
-        for (int i = 0; i < values.length; i++)
+        for (int i = 0; i < values.length; i++) {
             message.body[i] = (byte) values[i];
+        }
     }
 
     protected final void setMessageBody(byte[] values) {
@@ -233,8 +239,9 @@ public class EncodingTestBase {
     // positioned after the header, so the comparison must skip that.
 
     protected final CDROutputObject getOutputObject() {
-        if (outputObject == null)
+        if (outputObject == null) {
             outputObject = createOutputObject();
+        }
         return outputObject;
     }
 
@@ -271,21 +278,22 @@ public class EncodingTestBase {
     protected final void expectByteArrays(byte[]... expected) {
         getOutputObject().getBufferManager().sendMessage();
         assertEquals(expected.length, fragments.size());
-        for (int i = 0; i < expected.length; i++)
+        for (int i = 0; i < expected.length; i++) {
             expectFragment(i, expected[i]);
+        }
     }
 
     private byte[] subBuffer(byte[] input, int start) {
-        byte[] result = new byte[input.length-start];
+        byte[] result = new byte[input.length - start];
         System.arraycopy(input, start, result, 0, result.length);
         return result;
     }
 
-
     protected final void expectByteArray(int... expected) {
         byte[] bytes = new byte[expected.length];
-        for (int i = 0; i < expected.length; i++)
+        for (int i = 0; i < expected.length; i++) {
             bytes[i] = (byte) (expected[i]);
+        }
         expectByteArray(bytes);
     }
 
@@ -296,7 +304,6 @@ public class EncodingTestBase {
     interface AsynchronousAction {
         void exec();
     }
-
 
     //--------------------------------- fake implementation of a TransportManager --------------------------------------
 
@@ -471,8 +478,9 @@ public class EncodingTestBase {
 
         @Override
         public CodeSetComponentInfo.CodeSetContext getCodeSetContext() {
-            if (codeSets == null)
+            if (codeSets == null) {
                 codeSets = new CodeSetComponentInfo.CodeSetContext(char_encoding, wchar_encoding);
+            }
             return codeSets;
         }
 
@@ -499,7 +507,9 @@ public class EncodingTestBase {
         @Override
         public void sendWithoutLock(CDROutputObject outputObject) {
             try {
-                if (!locked) fail("sendWithoutLock called while connection is not locked");
+                if (!locked) {
+                    fail("sendWithoutLock called while connection is not locked");
+                }
                 outputObject.writeTo(this);
             } catch (IOException e) {
                 fail("Connection reported: " + e);
@@ -567,9 +577,13 @@ public class EncodingTestBase {
         private boolean startedNewMessage;
 
         byte[] getMessageData() {
-            if (data != null) return data;
+            if (data != null) {
+                return data;
+            }
 
-            if (body == null) throw new RuntimeException("No message body defined");
+            if (body == null) {
+                throw new RuntimeException("No message body defined");
+            }
             data = new byte[body.length + getHeaderLength()];
             System.arraycopy(body, 0, data, getHeaderLength(), body.length);
             copyToHeader((byte) 'G', (byte) 'I', (byte) 'O', (byte) 'P');
@@ -598,7 +612,7 @@ public class EncodingTestBase {
 
         @Override
         public int getSize() {
-            return sizeInHeader >=0 ? sizeInHeader : getMessageData().length;
+            return sizeInHeader >= 0 ? sizeInHeader : getMessageData().length;
         }
 
         @Override
@@ -638,8 +652,9 @@ public class EncodingTestBase {
         @Override
         public void write(OutputStream ostream) {
             startedNewMessage = true;
-            for (int i = 0; i < GIOPMessageHeaderLength; i++)
+            for (int i = 0; i < GIOPMessageHeaderLength; i++) {
                 ostream.write_octet((byte) 0);
+            }
         }
     }
 }

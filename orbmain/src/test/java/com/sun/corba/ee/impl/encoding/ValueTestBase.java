@@ -19,13 +19,13 @@
 
 package com.sun.corba.ee.impl.encoding;
 
+import com.sun.corba.ee.impl.protocol.giopmsgheaders.Message;
+import org.glassfish.corba.testutils.HexBuffer;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Stack;
-
-import com.sun.corba.ee.impl.protocol.giopmsgheaders.Message;
-import org.glassfish.corba.testutils.HexBuffer;
 
 import static org.junit.Assert.assertTrue;
 
@@ -98,7 +98,9 @@ public class ValueTestBase extends EncodingTestBase {
         writeInt(chunkLevel);
     }
 
-    /** When starting a new chunk, align and reserve space for the chunk length. **/
+    /**
+     * When starting a new chunk, align and reserve space for the chunk length.
+     **/
     protected void startChunk() throws IOException {
         align(4);
         chunkStack.push(out);
@@ -113,7 +115,7 @@ public class ValueTestBase extends EncodingTestBase {
     }
 
     protected void writeStringValue_1_2(String value) throws IOException {
-        writeInt(2 + 2*value.length());
+        writeInt(2 + 2 * value.length());
         writeBigEndianMarker();
         for (char aChar : value.toCharArray()) {
             out.write(0);
@@ -137,8 +139,9 @@ public class ValueTestBase extends EncodingTestBase {
 
     protected void writeString(String string) throws IOException {
         writeInt(string.length() + 1);
-        for (char aChar : string.toCharArray())
+        for (char aChar : string.toCharArray()) {
             out.write(aChar);
+        }
         out.write(0);
     }
 
@@ -168,8 +171,9 @@ public class ValueTestBase extends EncodingTestBase {
     }
 
     private void align(int size) throws IOException {
-        while ((out.pos() % size) != 0)
+        while ((out.pos() % size) != 0) {
             out.write(0);
+        }
     }
 
     protected void writeIndirectionTo(int location) throws IOException {
@@ -179,11 +183,11 @@ public class ValueTestBase extends EncodingTestBase {
 
     @SuppressWarnings("unchecked")
     protected <T> T readValueFromGeneratedBody(Class<?> valueClass) {
-      setMessageBody(getGeneratedBody());
+        setMessageBody(getGeneratedBody());
 
-      Object object = getInputObject().read_value();
-      assertTrue(valueClass.isInstance(object));
-      return (T) object;
+        Object object = getInputObject().read_value();
+        assertTrue(valueClass.isInstance(object));
+        return (T) object;
     }
 
     static class DataByteOutputStream extends DataOutputStream {

@@ -19,18 +19,16 @@
 
 package com.sun.corba.ee.impl.transport;
 
+import com.sun.corba.ee.spi.logging.ORBUtilSystemException;
+import com.sun.corba.ee.spi.trace.Transport;
+import com.sun.corba.ee.spi.transport.TemporarySelectorState;
+
 import java.io.IOException;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 
-import com.sun.corba.ee.spi.transport.TemporarySelectorState;
-
-import com.sun.corba.ee.spi.logging.ORBUtilSystemException;
-import com.sun.corba.ee.spi.trace.Transport;
-
 /**
- *
  * @author Charlie Hunt
  */
 
@@ -41,7 +39,7 @@ import com.sun.corba.ee.spi.trace.Transport;
 @Transport
 public class TemporarySelectorStateOpen implements TemporarySelectorState {
     private static final ORBUtilSystemException wrapper =
-        ORBUtilSystemException.self ;
+            ORBUtilSystemException.self;
 
     /** Creates a new instance of TemporarySelectorStateOpen */
     public TemporarySelectorStateOpen() {
@@ -55,34 +53,34 @@ public class TemporarySelectorStateOpen implements TemporarySelectorState {
                 result = theSelector.select(theTimeout);
             } else {
                 throw wrapper.temporarySelectorSelectTimeoutLessThanOne(
-                    theSelector, theTimeout);
+                        theSelector, theTimeout);
             }
         } else {
             throw new TemporarySelectorClosedException(
-                "Selector " + theSelector.toString() + " is closed.");
+                    "Selector " + theSelector.toString() + " is closed.");
         }
 
         return result;
     }
 
     @Transport
-    public SelectionKey registerChannel(Selector theSelector, 
-        SelectableChannel theSelectableChannel, int theOps) throws IOException {
+    public SelectionKey registerChannel(Selector theSelector,
+                                        SelectableChannel theSelectableChannel, int theOps) throws IOException {
 
         SelectionKey key;
         if (theSelector.isOpen()) {
             key = theSelectableChannel.register(theSelector, theOps);
         } else {
             throw new TemporarySelectorClosedException("Selector " +
-                                                        theSelector.toString() +
-                                                       " is closed.");
+                                                               theSelector.toString() +
+                                                               " is closed.");
         }
         return key;
     }
 
     @Transport
     public TemporarySelectorState cancelKeyAndFlushSelector(Selector theSelector,
-                              SelectionKey theSelectionKey) throws IOException {
+                                                            SelectionKey theSelectionKey) throws IOException {
 
         if (theSelectionKey != null) {
             theSelectionKey.cancel();
@@ -92,7 +90,8 @@ public class TemporarySelectorStateOpen implements TemporarySelectorState {
             theSelector.selectNow();
         } else {
             throw new TemporarySelectorClosedException(
-                "Selector " + theSelector.toString() + " is closed."); }
+                    "Selector " + theSelector.toString() + " is closed.");
+        }
 
         return this;
     }
@@ -105,13 +104,13 @@ public class TemporarySelectorStateOpen implements TemporarySelectorState {
 
     @Transport
     public TemporarySelectorState removeSelectedKey(Selector theSelector,
-                              SelectionKey theSelectionKey) throws IOException {
+                                                    SelectionKey theSelectionKey) throws IOException {
         if (theSelector.isOpen()) {
             theSelector.selectedKeys().remove(theSelectionKey);
         } else {
             throw new TemporarySelectorClosedException("Selector " +
-                                                        theSelector.toString() +
-                                                       " is closed.");
+                                                               theSelector.toString() +
+                                                               " is closed.");
         }
         return this;
     }

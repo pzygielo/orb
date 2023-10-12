@@ -26,12 +26,13 @@ package com.sun.corba.ee.impl.transport;
 
 import com.sun.corba.ee.impl.oa.poa.Policies;
 import com.sun.corba.ee.spi.ior.IORTemplate;
+import com.sun.corba.ee.spi.orb.ORB;
+import org.glassfish.pfl.basic.func.UnaryVoidFunction;
+
 import java.net.Socket;
 
-import com.sun.corba.ee.spi.orb.ORB;
-import org.glassfish.pfl.basic.func.UnaryVoidFunction ;
-
-/** This version of an acceptor is the other half of CorbaAcceptorLazyImpl.
+/**
+ * This version of an acceptor is the other half of CorbaAcceptorLazyImpl.
  * The idea is that AcceptOnly will NOT contribute to an IORTemplate, and will
  * actually accept from a ServerSocket (and so it must initialize the
  * server socket and close it).  The LazyImpl will contribute to an IORTemplate,
@@ -41,17 +42,17 @@ import org.glassfish.pfl.basic.func.UnaryVoidFunction ;
  * @author ken
  */
 public class AcceptorAcceptOnlyImpl extends AcceptorImpl {
-    private UnaryVoidFunction<Socket> operation ;
+    private UnaryVoidFunction<Socket> operation;
 
-    public AcceptorAcceptOnlyImpl( ORB orb, int port,
-        String name, String type, UnaryVoidFunction<Socket> operation ) {
-        super( orb, port, name, type ) ;
-        this.operation = operation  ;
+    public AcceptorAcceptOnlyImpl(ORB orb, int port,
+                                  String name, String type, UnaryVoidFunction<Socket> operation) {
+        super(orb, port, name, type);
+        this.operation = operation;
     }
 
     @Override
     public void accept() {
-        operation.evaluate( getAcceptedSocket() ) ;
+        operation.evaluate(getAcceptedSocket());
     }
 
     @Override

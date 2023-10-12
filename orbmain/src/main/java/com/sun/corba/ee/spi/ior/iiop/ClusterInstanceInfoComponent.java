@@ -19,11 +19,10 @@
 
 package com.sun.corba.ee.spi.ior.iiop;
 
-import com.sun.corba.ee.spi.ior.TaggedComponent;
 import com.sun.corba.ee.spi.folb.ClusterInstanceInfo;
+import com.sun.corba.ee.spi.ior.TaggedComponent;
 
-public interface ClusterInstanceInfoComponent extends TaggedComponent
-{
+public interface ClusterInstanceInfoComponent extends TaggedComponent {
     public ClusterInstanceInfo getClusterInstanceInfo();
 }
 

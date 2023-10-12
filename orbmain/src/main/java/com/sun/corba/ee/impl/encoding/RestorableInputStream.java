@@ -24,8 +24,7 @@ package com.sun.corba.ee.impl.encoding;
  * a way to get and restore its internal state without
  * violating encapsulation.
  */
-interface RestorableInputStream
-{
+interface RestorableInputStream {
     Object createStreamMemento();
 
     void restoreInternalState(Object streamMemento);

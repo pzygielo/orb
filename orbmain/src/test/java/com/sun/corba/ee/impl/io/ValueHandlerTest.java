@@ -26,10 +26,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.omg.CORBA_2_3.portable.InputStream;
 
+import javax.rmi.CORBA.ValueHandler;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Modifier;
-import javax.rmi.CORBA.ValueHandler;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -37,82 +37,81 @@ import static org.hamcrest.Matchers.instanceOf;
 
 public class ValueHandlerTest extends ValueTestBase {
 
-  ValueHandler valueHandler = ValueHandlerImpl.getInstance();
+    ValueHandler valueHandler = ValueHandlerImpl.getInstance();
 
-  /**
-   * Ensures that value handler impl is final
-   */
-  @Test
-  public void testValueHandlerImplIsFinal() {
-    int mods = ValueHandlerImpl.class.getModifiers();
+    /**
+     * Ensures that value handler impl is final
+     */
+    @Test
+    public void testValueHandlerImplIsFinal() {
+        int mods = ValueHandlerImpl.class.getModifiers();
 
-    Assert.assertTrue(Modifier.isFinal(mods));
-  }
+        Assert.assertTrue(Modifier.isFinal(mods));
+    }
 
-  /**
-   * Ensures the SharedSecrets class works
-   */
-  @Test
-  public void testSharedSecrets() {
-    Assert.assertNotNull(SharedSecrets.getJavaCorbaAccess());
-  }
+    /**
+     * Ensures the SharedSecrets class works
+     */
+    @Test
+    public void testSharedSecrets() {
+        Assert.assertNotNull(SharedSecrets.getJavaCorbaAccess());
+    }
 
-  @Test
-  public void canReadStringValue() throws IOException {
-    writeStringValue_1_2("This, too!");
+    @Test
+    public void canReadStringValue() throws IOException {
+        writeStringValue_1_2("This, too!");
 
-    assertThat(readWithValueHandler(String.class), equalTo("This, too!"));
-  }
+        assertThat(readWithValueHandler(String.class), equalTo("This, too!"));
+    }
 
-  @SuppressWarnings("unchecked")
-  private <T extends Serializable> T readWithValueHandler(Class<T> theClass) {
-    setMessageBody(getGeneratedBody());
-    InputStream inputStream = getInputObject();
-    Serializable value = valueHandler.readValue(inputStream, 0, theClass,
-          RepositoryId.createForJavaType(theClass), getInputObject().getCodeBase());
-    assertThat(value, instanceOf(theClass));
-    return (T) value;
-  }
+    @SuppressWarnings("unchecked")
+    private <T extends Serializable> T readWithValueHandler(Class<T> theClass) {
+        setMessageBody(getGeneratedBody());
+        InputStream inputStream = getInputObject();
+        Serializable value = valueHandler.readValue(inputStream, 0, theClass,
+                                                    RepositoryId.createForJavaType(theClass), getInputObject().getCodeBase());
+        assertThat(value, instanceOf(theClass));
+        return (T) value;
+    }
 
-  @Test
-  public void canReadSerializedEnum() throws IOException {
-    writeValueTag(ONE_REPID_ID);
-    writeRepId(RepositoryId.kWStringValueRepID);
-    writeStringValue_1_2(Enum1.strange.toString());
+    @Test
+    public void canReadSerializedEnum() throws IOException {
+        writeValueTag(ONE_REPID_ID);
+        writeRepId(RepositoryId.kWStringValueRepID);
+        writeStringValue_1_2(Enum1.strange.toString());
 
-    assertThat(readWithValueHandler(Enum1.class), equalTo(Enum1.strange));
-  }
+        assertThat(readWithValueHandler(Enum1.class), equalTo(Enum1.strange));
+    }
 
-  @Test
-  public void canReadSerializedEnumWithAbstractMethod() throws IOException {
-    writeValueTag(ONE_REPID_ID);
-    writeRepId(RepositoryId.kWStringValueRepID);
-    writeStringValue_1_2("second");
+    @Test
+    public void canReadSerializedEnumWithAbstractMethod() throws IOException {
+        writeValueTag(ONE_REPID_ID);
+        writeRepId(RepositoryId.kWStringValueRepID);
+        writeStringValue_1_2("second");
 
-    assertThat(readWithValueHandler(EnumWithAbstractMethod.class).getValue(), equalTo(2));
-  }
+        assertThat(readWithValueHandler(EnumWithAbstractMethod.class).getValue(), equalTo(2));
+    }
 
+    static enum EnumWithAbstractMethod {
 
+        first {
+            @Override
+            int getValue() {
+                return 1;
+            }
+        }, second {
+            @Override
+            int getValue() {
+                return 2;
+            }
+        }, third {
+            @Override
+            int getValue() {
+                return 3;
+            }
+        };
 
-  static enum EnumWithAbstractMethod {
-
-    first {
-      @Override
-      int getValue() {
-        return 1;
-      }
-    }, second {
-      @Override
-      int getValue() {
-        return 2;
-      }
-    }, third {
-      @Override
-      int getValue() {
-        return 3;
-      }
-    };
-    abstract int getValue();
-  }
+        abstract int getValue();
+    }
 
 }

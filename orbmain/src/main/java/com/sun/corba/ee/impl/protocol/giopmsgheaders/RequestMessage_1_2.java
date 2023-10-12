@@ -19,18 +19,15 @@
 
 package com.sun.corba.ee.impl.protocol.giopmsgheaders;
 
-import com.sun.corba.ee.spi.servicecontext.ServiceContextDefaults;
-import com.sun.corba.ee.spi.servicecontext.ServiceContexts;
-import com.sun.corba.ee.spi.ior.iiop.GIOPVersion;
-import com.sun.corba.ee.spi.orb.ORB;
-import com.sun.corba.ee.spi.orb.ObjectKeyCacheEntry;
 import com.sun.corba.ee.impl.encoding.CDRInputObject;
 import com.sun.corba.ee.impl.encoding.CDROutputObject;
-import com.sun.corba.ee.spi.misc.ORBConstants;
-
-import com.sun.corba.ee.spi.trace.Transport;
-
+import com.sun.corba.ee.spi.ior.iiop.GIOPVersion;
 import com.sun.corba.ee.spi.logging.ORBUtilSystemException;
+import com.sun.corba.ee.spi.orb.ORB;
+import com.sun.corba.ee.spi.orb.ObjectKeyCacheEntry;
+import com.sun.corba.ee.spi.servicecontext.ServiceContextDefaults;
+import com.sun.corba.ee.spi.servicecontext.ServiceContexts;
+import com.sun.corba.ee.spi.trace.Transport;
 
 /**
  * This implements the GIOP 1.2 Request header.
@@ -67,7 +64,7 @@ public final class RequestMessage_1_2 extends Message_1_2
                        byte[] _reserved, TargetAddress _target,
                        String _operation, ServiceContexts _service_contexts) {
         super(Message.GIOPBigMagic, GIOPVersion.V1_2, FLAG_NO_FRAG_BIG_ENDIAN,
-                Message.GIOPRequest, 0);
+              Message.GIOPRequest, 0);
         this.orb = orb;
         request_id = _request_id;
         response_flags = _response_flags;
@@ -120,7 +117,7 @@ public final class RequestMessage_1_2 extends Message_1_2
         return this.operation;
     }
 
-    @SuppressWarnings({"deprecation"})
+    @SuppressWarnings({ "deprecation" })
     public org.omg.CORBA.Principal getPrincipal() {
         // REVISIT Should we throw an exception or return null ?
         return null;

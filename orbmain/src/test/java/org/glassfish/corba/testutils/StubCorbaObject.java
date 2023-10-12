@@ -19,8 +19,8 @@
 
 package org.glassfish.corba.testutils;
 
-import org.omg.CORBA.*;
 import org.omg.CORBA.Object;
+import org.omg.CORBA.*;
 
 public class StubCorbaObject implements org.omg.CORBA.Object {
     public boolean _is_a(String s) {

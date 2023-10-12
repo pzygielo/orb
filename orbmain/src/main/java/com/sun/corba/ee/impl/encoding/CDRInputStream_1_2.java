@@ -24,14 +24,13 @@ import com.sun.corba.ee.spi.misc.ORBConstants;
 import com.sun.corba.ee.spi.trace.CdrRead;
 
 @CdrRead
-public class CDRInputStream_1_2 extends CDRInputStream_1_1
-{
+public class CDRInputStream_1_2 extends CDRInputStream_1_1 {
     // Indicates whether the header is padded. In GIOP 1.2 and above,
     // the body must be aligned on an 8-octet boundary, and so the header is
     // padded appropriately. However, if there is no body to a request or reply
     // message, there is no header padding, in the unfragmented case.
     protected boolean headerPadding;
-    
+
     // used to remember headerPadding flag when mark() and restore() are used.
     protected boolean restoreHeaderPadding;
 
@@ -43,7 +42,7 @@ public class CDRInputStream_1_2 extends CDRInputStream_1_1
 
     // the mark and reset methods have been overridden to remember the
     // headerPadding flag.
-    
+
     @Override
     public void mark(int readlimit) {
         super.mark(readlimit);
@@ -63,10 +62,10 @@ public class CDRInputStream_1_2 extends CDRInputStream_1_1
     @Override
     public CDRInputStreamBase dup() {
         CDRInputStreamBase result = super.dup();
-        ((CDRInputStream_1_2)result).headerPadding = this.headerPadding;
+        ((CDRInputStream_1_2) result).headerPadding = this.headerPadding;
         return result;
     }
-    
+
     @CdrRead
     @Override
     protected void alignAndCheck(int align, int n) {
@@ -96,7 +95,7 @@ public class CDRInputStream_1_2 extends CDRInputStream_1_1
         //       alignIncr is less than or equal to underlying
         //       ByteBuffer's limit.
         int savedPosition = byteBuffer.position();
-        int alignIncr = computeAlignment(savedPosition,align);
+        int alignIncr = computeAlignment(savedPosition, align);
         int bytesNeeded = alignIncr + n;
         if (savedPosition + alignIncr <= byteBuffer.limit()) {
             byteBuffer.position(savedPosition + alignIncr);
@@ -111,7 +110,7 @@ public class CDRInputStream_1_2 extends CDRInputStream_1_1
     public GIOPVersion getGIOPVersion() {
         return GIOPVersion.V1_2;
     }
-        
+
     @Override
     public char read_wchar() {
         // In GIOP 1.2, a wchar is encoded as an unsigned octet length
@@ -124,8 +123,9 @@ public class CDRInputStream_1_2 extends CDRInputStream_1_1
         // character?  This may come up as more unicode values are
         // assigned, and a single 16 bit Java char isn't enough.
         // Better to use strings for i18n purposes.
-        if (getWCharConverter().getNumChars() > 1)
-            throw wrapper.btcResultMoreThanOneChar() ;
+        if (getWCharConverter().getNumChars() > 1) {
+            throw wrapper.btcResultMoreThanOneChar();
+        }
 
         return result[0];
     }
@@ -139,8 +139,9 @@ public class CDRInputStream_1_2 extends CDRInputStream_1_1
 
         int len = read_long();
 
-        if (len == 0)
+        if (len == 0) {
             return newEmptyString();
+        }
 
         checkForNegativeLength(len);
 

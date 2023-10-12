@@ -31,19 +31,8 @@ import com.sun.corba.ee.spi.orb.ORBVersion;
 import com.sun.corba.ee.spi.orb.ObjectKeyCacheEntry;
 import com.sun.corba.ee.spi.protocol.MessageMediator;
 import com.sun.corba.ee.spi.protocol.ServerRequestDispatcher;
-import com.sun.corba.ee.spi.threadpool.NoSuchThreadPoolException;
-import com.sun.corba.ee.spi.threadpool.NoSuchWorkQueueException;
-import com.sun.corba.ee.spi.threadpool.ThreadPool;
-import com.sun.corba.ee.spi.threadpool.ThreadPoolManager;
-import com.sun.corba.ee.spi.threadpool.Work;
-import com.sun.corba.ee.spi.threadpool.WorkQueue;
-import com.sun.corba.ee.spi.transport.Connection;
-import com.sun.corba.ee.spi.transport.EventHandler;
-import com.sun.corba.ee.spi.transport.InboundConnectionCache;
-import com.sun.corba.ee.spi.transport.MessageTraceManager;
-import com.sun.corba.ee.spi.transport.Selector;
-import com.sun.corba.ee.spi.transport.TcpTimeouts;
-import com.sun.corba.ee.spi.transport.TransportManager;
+import com.sun.corba.ee.spi.threadpool.*;
+import com.sun.corba.ee.spi.transport.*;
 import org.junit.Before;
 
 import java.io.ByteArrayInputStream;
@@ -58,12 +47,7 @@ import java.nio.channels.spi.AbstractSelectableChannel;
 import java.nio.channels.spi.AbstractSelectionKey;
 import java.nio.channels.spi.AbstractSelector;
 import java.nio.channels.spi.SelectorProvider;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 import static com.meterware.simplestub.Stub.createStrictStub;
 import static com.meterware.simplestub.Stub.createStub;
@@ -120,9 +104,9 @@ public class TransportTestBase {
         @Override
         public void run() {
             while (numToProcess > 0) {
-                if (workQueue.items.isEmpty())
+                if (workQueue.items.isEmpty()) {
                     Thread.yield();
-                else {
+                } else {
                     numToProcess--;
                     Work work = workQueue.items.remove();
                     work.doWork();
@@ -162,7 +146,7 @@ public class TransportTestBase {
         connection.dispatcher = new ConnectionImpl.Dispatcher() {
             @Override
             public boolean dispatch(MessageMediator messageMediator) {
-                mediators.add( messageMediator );
+                mediators.add(messageMediator);
                 return false;
             }
         };
@@ -171,7 +155,7 @@ public class TransportTestBase {
     protected void readFromSocketWithoutChannelAndDispatch(byte[] bytes) {
         socketChannel = null;
         orbData.useSelectThread = false;
-        socket.inputStream = new ByteArrayInputStream( bytes );
+        socket.inputStream = new ByteArrayInputStream(bytes);
         connection = new ConnectionImpl(orb, acceptor, socket);
         connection.setConnectionCache(connectionCache);
     }
@@ -380,13 +364,15 @@ public class TransportTestBase {
         }
 
         protected void setNumBytesToWrite(int... numBytesToWrite) {
-            for (int i : numBytesToWrite)
+            for (int i : numBytesToWrite) {
                 this.numBytesToWrite.add(i);
+            }
         }
 
         public void setNumBytesToRead(int... numBytesToRead) {
-            for (int i : numBytesToRead)
+            for (int i : numBytesToRead) {
                 this.numBytesToRead.add(i);
+            }
         }
 
         protected void enqueData(byte... dataToBeRead) {
@@ -418,15 +404,20 @@ public class TransportTestBase {
 
         @Override
         protected void implConfigureBlocking(boolean block) throws IOException {
-            if (failConfigureBlocking)
+            if (failConfigureBlocking) {
                 throw new IOException("Test failure to configure blocking");
+            }
         }
 
         @Override
         public int read(ByteBuffer dst) throws IOException {
-            if (endOfInput) return -1;
+            if (endOfInput) {
+                return -1;
+            }
             int numBytesToRead = Math.min(getNumBytesToRead(), Math.min(dataSize(), bufferCapacity(dst)));
-            if (numBytesToRead == 0) return 0;
+            if (numBytesToRead == 0) {
+                return 0;
+            }
 
             dst.put(readableData, readPos, numBytesToRead);
             readPos += numBytesToRead;
@@ -444,7 +435,6 @@ public class TransportTestBase {
         protected byte[] getDataWritten() {
             return dataWritten;
         }
-
 
         public void setEndOfInput() {
             endOfInput = true;
@@ -534,8 +524,9 @@ public class TransportTestBase {
 
         @Override
         public void registerForEvent(EventHandler eventHandler) {
-            if (eventHandler instanceof Work)
+            if (eventHandler instanceof Work) {
                 workQueue.addWork((Work) eventHandler);
+            }
         }
 
         @Override
@@ -574,9 +565,11 @@ public class TransportTestBase {
         public SocketChannel getChannel() {
             return socketChannel;
         }
+
         public InputStream getInputStream() throws IOException {
             return inputStream;
         }
+
         public OutputStream getOutputStream() throws IOException {
             return outputStream;
         }
@@ -594,6 +587,7 @@ public class TransportTestBase {
             readParameters(messageMediator.getInputObject());
         }
 
-        public void readParameters( CDRInputObject input ) {}
+        public void readParameters(CDRInputObject input) {
+        }
     }
 }

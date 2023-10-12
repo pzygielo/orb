@@ -26,8 +26,7 @@ import java.io.IOException;
  * double dispatch when processing the various
  * concrete message types found in this package.
  */
-public interface MessageHandler
-{
+public interface MessageHandler {
     //
     // REVISIT - These should not throw IOException.
     //           Should be handled internally.
@@ -35,6 +34,7 @@ public interface MessageHandler
     /**
      * Used for message types for which we don't have concrete classes, yet,
      * such as CloseConnection and MessageError, as well as unknown types.
+     *
      * @param header Message to handle
      * @throws IOException If an IO error occurs
      */
@@ -42,26 +42,35 @@ public interface MessageHandler
 
     // Request
     void handleInput(RequestMessage_1_0 header) throws IOException;
+
     void handleInput(RequestMessage_1_1 header) throws IOException;
+
     void handleInput(RequestMessage_1_2 header) throws IOException;
 
     // Reply
-    void handleInput(ReplyMessage_1_0 header) throws IOException; 
+    void handleInput(ReplyMessage_1_0 header) throws IOException;
+
     void handleInput(ReplyMessage_1_1 header) throws IOException;
-    void handleInput(ReplyMessage_1_2 header) throws IOException; 
+
+    void handleInput(ReplyMessage_1_2 header) throws IOException;
 
     // LocateRequest
     void handleInput(LocateRequestMessage_1_0 header) throws IOException;
+
     void handleInput(LocateRequestMessage_1_1 header) throws IOException;
+
     void handleInput(LocateRequestMessage_1_2 header) throws IOException;
 
     // LocateReply
     void handleInput(LocateReplyMessage_1_0 header) throws IOException;
+
     void handleInput(LocateReplyMessage_1_1 header) throws IOException;
+
     void handleInput(LocateReplyMessage_1_2 header) throws IOException;
 
     // Fragment
     void handleInput(FragmentMessage_1_1 header) throws IOException;
+
     void handleInput(FragmentMessage_1_2 header) throws IOException;
 
     // CancelRequest

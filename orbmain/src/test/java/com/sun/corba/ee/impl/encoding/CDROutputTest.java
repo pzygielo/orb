@@ -21,7 +21,6 @@ package com.sun.corba.ee.impl.encoding;
 
 import com.sun.corba.ee.impl.corba.AnyImpl;
 import com.sun.corba.ee.impl.corba.TypeCodeImpl;
-import com.sun.corba.ee.impl.io.ValueUtility;
 import com.sun.corba.ee.spi.orb.ORB;
 import com.sun.corba.ee.spi.orb.ORBVersionFactory;
 import org.junit.Test;
@@ -38,13 +37,12 @@ import static org.junit.Assert.assertEquals;
 
 public class CDROutputTest extends EncodingTestBase {
 
-
     @Test
     public void whenCDROutputObjectCreated_canWriteBoolean() throws IOException {
         getOutputObject().write_boolean(false);
         getOutputObject().write_boolean(true);
 
-        expectByteArray(new byte[]{0, 1});
+        expectByteArray(new byte[] { 0, 1 });
     }
 
     @Test
@@ -109,14 +107,14 @@ public class CDROutputTest extends EncodingTestBase {
         getOutputObject().write_longlong(1099520016647L);
         getOutputObject().write_ulonglong(1099511628034L);
 
-        expectByteArray(0x04, PAD,  FF, (byte) 0xf2,
-                       0x00, 0x03,      // short
-                       PAD, PAD,
-                       0, 1, 2, (byte) 0x83,      // long1
-                       FF, FF, (byte) 0xfd, 0x71, // long2
-                       PAD, PAD, PAD, PAD,
-                       0, 0, 1, 0, 0, (byte) 0x80, 1, 7,  // longlong1
-                       0, 0, 1, 0, 0, 0,           1, 2);  // ulonglong2
+        expectByteArray(0x04, PAD, FF, (byte) 0xf2,
+                        0x00, 0x03,      // short
+                        PAD, PAD,
+                        0, 1, 2, (byte) 0x83,      // long1
+                        FF, FF, (byte) 0xfd, 0x71, // long2
+                        PAD, PAD, PAD, PAD,
+                        0, 0, 1, 0, 0, (byte) 0x80, 1, 7,  // longlong1
+                        0, 0, 1, 0, 0, 0, 1, 2);  // ulonglong2
     }
 
     @Test
@@ -129,7 +127,7 @@ public class CDROutputTest extends EncodingTestBase {
 
     @Test
     public void can_write_float_arrays() {
-        getOutputObject().write_float_array(new float[]{1, .0625f}, 0, 2);
+        getOutputObject().write_float_array(new float[] { 1, .0625f }, 0, 2);
 
         expectByteArray(0x3f, 0x80, 0, 0,
                         0x3d, 0x80, 0, 0);
@@ -137,11 +135,11 @@ public class CDROutputTest extends EncodingTestBase {
 
     @Test
     public void can_write_double_arrays() {
-        getOutputObject().write_double_array(new double[]{0.25, 2}, 0, 2);
+        getOutputObject().write_double_array(new double[] { 0.25, 2 }, 0, 2);
 
         expectByteArray(PAD, PAD, PAD, PAD,
-                0x3f, 0xd0, 0, 0, 0, 0, 0, 0,
-                0x40, 0, 0, 0, 0, 0, 0, 0);
+                        0x3f, 0xd0, 0, 0, 0, 0, 0, 0,
+                        0x40, 0, 0, 0, 0, 0, 0, 0);
     }
 
     @Test
@@ -188,7 +186,7 @@ public class CDROutputTest extends EncodingTestBase {
         getOutputObject().write_wstring("This works");
 
         expectByteArray(0, 0, 0, 11,
-                0, 'T', 0, 'h', 0, 'i', 0, 's', 0, ' ', 0, 'w', 0, 'o', 0, 'r', 0, 'k', 0, 's', 0, 0);
+                        0, 'T', 0, 'h', 0, 'i', 0, 's', 0, ' ', 0, 'w', 0, 'o', 0, 'r', 0, 'k', 0, 's', 0, 0);
     }
 
     @Test
@@ -216,14 +214,14 @@ public class CDROutputTest extends EncodingTestBase {
 
     @Test
     public void canWriteBooleanArray() {
-        getOutputObject().write_boolean_array(new boolean[]{true, true, false, true, false}, 0, 4);
+        getOutputObject().write_boolean_array(new boolean[] { true, true, false, true, false }, 0, 4);
 
         expectByteArray(1, 1, 0, 1);
     }
 
     @Test
     public void canWriteOctetArray() {
-        getOutputObject().write_octet_array(new byte[]{2, -3, 6, 2}, 0, 4);
+        getOutputObject().write_octet_array(new byte[] { 2, -3, 6, 2 }, 0, 4);
 
         expectByteArray(2, -3, 6, 2);
     }
@@ -231,9 +229,9 @@ public class CDROutputTest extends EncodingTestBase {
     @Test
     public void writingEmptyOctetArray_doesNotDoEightByteAlign() {
         getOutputObject().setHeaderPadding(true);
-        getOutputObject().write_octet_array(new byte[]{}, 0, 0);
+        getOutputObject().write_octet_array(new byte[] {}, 0, 0);
 
-        expectByteArray( new byte[0] );
+        expectByteArray(new byte[0]);
     }
 
     @Test(expected = BAD_PARAM.class)
@@ -243,56 +241,56 @@ public class CDROutputTest extends EncodingTestBase {
 
     @Test
     public void canWriteShortArray() {
-        getOutputObject().write_short_array(new short[]{-3, 1, 515, -1}, 1, 3);
+        getOutputObject().write_short_array(new short[] { -3, 1, 515, -1 }, 1, 3);
 
         expectByteArray(0, 1, 2, 3, -1, -1);
     }
 
     @Test
     public void canWriteUShortArray() {
-        getOutputObject().write_short_array(new short[] {-3, 1, 515, -1}, 0, 2);
+        getOutputObject().write_short_array(new short[] { -3, 1, 515, -1 }, 0, 2);
 
         expectByteArray(FF, 0xfd, 0, 1);
     }
 
     @Test
     public void canWriteLongArray() {
-        getOutputObject().write_long_array(new int[]{66051, -738}, 0, 2);
+        getOutputObject().write_long_array(new int[] { 66051, -738 }, 0, 2);
 
         expectByteArray(0, 1, 2, 3, -1, -1, -3, 30);
     }
 
     @Test
     public void canWriteULongArray() {
-        getOutputObject().write_ulong_array(new int[]{66051, -738}, 0, 2);
+        getOutputObject().write_ulong_array(new int[] { 66051, -738 }, 0, 2);
 
         expectByteArray(0, 1, 2, 3, -1, -1, -3, 30);
     }
 
     @Test
     public void canWriteLongLongArray() {
-        getOutputObject().write_longlong_array(new long[]{1099511628039L, -532}, 0, 2);
+        getOutputObject().write_longlong_array(new long[] { 1099511628039L, -532 }, 0, 2);
 
         expectByteArray(PAD, PAD, PAD, PAD, 0, 0, 1, 0, 0, 0, 1, 7, -1, -1, -1, -1, -1, -1, -3, -20);
     }
 
     @Test
     public void canWriteULongLongArray() {
-        getOutputObject().write_ulonglong_array(new long[]{1099511628039L, -532}, 0, 2);
+        getOutputObject().write_ulonglong_array(new long[] { 1099511628039L, -532 }, 0, 2);
 
         expectByteArray(PAD, PAD, PAD, PAD, 0, 0, 1, 0, 0, 0, 1, 7, -1, -1, -1, -1, -1, -1, -3, -20);
     }
 
     @Test
     public void canWriteCharArray() {
-        getOutputObject().write_char_array(new char[]{'b', 'u', 'c', 'k', 'l', 'e', 'u', 'p'}, 0, 8);
+        getOutputObject().write_char_array(new char[] { 'b', 'u', 'c', 'k', 'l', 'e', 'u', 'p' }, 0, 8);
 
         expectByteArray('b', 'u', 'c', 'k', 'l', 'e', 'u', 'p');
     }
 
     @Test
     public void canWriteWCharArray() {
-        getOutputObject().write_wchar_array(new char[]{'b', 'u', 't'}, 0, 3);
+        getOutputObject().write_wchar_array(new char[] { 'b', 'u', 't' }, 0, 3);
 
         expectByteArray(4, FE, FF, 0, 'b', 4, FE, FF, 0, 'u', 4, FE, FF, 0, 't');
     }
@@ -314,11 +312,11 @@ public class CDROutputTest extends EncodingTestBase {
     @Test
     public void canWriteSerializableTypeCode() {
         String KNOWN_TYPE_CODE = "0000001D000000CE0000000000000067524D493A636F6D2E73756E2E636F7262612E65652E696D706C" +
-                                 "2E656E636F64696E672E4344524F7574707574546573745C553030323453657269616C697A65644461" +
-                                 "74613A323837394346383133394444433741463A393031343243313746444330444632410000000000" +
-                                 "3C636F6D2E73756E2E636F7262612E65652E696D706C2E656E636F64696E672E4344524F7574707574" +
-                                 "546573742453657269616C697A65644461746100000000000000000000000001000000066142797465" +
-                                 "0000000000000A0000";
+                "2E656E636F64696E672E4344524F7574707574546573745C553030323453657269616C697A65644461" +
+                "74613A323837394346383133394444433741463A393031343243313746444330444632410000000000" +
+                "3C636F6D2E73756E2E636F7262612E65652E696D706C2E656E636F64696E672E4344524F7574707574" +
+                "546573742453657269616C697A65644461746100000000000000000000000001000000066142797465" +
+                "0000000000000A0000";
         TypeCode typeCode = AnyImpl.createTypeCodeForClass(SerializedData.class, getOrb());
         getOutputObject().write_TypeCode(typeCode);
 
@@ -331,10 +329,10 @@ public class CDROutputTest extends EncodingTestBase {
 
     private byte[] hexStringToByteArray(String s) {
         int len = s.length();
-        byte[] data = new byte[len/2];
-        for (int i = 0; i < len; i+=2) {
-            data[i/2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-                               + Character.digit(s.charAt(i+1), 16));
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+                    + Character.digit(s.charAt(i + 1), 16));
         }
         return data;
     }
@@ -343,7 +341,7 @@ public class CDROutputTest extends EncodingTestBase {
     public void canWriteObjRefTypeCode() {
         getOutputObject().write_TypeCode(new TypeCodeImpl((ORB) getOutputObject().orb(), TCKind._tk_objref, "aa", "bb"));
 
-        expectByteArray(0,0,0,14, 0,0,0,19, 0,0,0,0, 0,0,0,3, 'a','a',0,0, 0,0,0,3, 'b','b',0 );
+        expectByteArray(0, 0, 0, 14, 0, 0, 0, 19, 0, 0, 0, 0, 0, 0, 0, 3, 'a', 'a', 0, 0, 0, 0, 0, 3, 'b', 'b', 0);
     }
 
     @Test
@@ -383,9 +381,9 @@ public class CDROutputTest extends EncodingTestBase {
 
     @Test
     public void WhenEncapsOutputStreamClosedFirst_sharedBuffersAreOnlyReleasedOnce() throws IOException {
-        EncapsOutputStream os = new EncapsOutputStream( getOrb() );
+        EncapsOutputStream os = new EncapsOutputStream(getOrb());
         os.write_ulong(123);
-        InputStream is = (InputStream)(os.create_input_stream() );
+        InputStream is = (InputStream) (os.create_input_stream());
         assertEquals(123, is.read_ulong());
         os.close();
         is.close();
@@ -395,9 +393,9 @@ public class CDROutputTest extends EncodingTestBase {
 
     @Test
     public void WhenEncapsInputStreamClosedFirst_sharedBuffersAreOnlyReleasedOnce() throws IOException {
-        EncapsOutputStream os = new EncapsOutputStream( getOrb() );
+        EncapsOutputStream os = new EncapsOutputStream(getOrb());
         os.write_ulong(123);
-        InputStream is = (InputStream)(os.create_input_stream() );
+        InputStream is = (InputStream) (os.create_input_stream());
         assertEquals(123, is.read_ulong());
         is.close();
         os.close();
@@ -407,9 +405,9 @@ public class CDROutputTest extends EncodingTestBase {
 
     @Test
     public void WhenTypeCodeOutputStreamClosedFirst_sharedBuffersAreOnlyReleasedOnce() throws IOException {
-        TypeCodeOutputStream os = new TypeCodeOutputStream( getOrb() );
+        TypeCodeOutputStream os = new TypeCodeOutputStream(getOrb());
         os.write_ulong(123);
-        InputStream is = (InputStream)(os.create_input_stream() );
+        InputStream is = (InputStream) (os.create_input_stream());
         assertEquals(123, is.read_ulong());
         os.close();
         is.close();
@@ -419,9 +417,9 @@ public class CDROutputTest extends EncodingTestBase {
 
     @Test
     public void WhenTypeCodeInputStreamClosedFirst_sharedBuffersAreOnlyReleasedOnce() throws IOException {
-        TypeCodeOutputStream os = new TypeCodeOutputStream( getOrb() );
+        TypeCodeOutputStream os = new TypeCodeOutputStream(getOrb());
         os.write_ulong(123);
-        InputStream is = (InputStream)(os.create_input_stream() );
+        InputStream is = (InputStream) (os.create_input_stream());
         assertEquals(123, is.read_ulong());
         is.close();
         os.close();

@@ -19,18 +19,19 @@
 
 package com.sun.corba.ee.impl.transport;
 
-import java.nio.ByteBuffer;
-import com.sun.corba.ee.spi.orb.ORB;
-import com.sun.corba.ee.spi.transport.ByteBufferPool;
 import com.sun.corba.ee.spi.logging.ORBUtilSystemException;
 import com.sun.corba.ee.spi.misc.ORBConstants;
+import com.sun.corba.ee.spi.orb.ORB;
+import com.sun.corba.ee.spi.transport.ByteBufferPool;
+
+import java.nio.ByteBuffer;
 
 /**
  * @author Charlie Hunt
  */
 public class ByteBufferPoolImpl implements ByteBufferPool {
     final private static ORBUtilSystemException wrapper =
-        ORBUtilSystemException.self ;
+            ORBUtilSystemException.self;
 
     private ByteBuffer byteBufferSlab;
     final private boolean useDirectBuffers;
@@ -53,7 +54,9 @@ public class ByteBufferPoolImpl implements ByteBufferPool {
         }
     }
 
-    /** Return a ByteBuffer of the requested size. */
+    /**
+     * Return a ByteBuffer of the requested size.
+     */
     public ByteBuffer getByteBuffer(int size) {
         if (useDirectBuffers) {
             if (size > byteBufferSlabSize) {
@@ -66,18 +69,17 @@ public class ByteBufferPoolImpl implements ByteBufferPool {
                         (byteBufferSlab.capacity() - byteBufferSlab.limit() < size)) {
                     byteBufferSlab = allocateDirectByteBufferSlab();
                 }
-                
+
                 byteBufferSlab.limit(byteBufferSlab.position() + size);
                 ByteBuffer view = byteBufferSlab.slice();
                 byteBufferSlab.position(byteBufferSlab.limit());
-                
+
                 return view;
             }
         } else {
             return ByteBuffer.allocate(size);
         }
     }
-
 
     public void releaseByteBuffer(ByteBuffer buffer) {
         // nothing to do here other than help the garbage collector
@@ -86,14 +88,14 @@ public class ByteBufferPoolImpl implements ByteBufferPool {
         // buffer = null;
     }
 
-
     // REVISIT - Active ByteBuffers are currently not tracked.
+
     /**
      * Get a count of the outstanding allocated DirectByteBuffers.
      * (Those allocated and have not been returned to the pool).
      */
     public int activeCount() {
-         return 0;
+        return 0;
     }
 
     /**
@@ -111,8 +113,8 @@ public class ByteBufferPoolImpl implements ByteBufferPool {
         if (size > orb.getORBData().getMaxReadByteBufferSizeThreshold()) {
             if (minimumSize > orb.getORBData().getMaxReadByteBufferSizeThreshold()) {
                 throw wrapper.maximumReadByteBufferSizeExceeded(
-                      orb.getORBData().getMaxReadByteBufferSizeThreshold(), size, 
-                      ORBConstants.MAX_READ_BYTE_BUFFER_SIZE_THRESHOLD_PROPERTY);
+                        orb.getORBData().getMaxReadByteBufferSizeThreshold(), size,
+                        ORBConstants.MAX_READ_BYTE_BUFFER_SIZE_THRESHOLD_PROPERTY);
             } else {
                 // minimumSize is greater than 1/2 of size, and less than or 
                 // equal to max read byte buffer size threshold. So, just 
@@ -120,16 +122,16 @@ public class ByteBufferPoolImpl implements ByteBufferPool {
                 size = minimumSize;
             }
         }
-        
+
         ByteBuffer newByteBuffer = getByteBuffer(size);
-        
+
         // copy oldByteBuffer into newByteBuffer
         newByteBuffer.put(oldByteBuffer);
-        
+
         return newByteBuffer;
     }
 
-    /** 
+    /**
      * Allocate a DirectByteBuffer slab.
      */
     private ByteBuffer allocateDirectByteBufferSlab() {

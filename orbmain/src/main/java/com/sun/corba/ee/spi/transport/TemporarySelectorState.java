@@ -25,7 +25,6 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 
 /**
- *
  * @author Charlie Hunt
  */
 
@@ -54,24 +53,24 @@ public interface TemporarySelectorState {
      *                     SelectableChannel to become ready; must be greater
      *                     than 0 in value
      *
-     * @throws  IOException
+     * @throws IOException
      *          If an I/O error occurs
      *
-     * @throws  java.nio.channels.ClosedSelectorException
+     * @throws java.nio.channels.ClosedSelectorException
      *          If this theSelector is closed
      *
-     * @throws  IllegalArgumentException
+     * @throws IllegalArgumentException
      *          If the value of the theTimeout argument is not greater than 0
      *
-     * @return  The number of keys, possibly zero, whose ready-operation sets
+     * @return The number of keys, possibly zero, whose ready-operation sets
      *          was updated.
      */
     public int select(Selector theSelector, long theTimeout) throws IOException;
 
-   /**
+    /**
      * Registers theSelectableChannel with theSelector, setting theSelection to
      * the key returned by the registeration.
-     * 
+     *
      * @param  theSelector
      *         The selector with which this channel is to be registered
      *
@@ -81,33 +80,33 @@ public interface TemporarySelectorState {
      * @param  theOps
      *         The interest set for the resulting key
      *
-     * @throws  java.nio.channels.ClosedChannelException
+     * @throws java.nio.channels.ClosedChannelException
      *          If theSelectableChannel is closed
      *
-     * @throws  java.nio.channels.IllegalBlockingModeException
+     * @throws java.nio.channels.IllegalBlockingModeException
      *          If theSelectableChannel is in blocking mode
      *
-     * @throws  java.nio.channels.IllegalSelectorException
+     * @throws java.nio.channels.IllegalSelectorException
      *          If thSelectableChannel was not created by the same provider
      *          as theSelector
      *
-     * @throws  java.nio.channels.CancelledKeyException
+     * @throws java.nio.channels.CancelledKeyException
      *          If theSelectableChannel is currently registered with theSelector
      *          but the corresponding key has already been cancelled
      *
-     * @throws  IllegalArgumentException
+     * @throws IllegalArgumentException
      *          If a bit in <code>theOps</code> does not correspond to an operation
      *          that is supported by theSelectableChannel, that is, if <code>set &amp;
      *          ~theSeletableChannel.validOps() != 0</code>
      *
-     * @return  A key representing the registration of theSelectableChannel with
+     * @return A key representing the registration of theSelectableChannel with
      *         theSelector.
      */
     public SelectionKey registerChannel(Selector theSelector,
                                         SelectableChannel theSelectableChannel,
                                         int theOps) throws IOException;
 
-   /**
+    /**
      * Requests that the registration of a SelectableChannel with theSelector, 
      * theSelectionKey be cancelled and flushed from theSelector.  Upon return
      * theSelectionKey will be invalid and will have been flushed from
@@ -130,14 +129,14 @@ public interface TemporarySelectorState {
      *         A key representing the registration of theSelectableChannel with
      *         theSelector
      * @throws IOException if an error occurred
-     * @return  TemporarySelectorState, the state of the TemporarySelector after
+     * @return TemporarySelectorState, the state of the TemporarySelector after
      *          invoking this method.
      */
     public TemporarySelectorState cancelKeyAndFlushSelector(Selector theSelector,
                                                             SelectionKey theSelectionKey)
-                                                            throws IOException;
+            throws IOException;
 
-   /**
+    /**
      * Closes theSelector.
      *
      * <p> If a thread is currently blocked in one of theSelector's selection
@@ -157,15 +156,15 @@ public interface TemporarySelectorState {
      *
      * @param  theSelector
      *         The selector with which this channel is to be registered
-     * @throws  IOException
+     * @throws IOException
      *          If an I/O error occurs
      *
-     * @return  TemporarySelectorState, the state of the TemporarySelector after
+     * @return TemporarySelectorState, the state of the TemporarySelector after
      *          invoking this method.
      */
     public TemporarySelectorState close(Selector theSelector) throws IOException;
 
-   /**
+    /**
      * Remove theSelectionKey from the theSelector's selected key set.
      *
      * @param  theSelector
@@ -177,13 +176,13 @@ public interface TemporarySelectorState {
      *         theSelector and the key should be removed key removed from the
      *         selected key set.
      *
-     * @return  TemporarySelectorState, the state of the TemporarySelector after
+     * @return TemporarySelectorState, the state of the TemporarySelector after
      *          invoking this method.
      *
-     * @throws  IOException
+     * @throws IOException
      *          If this selector is closed
      */
     public TemporarySelectorState removeSelectedKey(Selector theSelector,
                                                     SelectionKey theSelectionKey)
-                                                    throws IOException;
+            throws IOException;
 }

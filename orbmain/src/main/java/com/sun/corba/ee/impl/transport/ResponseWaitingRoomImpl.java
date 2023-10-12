@@ -19,6 +19,19 @@
 
 package com.sun.corba.ee.impl.transport;
 
+import com.sun.corba.ee.impl.encoding.CDRInputObject;
+import com.sun.corba.ee.impl.misc.ORBUtility;
+import com.sun.corba.ee.impl.protocol.giopmsgheaders.LocateReplyOrReplyMessage;
+import com.sun.corba.ee.spi.logging.ORBUtilSystemException;
+import com.sun.corba.ee.spi.misc.ORBConstants;
+import com.sun.corba.ee.spi.orb.ORB;
+import com.sun.corba.ee.spi.protocol.MessageMediator;
+import com.sun.corba.ee.spi.trace.Transport;
+import com.sun.corba.ee.spi.transport.Connection;
+import com.sun.corba.ee.spi.transport.ResponseWaitingRoom;
+import org.glassfish.pfl.tf.spi.annotation.InfoMethod;
+import org.omg.CORBA.SystemException;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,36 +39,17 @@ import java.util.Map;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.omg.CORBA.CompletionStatus;
-import org.omg.CORBA.SystemException;
-
-
-import com.sun.corba.ee.spi.orb.ORB;
-import com.sun.corba.ee.spi.protocol.MessageMediator;
-import com.sun.corba.ee.spi.transport.Connection;
-import com.sun.corba.ee.spi.transport.ResponseWaitingRoom;
-
-import com.sun.corba.ee.impl.encoding.CDRInputObject;
-import com.sun.corba.ee.spi.logging.ORBUtilSystemException;
-import com.sun.corba.ee.spi.misc.ORBConstants;
-import com.sun.corba.ee.impl.misc.ORBUtility;
-import com.sun.corba.ee.impl.protocol.giopmsgheaders.LocateReplyOrReplyMessage;
-import com.sun.corba.ee.spi.trace.Transport;
-import org.glassfish.pfl.tf.spi.annotation.InfoMethod;
-
 /**
  * @author Harold Carr
  */
 @Transport
 public class ResponseWaitingRoomImpl
-    implements
-        ResponseWaitingRoom
-{
+        implements
+        ResponseWaitingRoom {
     final private static ORBUtilSystemException wrapper =
-        ORBUtilSystemException.self ;
+            ORBUtilSystemException.self;
 
-    final static class OutCallDesc
-    {
+    final static class OutCallDesc {
         MessageMediator messageMediator;
         SystemException exception;
         CDRInputObject inputObject;
@@ -68,44 +62,40 @@ public class ResponseWaitingRoomImpl
     final private ORB orb;
     final private Connection connection;
 
-
-    public ResponseWaitingRoomImpl(ORB orb, Connection connection)
-    {
+    public ResponseWaitingRoomImpl(ORB orb, Connection connection) {
         this.orb = orb;
         this.connection = connection;
-        this.out_calls = 
-               Collections.synchronizedMap(new HashMap<Integer, OutCallDesc>());
+        this.out_calls =
+                Collections.synchronizedMap(new HashMap<Integer, OutCallDesc>());
     }
 
     @Transport
-    public void registerWaiter(MessageMediator messageMediator)
-    {
-        display( "messageMediator request ID",
-            messageMediator.getRequestId() ) ;
-        display( "messageMediator operation name",
-            messageMediator.getOperationName() ) ;
+    public void registerWaiter(MessageMediator messageMediator) {
+        display("messageMediator request ID",
+                messageMediator.getRequestId());
+        display("messageMediator operation name",
+                messageMediator.getOperationName());
 
         Integer requestId = messageMediator.getRequestId();
-        
+
         OutCallDesc call = new OutCallDesc();
         call.messageMediator = messageMediator;
         OutCallDesc exists = out_calls.put(requestId, call);
         if (exists != null) {
             wrapper.duplicateRequestIdsInResponseWaitingRoom(
-                       ORBUtility.operationNameAndRequestId(
-                           (MessageMediator)exists.messageMediator),
-                       ORBUtility.operationNameAndRequestId(messageMediator));
+                    ORBUtility.operationNameAndRequestId(
+                            (MessageMediator) exists.messageMediator),
+                    ORBUtility.operationNameAndRequestId(messageMediator));
         }
     }
 
     @Transport
-    public void unregisterWaiter(MessageMediator mediator)
-    {
+    public void unregisterWaiter(MessageMediator mediator) {
         MessageMediator messageMediator = mediator;
-        display( "messageMediator request ID",
-            messageMediator.getRequestId() ) ;
-        display( "messageMediator operation name",
-            messageMediator.getOperationName() ) ;
+        display("messageMediator request ID",
+                messageMediator.getRequestId());
+        display("messageMediator operation name",
+                messageMediator.getOperationName());
 
         Integer requestId = messageMediator.getRequestId();
 
@@ -115,31 +105,31 @@ public class ResponseWaitingRoomImpl
     @Transport
     public CDRInputObject waitForResponse(MessageMediator messageMediator) {
         CDRInputObject returnStream = null;
-        
-        display( "messageMediator request ID",
-            messageMediator.getRequestId() ) ;
-        display( "messageMediator operation name",
-            messageMediator.getOperationName() ) ;
-        
+
+        display("messageMediator request ID",
+                messageMediator.getRequestId());
+        display("messageMediator operation name",
+                messageMediator.getOperationName());
+
         Integer requestId = messageMediator.getRequestId();
-        
+
         if (messageMediator.isOneWay()) {
             // The waiter is removed in releaseReply in the same
             // way as a normal request.
-            display( "Oneway request: not waiting") ;
+            display("Oneway request: not waiting");
             return null;
         }
-        
+
         OutCallDesc call = out_calls.get(requestId);
         if (call == null) {
-            throw wrapper.nullOutCall() ;
+            throw wrapper.nullOutCall();
         }
 
         // Value from ORBData is in milliseconds, will convert it nanoseconds
         // to use it with Condition.awaitNanos()
         long waitForResponseTimeout =
                 orb.getORBData().getWaitForResponseTimeout() * 1000 * 1000;
-        
+
         try {
             call.lock.lock();
             while (call.inputObject == null && call.exception == null) {
@@ -147,21 +137,21 @@ public class ResponseWaitingRoomImpl
                 // The ReaderThread reads in the reply IIOP message
                 // and signals us.
                 try {
-                    display( "Waiting for response..." ) ;
-                    
+                    display("Waiting for response...");
+
                     waitForResponseTimeout =
                             call.condition.awaitNanos(waitForResponseTimeout);
                     if (call.inputObject == null && call.exception == null) {
                         if (waitForResponseTimeout > 0) {
                             // it's a "spurious wait wakeup", need to
                             // continue to wait for a response
-                            display( "Spurious wakeup, continuing to wait for ",
-                                waitForResponseTimeout/1000000 );
+                            display("Spurious wakeup, continuing to wait for ",
+                                    waitForResponseTimeout / 1000000);
                         } else {
                             // timed out waiting for data
                             call.exception =
-                                wrapper.communicationsTimeoutWaitingForResponse(
-                                orb.getORBData().getWaitForResponseTimeout());
+                                    wrapper.communicationsTimeoutWaitingForResponse(
+                                            orb.getORBData().getWaitForResponseTimeout());
                             // REVISIT:
                             // Normally the inputObject or exception is
                             // created from the response stream.
@@ -171,50 +161,54 @@ public class ResponseWaitingRoomImpl
                                     ORBConstants.JAVA_ENC_VERSION);
                         }
                     }
-                } catch (InterruptedException ie) {};
+                } catch (InterruptedException ie) {
+                }
+                ;
             }
             if (call.exception != null) {
-                display( "Exception from call", call.exception ) ;
+                display("Exception from call", call.exception);
                 throw call.exception;
             }
-            
+
             returnStream = call.inputObject;
         } finally {
             call.lock.unlock();
         }
-        
+
         // REVISIT -- exceptions from unmarshaling code will
         // go up through this client thread!
-        
+
         if (returnStream != null) {
             // On fragmented streams the header MUST be unmarshaled here
             // (in the client thread) in case it blocks.
             // If the header was already unmarshaled, this won't
             // do anything
             // REVISIT: cast - need interface method.
-            ((CDRInputObject)returnStream).unmarshalHeader();
+            ((CDRInputObject) returnStream).unmarshalHeader();
         }
-        
+
         return returnStream;
     }
 
     @InfoMethod
-    private void display( String msg ) { }
+    private void display(String msg) {
+    }
 
     @InfoMethod
-    private void display( String msg, int value ) { }
+    private void display(String msg, int value) {
+    }
 
     @InfoMethod
-    private void display( String msg, Object value ) { }
+    private void display(String msg, Object value) {
+    }
 
     @Transport
-    public void responseReceived(CDRInputObject is)
-    {
+    public void responseReceived(CDRInputObject is) {
         CDRInputObject inputObject = (CDRInputObject) is;
         LocateReplyOrReplyMessage header = (LocateReplyOrReplyMessage)
-            inputObject.getMessageHeader();
-        display( "requestId", header.getRequestId()) ;
-        display( "header", header ) ;
+                inputObject.getMessageHeader();
+        display("requestId", header.getRequestId());
+        display("header", header);
 
         OutCallDesc call = out_calls.get(header.getRequestId());
 
@@ -227,7 +221,7 @@ public class ResponseWaitingRoomImpl
         // the ReaderThread gives it the last fragment and gets to the
         // out_calls.get line, then it will also be null, so just return;
         if (call == null) {
-            display( "No waiter" ) ;
+            display("No waiter");
             return;
         }
 
@@ -236,17 +230,17 @@ public class ResponseWaitingRoomImpl
         // The thread signalled will remove outcall descriptor if appropriate.
         // Otherwise, it'll be removed when last fragment for it has been put on
         // BufferManagerRead's queue.
-        
+
         try {
             call.lock.lock();
             MessageMediator messageMediator =
-                           (MessageMediator)call.messageMediator;
+                    (MessageMediator) call.messageMediator;
 
-            display( "Notifying waiters") ;
-            display( "messageMediator request ID",
-                messageMediator.getRequestId() ) ;
-            display( "messageMediator operation name",
-                messageMediator.getOperationName() ) ;
+            display("Notifying waiters");
+            display("messageMediator request ID",
+                    messageMediator.getRequestId());
+            display("messageMediator operation name",
+                    messageMediator.getOperationName());
 
             messageMediator.setReplyHeader(header);
             messageMediator.setInputObject(is);
@@ -258,8 +252,7 @@ public class ResponseWaitingRoomImpl
         }
     }
 
-    public int numberRegistered()
-    {
+    public int numberRegistered() {
         return out_calls.size();
     }
 
@@ -277,7 +270,7 @@ public class ResponseWaitingRoomImpl
                 call = itr.next();
                 try {
                     call.lock.lock();
-                    ((MessageMediator)call.messageMediator).cancelRequest();
+                    ((MessageMediator) call.messageMediator).cancelRequest();
                     call.inputObject = null;
                     call.exception = systemException;
                     call.condition.signal();
@@ -288,8 +281,7 @@ public class ResponseWaitingRoomImpl
         }
     }
 
-    public MessageMediator getMessageMediator(int requestId)
-    {
+    public MessageMediator getMessageMediator(int requestId) {
         OutCallDesc call = out_calls.get(requestId);
         if (call == null) {
             // This can happen when getting early reply fragments for a

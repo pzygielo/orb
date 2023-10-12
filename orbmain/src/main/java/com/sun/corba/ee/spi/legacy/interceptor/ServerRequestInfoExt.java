@@ -19,7 +19,8 @@
 
 package com.sun.corba.ee.spi.legacy.interceptor;
 
-/** This extension is used to provide information about whether or not
+/**
+ * This extension is used to provide information about whether or not
  * the object to which the incoming request is dispatched is a name service
  * or not.  This is added to the implementation of the PortableInterceptor
  * ServerRequestInfo interface (see impl.interceptors.ServerRequestInfoImpl)
@@ -28,5 +29,5 @@ package com.sun.corba.ee.spi.legacy.interceptor;
  * @author ken
  */
 public interface ServerRequestInfoExt {
-    boolean isNameService() ;
+    boolean isNameService();
 }

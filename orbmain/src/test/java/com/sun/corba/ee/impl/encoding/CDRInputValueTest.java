@@ -30,19 +30,10 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Date;
 
-import static org.hamcrest.Matchers.arrayContaining;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 public class CDRInputValueTest extends ValueTestBase {
-
 
     @Test
     public void canReadStringValue() throws IOException {
@@ -118,7 +109,7 @@ public class CDRInputValueTest extends ValueTestBase {
         writeString(Enum1.strange.toString());
 
         Enum1 enum1 = readValueFromGeneratedBody(Enum1.class);
-        assertEquals( Enum1.strange, enum1);
+        assertEquals(Enum1.strange, enum1);
     }
 
     @Test
@@ -166,7 +157,7 @@ public class CDRInputValueTest extends ValueTestBase {
         writeInt(3);
         writeIndirectionTo(location);
 
-        setMessageBody( getGeneratedBody() );
+        setMessageBody(getGeneratedBody());
 
         Object object1 = getInputObject().read_value();
         Object object2 = getInputObject().read_value();
@@ -184,7 +175,7 @@ public class CDRInputValueTest extends ValueTestBase {
         writeInt(3);
         writeIndirectionTo(location);
 
-        setMessageBody( getGeneratedBody() );
+        setMessageBody(getGeneratedBody());
 
         Object object1 = getInputObject().read_value();
         Object object2 = getInputObject().read_value();
@@ -204,12 +195,12 @@ public class CDRInputValueTest extends ValueTestBase {
         writeInt(3);
         writeIndirectionTo(location);
 
-        setMessageBody( getGeneratedBody() );
+        setMessageBody(getGeneratedBody());
 
         Object object1 = getInputObject().read_value();
         Object object2 = getInputObject().read_value();
         assertSame(object1, object2);
-        assertEquals( 'x', ((Value1) object1).aChar);
+        assertEquals('x', ((Value1) object1).aChar);
     }
 
     @Test
@@ -265,7 +256,7 @@ public class CDRInputValueTest extends ValueTestBase {
         writeEndTag(-1);
 
         Value2 value2 = readValueFromGeneratedBody(Value2.class);
-        assertEquals(750,value2.aLong);
+        assertEquals(750, value2.aLong);
         assertEquals('x', value2.aValue.aChar);
         assertEquals(3, value2.aValue.anInt);
     }
@@ -309,7 +300,7 @@ public class CDRInputValueTest extends ValueTestBase {
         writeEndTag(-1);
 
         Value2 value2 = readValueFromGeneratedBody(Value2.class);
-        assertEquals(750,value2.aLong);
+        assertEquals(750, value2.aLong);
         assertEquals('x', value2.aValue.aChar);
         assertEquals(3, value2.aValue.anInt);
     }
@@ -322,7 +313,7 @@ public class CDRInputValueTest extends ValueTestBase {
 
         writeWchar_1_2('x');
 
-        setMessageBody( getGeneratedBody() );
+        setMessageBody(getGeneratedBody());
 
         Object object = getInputObject().read_value(Value1.REPID);
         assertTrue(object instanceof Value1);
@@ -334,7 +325,7 @@ public class CDRInputValueTest extends ValueTestBase {
     @Test
     public void canReadNullValueUsingDefaultFactory() throws IOException {
         writeNull();
-        setMessageBody( getGeneratedBody() );
+        setMessageBody(getGeneratedBody());
 
         assertNull(getInputObject().read_value(Value1.REPID));
     }
@@ -342,7 +333,7 @@ public class CDRInputValueTest extends ValueTestBase {
     @Test(expected = IndirectionException.class)
     public void whenIndirectionHasNoAntecedent_throwExceptionWhenUsingRepId() throws IOException {
         writeIndirectionTo(0);
-        setMessageBody( getGeneratedBody() );
+        setMessageBody(getGeneratedBody());
         getInputObject().read_value(Value1.REPID);
     }
 
@@ -359,13 +350,12 @@ public class CDRInputValueTest extends ValueTestBase {
 
         writeIndirectionTo(location);
 
-        setMessageBody( getGeneratedBody() );
+        setMessageBody(getGeneratedBody());
 
         Object object1 = getInputObject().read_value(Value1.REPID);
         Object object2 = getInputObject().read_value(Value1.REPID);
         assertSame(object1, object2);
     }
-
 
     @Test
     public void whenObjectImplementsReadResolve_resultingValueMatchesOriginal() throws Exception {
@@ -439,7 +429,6 @@ public class CDRInputValueTest extends ValueTestBase {
         Date date = readDateInstance(true);
         assertThat(date.getTime(), equalTo(MSEC));
     }
-    
 
     private Date readDateInstance(boolean defaultWriteObjectCalled) throws IOException {
         useStreamFormatVersion2();
@@ -500,7 +489,6 @@ public class CDRInputValueTest extends ValueTestBase {
         writeWchar_1_2('x');
         writeInt(3);
 
-
         writeDouble(12.0);
 
         CustomMarshalledValue value = readValueFromGeneratedBody(CustomMarshalledValue.class);
@@ -514,28 +502,28 @@ public class CDRInputValueTest extends ValueTestBase {
 
     @Test
     public void canReadValueWithCustomWriteMarshaling() throws IOException {
-      useStreamFormatVersion1();
-      writeValueTag(ONE_REPID_ID);
-      writeRepId(RepositoryId.createForJavaType(CustomWriteClass.class));
-      startCustomMarshalingFormat(true);
-      writeInt(73);
+        useStreamFormatVersion1();
+        writeValueTag(ONE_REPID_ID);
+        writeRepId(RepositoryId.createForJavaType(CustomWriteClass.class));
+        startCustomMarshalingFormat(true);
+        writeInt(73);
 
-      CustomWriteClass value = readValueFromGeneratedBody(CustomWriteClass.class);
+        CustomWriteClass value = readValueFromGeneratedBody(CustomWriteClass.class);
 
-      assertEquals(73, value.aPositiveValue);
+        assertEquals(73, value.aPositiveValue);
     }
 
     @Test
     public void canReadValueWithCustomReadMarshaling() throws IOException {
-      useStreamFormatVersion1();
-      writeValueTag(ONE_REPID_ID);
-      writeRepId(RepositoryId.createForJavaType(CustomReadClass.class));
-      startCustomMarshalingFormat(false);
-      writeInt(-73);
+        useStreamFormatVersion1();
+        writeValueTag(ONE_REPID_ID);
+        writeRepId(RepositoryId.createForJavaType(CustomReadClass.class));
+        startCustomMarshalingFormat(false);
+        writeInt(-73);
 
-      CustomReadClass value = readValueFromGeneratedBody(CustomReadClass.class);
+        CustomReadClass value = readValueFromGeneratedBody(CustomReadClass.class);
 
-      assertEquals(1, value.aPositiveValue);
+        assertEquals(1, value.aPositiveValue);
     }
 
     static final String CUSTOM_VALUE_REPID = RepositoryId.createForJavaType(CustomMarshalledValue.class);

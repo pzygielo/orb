@@ -19,13 +19,12 @@
 
 package com.sun.corba.ee.impl.misc;
 
-import com.sun.corba.ee.spi.orb.ORB;
-
 import com.sun.corba.ee.spi.logging.ORBUtilSystemException;
-
+import com.sun.corba.ee.spi.orb.ORB;
 import com.sun.corba.ee.spi.trace.Cdr;
 
-/** This is a hash table implementation that simultaneously maps key to value
+/**
+ * This is a hash table implementation that simultaneously maps key to value
  * and value to key.  It is used for marshalling and unmarshalling value types,
  * where it is necessary to track the correspondence between object instances
  * and their offsets in a stream.  It is also used for tracking indirections for
@@ -35,49 +34,49 @@ import com.sun.corba.ee.spi.trace.Cdr;
  * failures).  Also note that the same key (Object) may be stored with multiple
  * values (int offsets) due to the way readResolve works (see also GlassFish issue 1605).
  *
- * @since 1.1
- *
  * @author Ken Cavanaugh
+ * @since 1.1
  */
 @Cdr
 public class CacheTable<K> {
     private static final ORBUtilSystemException wrapper =
-        ORBUtilSystemException.self ;
+            ORBUtilSystemException.self;
 
     private class Entry<K> {
         private K key;
         private int val;
         private Entry<K> next;  // this chains the collision list of table "map"
         private Entry<K> rnext; // this chains the collision list of table "rmap"
+
         public Entry(K k, int v) {
             key = k;
             val = v;
             next = null;
             rnext = null;
-        } 
+        }
     }
 
     private boolean noReverseMap;
-    private String cacheType ;
+    private String cacheType;
 
     // size must be power of 2
-    private static final int INITIAL_SIZE = 64 ;
+    private static final int INITIAL_SIZE = 64;
     private static final int MAX_SIZE = 1 << 30;
-    private static final int INITIAL_THRESHHOLD = 48 ; 
+    private static final int INITIAL_THRESHHOLD = 48;
     private int size;
-    private int threshhold ;
+    private int threshhold;
     private int entryCount;
     private Entry<K>[] map;
     private Entry<K>[] rmap;
-      
+
     private ORB orb;
 
-    public  CacheTable(String cacheType, ORB orb, boolean u) {
+    public CacheTable(String cacheType, ORB orb, boolean u) {
         this.orb = orb;
-        this.cacheType = cacheType ;
+        this.cacheType = cacheType;
         noReverseMap = u;
         size = INITIAL_SIZE;
-        threshhold = INITIAL_THRESHHOLD ;
+        threshhold = INITIAL_THRESHHOLD;
         entryCount = 0;
         initTables();
     }
@@ -99,7 +98,7 @@ public class CacheTable<K> {
         Entry<K>[] oldMap = map;
         int oldSize = size;
         size <<= 1;
-        threshhold <<= 1 ;
+        threshhold <<= 1;
 
         initTables();
         // now rehash the entries into the new table
@@ -116,8 +115,8 @@ public class CacheTable<K> {
         // key and the value side of the mapping.  It's not clear
         // how useful this is in this application, as the low-order
         // bits change a lot for both sides.  
-        h ^= (h >>> 20) ^ (h >>> 12) ;
-        return (h ^ (h >>> 7) ^ (h >>> 4)) & (size - 1) ;
+        h ^= (h >>> 20) ^ (h >>> 12);
+        return (h ^ (h >>> 7) ^ (h >>> 4)) & (size - 1);
     }
 
     private int hash(K key) {
@@ -128,10 +127,12 @@ public class CacheTable<K> {
         return hashModTableSize(val);
     }
 
-    /** Store the (key,val) pair in the hash table, unless 
+    /**
+     * Store the (key,val) pair in the hash table, unless
      * (key,val) is already present.  Returns true if a new (key,val)
      * pair was added, else false.  val must be non-negative, but
      * this is not checked.
+     *
      * @param key Key for table
      * @param val Non-negative value
      */
@@ -158,14 +159,14 @@ public class CacheTable<K> {
                     // multiple values.  This is GlassFish issue 1605.
                     // Note: we store this anyway, so that getVal can find the key.
                     wrapper.duplicateIndirectionOffset();
-                } else {        
+                } else {
                     // if we get here we are trying to put in the same key/val pair
                     // this is a no-op, so we just return
                     return false;
                 }
             }
         }
-        
+
         Entry<K> newEntry = new Entry<K>(key, val);
         newEntry.next = map[index];
         map[index] = newEntry;
@@ -182,7 +183,9 @@ public class CacheTable<K> {
         return (getVal(key) != -1);
     }
 
-    /** Returns some int val where (key,val) is in this CacheTable.
+    /**
+     * Returns some int val where (key,val) is in this CacheTable.
+     *
      * @param key Key to lookup
      * @return Value found
      */
@@ -198,10 +201,12 @@ public class CacheTable<K> {
     }
 
     public final boolean containsVal(int val) {
-        return (getKey(val) != null); 
+        return (getKey(val) != null);
     }
 
-    /** Return the key where (key,val) is present in the map.
+    /**
+     * Return the key where (key,val) is present in the map.
+     *
      * @param val Value to lookup
      * @return Key for the value
      */

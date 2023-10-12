@@ -19,13 +19,12 @@
 
 package com.sun.corba.ee.impl.protocol.giopmsgheaders;
 
-import com.sun.corba.ee.spi.servicecontext.ServiceContexts;
-import com.sun.corba.ee.spi.servicecontext.ServiceContextDefaults;
 import com.sun.corba.ee.spi.ior.iiop.GIOPVersion;
+import com.sun.corba.ee.spi.logging.ORBUtilSystemException;
 import com.sun.corba.ee.spi.orb.ORB;
 import com.sun.corba.ee.spi.orb.ObjectKeyCacheEntry;
-
-import com.sun.corba.ee.spi.logging.ORBUtilSystemException;
+import com.sun.corba.ee.spi.servicecontext.ServiceContextDefaults;
+import com.sun.corba.ee.spi.servicecontext.ServiceContexts;
 
 /**
  * This implements the GIOP 1.1 Request header.
@@ -49,7 +48,7 @@ public final class RequestMessage_1_1 extends Message_1_1
     private byte[] reserved = null; // Added in GIOP 1.1
     private byte[] object_key = null;
     private String operation = null;
-    @SuppressWarnings({"deprecation"})
+    @SuppressWarnings({ "deprecation" })
     private org.omg.CORBA.Principal requesting_principal = null;
     private ObjectKeyCacheEntry entry = null;
 
@@ -60,13 +59,12 @@ public final class RequestMessage_1_1 extends Message_1_1
         this.service_contexts = ServiceContextDefaults.makeServiceContexts(orb);
     }
 
-    @SuppressWarnings({"deprecation"})
-    RequestMessage_1_1(ORB orb, ServiceContexts _service_contexts,
-                       int _request_id, boolean _response_expected, byte[] _reserved,
-                       byte[] _object_key, String _operation,
-                       org.omg.CORBA.Principal _requesting_principal) {
+    @SuppressWarnings({ "deprecation" }) RequestMessage_1_1(ORB orb, ServiceContexts _service_contexts,
+                                                            int _request_id, boolean _response_expected, byte[] _reserved,
+                                                            byte[] _object_key, String _operation,
+                                                            org.omg.CORBA.Principal _requesting_principal) {
         super(Message.GIOPBigMagic, GIOPVersion.V1_1, FLAG_NO_FRAG_BIG_ENDIAN,
-                Message.GIOPRequest, 0);
+              Message.GIOPRequest, 0);
         this.orb = orb;
         service_contexts = _service_contexts;
         request_id = _request_id;
@@ -112,7 +110,7 @@ public final class RequestMessage_1_1 extends Message_1_1
         return this.operation;
     }
 
-    @SuppressWarnings({"deprecation"})
+    @SuppressWarnings({ "deprecation" })
     public org.omg.CORBA.Principal getPrincipal() {
         return this.requesting_principal;
     }

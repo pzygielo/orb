@@ -19,8 +19,6 @@
 
 package com.sun.corba.ee.impl.protocol.giopmsgheaders;
 
-import com.sun.corba.ee.spi.ior.iiop.GIOPVersion;
-
 import com.sun.corba.ee.spi.orb.ORB;
 import com.sun.corba.ee.spi.orb.ObjectKeyCacheEntry;
 
@@ -72,11 +70,12 @@ public final class LocateRequestMessage_1_0 extends Message_1_0
     // IO methods
 
     public void read(org.omg.CORBA.portable.InputStream istream) {
-        super.read(istream);;
+        super.read(istream);
+        ;
         this.request_id = istream.read_ulong();
         int _len0 = istream.read_long();
         this.object_key = new byte[_len0];
-        istream.read_octet_array (this.object_key, 0, _len0);
+        istream.read_octet_array(this.object_key, 0, _len0);
     }
 
     public void write(org.omg.CORBA.portable.OutputStream ostream) {
@@ -88,8 +87,7 @@ public final class LocateRequestMessage_1_0 extends Message_1_0
     }
 
     public void callback(MessageHandler handler)
-        throws java.io.IOException
-    {
+            throws java.io.IOException {
         handler.handleInput(this);
     }
 } // class LocateRequestMessage_1_0

@@ -47,7 +47,7 @@ public final class LocateRequestMessage_1_2 extends Message_1_2
 
     LocateRequestMessage_1_2(ORB orb, int _request_id, TargetAddress _target) {
         super(Message.GIOPBigMagic, GIOPVersion.V1_2, FLAG_NO_FRAG_BIG_ENDIAN,
-                Message.GIOPLocateRequest, 0);
+              Message.GIOPLocateRequest, 0);
         this.orb = orb;
         request_id = _request_id;
         target = _target;

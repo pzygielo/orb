@@ -19,17 +19,15 @@
 
 package com.sun.corba.ee.impl.transport;
 
+import com.sun.corba.ee.spi.trace.Transport;
+import com.sun.corba.ee.spi.transport.TemporarySelectorState;
+
 import java.io.IOException;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 
-import com.sun.corba.ee.spi.transport.TemporarySelectorState;
-
-import com.sun.corba.ee.spi.trace.Transport;
-
 /**
- *
  * @author Charlie Hunt
  */
 
@@ -47,8 +45,8 @@ public class TemporarySelectorStateClosed implements TemporarySelectorState {
     public int select(Selector theSelector, long theTimeout) throws IOException {
         String selectorToString = getSelectorToString(theSelector);
         throw new TemporarySelectorClosedException("Temporary Selector " +
-                                                    selectorToString +
-                                                   " closed");
+                                                           selectorToString +
+                                                           " closed");
     }
 
     public SelectionKey registerChannel(Selector theSelector,
@@ -56,16 +54,16 @@ public class TemporarySelectorStateClosed implements TemporarySelectorState {
                                         int theOps) throws IOException {
         String selectorToString = getSelectorToString(theSelector);
         throw new TemporarySelectorClosedException("Temporary Selector " +
-                                                    selectorToString +
-                                                   " closed");
+                                                           selectorToString +
+                                                           " closed");
     }
 
     public TemporarySelectorState cancelKeyAndFlushSelector(Selector theSelector,
-                              SelectionKey theSelectionKey) throws IOException {
+                                                            SelectionKey theSelectionKey) throws IOException {
         String selectorToString = getSelectorToString(theSelector);
         throw new TemporarySelectorClosedException("Temporary Selector " +
-                                                    selectorToString +
-                                                   " closed");
+                                                           selectorToString +
+                                                           " closed");
     }
 
     @Transport
@@ -77,11 +75,11 @@ public class TemporarySelectorStateClosed implements TemporarySelectorState {
     }
 
     public TemporarySelectorState removeSelectedKey(Selector theSelector,
-                              SelectionKey theSelectionKey) throws IOException {
+                                                    SelectionKey theSelectionKey) throws IOException {
         String selectorToString = getSelectorToString(theSelector);
         throw new TemporarySelectorClosedException("Temporary Selector " +
-                                                    selectorToString +
-                                                   " closed");
+                                                           selectorToString +
+                                                           " closed");
     }
 
     private String getSelectorToString(Selector theSelector) {

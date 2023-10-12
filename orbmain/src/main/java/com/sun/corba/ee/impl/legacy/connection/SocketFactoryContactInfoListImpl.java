@@ -19,33 +19,28 @@
 
 package com.sun.corba.ee.impl.legacy.connection;
 
-import java.util.Iterator;
-
+import com.sun.corba.ee.impl.transport.ContactInfoListImpl;
 import com.sun.corba.ee.spi.ior.IOR;
 import com.sun.corba.ee.spi.orb.ORB;
-import com.sun.corba.ee.impl.transport.ContactInfoListImpl;
-import com.sun.corba.ee.impl.transport.ContactInfoListIteratorImpl;
+
+import java.util.Iterator;
 
 /**
  * @author Harold Carr
  */
-public class SocketFactoryContactInfoListImpl 
-    extends
-        ContactInfoListImpl
-{
+public class SocketFactoryContactInfoListImpl
+        extends
+        ContactInfoListImpl {
     // XREVISIT - is this used?
-    public SocketFactoryContactInfoListImpl(ORB orb)
-    {
+    public SocketFactoryContactInfoListImpl(ORB orb) {
         super(orb);
     }
 
-    public SocketFactoryContactInfoListImpl(ORB orb, IOR targetIOR)
-    {
+    public SocketFactoryContactInfoListImpl(ORB orb, IOR targetIOR) {
         super(orb, targetIOR);
     }
 
-    public Iterator iterator()
-    {
+    public Iterator iterator() {
         return new SocketFactoryContactInfoListIteratorImpl(orb, this);
     }
 }

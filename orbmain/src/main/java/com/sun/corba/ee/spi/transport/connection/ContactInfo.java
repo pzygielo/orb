@@ -19,9 +19,10 @@
 
 package com.sun.corba.ee.spi.transport.connection;
 
-import java.io.IOException ;
+import java.io.IOException;
 
-/** The ContactInfo represents the information needed to establish a connection
+/**
+ * The ContactInfo represents the information needed to establish a connection
  * to a (possibly different) process.  This is a subset of the PEPt 2.0 connection.
  * Any implemetnation of this interface must define hashCode and equals properly so that
  * it may be used in a Map.
@@ -29,11 +30,12 @@ import java.io.IOException ;
  * of the contact info (e.g. address information).
  */
 public interface ContactInfo<C extends Connection> {
-    /** Create a new Connection from this ContactInfo.
+    /**
+     * Create a new Connection from this ContactInfo.
      * Throws an IOException if Connection creation fails.
-     * 
-     * @throws IOException if creation fails
+     *
      * @return a new {@link Connection}
+     * @throws IOException if creation fails
      */
-    C createConnection() throws IOException ;
+    C createConnection() throws IOException;
 }

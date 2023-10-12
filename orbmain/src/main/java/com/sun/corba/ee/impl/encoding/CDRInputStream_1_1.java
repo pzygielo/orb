@@ -21,8 +21,7 @@ package com.sun.corba.ee.impl.encoding;
 
 import com.sun.corba.ee.spi.ior.iiop.GIOPVersion;
 
-public class CDRInputStream_1_1 extends CDRInputStream_1_0
-{
+public class CDRInputStream_1_1 extends CDRInputStream_1_0 {
     // See notes in CDROutputStream
     protected int fragmentOffset = 0;
 
@@ -36,7 +35,7 @@ public class CDRInputStream_1_1 extends CDRInputStream_1_0
     public CDRInputStreamBase dup() {
         CDRInputStreamBase result = super.dup();
 
-        ((CDRInputStream_1_1)result).fragmentOffset = this.fragmentOffset;
+        ((CDRInputStream_1_1) result).fragmentOffset = this.fragmentOffset;
 
         return result;
     }
@@ -49,20 +48,18 @@ public class CDRInputStream_1_1 extends CDRInputStream_1_0
     @Override
     protected void alignAndCheck(int align, int n) {
 
-
         checkBlockLength(align, n);
 
         // WARNING: Must compute real alignment after calling
         // checkBlockLength since it may move the position
         int alignment = computeAlignment(byteBuffer.position(), align);
 
-        if (byteBuffer.position() + n + alignment  > byteBuffer.limit()) {
+        if (byteBuffer.position() + n + alignment > byteBuffer.limit()) {
 
             // Some other ORBs may have found a way to send 1.1
             // fragments which put alignment bytes at the end
             // of a fragment
-            if (byteBuffer.position() + alignment == byteBuffer.limit())
-            {
+            if (byteBuffer.position() + alignment == byteBuffer.limit()) {
                 byteBuffer.position(byteBuffer.position() + alignment);
             }
 
@@ -91,7 +88,7 @@ public class CDRInputStream_1_1 extends CDRInputStream_1_0
         byteBuffer = bufferManagerRead.underflow(byteBuffer);
 
         if (bufferManagerRead.isFragmentOnUnderflow()) {
-            
+
             // By this point we should be guaranteed to have
             // a new fragment whose header has already been
             // unmarshalled.  bbwi.position() should point to the
@@ -104,12 +101,10 @@ public class CDRInputStream_1_1 extends CDRInputStream_1_0
 
     // Mark/reset ---------------------------------------
 
-    private class FragmentableStreamMemento extends StreamMemento
-    {
+    private class FragmentableStreamMemento extends StreamMemento {
         private int fragmentOffset_;
 
-        public FragmentableStreamMemento()
-        {
+        public FragmentableStreamMemento() {
             super();
 
             fragmentOffset_ = fragmentOffset;
@@ -122,12 +117,11 @@ public class CDRInputStream_1_1 extends CDRInputStream_1_0
     }
 
     @Override
-    public void restoreInternalState(java.lang.Object streamMemento) 
-    {
+    public void restoreInternalState(java.lang.Object streamMemento) {
         super.restoreInternalState(streamMemento);
 
-        fragmentOffset 
-            = ((FragmentableStreamMemento)streamMemento).fragmentOffset_;
+        fragmentOffset
+                = ((FragmentableStreamMemento) streamMemento).fragmentOffset_;
     }
 
     // --------------------------------------------------
@@ -148,8 +142,9 @@ public class CDRInputStream_1_1 extends CDRInputStream_1_0
         // character?  This may come up as more unicode values are
         // assigned, and a single 16 bit Java char isn't enough.
         // Better to use strings for i18n purposes.
-        if (getWCharConverter().getNumChars() > 1)
-            throw wrapper.btcResultMoreThanOneChar() ;
+        if (getWCharConverter().getNumChars() > 1) {
+            throw wrapper.btcResultMoreThanOneChar();
+        }
 
         return result[0];
     }
@@ -163,8 +158,9 @@ public class CDRInputStream_1_1 extends CDRInputStream_1_0
         // Workaround for ORBs which send string lengths of
         // zero to mean empty string.
         //
-        if (len == 0)
+        if (len == 0) {
             return newEmptyString();
+        }
 
         checkForNegativeLength(len);
 

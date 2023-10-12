@@ -37,21 +37,21 @@ class OrbReuseTracker {
         this.orb = orb;
         referenceCnt++;
         if (debug) {
-             System.out.println("New OrbReuseTracker created");
+            System.out.println("New OrbReuseTracker created");
         }
     }
 
     synchronized void incRefCount() {
         referenceCnt++;
         if (debug) {
-             System.out.println("Increment orb ref count to:" + referenceCnt);
+            System.out.println("Increment orb ref count to:" + referenceCnt);
         }
     }
 
     synchronized void decRefCount() {
         referenceCnt--;
         if (debug) {
-             System.out.println("Decrement orb ref count to:" + referenceCnt);
+            System.out.println("Decrement orb ref count to:" + referenceCnt);
         }
         if ((referenceCnt == 0)) {
             if (debug) {

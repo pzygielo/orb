@@ -21,8 +21,7 @@ package com.sun.corba.ee.impl.encoding;
 
 import com.sun.corba.ee.spi.ior.iiop.GIOPVersion;
 
-public class CDROutputStream_1_1 extends CDROutputStream_1_0
-{
+public class CDROutputStream_1_1 extends CDROutputStream_1_0 {
     // This is used to keep indirections working across fragments.  When added
     // to the current bbwi.position(), the result is the current position
     // in the byte stream without any fragment headers.
@@ -98,8 +97,7 @@ public class CDROutputStream_1_1 extends CDROutputStream_1_0
     }
 
     @Override
-    public void write_wchar(char x)
-    {
+    public void write_wchar(char x) {
         // In GIOP 1.1, interoperability with wchar is limited
         // to 2 byte fixed width encodings.  CORBA formal 99-10-07 15.3.1.6.
         // Note that the following code prohibits UTF-16 with a byte
@@ -108,8 +106,9 @@ public class CDROutputStream_1_1 extends CDROutputStream_1_0
 
         converter.convert(x);
 
-        if (converter.getNumBytes() != 2)
+        if (converter.getNumBytes() != 2) {
             throw wrapper.badGiop11Ctb();
+        }
 
         alignAndReserve(converter.getAlignment(),
                         converter.getNumBytes());
@@ -120,8 +119,7 @@ public class CDROutputStream_1_1 extends CDROutputStream_1_0
     }
 
     @Override
-    public void write_wstring(String value)
-    {
+    public void write_wstring(String value) {
         if (value == null) {
             throw wrapper.nullParam();
         }
@@ -140,7 +138,7 @@ public class CDROutputStream_1_1 extends CDROutputStream_1_0
         internalWriteOctetArray(converter.getBytes(), 0, converter.getNumBytes());
 
         // Write the 2 byte null ending
-        write_short((short)0);
+        write_short((short) 0);
     }
 }
 

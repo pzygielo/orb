@@ -25,8 +25,7 @@ import com.sun.corba.ee.spi.trace.CdrWrite;
 import org.glassfish.pfl.tf.spi.annotation.InfoMethod;
 
 @CdrWrite
-public class CDROutputStream_1_2 extends CDROutputStream_1_1
-{
+public class CDROutputStream_1_2 extends CDROutputStream_1_1 {
     // There's a situation with chunking with fragmentation
     // in which the alignment for a primitive value is needed
     // to fill fragment N, but the primitive won't fit so
@@ -80,14 +79,15 @@ public class CDROutputStream_1_2 extends CDROutputStream_1_1
     private boolean headerPadding;
 
     @InfoMethod
-    private void specialChunkCase() { }
+    private void specialChunkCase() {
+    }
 
     @CdrWrite
     @Override
     protected void handleSpecialChunkBegin(int requiredSize) {
         // If we're chunking and the item won't fit in the buffer
         if (inBlock && requiredSize + byteBuffer.position() > byteBuffer.limit()) {
-            specialChunkCase() ;
+            specialChunkCase();
 
             // Duplicating some code from end_block.  Compute
             // and write the total chunk length.
@@ -129,11 +129,10 @@ public class CDROutputStream_1_2 extends CDROutputStream_1_1
             specialChunk = false;
         }
     }
-    
+
     // Called after writing primitives
     @CdrWrite
-    private void checkPrimitiveAcrossFragmentedChunk()
-    {
+    private void checkPrimitiveAcrossFragmentedChunk() {
         if (primitiveAcrossFragmentedChunk) {
             primitiveAcrossFragmentedChunk = false;
 
@@ -149,7 +148,6 @@ public class CDROutputStream_1_2 extends CDROutputStream_1_1
             start_block();
         }
     }
-
 
     @Override
     public void write_octet(byte x) {
@@ -195,7 +193,7 @@ public class CDROutputStream_1_2 extends CDROutputStream_1_1
             headerPadding = false;
             alignOnBoundary(ORBConstants.GIOP_12_MSG_BODY_ALIGNMENT);
         }
-        
+
         // In GIOP 1.2, we always end fragments at our
         // fragment size, which is an "evenly divisible
         // 8 byte boundary" (aka divisible by 16).  A fragment can 
@@ -205,21 +203,23 @@ public class CDROutputStream_1_2 extends CDROutputStream_1_1
 
         byteBuffer.position(byteBuffer.position() + computeAlignment(align));
 
-        if (byteBuffer.position() + n  > byteBuffer.limit())
+        if (byteBuffer.position() + n > byteBuffer.limit()) {
             grow(align, n);
+        }
     }
 
     @InfoMethod
-    private void outOfSequenceWrite() { }
+    private void outOfSequenceWrite() {
+    }
 
     @InfoMethod
-    private void handlingFragmentCase() { }
-
+    private void handlingFragmentCase() {
+    }
 
     @Override
     @CdrWrite
     protected void grow(int align, int n) {
-        
+
         // Save the current size for possible post-fragmentation calculation
         int oldSize = byteBuffer.position();
 
@@ -258,8 +258,9 @@ public class CDROutputStream_1_2 extends CDROutputStream_1_1
 
             // We just fragmented, and need to signal that we should
             // start a new chunk after writing the primitive.
-            if (handleChunk)
+            if (handleChunk) {
                 primitiveAcrossFragmentedChunk = true;
+            }
         }
     }
 
@@ -269,8 +270,7 @@ public class CDROutputStream_1_2 extends CDROutputStream_1_1
     }
 
     @Override
-    public void write_wchar(char x)
-    {
+    public void write_wchar(char x) {
         // In GIOP 1.2, a wchar is encoded as an unsigned octet length
         // followed by the octets of the converted wchar.  This is good,
         // but it causes problems with our chunking code.  We don't
@@ -285,7 +285,7 @@ public class CDROutputStream_1_2 extends CDROutputStream_1_1
 
         handleSpecialChunkBegin(1 + converter.getNumBytes());
 
-        write_octet((byte)converter.getNumBytes());
+        write_octet((byte) converter.getNumBytes());
 
         byte[] result = converter.getBytes();
 
@@ -297,11 +297,10 @@ public class CDROutputStream_1_2 extends CDROutputStream_1_1
     }
 
     @Override
-    public void write_wchar_array(char[] value, int offset, int length)
-    {
+    public void write_wchar_array(char[] value, int offset, int length) {
         if (value == null) {
             throw wrapper.nullParam();
-        }   
+        }
 
         CodeSetConversion.CTBConverter converter = getWCharConverter();
 
@@ -313,7 +312,7 @@ public class CDROutputStream_1_2 extends CDROutputStream_1_1
 
         // Remember that every wchar starts with an octet telling
         // its length.  The buffer size is an upper bound estimate.
-        int maxLength = (int)Math.ceil(converter.getMaxBytesPerChar() * length);
+        int maxLength = (int) Math.ceil(converter.getMaxBytesPerChar() * length);
         byte[] buffer = new byte[maxLength + length];
 
         for (int i = 0; i < length; i++) {
@@ -321,7 +320,7 @@ public class CDROutputStream_1_2 extends CDROutputStream_1_1
             converter.convert(value[offset + i]);
 
             // Make sure to add the octet length
-            buffer[totalNumBytes++] = (byte)converter.getNumBytes();
+            buffer[totalNumBytes++] = (byte) converter.getNumBytes();
 
             // Copy it into our buffer
             System.arraycopy(converter.getBytes(), 0,
@@ -341,7 +340,7 @@ public class CDROutputStream_1_2 extends CDROutputStream_1_1
         internalWriteOctetArray(buffer, 0, totalNumBytes);
 
         handleSpecialChunkEnd();
-    }    
+    }
 
     @Override
     public void write_wstring(String value) {

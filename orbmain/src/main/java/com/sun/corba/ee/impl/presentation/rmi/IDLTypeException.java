@@ -17,7 +17,7 @@
  * Classpath-exception-2.0
  */
 
-package com.sun.corba.ee.impl.presentation.rmi ;
+package com.sun.corba.ee.impl.presentation.rmi;
 
 /**
  * Checked exception containing information about an
@@ -25,7 +25,8 @@ package com.sun.corba.ee.impl.presentation.rmi ;
  */
 public class IDLTypeException extends Exception {
 
-    public IDLTypeException() {}
+    public IDLTypeException() {
+    }
 
     public IDLTypeException(String message) {
         super(message);

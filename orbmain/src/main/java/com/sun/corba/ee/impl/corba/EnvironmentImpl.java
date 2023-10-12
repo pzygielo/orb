@@ -21,29 +21,23 @@
 package com.sun.corba.ee.impl.corba;
 
 import org.omg.CORBA.Environment;
-import org.omg.CORBA.UserException;
-import org.omg.CORBA.ORB;
 
 public class EnvironmentImpl extends Environment {
 
     private Exception _exc;
 
-    public EnvironmentImpl()
-    {
+    public EnvironmentImpl() {
     }
-  
-    public Exception exception() 
-    {
+
+    public Exception exception() {
         return _exc;
     }
 
-    public void exception(Exception exc)
-    {
+    public void exception(Exception exc) {
         _exc = exc;
     }
 
-    public void clear()
-    {
+    public void clear() {
         _exc = null;
     }
 

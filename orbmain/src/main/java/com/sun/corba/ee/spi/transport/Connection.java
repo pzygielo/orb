@@ -19,38 +19,33 @@
 
 package com.sun.corba.ee.spi.transport;
 
+import com.sun.corba.ee.impl.encoding.CDRInputObject;
+import com.sun.corba.ee.impl.encoding.CDROutputObject;
+import com.sun.corba.ee.impl.encoding.CodeSetComponentInfo;
+import com.sun.corba.ee.spi.ior.IOR;
+import com.sun.corba.ee.spi.ior.iiop.GIOPVersion;
+import com.sun.corba.ee.spi.orb.ORB;
+import com.sun.corba.ee.spi.protocol.MessageMediator;
+import com.sun.corba.ee.spi.protocol.RequestId;
+import com.sun.org.omg.SendingContext.CodeBase;
+import org.omg.CORBA.SystemException;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Queue;
 
-import org.omg.CORBA.SystemException;
-
-import com.sun.org.omg.SendingContext.CodeBase;
-
-
-import com.sun.corba.ee.spi.ior.IOR ;
-import com.sun.corba.ee.spi.ior.iiop.GIOPVersion;
-import com.sun.corba.ee.spi.orb.ORB;
-import com.sun.corba.ee.spi.protocol.MessageMediator;
-import com.sun.corba.ee.spi.protocol.RequestId;
-
-import com.sun.corba.ee.impl.encoding.CodeSetComponentInfo;
-import com.sun.corba.ee.impl.encoding.CDRInputObject;
-import com.sun.corba.ee.impl.encoding.CDROutputObject;
-
 /**
  * @author Harold Carr
  */
 public interface Connection
-    extends
-        com.sun.corba.ee.spi.legacy.connection.Connection
-{
+        extends
+        com.sun.corba.ee.spi.legacy.connection.Connection {
     /**
      * Used to determine if the <code>Connection</code> should register
      * with the CorbaTransportManager Selector
      * to handle read events.
-     *
+     * <p>
      * For example, an HTTP transport would not register since the requesting
      * thread would just block on read when waiting for the reply.
      *
@@ -60,10 +55,10 @@ public interface Connection
 
     /**
      * Used to determine if the <code>Connection</code> should register
-     * with the 
+     * with the
      * CorbaTransportManager Selector
      * to handle read events.
-     *
+     * <p>
      * For example, an HTTP transport would not register since the requesting
      * thread would just block on read when waiting for the reply.
      *
@@ -139,7 +134,7 @@ public interface Connection
 
     /**
      * Grab a write lock on the <code>Connection</code>.
-     *
+     * <p>
      * If another thread already has a write lock then the calling
      * thread will block until the lock is released.  The calling
      * thread must call
@@ -165,7 +160,7 @@ public interface Connection
     /**
      * Register an invocation's CorbaMessageMediator
      * with the <code>Connection</code>.
-     *
+     * <p>
      * This is useful in protocols which support fragmentation.
      *
      * @param messageMediator mediator to register
@@ -174,7 +169,7 @@ public interface Connection
 
     /**
      * If a message expect's a response then this method is called.
-     *
+     * <p>
      * This method might block on a read (e.g., HTTP), put the calling
      * thread to sleep while another thread read's the response (e.g., GIOP),
      * or it may use the calling thread to perform the server-side work
@@ -196,25 +191,33 @@ public interface Connection
     public void setConnectionCache(ConnectionCache connectionCache);
 
     public ConnectionCache getConnectionCache();
+
     public boolean hasSocketChannel();
 
     public void write(ByteBuffer byteBuffer)
-        throws IOException;
+            throws IOException;
 
     public int getNextRequestId();
+
     public ORB getBroker();
+
     public CodeSetComponentInfo.CodeSetContext getCodeSetContext();
+
     public void setCodeSetContext(CodeSetComponentInfo.CodeSetContext csc);
 
     // Facade to ResponseWaitingRoom.
     public MessageMediator clientRequestMapGet(int requestId);
 
     public void clientReply_1_1_Put(MessageMediator x);
+
     public MessageMediator clientReply_1_1_Get();
+
     public void clientReply_1_1_Remove();
 
     public void serverRequest_1_1_Put(MessageMediator x);
+
     public MessageMediator serverRequest_1_1_Get();
+
     public void serverRequest_1_1_Remove();
 
     public boolean isPostInitialContexts();
@@ -259,29 +262,32 @@ public interface Connection
     // End Code Base methods -----------------------------------------
 
     public void sendCloseConnection(GIOPVersion giopVersion)
-        throws IOException;
+            throws IOException;
 
     public void sendMessageError(GIOPVersion giopVersion)
-        throws IOException;
+            throws IOException;
 
     public void sendCancelRequest(GIOPVersion giopVersion, int requestId)
-        throws
+            throws
             IOException;
 
     // NOTE: This method can throw a connection rebind SystemException.
     public void sendCancelRequestWithLock(GIOPVersion giopVersion,
                                           int requestId)
-        throws 
+            throws
             IOException;
 
     public ResponseWaitingRoom getResponseWaitingRoom();
 
     public void serverRequestMapPut(int requestId,
                                     MessageMediator messageMediator);
+
     public MessageMediator serverRequestMapGet(int requestId);
+
     public void serverRequestMapRemove(int requestId);
 
     public Queue<MessageMediator> getFragmentList(RequestId corbaRequestId);
+
     public void removeFragmentList(RequestId corbaRequestId);
 
     // REVISIT: WRONG: should not expose sockets here.
@@ -289,11 +295,13 @@ public interface Connection
 
     // REVISIT - CorbaMessageMediator parameter?
     public void serverRequestProcessingBegins();
+
     public void serverRequestProcessingEnds();
 
-    /** Clean up all connection resources.  Used when shutting down an ORB.
+    /**
+     * Clean up all connection resources.  Used when shutting down an ORB.
      */
-    public void closeConnectionResources() ;
+    public void closeConnectionResources();
 }
 
 // End of file.

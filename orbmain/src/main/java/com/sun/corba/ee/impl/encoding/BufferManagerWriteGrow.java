@@ -19,17 +19,15 @@
 
 package com.sun.corba.ee.impl.encoding;
 
+import com.sun.corba.ee.spi.orb.ORB;
 import com.sun.corba.ee.spi.transport.ByteBufferPool;
 import com.sun.corba.ee.spi.transport.Connection;
-import com.sun.corba.ee.spi.orb.ORB;
 
 import java.nio.ByteBuffer;
 
-public class BufferManagerWriteGrow extends BufferManagerWrite
-{
-    BufferManagerWriteGrow( ORB orb )
-    {
-        super(orb) ;
+public class BufferManagerWriteGrow extends BufferManagerWrite {
+    BufferManagerWriteGrow(ORB orb) {
+        super(orb);
     }
 
     public boolean sentFragment() {
@@ -48,8 +46,9 @@ public class BufferManagerWriteGrow extends BufferManagerWrite
     protected ByteBuffer overflow(ByteBuffer byteBuffer, int numBytesNeeded) {
         int newLength = byteBuffer.limit() * 2;
 
-        while (byteBuffer.position() + numBytesNeeded >= newLength)
+        while (byteBuffer.position() + numBytesNeeded >= newLength) {
             newLength = newLength * 2;
+        }
 
         ByteBufferPool byteBufferPool = orb.getByteBufferPool();
         ByteBuffer newBB = byteBufferPool.getByteBuffer(newLength);
@@ -66,15 +65,15 @@ public class BufferManagerWriteGrow extends BufferManagerWrite
         return false;
     }
 
-    public void sendMessage () {
+    public void sendMessage() {
         Connection conn =
-              ((CDROutputObject)outputObject).getMessageMediator().getConnection();
+                ((CDROutputObject) outputObject).getMessageMediator().getConnection();
 
         conn.writeLock();
 
         try {
 
-            conn.sendWithoutLock((CDROutputObject)outputObject);
+            conn.sendWithoutLock((CDROutputObject) outputObject);
 
             sentFullMessage = true;
 
@@ -86,9 +85,10 @@ public class BufferManagerWriteGrow extends BufferManagerWrite
 
     /**
      * Close the BufferManagerWrite and do any outstanding cleanup.
-     *
+     * <p>
      * No work to do for a BufferManagerWriteGrow.
      */
-    public void close() {}
+    public void close() {
+    }
 
 }

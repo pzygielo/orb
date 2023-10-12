@@ -36,13 +36,11 @@ import java.util.EmptyStackException;
 /**
  * Streaming buffer manager.
  */
-public class BufferManagerWriteStream extends BufferManagerWrite
-{
+public class BufferManagerWriteStream extends BufferManagerWrite {
     private int fragmentCount = 0;
 
-    BufferManagerWriteStream( ORB orb )
-    {
-        super(orb) ;
+    BufferManagerWriteStream(ORB orb) {
+        super(orb);
     }
 
     public boolean sentFragment() {
@@ -76,7 +74,7 @@ public class BufferManagerWriteStream extends BufferManagerWrite
             }
 
             // bug 6382377: must not lose exception in PI
-            orb.getPIHandler().invokeClientPIEndingPoint( ReplyMessage.SYSTEM_EXCEPTION, se ) ;
+            orb.getPIHandler().invokeClientPIEndingPoint(ReplyMessage.SYSTEM_EXCEPTION, se);
 
             boolean retry = itr.reportException(null, se);
             if (retry) {
@@ -101,9 +99,9 @@ public class BufferManagerWriteStream extends BufferManagerWrite
         // REVISIT - we can optimize this by not creating the fragment message
         // each time.
 
-        FragmentMessage header = ((CDROutputObject)outputObject).getMessageHeader().createFragmentMessage();
+        FragmentMessage header = ((CDROutputObject) outputObject).getMessageHeader().createFragmentMessage();
 
-        header.write(((CDROutputObject)outputObject));
+        header.write(((CDROutputObject) outputObject));
         return byteBuffer;
     }
 
@@ -112,9 +110,8 @@ public class BufferManagerWriteStream extends BufferManagerWrite
         return true;
     }
 
-    private void sendFragment(boolean isLastFragment)
-    {
-        Connection conn = ((CDROutputObject)outputObject).getMessageMediator().getConnection();
+    private void sendFragment(boolean isLastFragment) {
+        Connection conn = ((CDROutputObject) outputObject).getMessageMediator().getConnection();
 
         // REVISIT: need an ORB
         //System.out.println("sendFragment: last?: " + isLastFragment);
@@ -122,7 +119,7 @@ public class BufferManagerWriteStream extends BufferManagerWrite
 
         try {
             // Send the fragment
-            conn.sendWithoutLock(((CDROutputObject)outputObject));
+            conn.sendWithoutLock(((CDROutputObject) outputObject));
 
             fragmentCount++;
 
@@ -134,8 +131,7 @@ public class BufferManagerWriteStream extends BufferManagerWrite
     }
 
     // Sends the last fragment
-    public void sendMessage ()
-    {
+    public void sendMessage() {
         sendFragment(true);
 
         sentFullMessage = true;
@@ -143,16 +139,20 @@ public class BufferManagerWriteStream extends BufferManagerWrite
 
     /**
      * Close the BufferManagerWrite and do any outstanding cleanup.
-     *
+     * <p>
      * No work to do for a BufferManagerWriteStream
      */
-    public void close(){};
+    public void close() {
+    }
+
+    ;
 
     /**
      * Get CorbaContactInfoListIterator
-     * 
+     * <p>
      * NOTE: Requires this.orb
-     * @return  the ContactInfoListIterator
+     *
+     * @return the ContactInfoListIterator
      */
     protected ContactInfoListIterator getContactInfoListIterator() {
         return (ContactInfoListIterator) this.orb.getInvocationInfo().getContactInfoListIterator();

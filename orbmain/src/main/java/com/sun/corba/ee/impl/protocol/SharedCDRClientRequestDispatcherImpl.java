@@ -20,19 +20,17 @@
 
 package com.sun.corba.ee.impl.protocol;
 
+import com.sun.corba.ee.impl.encoding.CDRInputObject;
+import com.sun.corba.ee.impl.encoding.CDROutputObject;
+import com.sun.corba.ee.spi.orb.ORB;
+import com.sun.corba.ee.spi.protocol.MessageMediator;
+import com.sun.corba.ee.spi.trace.Subcontract;
+import org.glassfish.pfl.tf.spi.annotation.InfoMethod;
+import org.omg.CORBA.portable.ApplicationException;
+
 import java.io.IOException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-
-import org.omg.CORBA.portable.ApplicationException;
-
-import com.sun.corba.ee.spi.orb.ORB;
-import com.sun.corba.ee.spi.protocol.MessageMediator;
-
-import com.sun.corba.ee.impl.encoding.CDRInputObject;
-import com.sun.corba.ee.impl.encoding.CDROutputObject;
-import com.sun.corba.ee.spi.trace.Subcontract;
-import org.glassfish.pfl.tf.spi.annotation.InfoMethod;
 
 /**
  * ClientDelegate is the RMI client-side subcontract or representation
@@ -41,12 +39,12 @@ import org.glassfish.pfl.tf.spi.annotation.InfoMethod;
  */
 @Subcontract
 public class SharedCDRClientRequestDispatcherImpl
-    extends
-        ClientRequestDispatcherImpl
-{
+        extends
+        ClientRequestDispatcherImpl {
 
     @InfoMethod
-    private void operationAndId( String msg, int rid ) { }
+    private void operationAndId(String msg, int rid) {
+    }
 
     // REVISIT:
     // Rather than have separate CDR subcontract,
@@ -59,19 +57,18 @@ public class SharedCDRClientRequestDispatcherImpl
     @Override
     @Subcontract
     public CDRInputObject marshalingComplete(java.lang.Object self,
-                                          CDROutputObject outputObject)
-        throws 
-            ApplicationException, 
-            org.omg.CORBA.portable.RemarshalException
-    {
+                                             CDROutputObject outputObject)
+            throws
+            ApplicationException,
+            org.omg.CORBA.portable.RemarshalException {
         MessageMediator messageMediator = null;
         messageMediator = (MessageMediator)
-            outputObject.getMessageMediator();
-        operationAndId( messageMediator.getOperationName(),
-            messageMediator.getRequestId() ) ;
+                outputObject.getMessageMediator();
+        operationAndId(messageMediator.getOperationName(),
+                       messageMediator.getRequestId());
         final ORB orb = (ORB) messageMediator.getBroker();
-        operationAndId(messageMediator.getOperationName(), 
-            messageMediator.getRequestId());
+        operationAndId(messageMediator.getOperationName(),
+                       messageMediator.getRequestId());
 
         CDROutputObject cdrOutputObject = outputObject;
         final CDROutputObject fCDROutputObject = cdrOutputObject;
@@ -81,13 +78,13 @@ public class SharedCDRClientRequestDispatcherImpl
         //
 
         CDRInputObject cdrInputObject = AccessController.doPrivileged(
-        		new PrivilegedAction<CDRInputObject>() {
-					@Override
-					public CDRInputObject run() {
-						return fCDROutputObject.createInputObject(orb);
-					}
-        		});
-        		
+                new PrivilegedAction<CDRInputObject>() {
+                    @Override
+                    public CDRInputObject run() {
+                        return fCDROutputObject.createInputObject(orb);
+                    }
+                });
+
         messageMediator.setInputObject(cdrInputObject);
         cdrInputObject.setMessageMediator(messageMediator);
 
@@ -96,8 +93,8 @@ public class SharedCDRClientRequestDispatcherImpl
         //
 
         // REVISIT: Impl cast.
-        ((MessageMediatorImpl)messageMediator).handleRequestRequest(
-            messageMediator);
+        ((MessageMediatorImpl) messageMediator).handleRequestRequest(
+                messageMediator);
 
         // InputStream must be closed on the InputObject so that its
         // ByteBuffer can be released to the ByteBufferPool. We must do
@@ -118,15 +115,15 @@ public class SharedCDRClientRequestDispatcherImpl
         cdrOutputObject = messageMediator.getOutputObject();
         final CDROutputObject fCDROutputObject2 = cdrOutputObject;
         cdrInputObject = AccessController.doPrivileged(
-        		new PrivilegedAction<CDRInputObject>() {
+                new PrivilegedAction<CDRInputObject>() {
 
-					@Override
-					public CDRInputObject run() {
-						// TODO Auto-generated method stub
-						return fCDROutputObject2.createInputObject(orb);
-					}
-        			
-        		});
+                    @Override
+                    public CDRInputObject run() {
+                        // TODO Auto-generated method stub
+                        return fCDROutputObject2.createInputObject(orb);
+                    }
+
+                });
         messageMediator.setInputObject(cdrInputObject);
         cdrInputObject.setMessageMediator(messageMediator);
 

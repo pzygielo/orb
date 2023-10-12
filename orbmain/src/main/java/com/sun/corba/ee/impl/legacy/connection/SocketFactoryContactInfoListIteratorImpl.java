@@ -19,30 +19,26 @@
 
 package com.sun.corba.ee.impl.legacy.connection;
 
-import org.omg.CORBA.CompletionStatus;
-import org.omg.CORBA.SystemException;
-
+import com.sun.corba.ee.impl.transport.ContactInfoListIteratorImpl;
+import com.sun.corba.ee.impl.transport.SharedCDRContactInfoImpl;
 import com.sun.corba.ee.spi.legacy.connection.GetEndPointInfoAgainException;
+import com.sun.corba.ee.spi.logging.ORBUtilSystemException;
 import com.sun.corba.ee.spi.orb.ORB;
+import com.sun.corba.ee.spi.trace.IsLocal;
 import com.sun.corba.ee.spi.transport.ContactInfo;
 import com.sun.corba.ee.spi.transport.ContactInfoList;
 import com.sun.corba.ee.spi.transport.SocketInfo;
-
-import com.sun.corba.ee.spi.logging.ORBUtilSystemException;
-import com.sun.corba.ee.impl.transport.ContactInfoListIteratorImpl;
-import com.sun.corba.ee.impl.transport.SharedCDRContactInfoImpl;
-import com.sun.corba.ee.spi.trace.IsLocal;
+import org.omg.CORBA.CompletionStatus;
+import org.omg.CORBA.SystemException;
 
 @IsLocal
 public class SocketFactoryContactInfoListIteratorImpl
-    extends ContactInfoListIteratorImpl
-{
+        extends ContactInfoListIteratorImpl {
     private SocketInfo socketInfoCookie;
 
     public SocketFactoryContactInfoListIteratorImpl(
-        ORB orb,
-        ContactInfoList corbaContactInfoList)
-    {
+            ORB orb,
+            ContactInfoList corbaContactInfoList) {
         super(orb, corbaContactInfoList, null, null, false);
     }
 
@@ -53,58 +49,53 @@ public class SocketFactoryContactInfoListIteratorImpl
 
     @Override
     @IsLocal
-    public boolean hasNext()
-    {
+    public boolean hasNext() {
         return true;
     }
 
     @Override
     @IsLocal
-    public ContactInfo next()
-    {
-        if (contactInfoList.getEffectiveTargetIOR().getProfile().isLocal()){
+    public ContactInfo next() {
+        if (contactInfoList.getEffectiveTargetIOR().getProfile().isLocal()) {
             return new SharedCDRContactInfoImpl(
-                orb, contactInfoList,
-                contactInfoList.getEffectiveTargetIOR(),
-                orb.getORBData().getGIOPAddressDisposition());
+                    orb, contactInfoList,
+                    contactInfoList.getEffectiveTargetIOR(),
+                    orb.getORBData().getGIOPAddressDisposition());
         } else {
             // REVISIT:
             // on comm_failure maybe need to give IOR instead of located.
             return new SocketFactoryContactInfoImpl(
-                orb, contactInfoList,
-                contactInfoList.getEffectiveTargetIOR(),
-                orb.getORBData().getGIOPAddressDisposition(),
-                socketInfoCookie);
+                    orb, contactInfoList,
+                    contactInfoList.getEffectiveTargetIOR(),
+                    orb.getORBData().getGIOPAddressDisposition(),
+                    socketInfoCookie);
         }
     }
 
     @Override
     public boolean reportException(ContactInfo contactInfo,
-                                   RuntimeException ex)
-    {
+                                   RuntimeException ex) {
         this.failureException = ex;
         if (ex instanceof org.omg.CORBA.COMM_FAILURE) {
 
             SystemException se = (SystemException) ex;
 
-            if (se.minor == ORBUtilSystemException.CONNECTION_REBIND)
-            {
+            if (se.minor == ORBUtilSystemException.CONNECTION_REBIND) {
                 return true;
             } else {
                 if (ex.getCause() instanceof GetEndPointInfoAgainException) {
-                    socketInfoCookie = 
-                        ((GetEndPointInfoAgainException) ex.getCause())
-                        .getEndPointInfo();
+                    socketInfoCookie =
+                            ((GetEndPointInfoAgainException) ex.getCause())
+                                    .getEndPointInfo();
                     return true;
                 }
 
                 if (se.completed == CompletionStatus.COMPLETED_NO) {
                     if (contactInfoList.getEffectiveTargetIOR() !=
-                        contactInfoList.getTargetIOR()) 
-                    {
+                            contactInfoList.getTargetIOR()) {
                         // retry from root ior
                         contactInfoList.setEffectiveTargetIOR(
-                            contactInfoList.getTargetIOR());
+                                contactInfoList.getTargetIOR());
                         return true;
                     }
                 }
